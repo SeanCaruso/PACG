@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CardActionResolvable : IResolvable
+public class CardActionResolvable /*: IResolvable*/
 {
     public PlayerCharacter Player {  get; private set; }
     public PF.ActionType Verb {  get; private set; }
@@ -14,5 +14,10 @@ public class CardActionResolvable : IResolvable
         Verb = verb;
         Count = count;
         TypeFilter = typeFilter;
+    }
+
+    public List<PlayCardAction> GetValidActions(ActionContext context, ResolutionManager resolutionManager)
+    {
+        throw new System.NotImplementedException();
     }
 }

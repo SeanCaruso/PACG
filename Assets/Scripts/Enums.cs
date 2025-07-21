@@ -26,7 +26,9 @@ namespace PF
         Divine,
         Fortitude,
         Knowledge,
+        Melee,
         Perception,
+        Ranged,
         Stealth,
         Survival
     }

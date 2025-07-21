@@ -19,7 +19,16 @@ public enum EncounterPhase
 
 public class EncounterManager : MonoBehaviour
 {
-    private bool isWaitingOnPlayer = false;
+    private LogicRegistry logicRegistry;
+    private IInputController inputController;
+    private ResolutionManager resolutionManager;
+
+    private void Start()
+    {
+        logicRegistry = FindFirstObjectByType<LogicRegistry>();
+        inputController = FindFirstObjectByType<DebugInputController>();
+        resolutionManager = new(logicRegistry);
+    }
 
     public IEnumerator RunEncounter(EncounterContext context)
     {
@@ -34,16 +43,20 @@ public class EncounterManager : MonoBehaviour
             EncounterPhase.Avenge,
         };
 
+        var actionContext = new ActionContext(context.ActivePlayer, CheckCategory.Combat, resolutionManager, logicRegistry);
         foreach (EncounterPhase phase in encounterFlow)
         {
-            IEncounterLogic logic = context.GetEncounterLogic();
-            logic?.Execute(context, phase);
+            IEncounterLogic logic = logicRegistry.GetEncounterLogic(context.EncounteredCardData.cardID);
+            var resolvables = logic?.Execute(context.ActivePlayer, phase);
 
-            while (isWaitingOnPlayer)
+            // Resolve resolvables.
+            if (resolvables.Count > 0 && resolvables[0] is CombatResolvable)
             {
-                yield return null;
+                resolutionManager.HandleCombatResolvable(resolvables[0] as CombatResolvable, actionContext, inputController);
             }
         }
+
+        yield break;
     }
 
     public void ResolveDamage(List<PlayerCharacter> targets, int amount, string type)

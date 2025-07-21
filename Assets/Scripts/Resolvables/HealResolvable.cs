@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HealResolvable : IResolvable
+public class HealResolvable /*: IResolvable*/
 {
     public PlayerCharacter Player {  get; private set; }
     public int Count { get; private set; }
@@ -12,5 +12,10 @@ public class HealResolvable : IResolvable
         Player = player;
         Count = count;
         TypeFilter = typeFilter;
+    }
+
+    public List<PlayCardAction> GetValidActions(ActionContext context, ResolutionManager resolutionManager)
+    {
+        throw new System.NotImplementedException();
     }
 }

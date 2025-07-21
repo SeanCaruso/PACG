@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class IStagedAction
+public interface IStagedAction
 {
-    
+    public void Commit();
 }
