@@ -44,6 +44,7 @@ public class EncounterManager : MonoBehaviour
         };
 
         var actionContext = new ActionContext(context.ActivePlayer, CheckCategory.Combat, resolutionManager, logicRegistry);
+        actionContext.ContextData["EncounteredCard"] = context.EncounteredCardData;
         foreach (EncounterPhase phase in encounterFlow)
         {
             IEncounterLogic logic = logicRegistry.GetEncounterLogic(context.EncounteredCardData.cardID);

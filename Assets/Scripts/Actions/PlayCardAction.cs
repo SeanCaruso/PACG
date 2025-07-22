@@ -19,7 +19,7 @@ public class PlayCardAction : IStagedAction
 
     public string GetLabel()
     {
-        return label is null ? actionType.ToString() : label;
+        return $"{(label is null ? actionType.ToString() : label)} {cardData.cardName}";
     }
 
     public void Commit(ActionContext context)

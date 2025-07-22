@@ -12,26 +12,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b9caa4de1a44a24690a5d7218d08e5f, type: 3}
   m_Name: Valeros
   m_EditorClassIdentifier: 
-  Name: 
-  strDie: 0
-  strBonus: 0
-  dexDie: 0
-  dexBonus: 0
-  conDie: 0
-  conBonus: 0
-  intDie: 0
-  intBonus: 0
-  wisDie: 0
-  wisBonus: 0
-  chaDie: 0
-  chaBonus: 0
-  handSize: 0
-  proficiencies: 
-  traits: []
-  weapons: 0
+  Name: Valeros
+  attributes:
+  - attribute: 0
+    die: 10
+    bonus: 0
+  - attribute: 1
+    die: 8
+    bonus: 0
+  - attribute: 2
+    die: 8
+    bonus: 0
+  - attribute: 3
+    die: 4
+    bonus: 0
+  - attribute: 4
+    die: 6
+    bonus: 0
+  - attribute: 5
+    die: 6
+    bonus: 0
+  skills:
+  - skill: 12
+    attribute: 0
+    bonus: 2
+  - skill: 14
+    attribute: 1
+    bonus: 1
+  - skill: 10
+    attribute: 2
+    bonus: 2
+  - skill: 8
+    attribute: 5
+    bonus: 2
+  handSize: 4
+  proficiencies: 0100000005000000
+  traits:
+  - Human
+  - Fighter
+  weapons: 4
   spells: 0
-  armors: 0
-  items: 0
-  allies: 0
-  blessings: 0
-  favoredCards: []
+  armors: 3
+  items: 2
+  allies: 3
+  blessings: 3
+  favoredCards:
+  - cardType: 5
+    trait: Sword

@@ -22,4 +22,5 @@ public class ActionContext
     public PF.Skill UsedSkill { get; set; } = new();
     public List<string> Traits { get; private set; } = new();
     public DicePool DicePool { get; private set; } = new();
+    public Dictionary<string, object> ContextData { get; private set; } = new();
 }

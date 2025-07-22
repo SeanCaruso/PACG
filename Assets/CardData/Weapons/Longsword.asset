@@ -24,4 +24,7 @@ MonoBehaviour:
       adventureLevelMult: 0
       category: 1
       allowedSkills: 000000000c000000
-  traits: []
+  traits:
+  - Sword
+  - Melee
+  - Slashing
