@@ -6,6 +6,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     [Header("Object References")]
+    public CharacterData characterData;
     public Deck playerDeck;
     public Deck locationDeck;
 
@@ -23,6 +24,7 @@ public class GameManager : MonoBehaviour
 
     private List<CardData> playerHand = new();
 
+    private GameContext gameContext = new(1);
     private CardData currentEncounterCard;
 
     private void Start()
@@ -35,7 +37,7 @@ public class GameManager : MonoBehaviour
 
     void SetupInitialHand()
     {
-        for (int i = 0; i < startingHandSize; ++i)
+        for (int i = 0; i < characterData.handSize; ++i)
         {
             CardData drawnCard = playerDeck.DrawCard();
             if (!drawnCard)
@@ -69,20 +71,21 @@ public class GameManager : MonoBehaviour
         if (!exploredCard)
             yield break;
 
-        GameObject encounterObject = new GameObject($"Encounter_{exploredCard.cardID}");
+        GameObject encounterObject = new($"Encounter_{exploredCard.cardID}");
         EncounterManager encounterManager = encounterObject.AddComponent<EncounterManager>();
 
-        PlayerCharacter testCharacter = new();
-        testCharacter.deck = playerDeck;
-        testCharacter.hand = playerHand;
-        testCharacter.proficiencies.Add(PF.CardType.Weapon);
-        EncounterContext context = new EncounterContext(exploredCard, testCharacter, encounterManager);
+        PlayerCharacter testCharacter = new()
+        {
+            characterData = this.characterData,
+            deck = playerDeck,
+            hand = playerHand
+        };
+        EncounterContext context = new(gameContext, exploredCard, testCharacter, encounterManager);
 
         yield return encounterManager.RunEncounter(context);
 
         if (context.CheckResult?.WasSuccess ?? false)
         {
-            Debug.Log("Success!");
             if (currentEncounterCard is BoonCardData)
             {
                 CreateCardInHand(currentEncounterCard);
@@ -90,7 +93,6 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("Failure!");
             // Do damage later.
         }
 

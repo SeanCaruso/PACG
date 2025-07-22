@@ -2,5 +2,5 @@ using UnityEngine;
 
 public interface IStagedAction
 {
-    public void Commit();
+    public void Commit(ActionContext context);
 }

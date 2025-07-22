@@ -11,5 +11,5 @@ public class EncounterLogicForAttribute : Attribute
 
 public interface IEncounterLogic
 {
-    List<IResolvable> Execute(PlayerCharacter character, EncounterPhase phase);
+    List<IResolvable> Execute(EncounterContext context, EncounterPhase phase);
 }

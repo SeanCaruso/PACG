@@ -15,6 +15,8 @@ public class CheckStep
     [Header("Check Type")]
     public CheckCategory category;
     public List<PF.Skill> allowedSkills;
+
+    public int TotalDC(GameContext gameContext) => baseDC + (adventureLevelMult * gameContext.AdventureNumber);
 }
 
 [System.Serializable]

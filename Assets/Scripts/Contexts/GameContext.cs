@@ -3,14 +3,10 @@ using UnityEngine;
 
 public class GameContext
 {
-    public IInputController InputController { get; }
-    public LogicRegistry LogicRegistry { get; }
-    public List<PlayerCharacter> AllPlayers { get; }
+    public int AdventureNumber { get; private set; }
 
-    public GameContext(IInputController inputController, LogicRegistry logicRegistry, List<PlayerCharacter> allPlayers)
+    public GameContext(int adventureNumber)
     {
-        InputController = inputController;
-        LogicRegistry = logicRegistry;
-        AllPlayers = allPlayers;
+        AdventureNumber = adventureNumber;
     }
 }

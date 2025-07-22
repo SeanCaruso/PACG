@@ -32,7 +32,7 @@ public class EncounterManager : MonoBehaviour
 
     public IEnumerator RunEncounter(EncounterContext context)
     {
-        List<EncounterPhase> encounterFlow =new List<EncounterPhase>
+        List<EncounterPhase> encounterFlow = new List<EncounterPhase>
         {
             EncounterPhase.OnEncounter,
             EncounterPhase.Evasion,
@@ -47,22 +47,36 @@ public class EncounterManager : MonoBehaviour
         foreach (EncounterPhase phase in encounterFlow)
         {
             IEncounterLogic logic = logicRegistry.GetEncounterLogic(context.EncounteredCardData.cardID);
-            var resolvables = logic?.Execute(context.ActivePlayer, phase) ?? new();
+            var resolvables = logic?.Execute(context, phase) ?? new();
 
             // Resolve resolvables.
             if (resolvables.Count > 0 && resolvables[0] is CombatResolvable)
             {
-                yield return resolutionManager.HandleCombatResolvable(resolvables[0] as CombatResolvable, actionContext, inputController);
+                CombatResolvable combatResolvable = resolvables[0] as CombatResolvable;
+                yield return resolutionManager.HandleCombatResolvable(combatResolvable, actionContext, inputController);
 
-                inputController.SelectedAction?.Commit();
+                ResolveCombatCheck(actionContext, combatResolvable.Difficulty);
             }
         }
 
         yield break;
     }
 
-    public void ResolveDamage(List<PlayerCharacter> targets, int amount, string type)
+    private CheckResult ResolveCombatCheck(ActionContext context, int dc)
     {
+        int rollResult = context.DicePool.Roll();
 
+        CheckResult checkResult = new(rollResult, dc, context.ActiveCharacter, context.UsedSkill, context.Traits);
+
+        if (checkResult.WasSuccess)
+        {
+            Debug.Log($"Rolled {rollResult} vs. {dc} - Success!");
+        }
+        else
+        {
+            Debug.Log($"Rolled {rollResult} vs. {dc} - Take {checkResult.MarginOfSuccess * -1} damage!");
+        }
+
+        return checkResult;
     }
 }

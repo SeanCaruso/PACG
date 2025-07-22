@@ -21,7 +21,7 @@ public class CombatResolvable : IResolvable
             var cardLogic = context.LogicRegistry.GetPlayableLogic(cardData.cardID);
             if (cardLogic != null)
             {
-                var availableActions = cardLogic.GetAvailableActions(context);
+                var availableActions = cardLogic.GetAvailableActions(context, cardData);
                 allOptions.AddRange(availableActions);
             }
         }

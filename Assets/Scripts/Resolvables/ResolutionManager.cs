@@ -14,5 +14,7 @@ public class ResolutionManager
     {
         var actions = combat.GetValidActions(context);
         yield return input.PresentCardActionChoices(actions, context);
+
+        input.SelectedAction.Commit(context);
     }
 }

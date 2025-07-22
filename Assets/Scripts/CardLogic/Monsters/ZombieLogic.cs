@@ -4,11 +4,12 @@ using UnityEngine;
 [EncounterLogicFor("Zombie")]
 public class ZombieLogic : IEncounterLogic
 {
-    public List<IResolvable> Execute(PlayerCharacter character, EncounterPhase phase)
+    public List<IResolvable> Execute(EncounterContext context, EncounterPhase phase)
     {
         if (phase == EncounterPhase.AttemptChecks)
         {
-            return new List<IResolvable>{ new CombatResolvable(character, 9) };
+            int totalDC = context.EncounteredCardData.checkRequirement.checkSteps[0].TotalDC(context.GameContext);
+            return new List<IResolvable>{ new CombatResolvable(context.ActivePlayer, totalDC) };
         }
 
         return new();
