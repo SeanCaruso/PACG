@@ -17,7 +17,7 @@ public class PlayCardAction : IStagedAction
 
     public string GetLabel()
     {
-        return label is null ? nameof(actionType) : label;
+        return label is null ? actionType.ToString() : label;
     }
 
     public void Commit()

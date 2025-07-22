@@ -3,13 +3,13 @@ using UnityEngine;
 
 public class PlayerCharacter
 {
-    private List<PF.CardType> proficiencies;
+    public List<PF.CardType> proficiencies = new();
 
     public Deck deck;
-    public List<CardData> hand;
-    public List<CardData> discards;
-    public List<CardData> buriedCards;
-    public List<CardData> displayedCards;
+    public List<CardData> hand = new();
+    public List<CardData> discards = new();
+    public List<CardData> buriedCards = new();
+    public List<CardData> displayedCards = new();
 
     public bool IsProficient(PF.CardType cardType) => proficiencies.Contains(cardType);
 }

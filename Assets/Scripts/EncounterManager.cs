@@ -23,7 +23,7 @@ public class EncounterManager : MonoBehaviour
     private IInputController inputController;
     private ResolutionManager resolutionManager;
 
-    private void Start()
+    private void Awake()
     {
         logicRegistry = FindFirstObjectByType<LogicRegistry>();
         inputController = FindFirstObjectByType<DebugInputController>();
@@ -47,12 +47,14 @@ public class EncounterManager : MonoBehaviour
         foreach (EncounterPhase phase in encounterFlow)
         {
             IEncounterLogic logic = logicRegistry.GetEncounterLogic(context.EncounteredCardData.cardID);
-            var resolvables = logic?.Execute(context.ActivePlayer, phase);
+            var resolvables = logic?.Execute(context.ActivePlayer, phase) ?? new();
 
             // Resolve resolvables.
             if (resolvables.Count > 0 && resolvables[0] is CombatResolvable)
             {
-                resolutionManager.HandleCombatResolvable(resolvables[0] as CombatResolvable, actionContext, inputController);
+                yield return resolutionManager.HandleCombatResolvable(resolvables[0] as CombatResolvable, actionContext, inputController);
+
+                inputController.SelectedAction?.Commit();
             }
         }
 

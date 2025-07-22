@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -18,6 +20,8 @@ public class GameManager : MonoBehaviour
 
     [Header("Game Rules")]
     public int startingHandSize = 5;
+
+    private List<CardData> playerHand = new();
 
     private CardData currentEncounterCard;
 
@@ -43,6 +47,8 @@ public class GameManager : MonoBehaviour
 
     void CreateCardInHand(CardData card)
     {
+        playerHand.Add(card);
+
         GameObject newCardObject = Instantiate(cardPrefab, handHolder);
 
         CardDisplay cardDisplay = newCardObject.GetComponent<CardDisplay>();
@@ -53,31 +59,30 @@ public class GameManager : MonoBehaviour
 
     public void OnExploreClicked()
     {
+        StartCoroutine(RunEncounter());
+    }
+
+    private IEnumerator RunEncounter()
+    {
         CardData exploredCard = locationDeck.DrawCard();
-        if (exploredCard)
-            StartEncounter(exploredCard);
-    }
 
-    void StartEncounter(CardData card)
-    {
-        currentEncounterCard = card;
+        if (!exploredCard)
+            yield break;
 
-        encounterZone.SetActive(true);
-        encounterCardDisplay.cardData = card;
-        encounterCardDisplay.UpdateCardDisplay();
+        GameObject encounterObject = new GameObject($"Encounter_{exploredCard.cardID}");
+        EncounterManager encounterManager = encounterObject.AddComponent<EncounterManager>();
 
-        checkButtonText.text = card is BaneCardData ? "Attempt to Defeat" : "Attempt to Acquire";
-    }
+        PlayerCharacter testCharacter = new();
+        testCharacter.deck = playerDeck;
+        testCharacter.hand = playerHand;
+        testCharacter.proficiencies.Add(PF.CardType.Weapon);
+        EncounterContext context = new EncounterContext(exploredCard, testCharacter, encounterManager);
 
-    public void OnEncounterCheck()
-    {
-        int roll = Random.Range(1, 20);
+        yield return encounterManager.RunEncounter(context);
 
-        bool success = false;// roll >= currentEncounterCard.CheckDC;
-
-        if (success)
+        if (context.CheckResult?.WasSuccess ?? false)
         {
-            Debug.Log("Player rolled a " + roll + "... Success!");
+            Debug.Log("Success!");
             if (currentEncounterCard is BoonCardData)
             {
                 CreateCardInHand(currentEncounterCard);
@@ -85,15 +90,10 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("Player rolled a " + roll + "... Failure!");
+            Debug.Log("Failure!");
+            // Do damage later.
         }
 
-        EndEncounter();
-    }
-
-    void EndEncounter()
-    {
-        encounterZone.SetActive(false);
-        currentEncounterCard = null;
+        Destroy(encounterObject);
     }
 }

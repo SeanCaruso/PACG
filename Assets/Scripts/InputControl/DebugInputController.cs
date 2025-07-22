@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class DebugInputController : MonoBehaviour, IInputController
 {
@@ -14,9 +15,13 @@ public class DebugInputController : MonoBehaviour, IInputController
     {
         if (!waitingForInput) return;
 
+        var keyboard = Keyboard.current;
+        if (keyboard is null) return;
+
         for (int i = 0; i < currentOptions.Count; i++)
         {
-            if (Input.GetKeyDown(KeyCode.Alpha1 + i))
+            Key key = Key.Digit1 + i;
+            if (keyboard[key].wasPressedThisFrame)
             {
                 selectedAction = currentOptions[i];
                 break;
@@ -39,7 +44,6 @@ public class DebugInputController : MonoBehaviour, IInputController
         yield return new WaitUntil(() => selectedAction != null);
 
         waitingForInput = false;
-        yield return selectedAction;
     }
 
     public void CommitActions()
