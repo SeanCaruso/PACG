@@ -18,10 +18,10 @@ public class CombatResolvable : IResolvable
 
         foreach (var cardData in Character.hand)
         {
-            var cardLogic = context.LogicRegistry.GetPlayableLogic(cardData.cardID);
+            var cardLogic = context.LogicRegistry.GetPlayableLogic(cardData);
             if (cardLogic != null)
             {
-                var availableActions = cardLogic.GetAvailableActions(context, cardData);
+                var availableActions = cardLogic.GetAvailableActions(context);
                 allOptions.AddRange(availableActions);
             }
         }

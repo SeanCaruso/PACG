@@ -6,7 +6,7 @@ using UnityEngine;
 public class LogicRegistry : MonoBehaviour
 {
     private readonly Dictionary<string, IEncounterLogic> encounterLogicMap = new();
-    private readonly Dictionary<string, IPlayableLogic> playableLogicMap = new();
+    private readonly Dictionary<string, BasePlayableLogic> playableLogicMap = new();
 
     private void Awake()
     {
@@ -32,12 +32,12 @@ public class LogicRegistry : MonoBehaviour
             }
 
             // Check for Playable logic.
-            if (typeof(IPlayableLogic).IsAssignableFrom(type))
+            if (typeof(BasePlayableLogic).IsAssignableFrom(type))
             {
                 var attribute = type.GetCustomAttribute<PlayableLogicForAttribute>();
                 if (attribute != null)
                 {
-                    var instance = Activator.CreateInstance(type) as IPlayableLogic;
+                    var instance = Activator.CreateInstance(type) as BasePlayableLogic;
                     playableLogicMap[attribute.CardID] = instance;
                 }
             }
@@ -53,9 +53,10 @@ public class LogicRegistry : MonoBehaviour
         return logic;
     }
 
-    public IPlayableLogic GetPlayableLogic(string cardID)
+    public BasePlayableLogic GetPlayableLogic(CardData cardData)
     {
-        playableLogicMap.TryGetValue(cardID , out var logic);
+        playableLogicMap.TryGetValue(cardData.cardID , out var logic);
+        logic.CardData = cardData;
         return logic;
     }
 }

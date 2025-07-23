@@ -12,8 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72b1ad41f9c218045b980737984353fc, type: 3}
   m_Name: Orison
   m_EditorClassIdentifier: 
-  CardName: Orison
-  Level: 0
-  CardArt: {fileID: 0}
-  CheckDC: 2
-  CardType: 2
+  cardID: Orison
+  cardName: Orison
+  cardType: 2
+  cardLevel: 0
+  cardArt: {fileID: 0}
+  checkRequirement:
+    mode: 0
+    checkSteps:
+    - baseDC: 2
+      adventureLevelMult: 0
+      category: 1
+      allowedSkills: 0400000009000000
+  traits:
+  - Divine

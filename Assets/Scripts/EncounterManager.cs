@@ -43,7 +43,7 @@ public class EncounterManager : MonoBehaviour
             EncounterPhase.Avenge,
         };
 
-        var actionContext = new ActionContext(context.ActivePlayer, CheckCategory.Combat, resolutionManager, logicRegistry);
+        var actionContext = new ActionContext(context.TurnContext, CheckCategory.Combat, resolutionManager, logicRegistry);
         actionContext.ContextData["EncounteredCard"] = context.EncounteredCardData;
         foreach (EncounterPhase phase in encounterFlow)
         {
@@ -65,9 +65,10 @@ public class EncounterManager : MonoBehaviour
 
     private CheckResult ResolveCombatCheck(ActionContext context, int dc)
     {
+        context.DicePool.AddDice(context.BlessingCount, context.TurnContext.CurrentPC.GetSkill(context.UsedSkill).die);
         int rollResult = context.DicePool.Roll();
 
-        CheckResult checkResult = new(rollResult, dc, context.ActiveCharacter, context.UsedSkill, context.Traits);
+        CheckResult checkResult = new(rollResult, dc, context.TurnContext.CurrentPC, context.UsedSkill, context.Traits);
 
         if (checkResult.WasSuccess)
         {

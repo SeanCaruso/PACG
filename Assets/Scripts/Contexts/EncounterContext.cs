@@ -3,17 +3,15 @@ using UnityEngine;
 
 public class EncounterContext
 {
-    public GameContext GameContext { get; private set; }
+    public TurnContext TurnContext { get; private set; }
     public CardData EncounteredCardData { get; }
-    public PlayerCharacter ActivePlayer {  get; }
     public EncounterManager EncounterManager { get; }
     public CheckResult CheckResult { get; set; }
 
-    public EncounterContext(GameContext gameContext, CardData card, PlayerCharacter activePlayer, EncounterManager encounterManager)
+    public EncounterContext(TurnContext turnContext, CardData card, EncounterManager encounterManager)
     {
-        GameContext = gameContext;
+        TurnContext = turnContext;
         EncounteredCardData = card;
-        ActivePlayer = activePlayer;
         EncounterManager = encounterManager;
     }
 }

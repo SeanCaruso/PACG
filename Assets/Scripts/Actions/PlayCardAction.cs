@@ -2,13 +2,13 @@ using UnityEngine;
 
 public class PlayCardAction : IStagedAction
 {
-    private IPlayableLogic playable;
+    private BasePlayableLogic playable;
     private CardData cardData;
     private PF.ActionType actionType;
     private int? powerIndex = null;
     private string label = null;
 
-    public PlayCardAction(IPlayableLogic playable, CardData cardData, PF.ActionType actionType, string label = null, int? powerIndex = null)
+    public PlayCardAction(BasePlayableLogic playable, CardData cardData, PF.ActionType actionType, string label = null, int? powerIndex = null)
     {
         this.playable = playable;
         this.cardData = cardData;
@@ -26,5 +26,7 @@ public class PlayCardAction : IStagedAction
     {
         context.Traits.AddRange(cardData.traits);
         playable.Execute(context, powerIndex);
+
+        context.TurnContext.CurrentPC.MoveCard(cardData, actionType);
     }
 }

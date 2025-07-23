@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     public CharacterData characterData;
     public Deck playerDeck;
     public Deck locationDeck;
+    public CardData hourBlessing;
 
     [Header("UI References")]
     public GameObject encounterZone;
@@ -25,7 +26,6 @@ public class GameManager : MonoBehaviour
     private List<CardData> playerHand = new();
 
     private GameContext gameContext = new(1);
-    private CardData currentEncounterCard;
 
     private void Start()
     {
@@ -80,15 +80,16 @@ public class GameManager : MonoBehaviour
             deck = playerDeck,
             hand = playerHand
         };
-        EncounterContext context = new(gameContext, exploredCard, testCharacter, encounterManager);
+        TurnContext turnContext = new(gameContext, hourBlessing, testCharacter);
+        EncounterContext context = new(turnContext, exploredCard, encounterManager);
 
         yield return encounterManager.RunEncounter(context);
 
         if (context.CheckResult?.WasSuccess ?? false)
         {
-            if (currentEncounterCard is BoonCardData)
+            if (exploredCard is BoonCardData)
             {
-                CreateCardInHand(currentEncounterCard);
+                CreateCardInHand(exploredCard);
             }
         }
         else

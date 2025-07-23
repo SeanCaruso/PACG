@@ -8,8 +8,8 @@ public class ZombieLogic : IEncounterLogic
     {
         if (phase == EncounterPhase.AttemptChecks)
         {
-            int totalDC = context.EncounteredCardData.checkRequirement.checkSteps[0].TotalDC(context.GameContext);
-            return new List<IResolvable>{ new CombatResolvable(context.ActivePlayer, totalDC) };
+            int totalDC = context.EncounteredCardData.checkRequirement.checkSteps[0].TotalDC(context.TurnContext.GameContext);
+            return new List<IResolvable>{ new CombatResolvable(context.TurnContext.CurrentPC, totalDC) };
         }
 
         return new();

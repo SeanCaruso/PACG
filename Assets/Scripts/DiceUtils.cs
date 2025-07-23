@@ -17,7 +17,7 @@ public static class DiceUtils
 
 public class DicePool
 {
-    private Dictionary<int, int> dice = new();
+    private Dictionary<int, int> dice = new(); // Key: Sides; Value: count
     private int bonus = 0;
 
     public void AddDice(int count, int sides, int bonus = 0)
@@ -38,6 +38,19 @@ public class DicePool
         {
             rollResult += DiceUtils.Roll(count, sides);
         }
+        Debug.Log($"Rolling {ToString()} ==> {rollResult}");
         return rollResult;
+    }
+
+    public override string ToString()
+    {
+        string retval = "";
+        foreach ((int sides, int count) in dice)
+        {
+            retval += retval != "" ? " + " : "";
+            retval += $"{count}d{sides}";
+        }
+        retval += bonus == 0 ? "" : $" + {bonus}";
+        return retval;
     }
 }
