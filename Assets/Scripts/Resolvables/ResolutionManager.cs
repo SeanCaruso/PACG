@@ -5,16 +5,26 @@ using UnityEngine;
 public class ResolutionManager
 {
     public LogicRegistry LogicRegistry;
-    public ResolutionManager(LogicRegistry LogicRegistry)
+    private UIInputController uiController;
+
+    public ResolutionManager(LogicRegistry LogicRegistry, UIInputController uiController)
     {
         this.LogicRegistry = LogicRegistry;
+        this.uiController = uiController;
     }
 
-    public IEnumerator HandleCombatResolvable(CombatResolvable combat, ActionContext context, IInputController input)
+    public IEnumerator HandleCombatResolvable(CombatResolvable combat, ActionContext context)
     {
         var actions = combat.GetValidActions(context);
-        yield return input.PresentCardActionChoices(actions, context);
+        yield return uiController.PresentCardActionChoices(actions, context);
 
-        input.SelectedAction.Commit(context);
+        if (uiController.SelectedAction != null)
+        {
+            // Stage the action (for any pre-execution effects)
+            uiController.SelectedAction.playable?.OnStage(context, uiController.SelectedAction.PowerIndex);
+
+            // Commit the action.
+            uiController.SelectedAction.Commit(context);
+        }
     }
 }

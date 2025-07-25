@@ -2,11 +2,13 @@ using UnityEngine;
 
 public class PlayCardAction : IStagedAction
 {
-    private BasePlayableLogic playable;
-    private CardData cardData;
-    private PF.ActionType actionType;
+    public BasePlayableLogic playable { get; private set; }
+    public CardData cardData { get; private set; }
+    public PF.ActionType actionType { get; private set; }
     private int? powerIndex = null;
     private string label = null;
+
+    public int? PowerIndex => powerIndex;
 
     public PlayCardAction(BasePlayableLogic playable, CardData cardData, PF.ActionType actionType, string label = null, int? powerIndex = null)
     {

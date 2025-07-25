@@ -20,14 +20,14 @@ public enum EncounterPhase
 public class EncounterManager : MonoBehaviour
 {
     private LogicRegistry logicRegistry;
-    private IInputController inputController;
+    private UIInputController inputController;
     private ResolutionManager resolutionManager;
 
     private void Awake()
     {
         logicRegistry = FindFirstObjectByType<LogicRegistry>();
-        inputController = FindFirstObjectByType<DebugInputController>();
-        resolutionManager = new(logicRegistry);
+        inputController = FindFirstObjectByType<UIInputController>();
+        resolutionManager = new(logicRegistry, inputController);
     }
 
     public IEnumerator RunEncounter(EncounterContext context)
@@ -54,7 +54,7 @@ public class EncounterManager : MonoBehaviour
             if (resolvables.Count > 0 && resolvables[0] is CombatResolvable)
             {
                 CombatResolvable combatResolvable = resolvables[0] as CombatResolvable;
-                yield return resolutionManager.HandleCombatResolvable(combatResolvable, actionContext, inputController);
+                yield return resolutionManager.HandleCombatResolvable(combatResolvable, actionContext);
 
                 ResolveCombatCheck(actionContext, combatResolvable.Difficulty);
             }
@@ -63,10 +63,15 @@ public class EncounterManager : MonoBehaviour
         yield break;
     }
 
-    private CheckResult ResolveCombatCheck(ActionContext context, int dc)
+    private IEnumerator ResolveCombatCheck(ActionContext context, int dc)
     {
+        // Add blessing dice.
         context.DicePool.AddDice(context.BlessingCount, context.TurnContext.CurrentPC.GetSkill(context.UsedSkill).die);
+
         int rollResult = context.DicePool.Roll();
+
+        // Display dice rolling.
+        yield return inputController.ShowDiceRoll(context.DicePool, rollResult);
 
         CheckResult checkResult = new(rollResult, dc, context.TurnContext.CurrentPC, context.UsedSkill, context.Traits);
 
@@ -79,6 +84,6 @@ public class EncounterManager : MonoBehaviour
             Debug.Log($"Rolled {rollResult} vs. {dc} - Take {checkResult.MarginOfSuccess * -1} damage!");
         }
 
-        return checkResult;
+        yield return checkResult;
     }
 }

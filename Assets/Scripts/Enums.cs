@@ -1,5 +1,5 @@
 
-namespace PF
+public static class PF
 {
 
     public enum ActionType { Draw, Reveal, Display, Reload, Recharge, Discard, Bury, Banish }
@@ -9,8 +9,28 @@ namespace PF
         // Boons
         Ally, Armor, Blessing, Item, Spell, Weapon,
         // Banes
-        Barrier, Monster
+        Barrier, Monster, StoryBane
     }
+    public static string S(CardType type)
+    {
+        switch(type)
+        {
+            case CardType.StoryBane:
+                return "Story Bane";
+            default:
+                return type.ToString();
+        }
+    }
+    public static bool IsBane(CardType cardType)
+    {
+        return cardType switch
+        {
+            CardType.Barrier or CardType.Monster or CardType.StoryBane => true,
+            _ => false,
+        };
+    }
+    public static bool IsBoon(CardType cardType) => !IsBane(cardType);
+
     public enum Skill
     {
         Strength,

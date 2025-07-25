@@ -13,7 +13,13 @@ public abstract class CardData : ScriptableObject
     public int cardLevel;
     public Sprite cardArt;
 
+    [Header("Check(s) to Acquire/Defeat")]
     public CheckRequirement checkRequirement;
 
+    [Header("Powers")]
+    public string powers;
+    public string recovery;
+
+    [Header("Traits")]
     public List<string> traits;
 }

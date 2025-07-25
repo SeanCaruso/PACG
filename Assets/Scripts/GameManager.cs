@@ -12,10 +12,12 @@ public class GameManager : MonoBehaviour
     public CardData hourBlessing;
 
     [Header("UI References")]
+    public UIInputController uIInputController;
     public GameObject encounterZone;
     public CardDisplay encounterCardDisplay;
     public TextMeshProUGUI checkButtonText;
     public Transform handHolder;
+    public DiceRollUI diceRollUI;
 
     [Header("Prefab References")]
     public GameObject cardPrefab;
@@ -33,6 +35,10 @@ public class GameManager : MonoBehaviour
         locationDeck.Shuffle();
 
         SetupInitialHand();
+
+        // Initialize UI if not already done.
+        if (!uIInputController)
+            uIInputController = FindFirstObjectByType<UIInputController>();
     }
 
     void SetupInitialHand()
@@ -55,8 +61,7 @@ public class GameManager : MonoBehaviour
 
         CardDisplay cardDisplay = newCardObject.GetComponent<CardDisplay>();
 
-        cardDisplay.cardData = card;
-        cardDisplay.UpdateCardDisplay();
+        cardDisplay.SetCardData(card, gameContext);
     }
 
     public void OnExploreClicked()
@@ -70,6 +75,10 @@ public class GameManager : MonoBehaviour
 
         if (!exploredCard)
             yield break;
+
+        // Show the encountered card in UI.
+        if (encounterCardDisplay) encounterCardDisplay.SetCardData(exploredCard, gameContext);
+        if (encounterZone) encounterZone.SetActive(true);
 
         GameObject encounterObject = new($"Encounter_{exploredCard.cardID}");
         EncounterManager encounterManager = encounterObject.AddComponent<EncounterManager>();
@@ -98,5 +107,22 @@ public class GameManager : MonoBehaviour
         }
 
         Destroy(encounterObject);
+    }
+
+    public void RefreshHandDisplay()
+    {
+        // Clear existing hand display
+        foreach (Transform child in handHolder)
+        {
+            Destroy(child.gameObject);
+        }
+
+        // Recreate hand display.
+        foreach (CardData card in playerHand)
+        {
+            GameObject cardObj = Instantiate(cardPrefab, handHolder);
+            CardDisplay cardDisplay = cardObj.GetComponent<CardDisplay>();
+            cardDisplay.SetCardData(card, gameContext);
+        }
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum CheckMode { Single, Choice, Sequential }
+public enum CheckMode { Single, Choice, Sequential, None }
 public enum CheckCategory { Combat, Skill }
 
 [System.Serializable]

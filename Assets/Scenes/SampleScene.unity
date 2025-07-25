@@ -430,16 +430,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cards:
-  - {fileID: 11400000, guid: b2cfd91a0ff5c434fa1654f703e316a1, type: 2}
-  - {fileID: 11400000, guid: b2cfd91a0ff5c434fa1654f703e316a1, type: 2}
-  - {fileID: 11400000, guid: b2cfd91a0ff5c434fa1654f703e316a1, type: 2}
-  - {fileID: 11400000, guid: 29627170919b1504da200635d1affa09, type: 2}
-  - {fileID: 11400000, guid: 29627170919b1504da200635d1affa09, type: 2}
-  - {fileID: 11400000, guid: 06534aedf16e0b345b540522bee89026, type: 2}
-  - {fileID: 11400000, guid: 2a7ae1164e0ff3f4d9253519a4f2e772, type: 2}
-  - {fileID: 11400000, guid: 2a7ae1164e0ff3f4d9253519a4f2e772, type: 2}
-  - {fileID: 11400000, guid: ae8c8da9fa58bd8418ecc8ca5855c4a9, type: 2}
-  - {fileID: 11400000, guid: ae8c8da9fa58bd8418ecc8ca5855c4a9, type: 2}
+  - {fileID: 11400000, guid: 91d795d0730e3c94ba316591be2c9675, type: 2}
+  - {fileID: 11400000, guid: 1894fc1c203f4d147886dc38606a95bc, type: 2}
 --- !u!4 &736764138
 Transform:
   m_ObjectHideFlags: 0
@@ -561,8 +553,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d6637ae0a9e90d4eb053a2e7a0354ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  characterData: {fileID: 11400000, guid: 7f93a7efbf7cf2c408a01c15431b7656, type: 2}
   playerDeck: {fileID: 736764137}
   locationDeck: {fileID: 1382152291}
+  hourBlessing: {fileID: 11400000, guid: 06534aedf16e0b345b540522bee89026, type: 2}
   encounterZone: {fileID: 2042406799}
   encounterCardDisplay: {fileID: 340488837}
   checkButtonText: {fileID: 1597285176}
@@ -1004,6 +998,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cards:
+  - {fileID: 11400000, guid: d747111548c51b64583711ae21922f8d, type: 2}
+  - {fileID: 11400000, guid: d747111548c51b64583711ae21922f8d, type: 2}
+  - {fileID: 11400000, guid: d747111548c51b64583711ae21922f8d, type: 2}
   - {fileID: 11400000, guid: d747111548c51b64583711ae21922f8d, type: 2}
 --- !u!4 &1382152292
 Transform:
