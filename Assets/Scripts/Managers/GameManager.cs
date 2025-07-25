@@ -29,6 +29,11 @@ public class GameManager : MonoBehaviour
 
     private GameContext gameContext = new(1);
 
+    public void Awake()
+    {
+        ServiceLocator.Register(this);
+    }
+
     private void Start()
     {
         playerDeck.Shuffle();
@@ -56,12 +61,10 @@ public class GameManager : MonoBehaviour
     void CreateCardInHand(CardData card)
     {
         playerHand.Add(card);
+        PlayerHandController handController = ServiceLocator.Get<PlayerHandController>();
+        if (handController == null) Debug.LogError("Unable to find PlayerHandController!");
 
-        GameObject newCardObject = Instantiate(cardPrefab, handHolder);
-
-        CardDisplay cardDisplay = newCardObject.GetComponent<CardDisplay>();
-
-        cardDisplay.SetCardData(card, gameContext);
+        handController.AddCard(card, gameContext);
     }
 
     public void OnExploreClicked()

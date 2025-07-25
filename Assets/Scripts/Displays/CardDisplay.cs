@@ -38,6 +38,15 @@ public class CardDisplay : MonoBehaviour
     [Header("Traits")]
     public GameObject traitsSection;
 
+    [Header("States")]
+    public bool isInHand = false;
+    public bool isExpanded = false;
+    public bool isStaged = false;
+
+    public Vector3 originalPosition;
+    public Vector3 originalScale;
+    public int originalSiblingIndex;
+
     private CardData cardData;
     private GameContext gameContext;
 
@@ -53,7 +62,7 @@ public class CardDisplay : MonoBehaviour
         if (cardData == null) return;
 
         // Set the various panel colors to the card type's color.
-        Color panelColor = GetPanelColor(cardData.cardType);
+        Color32 panelColor = GetPanelColor(cardData.cardType);
         topPanel.GetComponent<Image>().color = panelColor;
         checksLabelPanel.GetComponent<Image>().color = Color.Lerp(panelColor, Color.black, 0.5f);
         checksSection.GetComponent<Image>().color = panelColor;
@@ -136,41 +145,44 @@ public class CardDisplay : MonoBehaviour
         tmp.font = cardFont;
         tmp.fontSize = 9f;
         tmp.color = Color.white;
+
+        var sizeFitter = textObject.AddComponent<ContentSizeFitter>();
+        sizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
     }
 
     private void Start()
     {
-        UpdateCardDisplay();
+        //UpdateCardDisplay();
     }
 
-    private Color GetPanelColor(PF.CardType cardType)
+    private Color32 GetPanelColor(PF.CardType cardType)
     {
         switch(cardType)
         {
             // Boons
             case PF.CardType.Ally:
-                return new(68, 98, 153);
+                return new(68, 98, 153, 255);
             case PF.CardType.Armor:
-                return new(170, 178, 186);
+                return new(170, 178, 186, 255);
             case PF.CardType.Blessing:
-                return new(0, 172, 235);
+                return new(0, 172, 235, 255);
             case PF.CardType.Item:
-                return new(96, 133, 132);
+                return new(96, 133, 132, 255);
             case PF.CardType.Spell:
-                return new(97, 46, 138);
+                return new(97, 46, 138, 255);
             case PF.CardType.Weapon:
-                return new(93, 97, 96);
+                return new(93, 97, 96, 255);
 
             // Banes
             case PF.CardType.Barrier:
-                return new(255, 227, 57);
+                return new(255, 227, 57, 255);
             case PF.CardType.Monster:
-                return new(213, 112, 41);
+                return new(213, 112, 41, 255);
             case PF.CardType.StoryBane:
-                return new(130, 36, 38);
+                return new(130, 36, 38, 255);
             default:
                 Debug.LogError($"GetPanelColor --- Unknown card type: {cardType}");
-                return new(255, 0, 255);
+                return new(255, 0, 255, 255);
         }
     }
 }

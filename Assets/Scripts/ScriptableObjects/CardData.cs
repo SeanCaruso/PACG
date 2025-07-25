@@ -17,7 +17,9 @@ public abstract class CardData : ScriptableObject
     public CheckRequirement checkRequirement;
 
     [Header("Powers")]
+    [TextArea(3,10)]
     public string powers;
+    [TextArea(3,10)]
     public string recovery;
 
     [Header("Traits")]
