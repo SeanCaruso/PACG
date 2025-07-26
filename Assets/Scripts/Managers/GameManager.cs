@@ -14,13 +14,12 @@ public class GameManager : MonoBehaviour
     [Header("UI References")]
     public UIInputController uIInputController;
     public GameObject encounterZone;
-    public CardDisplay encounterCardDisplay;
     public TextMeshProUGUI checkButtonText;
     public Transform handHolder;
     public DiceRollUI diceRollUI;
 
     [Header("Prefab References")]
-    public GameObject cardPrefab;
+    public CardDisplay cardPrefab;
 
     [Header("Game Rules")]
     public int startingHandSize = 5;
@@ -80,8 +79,10 @@ public class GameManager : MonoBehaviour
             yield break;
 
         // Show the encountered card in UI.
-        if (encounterCardDisplay) encounterCardDisplay.SetCardData(exploredCard, gameContext);
-        if (encounterZone) encounterZone.SetActive(true);
+        CardDisplay newCard = Instantiate(cardPrefab, encounterZone.transform);
+        newCard.SetCardData(exploredCard, gameContext);
+        newCard.transform.localScale = Vector3.one;
+        newCard.transform.localPosition = Vector3.zero;
 
         GameObject encounterObject = new($"Encounter_{exploredCard.cardID}");
         EncounterManager encounterManager = encounterObject.AddComponent<EncounterManager>();
@@ -123,9 +124,8 @@ public class GameManager : MonoBehaviour
         // Recreate hand display.
         foreach (CardData card in playerHand)
         {
-            GameObject cardObj = Instantiate(cardPrefab, handHolder);
-            CardDisplay cardDisplay = cardObj.GetComponent<CardDisplay>();
-            cardDisplay.SetCardData(card, gameContext);
+            CardDisplay newCard = Instantiate(cardPrefab, handHolder);
+            newCard.SetCardData(card, gameContext);
         }
     }
 }

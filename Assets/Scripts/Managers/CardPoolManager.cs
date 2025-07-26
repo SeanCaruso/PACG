@@ -1,9 +1,11 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
+[Obsolete("This is overkill for the project. Just instantiate as needed.")]
 public class CardPoolManager : MonoBehaviour
 {
     [Header("Pool Settings")]
@@ -16,12 +18,12 @@ public class CardPoolManager : MonoBehaviour
 
     private void Awake()
     {
-        ServiceLocator.Register(this);
+        //ServiceLocator.Register(this);
     }
 
     private void Start()
     {
-        InitializePool();
+        //InitializePool();
     }
 
     void InitializePool()

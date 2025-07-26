@@ -25,7 +25,7 @@ public class PlayerHandController : MonoBehaviour
 
     public void AddCard(CardData cardData, GameContext context)
     {
-        CardDisplay newCard = ServiceLocator.Get<CardPoolManager>().GetCard();
+        CardDisplay newCard = Instantiate(cardPrefab, handContainer);
         newCard.SetCardData(cardData, context);
         newCard.transform.SetParent(handContainer);
         newCard.transform.localScale = Vector3.one;

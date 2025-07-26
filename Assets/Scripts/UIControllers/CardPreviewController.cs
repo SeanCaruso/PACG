@@ -48,7 +48,7 @@ public class CardPreviewController : MonoBehaviour
         if (currentlyEnlargedCard == null) return;
 
         // Return the card to its original parent and Z-index.
-        currentlyEnlargedCard.transform.SetParent(originalParent, true);
+        currentlyEnlargedCard.transform.SetParent(originalParent, false);
         currentlyEnlargedCard.transform.SetSiblingIndex(originalSiblingIndex);
         currentlyEnlargedCard.transform.localScale = originalScale;
 

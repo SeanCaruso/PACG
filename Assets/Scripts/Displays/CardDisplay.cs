@@ -91,7 +91,14 @@ public class CardDisplay : MonoBehaviour
         else if (cardData.checkRequirement.checkSteps.Count > 0)
         {
             var check = cardData.checkRequirement.checkSteps[0];
-            foreach (var skill in check.allowedSkills) AddTextToPanel(skill.ToString().ToUpper(), checksSection);
+            if (check.category == CheckCategory.Combat)
+            {
+                AddTextToPanel("COMBAT", checksSection);
+            }
+            else
+            {
+                foreach (var skill in check.allowedSkills) AddTextToPanel(skill.ToString().ToUpper(), checksSection);
+            }
 
             int totalDC = check.baseDC + check.adventureLevelMult * gameContext.AdventureNumber;
             checkDC.text = totalDC.ToString();
@@ -113,7 +120,14 @@ public class CardDisplay : MonoBehaviour
                 Debug.LogError($"UpdateCardDisplay --- {cardData.cardName} has multiple checks, but an invalid check mode!");
             }
             var check2 = cardData.checkRequirement.checkSteps[1];
-            foreach (var skill in check2.allowedSkills) AddTextToPanel(skill.ToString().ToUpper(), checksSection2);
+            if (check2.category == CheckCategory.Combat)
+            {
+                AddTextToPanel("COMBAT", checksSection2);
+            }
+            else
+            {
+                foreach (var skill in check2.allowedSkills) AddTextToPanel(skill.ToString().ToUpper(), checksSection2);
+            }
 
             int totalDC = check2.baseDC + check2.adventureLevelMult * gameContext.AdventureNumber;
             checkDC2.text = totalDC.ToString();

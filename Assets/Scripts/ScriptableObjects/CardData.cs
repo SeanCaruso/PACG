@@ -21,6 +21,8 @@ public abstract class CardData : ScriptableObject
     public string powers;
     [TextArea(3,10)]
     public string recovery;
+    public List<string> immunities;
+    public List<string> vulnerabilities;
 
     [Header("Traits")]
     public List<string> traits;
