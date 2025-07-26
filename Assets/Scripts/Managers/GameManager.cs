@@ -24,9 +24,7 @@ public class GameManager : MonoBehaviour
     [Header("Game Rules")]
     public int startingHandSize = 5;
 
-    private List<CardData> playerHand = new();
-
-    private GameContext gameContext = new(1);
+    private readonly List<CardData> playerHand = new();
 
     public void Awake()
     {
@@ -35,6 +33,9 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        // Set up the game context.
+        ServiceLocator.Get<ContextManager>().GameContext = new(1);
+
         playerDeck.Shuffle();
         locationDeck.Shuffle();
 
@@ -63,7 +64,7 @@ public class GameManager : MonoBehaviour
         PlayerHandController handController = ServiceLocator.Get<PlayerHandController>();
         if (handController == null) Debug.LogError("Unable to find PlayerHandController!");
 
-        handController.AddCard(card, gameContext);
+        handController.AddCard(card);
     }
 
     public void OnExploreClicked()
@@ -80,7 +81,7 @@ public class GameManager : MonoBehaviour
 
         // Show the encountered card in UI.
         CardDisplay newCard = Instantiate(cardPrefab, encounterZone.transform);
-        newCard.SetCardData(exploredCard, gameContext);
+        newCard.SetCardData(exploredCard);
         newCard.transform.localScale = Vector3.one;
         newCard.transform.localPosition = Vector3.zero;
 
@@ -112,21 +113,5 @@ public class GameManager : MonoBehaviour
         }
 
         Destroy(encounterObject);
-    }
-
-    public void RefreshHandDisplay()
-    {
-        // Clear existing hand display
-        foreach (Transform child in handHolder)
-        {
-            Destroy(child.gameObject);
-        }
-
-        // Recreate hand display.
-        foreach (CardData card in playerHand)
-        {
-            CardDisplay newCard = Instantiate(cardPrefab, handHolder);
-            newCard.SetCardData(card, gameContext);
-        }
     }
 }

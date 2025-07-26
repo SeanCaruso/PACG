@@ -23,10 +23,10 @@ public class PlayerHandController : MonoBehaviour
         ServiceLocator.Register(this);
     }
 
-    public void AddCard(CardData cardData, GameContext context)
+    public void AddCard(CardData cardData)
     {
         CardDisplay newCard = Instantiate(cardPrefab, handContainer);
-        newCard.SetCardData(cardData, context);
+        newCard.SetCardData(cardData);
         newCard.transform.SetParent(handContainer);
         newCard.transform.localScale = Vector3.one;
         newCard.isInHand = true;

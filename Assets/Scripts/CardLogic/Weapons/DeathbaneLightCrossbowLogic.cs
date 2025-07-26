@@ -14,7 +14,7 @@ public class DeathbaneLightCrossbowLogic : IPlayableLogic
     public List<PlayCardAction> GetAvailableActions()
     {
         List<PlayCardAction> actions = new();
-        if (Game.ActionContext.CheckCategory == CheckCategory.Combat)
+        if (Game.ActionContext?.CheckCategory == CheckCategory.Combat)
         {
             actions.Add(new(this, CardData, PF.ActionType.Reveal, powerIndex: RevealIndex));
 

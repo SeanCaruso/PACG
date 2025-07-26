@@ -50,12 +50,10 @@ public class CardDisplay : MonoBehaviour
     private CardData cardData;
     public IEncounterLogic encounterLogic = null;
     public IPlayableLogic playableLogic = null;
-    private GameContext gameContext;
 
-    public void SetCardData(CardData cardData, GameContext context)
+    public void SetCardData(CardData cardData)
     {
         this.cardData = cardData;
-        this.gameContext = context;
         UpdateCardDisplay();
 
         var logicRegistry = ServiceLocator.Get<LogicRegistry>();
@@ -106,7 +104,7 @@ public class CardDisplay : MonoBehaviour
                 foreach (var skill in check.allowedSkills) AddTextToPanel(skill.ToString().ToUpper(), checksSection);
             }
 
-            int totalDC = check.baseDC + check.adventureLevelMult * gameContext.AdventureNumber;
+            int totalDC = check.baseDC + check.adventureLevelMult * Game.GameContext.AdventureNumber;
             checkDC.text = totalDC.ToString();
         }
 
@@ -135,7 +133,7 @@ public class CardDisplay : MonoBehaviour
                 foreach (var skill in check2.allowedSkills) AddTextToPanel(skill.ToString().ToUpper(), checksSection2);
             }
 
-            int totalDC = check2.baseDC + check2.adventureLevelMult * gameContext.AdventureNumber;
+            int totalDC = check2.baseDC + check2.adventureLevelMult * Game.GameContext.AdventureNumber;
             checkDC2.text = totalDC.ToString();
         }
         else if (cardData.checkRequirement.checkSteps.Count > 2)

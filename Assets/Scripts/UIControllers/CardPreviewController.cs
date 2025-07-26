@@ -1,15 +1,24 @@
+using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class CardPreviewController : MonoBehaviour
 {
+    [Header("UI Elements")]
     public GameObject previewArea;
     public Button backgroundButton;
 
-    private GameObject currentlyEnlargedCard;
+    [Header("Action Buttons")]
+    public Transform actionButtonContainer;
+    public GameObject actionButtonPrefab;
+
+    private CardDisplay currentlyEnlargedCard;
     private Transform originalParent;
     private int originalSiblingIndex;
     private Vector3 originalScale;
+
+    private List<GameObject> activeActionButtons = new();
 
     private void Awake()
     {
@@ -27,7 +36,14 @@ public class CardPreviewController : MonoBehaviour
     {
         if (currentlyEnlargedCard != null) return;
 
-        currentlyEnlargedCard = cardToEnlarge;
+        CardDisplay cardDisplay = cardToEnlarge.GetComponent<CardDisplay>();
+        if (cardDisplay == null )
+        {
+            Debug.LogError($"{GetType().Name}.EnlargeCard --- Unable to get card display component!");
+            return;
+        }
+
+        currentlyEnlargedCard = cardDisplay;
 
         // Store the card's original location and size.
         originalParent = cardToEnlarge.transform.parent;
@@ -41,6 +57,25 @@ public class CardPreviewController : MonoBehaviour
         cardToEnlarge.transform.SetParent(previewArea.transform, true);
         cardToEnlarge.transform.localPosition = Vector3.zero;
         cardToEnlarge.transform.localScale = new Vector3(2f, 2f, 1.0f);
+
+        // Generate any action buttons for the current context.
+        var actions = cardDisplay.playableLogic?.GetAvailableActions() ?? new();
+        if (actions.Count > 0)
+        {
+            GenerateActionButtons(actions);
+        }
+    }
+
+    public void GenerateActionButtons(List<PlayCardAction> actions)
+    {
+        foreach (var action in actions)
+        {
+            GameObject button = Instantiate(actionButtonPrefab, actionButtonContainer);
+
+            button.GetComponentInChildren<TextMeshProUGUI>().text = action.actionType.ToString();
+
+            activeActionButtons.Add(button);
+        }
     }
 
     private void ReturnCardToOrigin()
@@ -55,5 +90,12 @@ public class CardPreviewController : MonoBehaviour
         // Hide the preview and clear the card.
         previewArea.SetActive(false);
         currentlyEnlargedCard = null;
+
+        // Clear action buttons.
+        foreach (var button  in activeActionButtons)
+        {
+            Destroy(button);
+        }
+        activeActionButtons.Clear();
     }
 }

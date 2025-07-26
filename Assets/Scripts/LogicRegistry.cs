@@ -57,8 +57,11 @@ public class LogicRegistry : MonoBehaviour
 
     public IPlayableLogic GetPlayableLogic(CardData cardData)
     {
-        playableLogicMap.TryGetValue(cardData.cardID , out var logic);
-        logic.CardData = cardData;
+        playableLogicMap.TryGetValue(cardData.cardID, out var logic);
+        if (logic != null)
+        {
+            logic.CardData = cardData;
+        }
         return logic;
     }
 }
