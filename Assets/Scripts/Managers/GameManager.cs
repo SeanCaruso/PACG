@@ -93,12 +93,13 @@ public class GameManager : MonoBehaviour
             deck = playerDeck,
             hand = playerHand
         };
-        TurnContext turnContext = new(gameContext, hourBlessing, testCharacter);
-        EncounterContext context = new(turnContext, exploredCard, encounterManager);
+        ContextManager contextManager = ServiceLocator.Get<ContextManager>();
+        contextManager.TurnContext = new(hourBlessing, testCharacter);
+        contextManager.EncounterContext = new(exploredCard, encounterManager);
 
-        yield return encounterManager.RunEncounter(context);
+        yield return encounterManager.RunEncounter();
 
-        if (context.CheckResult?.WasSuccess ?? false)
+        if (Game.EncounterContext.CheckResult?.WasSuccess ?? false)
         {
             if (exploredCard is BoonCardData)
             {

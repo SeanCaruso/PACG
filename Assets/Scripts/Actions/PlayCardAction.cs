@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class PlayCardAction : IStagedAction
 {
-    public BasePlayableLogic playable { get; private set; }
+    public IPlayableLogic playable { get; private set; }
     public CardData cardData { get; private set; }
     public PF.ActionType actionType { get; private set; }
     private int? powerIndex = null;
@@ -10,7 +10,7 @@ public class PlayCardAction : IStagedAction
 
     public int? PowerIndex => powerIndex;
 
-    public PlayCardAction(BasePlayableLogic playable, CardData cardData, PF.ActionType actionType, string label = null, int? powerIndex = null)
+    public PlayCardAction(IPlayableLogic playable, CardData cardData, PF.ActionType actionType, string label = null, int? powerIndex = null)
     {
         this.playable = playable;
         this.cardData = cardData;
@@ -24,11 +24,11 @@ public class PlayCardAction : IStagedAction
         return $"{(label is null ? actionType.ToString() : label)} {cardData.cardName}";
     }
 
-    public void Commit(ActionContext context)
+    public void Commit()
     {
-        context.Traits.AddRange(cardData.traits);
-        playable.Execute(context, powerIndex);
+        Game.ActionContext.Traits.AddRange(cardData.traits);
+        playable.Execute(powerIndex);
 
-        context.TurnContext.CurrentPC.MoveCard(cardData, actionType);
+        Game.TurnContext.CurrentPC.MoveCard(cardData, actionType);
     }
 }

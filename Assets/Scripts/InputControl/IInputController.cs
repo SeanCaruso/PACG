@@ -5,7 +5,7 @@ public interface IInputController
 {
     PlayCardAction SelectedAction { get; }
 
-    IEnumerator PresentCardActionChoices(List<PlayCardAction> actionChoices, ActionContext context);
+    IEnumerator PresentCardActionChoices(List<PlayCardAction> actionChoices);
     public void CommitActions();
     public void UndoAction();
 }

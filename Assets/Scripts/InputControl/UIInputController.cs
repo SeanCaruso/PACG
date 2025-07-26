@@ -30,7 +30,7 @@ public class UIInputController : MonoBehaviour, IInputController
         SetUIState(false);
     }
 
-    public IEnumerator PresentCardActionChoices(List<PlayCardAction> actionChoices, ActionContext context)
+    public IEnumerator PresentCardActionChoices(List<PlayCardAction> actionChoices)
     {
         currentOptions = actionChoices;
         selectedAction = null;

@@ -48,6 +48,8 @@ public class CardDisplay : MonoBehaviour
     public int originalSiblingIndex;
 
     private CardData cardData;
+    public IEncounterLogic encounterLogic = null;
+    public IPlayableLogic playableLogic = null;
     private GameContext gameContext;
 
     public void SetCardData(CardData cardData, GameContext context)
@@ -55,6 +57,10 @@ public class CardDisplay : MonoBehaviour
         this.cardData = cardData;
         this.gameContext = context;
         UpdateCardDisplay();
+
+        var logicRegistry = ServiceLocator.Get<LogicRegistry>();
+        encounterLogic = logicRegistry.GetEncounterLogic(cardData.cardID);
+        playableLogic = logicRegistry.GetPlayableLogic(cardData);
     }
 
     public void UpdateCardDisplay()
@@ -64,10 +70,10 @@ public class CardDisplay : MonoBehaviour
         // Set the various panel colors to the card type's color.
         Color32 panelColor = GetPanelColor(cardData.cardType);
         topPanel.GetComponent<Image>().color = panelColor;
-        checksLabelPanel.GetComponent<Image>().color = Color.Lerp(panelColor, Color.black, 0.5f);
+        checksLabelPanel.GetComponent<Image>().color = Color.Lerp(panelColor, Color.black, 0.75f);
         checksSection.GetComponent<Image>().color = panelColor;
         checksSection2.GetComponent<Image>().color = panelColor;
-        powersPanel.GetComponent<Image>().color = Color.Lerp(panelColor, Color.white, 0.5f);
+        powersPanel.GetComponent<Image>().color = Color.Lerp(panelColor, Color.white, 0.75f);
         traitsSection.GetComponent<Image>().color = panelColor;
         bottomPanel.GetComponent<Image>().color = panelColor;
 

@@ -16,7 +16,7 @@ public class CheckStep
     public CheckCategory category;
     public List<PF.Skill> allowedSkills;
 
-    public int TotalDC(GameContext gameContext) => baseDC + (adventureLevelMult * gameContext.AdventureNumber);
+    public int TotalDC => baseDC + (adventureLevelMult * Game.GameContext.AdventureNumber);
 }
 
 [System.Serializable]

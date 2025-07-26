@@ -13,18 +13,18 @@ public class ResolutionManager
         this.uiController = uiController;
     }
 
-    public IEnumerator HandleCombatResolvable(CombatResolvable combat, ActionContext context)
+    public IEnumerator HandleCombatResolvable(CombatResolvable combat)
     {
-        var actions = combat.GetValidActions(context);
-        yield return uiController.PresentCardActionChoices(actions, context);
+        var actions = combat.GetValidActions();
+        yield return uiController.PresentCardActionChoices(actions);
 
         if (uiController.SelectedAction != null)
         {
             // Stage the action (for any pre-execution effects)
-            uiController.SelectedAction.playable?.OnStage(context, uiController.SelectedAction.PowerIndex);
+            uiController.SelectedAction.playable?.OnStage(uiController.SelectedAction.PowerIndex);
 
             // Commit the action.
-            uiController.SelectedAction.Commit(context);
+            uiController.SelectedAction.Commit();
         }
     }
 }

@@ -12,16 +12,16 @@ public class CombatResolvable : IResolvable
         Difficulty = difficulty;
     }
 
-    public List<PlayCardAction> GetValidActions(ActionContext context)
+    public List<PlayCardAction> GetValidActions()
     {
         var allOptions = new List<PlayCardAction>();
 
         foreach (var cardData in Character.hand)
         {
-            var cardLogic = context.LogicRegistry.GetPlayableLogic(cardData);
+            var cardLogic = ServiceLocator.Get<LogicRegistry>().GetPlayableLogic(cardData);
             if (cardLogic != null)
             {
-                var availableActions = cardLogic.GetAvailableActions(context);
+                var availableActions = cardLogic.GetAvailableActions();
                 allOptions.AddRange(availableActions);
             }
         }

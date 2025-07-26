@@ -4,14 +4,12 @@ using UnityEngine;
 public class ActionContext
 {
     // Fields that must be set on initialization - these should never change.
-    public TurnContext TurnContext { get; private set; }
     public CheckCategory CheckCategory { get; private set; }
     public ResolutionManager ResolutionManager { get; private set; } 
     public LogicRegistry LogicRegistry { get; private set; }
 
-    public ActionContext(TurnContext turnContext, CheckCategory checkCategory, ResolutionManager resolutionManager, LogicRegistry logicRegistry)
+    public ActionContext(CheckCategory checkCategory, ResolutionManager resolutionManager, LogicRegistry logicRegistry)
     {
-        TurnContext = turnContext;
         CheckCategory = checkCategory;
         ResolutionManager = resolutionManager;
         LogicRegistry = logicRegistry;

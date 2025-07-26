@@ -29,7 +29,7 @@ public class DebugInputController : MonoBehaviour, IInputController
         }
     }
 
-    public IEnumerator PresentCardActionChoices(List<PlayCardAction> actionChoices, ActionContext context)
+    public IEnumerator PresentCardActionChoices(List<PlayCardAction> actionChoices)
     {
         currentOptions = actionChoices;
         selectedAction = null;

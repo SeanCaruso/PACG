@@ -9,7 +9,7 @@ public class EncounterLogicForAttribute : Attribute
     public EncounterLogicForAttribute(string cardID) {  this.CardID = cardID; }
 }
 
-public interface IEncounterLogic
+public interface IEncounterLogic : ICardLogic
 {
-    List<IResolvable> Execute(EncounterContext context, EncounterPhase phase);
+    List<IResolvable> Execute(EncounterPhase phase);
 }

@@ -3,34 +3,38 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [PlayableLogicFor("Orison")]
-public class OrisonLogic : BasePlayableLogic
+public class OrisonLogic : IPlayableLogic
 {
+    public CardData CardData { get; set; }
+
     private const int DiscardToBless = 0;
     private const int RechargeToBless = 1;
     private const int DiscardToExplore = 2;
 
-    public override List<PlayCardAction> GetAvailableActions(ActionContext context)
+    public List<PlayCardAction> GetAvailableActions()
     {
-        List<PlayCardAction> actions = new();
-        actions.Add(new(this, CardData, PF.ActionType.Discard, powerIndex: DiscardToBless));
+        List<PlayCardAction> actions = new()
+        {
+            new(this, CardData, PF.ActionType.Discard, powerIndex: DiscardToBless)
+        };
 
-        if (context.TurnContext.HourBlessing.cardLevel == 0)
+        if (Game.TurnContext.HourBlessing.cardLevel == 0)
         {
             actions.Add(new(this, CardData, PF.ActionType.Recharge, powerIndex: RechargeToBless));
         }
         return actions;
     }
 
-    public override void OnStage(ActionContext context, int? powerIndex = null)
+    public void OnStage(int? powerIndex = null)
     {
         //context.ResolutionManager.StageAction(new());
     }
 
-    public override void ExecuteCardLogic(ActionContext context, int? powerIndex = null)
+    public void ExecuteCardLogic(int? powerIndex = null)
     {
         if (powerIndex == DiscardToBless || powerIndex == RechargeToBless)
         {
-            ++context.BlessingCount;
+            ++Game.ActionContext.BlessingCount;
         }
     }
 }
