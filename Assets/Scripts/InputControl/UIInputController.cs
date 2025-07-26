@@ -17,7 +17,7 @@ public class UIInputController : MonoBehaviour, IInputController
 
     private List<PlayCardAction> currentOptions;
     private PlayCardAction selectedAction;
-    private bool waitingForInput;
+    //private bool waitingForInput;
     private List<GameObject> activeButtons = new();
 
     public PlayCardAction SelectedAction => selectedAction;
@@ -34,7 +34,7 @@ public class UIInputController : MonoBehaviour, IInputController
     {
         currentOptions = actionChoices;
         selectedAction = null;
-        waitingForInput = true;
+        //waitingForInput = true;
 
         if (statusText) statusText.text = "Choose a card to play:";
 
@@ -46,7 +46,7 @@ public class UIInputController : MonoBehaviour, IInputController
         yield return new WaitUntil(() => selectedAction != null);
 
         SetUIState(false);
-        waitingForInput = false;
+        //waitingForInput = false;
     }
 
     private void CreateActionButtons()

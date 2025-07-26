@@ -52,7 +52,7 @@ public class CardPoolManager : MonoBehaviour
         Image[] images = card.GetComponentsInChildren<Image>();
         TextMeshProUGUI[] texts = card.GetComponentsInChildren<TextMeshProUGUI>();
 
-        foreach (var image in images) if (image.GetComponent<Button>() == null) image.raycastTarget = false;
+        //foreach (var image in images) if (image.GetComponent<Button>() == null) image.raycastTarget = false;
         foreach (var text in texts) text.raycastTarget = false;
     }
 

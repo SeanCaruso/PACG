@@ -24,6 +24,9 @@ MonoBehaviour:
       adventureLevelMult: 0
       category: 1
       allowedSkills: 000000000c000000
+  powers: For your combat check, reveal to use Strength or Melee + 1d8; if proficient,
+    you may additionallly reload to add another 1d4.
+  recovery: 
   traits:
   - Sword
   - Melee

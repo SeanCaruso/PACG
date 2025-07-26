@@ -69,6 +69,7 @@ public class CardDisplay : MonoBehaviour
         checksSection2.GetComponent<Image>().color = panelColor;
         powersPanel.GetComponent<Image>().color = Color.Lerp(panelColor, Color.white, 0.5f);
         traitsSection.GetComponent<Image>().color = panelColor;
+        bottomPanel.GetComponent<Image>().color = panelColor;
 
         // Top bar.
         nameText.text = cardData.name;
