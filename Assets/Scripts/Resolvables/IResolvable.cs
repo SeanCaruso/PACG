@@ -2,6 +2,7 @@ using System.Collections.Generic;
 
 public interface IResolvable
 {
-    public List<PlayCardAction> GetValidActions();
-    public bool IsResolved(Stack<PlayCardAction> actions);
+    public List<IStagedAction> GetValidActions();
+    public List<IStagedAction> GetValidActionsForCard(CardData card);
+    public bool IsResolved(Stack<IStagedAction> actions);
 }

@@ -2,20 +2,20 @@ using UnityEngine;
 
 public class PlayCardAction : IStagedAction
 {
-    public IPlayableLogic playable { get; private set; }
-    public CardData cardData { get; private set; }
-    public PF.ActionType actionType { get; private set; }
+    public IPlayableLogic Playable { get; private set; }
+    public CardData CardData { get; private set; }
+    public PF.ActionType ActionType { get; private set; }
     public bool isCombat = false;
-    private int? powerIndex = null;
-    private string label = null;
+    private readonly int? powerIndex = null;
+    private readonly string label = null;
 
     public int? PowerIndex => powerIndex;
 
     public PlayCardAction(IPlayableLogic playable, CardData cardData, PF.ActionType actionType, string label = null, int? powerIndex = null, bool isCombat = false)
     {
-        this.playable = playable;
-        this.cardData = cardData;
-        this.actionType = actionType;
+        this.Playable = playable;
+        this.CardData = cardData;
+        this.ActionType = actionType;
         this.label = label;
         this.powerIndex = powerIndex;
         this.isCombat = isCombat;
@@ -23,14 +23,14 @@ public class PlayCardAction : IStagedAction
 
     public string GetLabel()
     {
-        return $"{(label is null ? actionType.ToString() : label)} {cardData.cardName}";
+        return $"{(label is null ? ActionType.ToString() : label)} {CardData.cardName}";
     }
 
     public void Commit()
     {
-        Game.CheckContext.Traits.AddRange(cardData.traits);
-        playable.Execute(powerIndex);
+        Game.CheckContext.Traits.AddRange(CardData.traits);
+        Playable.Execute(powerIndex);
 
-        Game.TurnContext.CurrentPC.MoveCard(cardData, actionType);
+        Game.TurnContext.CurrentPC.MoveCard(CardData, ActionType);
     }
 }

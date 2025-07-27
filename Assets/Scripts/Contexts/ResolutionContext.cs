@@ -7,6 +7,9 @@ public class ResolutionContext
     private IResolvable currentResolvable;
     private bool isResolved = false;
 
+    public List<IStagedAction> ValidActions => currentResolvable?.GetValidActions() ?? new();
+    public List<IStagedAction> ValidActionsForCard(CardData cardData) => currentResolvable?.GetValidActionsForCard(cardData) ?? new();
+
     public ResolutionContext(IResolvable resolvable)
     {
         currentResolvable = resolvable;
@@ -18,7 +21,7 @@ public class ResolutionContext
         yield return new WaitUntil(() => isResolved);
     }
 
-    public bool IsResolved(Stack<PlayCardAction> actions)
+    public bool IsResolved(Stack<IStagedAction> actions)
     {
         return currentResolvable.IsResolved(actions);
     }

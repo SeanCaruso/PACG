@@ -5,10 +5,10 @@ using UnityEngine.UI;
 
 public class ActionStagingManager : MonoBehaviour
 {
-    private readonly Stack<PlayCardAction> stagedActions = new();
+    private readonly Stack<IStagedAction> stagedActions = new();
     private readonly Dictionary<CardData, CardStagingInfo> originalCardStates = new();
 
-    public Stack<PlayCardAction> StagedActions => stagedActions;
+    public Stack<IStagedAction> StagedActions => stagedActions;
 
     [Header("UI References")]
     public GameObject commitButton;
@@ -21,22 +21,22 @@ public class ActionStagingManager : MonoBehaviour
         ServiceLocator.Register(this);
     }
 
-    public void StageAction(PlayCardAction action, CardStagingInfo? overrideOrigin = null)
+    public void StageAction(IStagedAction action, CardStagingInfo? overrideOrigin = null)
     {
-        var cardDisplay = FindCardDisplay(action.cardData);
+        var cardDisplay = FindCardDisplay(action.CardData);
         if (cardDisplay == null)
         {
-            Debug.LogError($"StageAction --- Unable to find cardDisplay for {action.cardData.cardName}");
+            Debug.LogError($"StageAction --- Unable to find cardDisplay for {action.CardData.cardName}");
         }
 
         // Keep track of where the card will be going if undone.
         if (overrideOrigin.HasValue)
         {
-            originalCardStates[action.cardData] = overrideOrigin.Value;
+            originalCardStates[action.CardData] = overrideOrigin.Value;
         }
         else
         {
-            originalCardStates[action.cardData] = new()
+            originalCardStates[action.CardData] = new()
             {
                 cardDisplay = cardDisplay,
                 originalScale = cardDisplay.transform.localScale,
@@ -46,7 +46,7 @@ public class ActionStagingManager : MonoBehaviour
         }
 
         // Hide/move the card based on the action type.
-        switch (action.actionType)
+        switch (action.ActionType)
         {
             case PF.ActionType.Display:
                 // Move to display area.
@@ -72,9 +72,9 @@ public class ActionStagingManager : MonoBehaviour
     {
         var action = stagedActions.Pop();
 
-        if (!originalCardStates.TryGetValue(action.cardData, out var stagingInfo))
+        if (!originalCardStates.TryGetValue(action.CardData, out var stagingInfo))
         {
-            Debug.LogError($"Unable to find original card state for {action.cardData.cardName}");
+            Debug.LogError($"Unable to find original card state for {action.CardData.cardName}");
             return;
         }
 
@@ -84,6 +84,12 @@ public class ActionStagingManager : MonoBehaviour
         stagingInfo.cardDisplay.gameObject.SetActive(true);
 
         UpdateUI();
+    }
+
+    private void UpdateUI()
+    {
+        undoButton.SetActive(stagedActions.Count > 0);
+        commitButton.SetActive(Game.ResolutionContext.IsResolved(stagedActions));
     }
 
     public void Commit()
@@ -99,7 +105,7 @@ public class ActionStagingManager : MonoBehaviour
         foreach (Transform cardTranform in revealedArea)
         {
             var cardDisplay = cardTranform.GetComponent<CardDisplay>();
-            if (cardDisplay != null && originalCardStates.TryGetValue(cardDisplay.GetCardData(), out var stagingInfo))
+            if (cardDisplay != null && originalCardStates.TryGetValue(cardDisplay.CardData, out var stagingInfo))
             {
                 cardTranform.SetParent(stagingInfo.originalParent);
                 cardTranform.localScale = stagingInfo.originalScale;
@@ -107,18 +113,13 @@ public class ActionStagingManager : MonoBehaviour
             }
         }
 
-        UpdateUI();
-    }
-
-    private void UpdateUI()
-    {
-        undoButton.SetActive(stagedActions.Count > 0);
-        commitButton.SetActive(Game.ResolutionContext.IsResolved(stagedActions));
+        undoButton.SetActive(false);
+        commitButton.SetActive(false);
     }
 
     private CardDisplay FindCardDisplay(CardData cardData)
     {
-        return FindObjectsByType<CardDisplay>(FindObjectsSortMode.None).FirstOrDefault(cd => cd.GetCardData() == cardData);
+        return FindObjectsByType<CardDisplay>(FindObjectsSortMode.None).FirstOrDefault(cd => cd.CardData == cardData);
     }
 }
 

@@ -58,7 +58,7 @@ public class EncounterManager : MonoBehaviour
                 yield return Game.ResolutionContext.WaitForResolution();
                 Game.EndResolution();
 
-                ResolveCombatCheck(combatResolvable.Difficulty);
+                yield return ResolveCombatCheck(combatResolvable.Difficulty);
             }
         }
         Game.EndCheck();
@@ -66,7 +66,7 @@ public class EncounterManager : MonoBehaviour
         yield break;
     }
 
-    private CheckResult ResolveCombatCheck(int dc)
+    private IEnumerator ResolveCombatCheck(int dc)
     {
         CheckContext context = Game.CheckContext;
 
@@ -75,17 +75,26 @@ public class EncounterManager : MonoBehaviour
 
         int rollResult = context.DicePool.Roll();
 
+        context.CheckPhase = CheckPhase.RollDice;
         CheckResult checkResult = new(rollResult, dc, Game.TurnContext.CurrentPC, context.UsedSkill, context.Traits);
 
         if (checkResult.WasSuccess)
         {
             Debug.Log($"Rolled {rollResult} vs. {dc} - Success!");
         }
+        else if (false /* Reroll? avenge? */)
+        { }
         else
         {
-            Debug.Log($"Rolled {rollResult} vs. {dc} - Take {checkResult.MarginOfSuccess * -1} damage!");
+            context.CheckPhase = CheckPhase.SufferDamage;
+
+            DamageResolvable damageResolvable = new(Game.TurnContext.CurrentPC, -checkResult.MarginOfSuccess);
+            Game.NewResolution(new(damageResolvable));
+            Debug.Log($"Rolled {rollResult} vs. {dc} - Take {damageResolvable.Amount} damage!");
+            yield return Game.ResolutionContext.WaitForResolution();
+            Game.EndResolution();
         }
 
-        return checkResult;
+        yield return checkResult;
     }
 }

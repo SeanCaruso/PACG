@@ -62,14 +62,14 @@ public class CardPreviewController : MonoBehaviour
         cardRect.localScale = new Vector3(2f, 2f, 1.0f);
 
         // Generate any action buttons for the current context.
-        var actions = cardDisplay.playableLogic?.GetAvailableActions() ?? new();
+        var actions = Game.ResolutionContext?.ValidActionsForCard(cardDisplay.CardData);
         if (actions.Count > 0)
         {
             GenerateActionButtons(actions);
         }
     }
 
-    public void GenerateActionButtons(List<PlayCardAction> actions)
+    public void GenerateActionButtons(List<IStagedAction> actions)
     {
         CardStagingInfo stagingInfo = new()
         {
@@ -83,7 +83,7 @@ public class CardPreviewController : MonoBehaviour
         {
             GameObject buttonObj = Instantiate(actionButtonPrefab, actionButtonContainer);
 
-            buttonObj.GetComponentInChildren<TextMeshProUGUI>().text = action.actionType.ToString();
+            buttonObj.GetComponentInChildren<TextMeshProUGUI>().text = action.ActionType.ToString();
             Button button = buttonObj.GetComponent<Button>();
             button.onClick.AddListener(() =>
             {

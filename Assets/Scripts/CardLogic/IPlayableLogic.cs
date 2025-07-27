@@ -12,7 +12,7 @@ public class PlayableLogicForAttribute : Attribute
 public interface IPlayableLogic : ICardLogic
 {
     public bool CanPlay => GetAvailableActions().Count > 0;
-    public List<PlayCardAction> GetAvailableActions();
+    public List<IStagedAction> GetAvailableActions();
     public void OnStage(int? powerIndex = null);
 
     public void Execute(int? powerIndex = null)

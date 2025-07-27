@@ -11,12 +11,12 @@ public class DeathbaneLightCrossbowLogic : IPlayableLogic
     private const int DiscardIndex = 1;
     private const int ReloadIndex = 2;
 
-    public List<PlayCardAction> GetAvailableActions()
+    public List<IStagedAction> GetAvailableActions()
     {
-        List<PlayCardAction> actions = new();
-        if (Game.CheckContext?.CheckCategory == CheckCategory.Combat)
+        List<IStagedAction> actions = new();
+        if (Game.CheckContext?.CheckCategory == CheckCategory.Combat && Game.CheckContext?.CheckPhase == CheckPhase.PlayCards)
         {
-            actions.Add(new(this, CardData, PF.ActionType.Reveal, powerIndex: RevealIndex, isCombat: true));
+            actions.Add(new PlayCardAction(this, CardData, PF.ActionType.Reveal, powerIndex: RevealIndex, isCombat: true));
 
             // TODO - Add Distant combat check logic.
         }

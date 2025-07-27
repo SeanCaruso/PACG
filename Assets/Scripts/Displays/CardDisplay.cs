@@ -61,7 +61,7 @@ public class CardDisplay : MonoBehaviour
         playableLogic = logicRegistry.GetPlayableLogic(cardData);
     }
 
-    public CardData GetCardData() => cardData;
+    public CardData CardData => cardData;
 
     public void UpdateCardDisplay()
     {

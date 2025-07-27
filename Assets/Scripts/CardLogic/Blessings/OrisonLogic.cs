@@ -11,16 +11,16 @@ public class OrisonLogic : IPlayableLogic
     private const int RechargeToBless = 1;
     private const int DiscardToExplore = 2;
 
-    public List<PlayCardAction> GetAvailableActions()
+    public List<IStagedAction> GetAvailableActions()
     {
-        List<PlayCardAction> actions = new()
+        List<IStagedAction> actions = new()
         {
-            new(this, CardData, PF.ActionType.Discard, powerIndex: DiscardToBless)
+            new PlayCardAction(this, CardData, PF.ActionType.Discard, powerIndex: DiscardToBless)
         };
 
         if (Game.TurnContext.HourBlessing.cardLevel == 0)
         {
-            actions.Add(new(this, CardData, PF.ActionType.Recharge, powerIndex: RechargeToBless));
+            actions.Add(new PlayCardAction(this, CardData, PF.ActionType.Recharge, powerIndex: RechargeToBless));
         }
         return actions;
     }

@@ -4,35 +4,36 @@ using UnityEngine;
 
 public class CombatResolvable : IResolvable
 {
-    public PlayerCharacter Character { get; set; }
-    public int Difficulty { get; set; }
+    public PlayerCharacter Character { get; protected set; }
+    public int Difficulty { get; protected set; }
     public CombatResolvable(PlayerCharacter character, int difficulty)
     {
         this.Character = character;
         Difficulty = difficulty;
     }
 
-    public List<PlayCardAction> GetValidActions()
+    public List<IStagedAction> GetValidActions()
     {
-        var allOptions = new List<PlayCardAction>();
+        var allOptions = new List<IStagedAction>();
 
         foreach (var cardData in Character.hand)
         {
-            var cardLogic = ServiceLocator.Get<LogicRegistry>().GetPlayableLogic(cardData);
-            if (cardLogic != null)
-            {
-                var availableActions = cardLogic.GetAvailableActions();
-                allOptions.AddRange(availableActions);
-            }
+            allOptions.AddRange(GetValidActionsForCard(cardData));
         }
         return allOptions;
     }
 
-    public bool IsResolved(Stack<PlayCardAction> actions)
+    public List<IStagedAction> GetValidActionsForCard(CardData cardData)
+    {
+        var cardLogic = Game.GetPlayableLogic(cardData);
+        return cardLogic?.GetAvailableActions() ?? new();
+    }
+
+    public bool IsResolved(Stack<IStagedAction> actions)
     {
         foreach (var action in actions)
         {
-            if (action.isCombat)
+            if (action is PlayCardAction playAction && playAction.isCombat)
                 return true;
         }
         return false;

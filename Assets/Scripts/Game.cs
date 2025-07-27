@@ -9,6 +9,7 @@ public static class Game
         _contextManager = contextManager;
     }
 
+    // --- Contexts ---
     public static GameContext GameContext => _contextManager.GameContext;
 
     public static TurnContext TurnContext => _contextManager.TurnContext;
@@ -26,4 +27,8 @@ public static class Game
     public static CheckContext CheckContext => _contextManager.CheckContext;
     public static void NewCheck(CheckContext checkContext) => _contextManager.NewCheck(checkContext);
     public static void EndCheck() => _contextManager.EndCheck();
+
+    // --- Logic ---
+    public static IPlayableLogic GetPlayableLogic(CardData cardData) => ServiceLocator.Get<LogicRegistry>().GetPlayableLogic(cardData);
+    public static IEncounterLogic GetEncounterLogic(CardData cardData) => ServiceLocator.Get<LogicRegistry>().GetEncounterLogic(cardData.cardID);
 }

@@ -10,16 +10,16 @@ public class LongswordLogic : IPlayableLogic
     private const int RevealIndex = 0;
     private const int ReloadIndex = 1;
 
-    public List<PlayCardAction> GetAvailableActions()
+    public List<IStagedAction> GetAvailableActions()
     {
-        List<PlayCardAction> actions = new();
-        if (Game.CheckContext?.CheckCategory == CheckCategory.Combat)
+        List<IStagedAction> actions = new();
+        if (Game.CheckContext?.CheckCategory == CheckCategory.Combat && Game.CheckContext.CheckPhase == CheckPhase.PlayCards)
         {
-            actions.Add(new(this, CardData, PF.ActionType.Reveal, powerIndex: RevealIndex, isCombat: true));
+            actions.Add(new PlayCardAction(this, CardData, PF.ActionType.Reveal, powerIndex: RevealIndex, isCombat: true));
 
             if (Game.TurnContext.CurrentPC.IsProficient(PF.CardType.Weapon))
             {
-                actions.Add(new(this, CardData, PF.ActionType.Reload, powerIndex: ReloadIndex, isCombat: true));
+                actions.Add(new PlayCardAction(this, CardData, PF.ActionType.Reload, powerIndex: ReloadIndex, isCombat: true));
             }
         }
         return actions;
