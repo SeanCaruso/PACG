@@ -98,8 +98,6 @@ InitTestScene*.unity*
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
 /Assets/Sprites/CardExamples
-/Assets/LeanTween
 /Assets/Resources/BillingMode.json
 /Assets/Resources/BillingMode.json.meta
-*.meta
 /Assets/Plugins
