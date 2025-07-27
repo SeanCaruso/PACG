@@ -82,8 +82,8 @@ public class GameManager : MonoBehaviour
         // Show the encountered card in UI.
         CardDisplay newCard = Instantiate(cardPrefab, encounterZone.transform);
         newCard.SetCardData(exploredCard);
+        newCard.GetComponent<RectTransform>().anchoredPosition = Vector3.zero;
         newCard.transform.localScale = Vector3.one;
-        newCard.transform.localPosition = Vector3.zero;
 
         GameObject encounterObject = new($"Encounter_{exploredCard.cardID}");
         EncounterManager encounterManager = encounterObject.AddComponent<EncounterManager>();

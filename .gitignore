@@ -102,3 +102,4 @@ InitTestScene*.unity*
 /Assets/Resources/BillingMode.json
 /Assets/Resources/BillingMode.json.meta
 *.meta
+/Assets/Plugins

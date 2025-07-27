@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 
 public class PlayerHandController : MonoBehaviour
@@ -101,6 +100,6 @@ public class PlayerHandController : MonoBehaviour
         card.transform.localScale = Vector3.zero;
 
         // Animate scale and position.
-        LeanTween.scale(card.gameObject, Vector3.one, 0.5f).setEase(LeanTweenType.easeOutBack);
+        //LeanTween.scale(card.gameObject, Vector3.one, 0.5f).setEase(LeanTweenType.easeOutBack);
     }
 }

@@ -18,7 +18,7 @@ public class UIInputController : MonoBehaviour, IInputController
     private List<PlayCardAction> currentOptions;
     private PlayCardAction selectedAction;
     //private bool waitingForInput;
-    private List<GameObject> activeButtons = new();
+    private readonly List<GameObject> activeButtons = new();
 
     public PlayCardAction SelectedAction => selectedAction;
 
