@@ -13,13 +13,13 @@ public class LongswordLogic : IPlayableLogic
     public List<PlayCardAction> GetAvailableActions()
     {
         List<PlayCardAction> actions = new();
-        if (Game.ActionContext?.CheckCategory == CheckCategory.Combat)
+        if (Game.CheckContext?.CheckCategory == CheckCategory.Combat)
         {
-            actions.Add(new(this, CardData, PF.ActionType.Reveal, powerIndex: RevealIndex));
+            actions.Add(new(this, CardData, PF.ActionType.Reveal, powerIndex: RevealIndex, isCombat: true));
 
             if (Game.TurnContext.CurrentPC.IsProficient(PF.CardType.Weapon))
             {
-                actions.Add(new(this, CardData, PF.ActionType.Reload, powerIndex: ReloadIndex));
+                actions.Add(new(this, CardData, PF.ActionType.Reload, powerIndex: ReloadIndex, isCombat: true));
             }
         }
         return actions;
@@ -39,14 +39,14 @@ public class LongswordLogic : IPlayableLogic
             (int die, int bonus) strSkill = Game.TurnContext.CurrentPC.GetAttr(PF.Skill.Strength);
 
             var (skill, die, bonus) = meleeSkill.die >= strSkill.die ? (PF.Skill.Melee, meleeSkill.die, meleeSkill.bonus) : (PF.Skill.Strength, strSkill.die, strSkill.bonus);
-            Game.ActionContext.UsedSkill = skill;
-            Game.ActionContext.DicePool.AddDice(1, die, bonus);
-            Game.ActionContext.DicePool.AddDice(1, 8);
+            Game.CheckContext.UsedSkill = skill;
+            Game.CheckContext.DicePool.AddDice(1, die, bonus);
+            Game.CheckContext.DicePool.AddDice(1, 8);
 
             // Reload to add another 1d4.
             if (powerIndex == ReloadIndex)
             {
-                Game.ActionContext.DicePool.AddDice(1, 4);
+                Game.CheckContext.DicePool.AddDice(1, 4);
             }
         }
     }

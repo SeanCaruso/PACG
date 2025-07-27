@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardID: GiantToad
   cardName: Giant Toad
+  cardType: 7
   cardLevel: 1
   cardArt: {fileID: 0}
   checkRequirement:
@@ -27,5 +28,14 @@ MonoBehaviour:
       adventureLevelMult: 0
       category: 1
       allowedSkills: 06000000
-  traits: []
-  CardType: 0
+  powers: 'All damage is Poison damage.
+
+
+    If undefeated, suffer the scourges
+    Entangled and Poisoned.'
+  recovery: 
+  immunities: []
+  vulnerabilities: []
+  traits:
+  - Animal
+  - Poison

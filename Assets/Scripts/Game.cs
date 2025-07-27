@@ -10,7 +10,20 @@ public static class Game
     }
 
     public static GameContext GameContext => _contextManager.GameContext;
+
     public static TurnContext TurnContext => _contextManager.TurnContext;
+    public static void NewTurn(TurnContext turnContext) => _contextManager.NewTurn(turnContext);
+    public static void EndTurn() => _contextManager.EndTurn();
+
     public static EncounterContext EncounterContext => _contextManager.EncounterContext;
-    public static ActionContext ActionContext => _contextManager.ActionContext;
+    public static void NewEncounter(EncounterContext encounterContext) => _contextManager.NewEncounter(encounterContext);
+    public static void EndEncounter() => _contextManager.EndEncounter();
+
+    public static ResolutionContext ResolutionContext => _contextManager.ResolutionContext;
+    public static void NewResolution(ResolutionContext resolutionContext) => _contextManager.NewResolution(resolutionContext);
+    public static void EndResolution() => _contextManager.EndResolution();
+
+    public static CheckContext CheckContext => _contextManager.CheckContext;
+    public static void NewCheck(CheckContext checkContext) => _contextManager.NewCheck(checkContext);
+    public static void EndCheck() => _contextManager.EndCheck();
 }

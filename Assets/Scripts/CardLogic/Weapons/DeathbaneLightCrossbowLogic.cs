@@ -14,9 +14,9 @@ public class DeathbaneLightCrossbowLogic : IPlayableLogic
     public List<PlayCardAction> GetAvailableActions()
     {
         List<PlayCardAction> actions = new();
-        if (Game.ActionContext?.CheckCategory == CheckCategory.Combat)
+        if (Game.CheckContext?.CheckCategory == CheckCategory.Combat)
         {
-            actions.Add(new(this, CardData, PF.ActionType.Reveal, powerIndex: RevealIndex));
+            actions.Add(new(this, CardData, PF.ActionType.Reveal, powerIndex: RevealIndex, isCombat: true));
 
             // TODO - Add Distant combat check logic.
         }
@@ -37,16 +37,16 @@ public class DeathbaneLightCrossbowLogic : IPlayableLogic
             (int die, int bonus) dexSkill = Game.TurnContext.CurrentPC.GetAttr(PF.Skill.Dexterity);
 
             var (skill, die, bonus) = rangedSkill.die >= dexSkill.die ? (PF.Skill.Ranged, rangedSkill.die, rangedSkill.bonus) : (PF.Skill.Dexterity, dexSkill.die, dexSkill.bonus);
-            Game.ActionContext.UsedSkill = skill;
-            Game.ActionContext.DicePool.AddDice(1, die, bonus);
-            Game.ActionContext.DicePool.AddDice(1, 8, 1);
+            Game.CheckContext.UsedSkill = skill;
+            Game.CheckContext.DicePool.AddDice(1, die, bonus);
+            Game.CheckContext.DicePool.AddDice(1, 8, 1);
 
             // Against an Undead bane, add another 1d8.
-            if (Game.ActionContext.ContextData.TryGetValue("EncounteredCard", out var cardData)
+            if (Game.CheckContext.ContextData.TryGetValue("EncounteredCard", out var cardData)
                 && cardData is CardData encounteredCard
                 && (encounteredCard.traits?.Contains("Undead") ?? false))
             {
-                Game.ActionContext.DicePool.AddDice(1, 8);
+                Game.CheckContext.DicePool.AddDice(1, 8);
             }
 
         }

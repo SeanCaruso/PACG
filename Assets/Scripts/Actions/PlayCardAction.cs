@@ -5,18 +5,20 @@ public class PlayCardAction : IStagedAction
     public IPlayableLogic playable { get; private set; }
     public CardData cardData { get; private set; }
     public PF.ActionType actionType { get; private set; }
+    public bool isCombat = false;
     private int? powerIndex = null;
     private string label = null;
 
     public int? PowerIndex => powerIndex;
 
-    public PlayCardAction(IPlayableLogic playable, CardData cardData, PF.ActionType actionType, string label = null, int? powerIndex = null)
+    public PlayCardAction(IPlayableLogic playable, CardData cardData, PF.ActionType actionType, string label = null, int? powerIndex = null, bool isCombat = false)
     {
         this.playable = playable;
         this.cardData = cardData;
         this.actionType = actionType;
         this.label = label;
         this.powerIndex = powerIndex;
+        this.isCombat = isCombat;
     }
 
     public string GetLabel()
@@ -26,7 +28,7 @@ public class PlayCardAction : IStagedAction
 
     public void Commit()
     {
-        Game.ActionContext.Traits.AddRange(cardData.traits);
+        Game.CheckContext.Traits.AddRange(cardData.traits);
         playable.Execute(powerIndex);
 
         Game.TurnContext.CurrentPC.MoveCard(cardData, actionType);

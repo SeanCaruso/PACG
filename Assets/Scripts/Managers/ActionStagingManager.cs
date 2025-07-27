@@ -8,6 +8,8 @@ public class ActionStagingManager : MonoBehaviour
     private readonly Stack<PlayCardAction> stagedActions = new();
     private readonly Dictionary<CardData, CardStagingInfo> originalCardStates = new();
 
+    public Stack<PlayCardAction> StagedActions => stagedActions;
+
     [Header("UI References")]
     public GameObject commitButton;
     public GameObject undoButton;
@@ -84,10 +86,34 @@ public class ActionStagingManager : MonoBehaviour
         UpdateUI();
     }
 
+    public void Commit()
+    {
+        foreach (var action in stagedActions)
+        {
+            action.Commit();
+        }
+        stagedActions.Clear();
+        Game.ResolutionContext?.Resolve();
+
+        // Move all revealed cards back to the hand.
+        foreach (Transform cardTranform in revealedArea)
+        {
+            var cardDisplay = cardTranform.GetComponent<CardDisplay>();
+            if (cardDisplay != null && originalCardStates.TryGetValue(cardDisplay.GetCardData(), out var stagingInfo))
+            {
+                cardTranform.SetParent(stagingInfo.originalParent);
+                cardTranform.localScale = stagingInfo.originalScale;
+                cardTranform.SetSiblingIndex(stagingInfo.originalSiblingIndex);
+            }
+        }
+
+        UpdateUI();
+    }
+
     private void UpdateUI()
     {
-        commitButton.SetActive(stagedActions.Count > 0);
         undoButton.SetActive(stagedActions.Count > 0);
+        commitButton.SetActive(Game.ResolutionContext.IsResolved(stagedActions));
     }
 
     private CardDisplay FindCardDisplay(CardData cardData)

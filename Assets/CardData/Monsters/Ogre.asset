@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardID: Ogre
   cardName: Ogre
+  cardType: 7
   cardLevel: 0
   cardArt: {fileID: 0}
   checkRequirement:
@@ -23,8 +24,11 @@ MonoBehaviour:
       adventureLevelMult: 2
       category: 0
       allowedSkills: 
+  powers: Before acting, each local character suffers 1 Combat damage.
+  recovery: 
+  immunities: []
+  vulnerabilities: []
   traits:
   - Giant
   - Ogre
   - Veteran
-  CardType: 1

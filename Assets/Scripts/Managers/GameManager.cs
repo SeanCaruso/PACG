@@ -34,7 +34,7 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         // Set up the game context.
-        ServiceLocator.Get<ContextManager>().GameContext = new(1);
+        ServiceLocator.Get<ContextManager>().NewGame(new(1));
 
         playerDeck.Shuffle();
         locationDeck.Shuffle();
@@ -95,22 +95,33 @@ public class GameManager : MonoBehaviour
             hand = playerHand
         };
         ContextManager contextManager = ServiceLocator.Get<ContextManager>();
-        contextManager.TurnContext = new(hourBlessing, testCharacter);
-        contextManager.EncounterContext = new(exploredCard, encounterManager);
+        Game.NewTurn(new(hourBlessing, testCharacter));
+        Game.NewEncounter(new(exploredCard, encounterManager));
 
         yield return encounterManager.RunEncounter();
+
+        Debug.Log("Encounter finished.");
 
         if (Game.EncounterContext.CheckResult?.WasSuccess ?? false)
         {
             if (exploredCard is BoonCardData)
             {
+                Debug.Log("Boon obtained.");
                 CreateCardInHand(exploredCard);
+            }
+            else
+            {
+                Debug.Log("Bane banished.");
+                Destroy(newCard.gameObject);
             }
         }
         else
         {
+            Debug.Log("Do damage.");
+            Destroy(newCard.gameObject);
             // Do damage later.
         }
+        Game.EndEncounter();
 
         Destroy(encounterObject);
     }

@@ -21,13 +21,11 @@ public class EncounterManager : MonoBehaviour
 {
     private LogicRegistry logicRegistry;
     private UIInputController inputController;
-    private ResolutionManager resolutionManager;
 
     private void Awake()
     {
         logicRegistry = FindFirstObjectByType<LogicRegistry>();
         inputController = FindFirstObjectByType<UIInputController>();
-        resolutionManager = new(logicRegistry, inputController);
     }
 
     public IEnumerator RunEncounter()
@@ -45,8 +43,8 @@ public class EncounterManager : MonoBehaviour
 
         EncounterContext context = Game.EncounterContext;
 
-        ServiceLocator.Get<ContextManager>().ActionContext = new ActionContext(CheckCategory.Combat, resolutionManager, logicRegistry);
-        Game.ActionContext.ContextData["EncounteredCard"] = context.EncounteredCardData;
+        Game.NewCheck(new(CheckCategory.Combat, logicRegistry));
+        Game.CheckContext.ContextData["EncounteredCard"] = context.EncounteredCardData;
         foreach (EncounterPhase phase in encounterFlow)
         {
             IEncounterLogic logic = logicRegistry.GetEncounterLogic(context.EncounteredCardData.cardID);
@@ -56,26 +54,26 @@ public class EncounterManager : MonoBehaviour
             if (resolvables.Count > 0 && resolvables[0] is CombatResolvable)
             {
                 CombatResolvable combatResolvable = resolvables[0] as CombatResolvable;
-                yield return resolutionManager.HandleCombatResolvable(combatResolvable);
+                Game.NewResolution(new(combatResolvable));
+                yield return Game.ResolutionContext.WaitForResolution();
+                Game.EndResolution();
 
                 ResolveCombatCheck(combatResolvable.Difficulty);
             }
         }
+        Game.EndCheck();
 
         yield break;
     }
 
-    private IEnumerator ResolveCombatCheck(int dc)
+    private CheckResult ResolveCombatCheck(int dc)
     {
-        ActionContext context = Game.ActionContext;
+        CheckContext context = Game.CheckContext;
 
         // Add blessing dice.
         context.DicePool.AddDice(context.BlessingCount, Game.TurnContext.CurrentPC.GetSkill(context.UsedSkill).die);
 
         int rollResult = context.DicePool.Roll();
-
-        // Display dice rolling.
-        yield return inputController.ShowDiceRoll(context.DicePool, rollResult);
 
         CheckResult checkResult = new(rollResult, dc, Game.TurnContext.CurrentPC, context.UsedSkill, context.Traits);
 
@@ -88,6 +86,6 @@ public class EncounterManager : MonoBehaviour
             Debug.Log($"Rolled {rollResult} vs. {dc} - Take {checkResult.MarginOfSuccess * -1} damage!");
         }
 
-        yield return checkResult;
+        return checkResult;
     }
 }

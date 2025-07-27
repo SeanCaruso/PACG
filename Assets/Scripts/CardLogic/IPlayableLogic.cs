@@ -17,9 +17,9 @@ public interface IPlayableLogic : ICardLogic
 
     public void Execute(int? powerIndex = null)
     {
-        if (!Game.ActionContext.PlayedCardTypes.Contains(CardData.cardType))
+        if (!Game.CheckContext.PlayedCardTypes.Contains(CardData.cardType))
         {
-            Game.ActionContext.PlayedCardTypes.Add(CardData.cardType);
+            Game.CheckContext.PlayedCardTypes.Add(CardData.cardType);
         }
 
         ExecuteCardLogic(powerIndex);

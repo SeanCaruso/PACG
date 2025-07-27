@@ -1,17 +1,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ActionContext
+public class CheckContext
 {
     // Fields that must be set on initialization - these should never change.
     public CheckCategory CheckCategory { get; private set; }
-    public ResolutionManager ResolutionManager { get; private set; } 
     public LogicRegistry LogicRegistry { get; private set; }
 
-    public ActionContext(CheckCategory checkCategory, ResolutionManager resolutionManager, LogicRegistry logicRegistry)
+    public CheckContext(CheckCategory checkCategory, LogicRegistry logicRegistry)
     {
         CheckCategory = checkCategory;
-        ResolutionManager = resolutionManager;
         LogicRegistry = logicRegistry;
     }
 

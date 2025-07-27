@@ -34,7 +34,7 @@ public class OrisonLogic : IPlayableLogic
     {
         if (powerIndex == DiscardToBless || powerIndex == RechargeToBless)
         {
-            ++Game.ActionContext.BlessingCount;
+            ++Game.CheckContext.BlessingCount;
         }
     }
 }

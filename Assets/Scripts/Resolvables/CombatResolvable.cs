@@ -27,4 +27,14 @@ public class CombatResolvable : IResolvable
         }
         return allOptions;
     }
+
+    public bool IsResolved(Stack<PlayCardAction> actions)
+    {
+        foreach (var action in actions)
+        {
+            if (action.isCombat)
+                return true;
+        }
+        return false;
+    }
 }

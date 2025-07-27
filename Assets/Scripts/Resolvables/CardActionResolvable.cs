@@ -16,7 +16,7 @@ public class CardActionResolvable /*: IResolvable*/
         TypeFilter = typeFilter;
     }
 
-    public List<PlayCardAction> GetValidActions(ActionContext context, ResolutionManager resolutionManager)
+    public List<PlayCardAction> GetValidActions(CheckContext context, ResolutionContext resolutionManager)
     {
         throw new System.NotImplementedException();
     }

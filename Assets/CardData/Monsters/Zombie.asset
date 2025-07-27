@@ -24,6 +24,16 @@ MonoBehaviour:
       adventureLevelMult: 2
       category: 0
       allowedSkills: 
+  powers: 'Immune to Mental and Poison.
+
+
+    If undefeated, a random character summons
+    and encounters this monster.'
+  recovery: 
+  immunities:
+  - Mental
+  - Poison
+  vulnerabilities: []
   traits:
   - Undead
   - Zombie
