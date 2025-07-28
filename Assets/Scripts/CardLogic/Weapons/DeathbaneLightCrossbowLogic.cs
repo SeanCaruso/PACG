@@ -14,18 +14,28 @@ public class DeathbaneLightCrossbowLogic : IPlayableLogic
     public List<IStagedAction> GetAvailableCardActions()
     {
         List<IStagedAction> actions = new();
-        if (Game.CheckContext?.CheckCategory == CheckCategory.Combat && Game.CheckContext?.CheckPhase == CheckPhase.PlayCards)
+        if (!Game.CheckContext.StagedCardTypes.Contains(CardData.cardType))
         {
-            actions.Add(new PlayCardAction(this, CardData, PF.ActionType.Reveal, powerIndex: RevealIndex, isCombat: true));
+            if (Game.CheckContext.CheckPC == CardData.Owner
+                && Game.CheckContext.CheckCategory == CheckCategory.Combat
+                && Game.CheckContext.CheckPhase == CheckPhase.PlayCards)
+            {
+                actions.Add(new PlayCardAction(this, CardData, PF.ActionType.Reveal, powerIndex: RevealIndex, isCombat: true));
 
-            // TODO - Add Distant combat check logic.
+                // TODO - Add Distant combat check logic.
+            }
         }
         return actions;
     }
 
     public void OnStage(int? powerIndex = null)
     {
-        //context.ResolutionManager.StageAction(new());
+        Game.Stage(CardData);
+    }
+
+    public void OnUndo(int? powerIndex = null)
+    {
+        Game.Undo(CardData);
     }
 
     public void ExecuteCardLogic(int? powerIndex = null)
@@ -33,10 +43,7 @@ public class DeathbaneLightCrossbowLogic : IPlayableLogic
         if (powerIndex == RevealIndex)
         {
             // Reveal to use Dexterity or Ranged + 1d8+1.
-            (int die, int bonus) rangedSkill = Game.TurnContext.CurrentPC.GetSkill(PF.Skill.Ranged);
-            (int die, int bonus) dexSkill = Game.TurnContext.CurrentPC.GetAttr(PF.Skill.Dexterity);
-
-            var (skill, die, bonus) = rangedSkill.die >= dexSkill.die ? (PF.Skill.Ranged, rangedSkill.die, rangedSkill.bonus) : (PF.Skill.Dexterity, dexSkill.die, dexSkill.bonus);
+            (PF.Skill skill, int die, int bonus) = CardData.Owner.GetBestSkill(PF.Skill.Dexterity, PF.Skill.Ranged);
             Game.CheckContext.UsedSkill = skill;
             Game.CheckContext.DicePool.AddDice(1, die, bonus);
             Game.CheckContext.DicePool.AddDice(1, 8, 1);

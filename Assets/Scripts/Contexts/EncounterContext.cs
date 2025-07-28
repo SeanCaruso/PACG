@@ -3,13 +3,13 @@ using UnityEngine;
 
 public class EncounterContext
 {
+    public PlayerCharacter EncounterPC { get; }
     public CardData EncounteredCardData { get; }
-    public EncounterManager EncounterManager { get; }
 
-    public EncounterContext(CardData card, EncounterManager encounterManager)
+    public EncounterContext(PlayerCharacter pc, CardData card)
     {
+        EncounterPC = pc;
         EncounteredCardData = card;
-        EncounterManager = encounterManager;
     }
 
     // Set during the encounter
