@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72b1ad41f9c218045b980737984353fc, type: 3}
+  m_Name: Throwing Axe
+  m_EditorClassIdentifier: 
+  cardID: ThrowingAxe
+  cardName: Throwing Axe
+  cardType: 5
+  cardLevel: 0
+  cardArt: {fileID: 0}
+  checkRequirement:
+    mode: 0
+    checkSteps:
+    - baseDC: 6
+      adventureLevelMult: 0
+      category: 1
+      allowedSkills: 00000000010000000c0000000e000000
+  powers: 'For your combat check, reveal to use Strength, Dexterity, Melee, or Ranged
+    + 1d6.
+
+
+    If proficient, on a local combat check, freely discard to add 1d6.
+    You may use this power even if you have previously revealed this card on this
+    check.'
+  recovery: 
+  immunities: []
+  vulnerabilities: []
+  traits:
+  - Axe
+  - Melee
+  - Ranged
+  - Slashing

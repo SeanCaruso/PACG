@@ -12,6 +12,16 @@ public class DamageAction : IStagedAction
         Amount = amount;
     }
 
+    public void OnStage()
+    {
+        Game.CheckContext.StagedCardTypes.Add(CardData.cardType);
+    }
+
+    public void OnUndo()
+    {
+        Game.CheckContext.StagedCardTypes.Remove(CardData.cardType);
+    }
+
     public void Commit()
     {
         Game.TurnContext.CurrentPC.MoveCard(CardData, ActionType);

@@ -41,7 +41,7 @@ public class EncounterManager : MonoBehaviour
         logicRegistry = ServiceLocator.Get<LogicRegistry>();
         encounterLogic = logicRegistry.GetEncounterLogic(context.EncounteredCardData.cardID);
 
-        Game.NewCheck(new(CheckCategory.Combat, logicRegistry));
+        Game.NewCheck(new(context.EncounterPC, CheckCategory.Combat, logicRegistry));
         foreach (EncounterPhase phase in encounterFlow)
         {
             var resolvables = encounterLogic?.Execute(phase) ?? new();

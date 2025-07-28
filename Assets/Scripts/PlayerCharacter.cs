@@ -38,6 +38,33 @@ public class PlayerCharacter
         return (4, 0); // Default of 1d4.
     }
 
+    public (PF.Skill, int die, int bonus) GetBestSkill(params PF.Skill[] skills)
+    {
+        PF.Skill bestSkill = skills[0];
+        int bestDie = 4, bestBonus = 0;
+        double bestAvg = 2.5;
+
+        foreach (var skill in  skills)
+        {
+            var (die, bonus) = GetSkill(skill);
+            if (die == 4 && bonus == 0)
+            {
+                (die, bonus) = GetAttr(skill);
+            }
+
+            double avg = (die / 2.0) + 0.5 + bonus;
+            if (avg > bestAvg)
+            {
+                bestSkill = skill;
+                bestDie = die;
+                bestBonus = bonus;
+                bestAvg = avg;
+            }
+        }
+
+        return (bestSkill, bestDie, bestBonus);
+    }
+
     public void MoveCard(CardData card, PF.ActionType action)
     {
         if (action == PF.ActionType.Reveal)

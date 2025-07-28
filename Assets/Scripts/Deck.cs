@@ -17,9 +17,7 @@ public class Deck : MonoBehaviour
         for (int i = activeDeck.Count - 1; i > 0; i--)
         {
             int randomIndex = Random.Range(0, i + 1);
-            CardData temp = activeDeck[i];
-            activeDeck[i] = activeDeck[randomIndex];
-            activeDeck[randomIndex] = temp;
+            (activeDeck[randomIndex], activeDeck[i]) = (activeDeck[i], activeDeck[randomIndex]);
         }
     }
 

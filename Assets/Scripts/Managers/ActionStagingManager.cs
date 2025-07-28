@@ -6,10 +6,9 @@ using static PF;
 
 public class ActionStagingManager : MonoBehaviour
 {
-    private readonly Stack<IStagedAction> stagedActions = new();
+    private readonly Stack<IPlayableLogic> stagingOrder = new();
+    private readonly Dictionary<IPlayableLogic, IStagedAction> stagedActions = new();
     private readonly Dictionary<CardData, CardStagingInfo> originalCardStates = new();
-
-    public Stack<IStagedAction> StagedActions => stagedActions;
 
     [Header("UI References")]
     public GameObject commitButton;
@@ -26,27 +25,32 @@ public class ActionStagingManager : MonoBehaviour
 
     public void StageAction(IStagedAction action, CardStagingInfo? overrideOrigin = null)
     {
+        var logic = Game.GetPlayableLogic(action.CardData);
+
         var cardDisplay = FindCardDisplay(action.CardData);
         if (cardDisplay == null)
         {
             Debug.LogError($"StageAction --- Unable to find cardDisplay for {action.CardData.cardName}");
         }
 
-        // Keep track of where the card will be going if undone.
-        if (overrideOrigin.HasValue)
+        // If this is the first time we've staged an action for this card, keep track of where the card will be going if undone.
+        if (!stagedActions.ContainsKey(logic))
         {
-            originalCardStates[action.CardData] = overrideOrigin.Value;
-        }
-        else
-        {
-            originalCardStates[action.CardData] = new()
+            if (overrideOrigin.HasValue)
             {
-                cardDisplay = cardDisplay,
-                originalParent = cardDisplay.transform.parent,
-                originalCharacterLocation = Game.TurnContext.CurrentPC.FindCard(action.CardData),
-                originalScale = cardDisplay.transform.localScale,
-                originalSiblingIndex = cardDisplay.transform.GetSiblingIndex()
-            };
+                originalCardStates[action.CardData] = overrideOrigin.Value;
+            }
+            else
+            {
+                originalCardStates[action.CardData] = new()
+                {
+                    cardDisplay = cardDisplay,
+                    originalParent = cardDisplay.transform.parent,
+                    originalCharacterLocation = Game.TurnContext.CurrentPC.FindCard(action.CardData),
+                    originalScale = cardDisplay.transform.localScale,
+                    originalSiblingIndex = cardDisplay.transform.GetSiblingIndex()
+                };
+            }
         }
 
         // Hide/move the card based on the action type.
@@ -71,13 +75,21 @@ public class ActionStagingManager : MonoBehaviour
         // We need to handle this here so that damage resolvables behave with hand size.
         Game.TurnContext.CurrentPC.MoveCard(action.CardData, action.ActionType);
 
-        stagedActions.Push(action);
+        action.OnStage();
+
+        stagedActions[logic] = (action);
+        if (!stagingOrder.Contains(logic)) stagingOrder.Push(logic);
         UpdateUI();
     }
 
     public void Undo()
     {
-        var action = stagedActions.Pop();
+        var logic = stagingOrder.Pop();
+        if (!stagedActions.TryGetValue(logic, out var action))
+        {
+            Debug.LogError($"Unable to find staged action for {logic.CardData.cardName}!");
+            return;
+        }
 
         if (!originalCardStates.TryGetValue(action.CardData, out var stagingInfo))
         {
@@ -96,6 +108,9 @@ public class ActionStagingManager : MonoBehaviour
             stagingInfo.originalCharacterLocation.Add(action.CardData);
         }
 
+        stagedActions.Remove(logic);
+        action.OnUndo();
+
         UpdateUI();
     }
 
@@ -103,7 +118,7 @@ public class ActionStagingManager : MonoBehaviour
     {
         undoButton.SetActive(stagedActions.Count > 0);
 
-        bool canCommit = stagedActions.Count > 0 && Game.ResolutionContext.IsResolved(stagedActions);
+        bool canCommit = stagedActions.Count > 0 && Game.ResolutionContext.IsResolved(new(stagedActions.Values));
         bool canSkip = stagedActions.Count == 0 && Game.ResolutionContext.IsResolved(new());
         commitButton.SetActive(canCommit || canSkip);
         commitButton.GetComponent<Image>().sprite = canSkip ? skipSprite : commitSprite;
@@ -111,10 +126,11 @@ public class ActionStagingManager : MonoBehaviour
 
     public void Commit()
     {
-        foreach (var action in stagedActions)
+        foreach ((_, var action) in stagedActions)
         {
             action.Commit();
         }
+        stagingOrder.Clear();
         stagedActions.Clear();
         Game.ResolutionContext?.Resolve();
 

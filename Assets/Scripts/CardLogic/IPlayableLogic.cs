@@ -25,9 +25,11 @@ public interface IPlayableLogic : ICardLogic
 
     public void OnStage(int? powerIndex = null);
 
+    public void OnUndo(int? powerIndex = null);
+
     public void Execute(int? powerIndex = null)
     {
-        Game.CheckContext.PlayedCards.Add(CardData);
+        Game.CheckContext.StagedCards.Add(CardData);
         ExecuteCardLogic(powerIndex);
     }
 

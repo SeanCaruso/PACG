@@ -24,17 +24,28 @@ public class GameManager : MonoBehaviour
     [Header("Game Rules")]
     public int startingHandSize = 5;
 
-    private readonly List<CardData> playerHand = new();
+    public PlayerCharacter testCharacter = null;
 
     public void Awake()
     {
         ServiceLocator.Register(this);
+        testCharacter = new()
+        {
+            characterData = characterData,
+            deck = playerDeck
+        };
     }
 
     private void Start()
     {
         // Set up the game context.
         ServiceLocator.Get<ContextManager>().NewGame(new(1));
+
+        foreach (var card in playerDeck.cards)
+        {
+            card.OriginalOwner = testCharacter;
+            card.Owner = testCharacter;
+        }
 
         playerDeck.Shuffle();
         locationDeck.Shuffle();
@@ -60,7 +71,7 @@ public class GameManager : MonoBehaviour
 
     void CreateCardInHand(CardData card)
     {
-        playerHand.Add(card);
+        testCharacter.hand.Add(card);
         PlayerHandController handController = ServiceLocator.Get<PlayerHandController>();
         if (handController == null) Debug.LogError("Unable to find PlayerHandController!");
 
@@ -88,15 +99,9 @@ public class GameManager : MonoBehaviour
         GameObject encounterObject = new($"Encounter_{exploredCard.cardID}");
         EncounterManager encounterManager = encounterObject.AddComponent<EncounterManager>();
 
-        PlayerCharacter testCharacter = new()
-        {
-            characterData = this.characterData,
-            deck = playerDeck,
-            hand = playerHand
-        };
         ContextManager contextManager = ServiceLocator.Get<ContextManager>();
         Game.NewTurn(new(hourBlessing, testCharacter));
-        Game.NewEncounter(new(exploredCard, encounterManager));
+        Game.NewEncounter(new(testCharacter, exploredCard));
 
         yield return encounterManager.RunEncounter();
 
@@ -108,6 +113,8 @@ public class GameManager : MonoBehaviour
             {
                 Debug.Log("Boon obtained.");
                 CreateCardInHand(exploredCard);
+                exploredCard.Owner = testCharacter;
+                exploredCard.OriginalOwner ??= testCharacter;
             }
             else
             {

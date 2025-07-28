@@ -11,11 +11,13 @@ public enum CheckPhase
 public class CheckContext
 {
     // Fields that must be set on initialization - these should never change.
+    public PlayerCharacter CheckPC { get; }
     public CheckCategory CheckCategory { get; private set; }
     public LogicRegistry LogicRegistry { get; private set; }
 
-    public CheckContext(CheckCategory checkCategory, LogicRegistry logicRegistry)
+    public CheckContext(PlayerCharacter pc, CheckCategory checkCategory, LogicRegistry logicRegistry)
     {
+        CheckPC = pc;
         CheckCategory = checkCategory;
         LogicRegistry = logicRegistry;
     }
@@ -23,8 +25,8 @@ public class CheckContext
     // Fields that are populated as actions are processed.
     public CheckPhase CheckPhase { get; set; } = CheckPhase.PlayCards;
     public PF.Skill UsedSkill { get; set; } = new();
-    public List<CardData> PlayedCards { get; private set; } = new();
-    public List<PF.CardType> PlayedCardTypes { get; private set; } = new();
+    public List<CardData> StagedCards { get; private set; } = new();
+    public List<PF.CardType> StagedCardTypes { get; private set; } = new();
     public List<string> Traits { get; private set; } = new();
     public DicePool DicePool { get; private set; } = new();
     public int BlessingCount { get; set; } = 0;

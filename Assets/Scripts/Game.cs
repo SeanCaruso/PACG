@@ -27,6 +27,39 @@ public static class Game
     public static CheckContext CheckContext => _contextManager.CheckContext;
     public static void NewCheck(CheckContext checkContext) => _contextManager.NewCheck(checkContext);
     public static void EndCheck() => _contextManager.EndCheck();
+    public static void Stage(CardData card, bool isFreely = false)
+    {
+        // Skip if we've already staged the card.
+        if (!CheckContext.StagedCards.Contains(card))
+        {
+            CheckContext.StagedCards.Add(card);
+            if (!isFreely)
+            {
+                if (CheckContext.StagedCardTypes.Contains(card.cardType)) Debug.LogError($"{card.cardName} staged a duplicate type!");
+                CheckContext.StagedCardTypes.Add(card.cardType);
+            }
+        }
+        else
+        {
+            Debug.Log($"{card.cardName} staged multiple times - was this inteded?");
+        }
+    }
+
+    public static void Undo(CardData card, bool isFreely = false)
+    {
+        if (CheckContext.StagedCards.Remove(card))
+        {
+            if (!isFreely)
+            {
+                if (!CheckContext.StagedCardTypes.Remove(card.cardType))
+                    Debug.LogError($"{card.cardName} attempted to undo its type without being staged!");
+            }
+        }
+        else
+        {
+            Debug.LogError($"{card.cardName} attempted to undo without being staged!");
+        }
+    }
 
     // --- Logic ---
     public static IPlayableLogic GetPlayableLogic(CardData cardData) => ServiceLocator.Get<LogicRegistry>().GetPlayableLogic(cardData);

@@ -13,10 +13,13 @@ public class LongspearLogic : IPlayableLogic
     public List<IStagedAction> GetAvailableCardActions()
     {
         List<IStagedAction> actions = new();
-        if (Game.CheckContext?.CheckCategory == CheckCategory.Combat)
+        if (IsCardPlayable)
         {
-            if (Game.CheckContext.CheckPhase == CheckPhase.PlayCards)
+            if (Game.CheckContext.CheckPhase == CheckPhase.PlayCards
+                && !Game.CheckContext.StagedCardTypes.Contains(CardData.cardType))
+            {
                 actions.Add(new PlayCardAction(this, CardData, PF.ActionType.Reveal, powerIndex: RevealIndex, isCombat: true));
+            }
 
             // We can discard to reroll if we're in the roll dice phase and this card is one of the reroll options.
             if (Game.CheckContext.CheckPhase == CheckPhase.RollDice
@@ -28,9 +31,20 @@ public class LongspearLogic : IPlayableLogic
         return actions;
     }
 
+    bool IsCardPlayable => (
+        // All powers on this card are specific to its owner during a combat check.
+        Game.CheckContext.CheckPC == CardData.Owner &&
+        Game.CheckContext.CheckCategory == CheckCategory.Combat
+    );
+
     public void OnStage(int? powerIndex = null)
     {
-        //context.ResolutionManager.StageAction(new());
+        if (powerIndex == RevealIndex) Game.Stage(CardData);
+    }
+
+    public void OnUndo(int? powerIndex = null)
+    {
+        if (powerIndex == RevealIndex) Game.Undo(CardData);
     }
 
     public void ExecuteCardLogic(int? powerIndex = null)
@@ -45,10 +59,7 @@ public class LongspearLogic : IPlayableLogic
         // Reveal to use Strength or Melee + 1d8.
         if (powerIndex == RevealIndex)
         {
-            (int die, int bonus) meleeSkill = Game.TurnContext.CurrentPC.GetSkill(PF.Skill.Melee);
-            (int die, int bonus) strSkill = Game.TurnContext.CurrentPC.GetAttr(PF.Skill.Strength);
-
-            var (skill, die, bonus) = meleeSkill.die >= strSkill.die ? (PF.Skill.Melee, meleeSkill.die, meleeSkill.bonus) : (PF.Skill.Strength, strSkill.die, strSkill.bonus);
+            (PF.Skill skill, int die, int bonus) = CardData.Owner.GetBestSkill(PF.Skill.Strength, PF.Skill.Melee);
             Game.CheckContext.UsedSkill = skill;
             Game.CheckContext.DicePool.AddDice(1, die, bonus);
             Game.CheckContext.DicePool.AddDice(1, 8);

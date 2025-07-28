@@ -27,7 +27,12 @@ public class OrisonLogic : IPlayableLogic
 
     public void OnStage(int? powerIndex = null)
     {
-        //context.ResolutionManager.StageAction(new());
+        // TODO: Implement staging
+    }
+
+    public void OnUndo(int? powerIndex = null)
+    {
+        // TODO: Implement undoing
     }
 
     public void ExecuteCardLogic(int? powerIndex = null)
