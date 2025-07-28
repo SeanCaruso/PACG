@@ -28,9 +28,9 @@ public class PlayCardAction : IStagedAction
         return $"{(label is null ? ActionType.ToString() : label)} {CardData.cardName}";
     }
 
-    public void OnStage() => Playable?.OnStage();
+    public void OnStage() => Playable?.OnStage(powerIndex);
 
-    public void OnUndo() => Playable?.OnUndo();
+    public void OnUndo() => Playable?.OnUndo(powerIndex);
 
     public void Commit()
     {

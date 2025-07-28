@@ -28,14 +28,14 @@ public class ThrowingAxeLogic : IPlayableLogic
     bool CanReveal => (
         // Reveal power can be used by the current owner while playing cards for a combat check.
         Game.CheckContext.CheckPC == CardData.Owner &&
-        !Game.CheckContext.StagedCardTypes.Contains(PF.CardType.Weapon) &&
+        !Game.CheckContext.StagedCardTypes.Contains(CardData.cardType) &&
         Game.CheckContext.CheckCategory == CheckCategory.Combat &&
         Game.CheckContext.CheckPhase == CheckPhase.PlayCards
         );
 
     bool CanDiscard => (
         // Discard power can be freely used on a local combat check while playing cards if the owner is proficient.
-        CardData.Owner.IsProficient(PF.CardType.Weapon) &&
+        CardData.Owner.IsProficient(CardData.cardType) &&
         Game.CheckContext.CheckCategory == CheckCategory.Combat &&
         Game.CheckContext.CheckPhase == CheckPhase.PlayCards &&
         true // TODO: Handle checking for local vs. distant.

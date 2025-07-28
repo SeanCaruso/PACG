@@ -39,11 +39,13 @@ public class LongspearLogic : IPlayableLogic
 
     public void OnStage(int? powerIndex = null)
     {
+        Game.EncounterContext.AddProhibitedTraits(CardData.Owner, CardData, "Offhand");
         if (powerIndex == RevealIndex) Game.Stage(CardData);
     }
 
     public void OnUndo(int? powerIndex = null)
     {
+        Game.EncounterContext.ProhibitedTraits.Remove((CardData.Owner, CardData));
         if (powerIndex == RevealIndex) Game.Undo(CardData);
     }
 
@@ -52,9 +54,6 @@ public class LongspearLogic : IPlayableLogic
         if (!Game.CheckContext.ContextData.ContainsKey("rerollCardData"))
             Game.CheckContext.ContextData["rerollCardData"] = new List<CardData>();
         List<CardData> rerollSources = (List<CardData>)Game.CheckContext.ContextData["rerollCardData"];
-
-        // May not play an Offhand boon this encounter.
-        Game.EncounterContext.ProhibitedTraits.Add("Offhand");
 
         // Reveal to use Strength or Melee + 1d8.
         if (powerIndex == RevealIndex)

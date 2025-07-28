@@ -13,6 +13,12 @@ public class EncounterContext
     }
 
     // Set during the encounter
-    public List<string> ProhibitedTraits { get; } = new();
+    public Dictionary<(PlayerCharacter, CardData), List<string>> ProhibitedTraits { get; } = new(); // Maps CardData to the list of traits that card prohibits.
+    public void AddProhibitedTraits(PlayerCharacter pc, CardData card, params string[] traits)
+    {
+        if (!ProhibitedTraits.ContainsKey((pc, card))) ProhibitedTraits.Add((pc, card), new());
+        foreach (var trait in traits) ProhibitedTraits[(pc, card)].Add(trait);
+    }
+
     public CheckResult CheckResult { get; set; }
 }

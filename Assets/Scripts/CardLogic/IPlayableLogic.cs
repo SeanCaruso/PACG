@@ -16,8 +16,11 @@ public interface IPlayableLogic : ICardLogic
     public List<IStagedAction> GetAvailableActions()
     {
         // If the card has any prohibited traits, (e.g. 2-Handed vs. Offhand), just return.
-        if (CardData.traits.Intersect(Game.EncounterContext.ProhibitedTraits).Any())
-            return new();
+        foreach (((var character, _), var prohibitedTraits) in Game.EncounterContext.ProhibitedTraits)
+        {
+            if (character == CardData.Owner && CardData.traits.Intersect(prohibitedTraits).Any())
+                return new();
+        }
 
         return GetAvailableCardActions();
     }
