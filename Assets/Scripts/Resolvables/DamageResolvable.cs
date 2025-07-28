@@ -39,7 +39,10 @@ public class DamageResolvable : IResolvable
     public bool IsResolved(Stack<IStagedAction> actions)
     {
         // If the player's hand size is less than or equal to the damage amount, this can always be resolved by discarding the entire hand.
-        if (PlayerCharacter.hand.Count <= Amount) return true;
+        //if (PlayerCharacter.hand.Count <= Amount) return true;
+
+        // This was presenting issues, so require manually discarding everything for now.
+        if (PlayerCharacter.hand.Count == 0) return true;
 
         int totalResolved = 0;
         foreach (var action in  actions)

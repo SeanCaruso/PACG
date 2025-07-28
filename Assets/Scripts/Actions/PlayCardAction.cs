@@ -30,7 +30,5 @@ public class PlayCardAction : IStagedAction
     {
         Game.CheckContext.Traits.AddRange(CardData.traits);
         Playable.Execute(powerIndex);
-
-        Game.TurnContext.CurrentPC.MoveCard(CardData, ActionType);
     }
 }

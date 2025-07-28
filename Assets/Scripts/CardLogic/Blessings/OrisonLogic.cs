@@ -11,7 +11,7 @@ public class OrisonLogic : IPlayableLogic
     private const int RechargeToBless = 1;
     private const int DiscardToExplore = 2;
 
-    public List<IStagedAction> GetAvailableActions()
+    public List<IStagedAction> GetAvailableCardActions()
     {
         List<IStagedAction> actions = new()
         {

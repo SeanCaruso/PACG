@@ -66,6 +66,16 @@ public class PlayerCharacter
         }
     }
 
+    public List<CardData> FindCard(CardData card)
+    {
+        if (hand.Contains(card)) return hand;
+        if (discards.Contains(card)) return discards;
+        if (displayedCards.Contains(card)) return displayedCards;
+        if (buriedCards.Contains(card)) return buriedCards;
+
+        return null;
+    }
+
     private void RemoveCardFromAllZones(CardData card)
     {
         hand.Remove(card);

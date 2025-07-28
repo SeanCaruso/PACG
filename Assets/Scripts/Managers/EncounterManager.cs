@@ -19,18 +19,13 @@ public enum EncounterPhase
 
 public class EncounterManager : MonoBehaviour
 {
-    private LogicRegistry logicRegistry;
-    private UIInputController inputController;
+    private LogicRegistry logicRegistry = null;
 
-    private void Awake()
-    {
-        logicRegistry = FindFirstObjectByType<LogicRegistry>();
-        inputController = FindFirstObjectByType<UIInputController>();
-    }
+    private IEncounterLogic encounterLogic = null;
 
     public IEnumerator RunEncounter()
     {
-        List<EncounterPhase> encounterFlow = new List<EncounterPhase>
+        List<EncounterPhase> encounterFlow = new()
         {
             EncounterPhase.OnEncounter,
             EncounterPhase.Evasion,
@@ -43,12 +38,13 @@ public class EncounterManager : MonoBehaviour
 
         EncounterContext context = Game.EncounterContext;
 
+        logicRegistry = ServiceLocator.Get<LogicRegistry>();
+        encounterLogic = logicRegistry.GetEncounterLogic(context.EncounteredCardData.cardID);
+
         Game.NewCheck(new(CheckCategory.Combat, logicRegistry));
-        Game.CheckContext.ContextData["EncounteredCard"] = context.EncounteredCardData;
         foreach (EncounterPhase phase in encounterFlow)
         {
-            IEncounterLogic logic = logicRegistry.GetEncounterLogic(context.EncounteredCardData.cardID);
-            var resolvables = logic?.Execute(phase) ?? new();
+            var resolvables = encounterLogic?.Execute(phase) ?? new();
 
             // Resolve resolvables.
             if (resolvables.Count > 0 && resolvables[0] is CombatResolvable)
@@ -73,16 +69,58 @@ public class EncounterManager : MonoBehaviour
         // Add blessing dice.
         context.DicePool.AddDice(context.BlessingCount, Game.TurnContext.CurrentPC.GetSkill(context.UsedSkill).die);
 
-        int rollResult = context.DicePool.Roll();
-
         context.CheckPhase = CheckPhase.RollDice;
-        CheckResult checkResult = new(rollResult, dc, Game.TurnContext.CurrentPC, context.UsedSkill, context.Traits);
+        CheckResult checkResult = new(context.DicePool.Roll(), dc, Game.TurnContext.CurrentPC, context.UsedSkill, context.Traits);
+
+        // See if we need to prompt for rerolls.
+        while (checkResult.MarginOfSuccess < Game.EncounterContext.EncounteredCardData.rerollThreshold)
+        {
+            bool promptReroll = false;
+            var cardsToCheck = Game.TurnContext.CurrentPC.hand;
+            cardsToCheck.AddRange(Game.TurnContext.CurrentPC.displayedCards);
+            foreach (var card in cardsToCheck)
+            {
+                if (logicRegistry.GetPlayableLogic(card).GetAvailableActions().Count > 0)
+                {
+                    promptReroll = true;
+                    break;
+                }
+            }
+
+            // No playable cards allow rerolls... check if a played card set the context.
+            promptReroll |= ((List<CardData>)Game.CheckContext.ContextData.GetValueOrDefault("rerollCardData", new List<CardData>())).Count > 0;
+
+            if (promptReroll)
+            {
+                Debug.Log("Prompting for reroll.");
+                // Reroll Resolvable
+                RerollResolvable rerollResolvable = new(Game.TurnContext.CurrentPC);
+                Game.NewResolution(new(rerollResolvable));
+                yield return Game.ResolutionContext.WaitForResolution();
+                Game.EndResolution();
+
+                if (Game.CheckContext.ContextData.TryGetValue("doReroll", out var doReroll) && (bool)(doReroll))
+                {
+                    checkResult.FinalRollTotal = context.DicePool.Roll();
+                }
+                else
+                {
+                    // We skipped - no more rerolls.
+                    ((List<CardData>)Game.CheckContext.ContextData.GetValueOrDefault("rerollCardData", new List<CardData>())).Clear();
+                }
+            }
+            else
+            {
+                Debug.Log("No reroll options.");
+                break;
+            }
+        }
 
         if (checkResult.WasSuccess)
         {
-            Debug.Log($"Rolled {rollResult} vs. {dc} - Success!");
+            Debug.Log($"Rolled {checkResult.FinalRollTotal} vs. {dc} - Success!");
         }
-        else if (false /* Reroll? avenge? */)
+        else if (false /* avenge? */)
         { }
         else
         {
@@ -90,7 +128,7 @@ public class EncounterManager : MonoBehaviour
 
             DamageResolvable damageResolvable = new(Game.TurnContext.CurrentPC, -checkResult.MarginOfSuccess);
             Game.NewResolution(new(damageResolvable));
-            Debug.Log($"Rolled {rollResult} vs. {dc} - Take {damageResolvable.Amount} damage!");
+            Debug.Log($"Rolled {checkResult.FinalRollTotal} vs. {dc} - Take {damageResolvable.Amount} damage!");
             yield return Game.ResolutionContext.WaitForResolution();
             Game.EndResolution();
         }

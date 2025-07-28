@@ -23,6 +23,7 @@ public class CheckContext
     // Fields that are populated as actions are processed.
     public CheckPhase CheckPhase { get; set; } = CheckPhase.PlayCards;
     public PF.Skill UsedSkill { get; set; } = new();
+    public List<CardData> PlayedCards { get; private set; } = new();
     public List<PF.CardType> PlayedCardTypes { get; private set; } = new();
     public List<string> Traits { get; private set; } = new();
     public DicePool DicePool { get; private set; } = new();

@@ -26,6 +26,12 @@ public class ContextManager : MonoBehaviour
     public void NewCheck(CheckContext checkContext) => CheckContext = checkContext;
     public void EndCheck() => CheckContext = null;
 
-    public void NewResolution(ResolutionContext resolutionContext) => ResolutionContext = resolutionContext;
+    public void NewResolution(ResolutionContext resolutionContext)
+    { 
+        ResolutionContext = resolutionContext;
+
+        // Update the ActionStagingManager in case we need to show a Skip button.
+        ServiceLocator.Get<ActionStagingManager>().UpdateUI();
+    }
     public void EndResolution() => ResolutionContext = null;
 }

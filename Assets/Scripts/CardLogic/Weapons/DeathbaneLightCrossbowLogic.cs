@@ -11,7 +11,7 @@ public class DeathbaneLightCrossbowLogic : IPlayableLogic
     private const int DiscardIndex = 1;
     private const int ReloadIndex = 2;
 
-    public List<IStagedAction> GetAvailableActions()
+    public List<IStagedAction> GetAvailableCardActions()
     {
         List<IStagedAction> actions = new();
         if (Game.CheckContext?.CheckCategory == CheckCategory.Combat && Game.CheckContext?.CheckPhase == CheckPhase.PlayCards)
@@ -42,9 +42,7 @@ public class DeathbaneLightCrossbowLogic : IPlayableLogic
             Game.CheckContext.DicePool.AddDice(1, 8, 1);
 
             // Against an Undead bane, add another 1d8.
-            if (Game.CheckContext.ContextData.TryGetValue("EncounteredCard", out var cardData)
-                && cardData is CardData encounteredCard
-                && (encounteredCard.traits?.Contains("Undead") ?? false))
+            if (Game.EncounterContext.EncounteredCardData.traits?.Contains("Undead") ?? false)
             {
                 Game.CheckContext.DicePool.AddDice(1, 8);
             }

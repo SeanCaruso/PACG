@@ -62,7 +62,7 @@ public class CardPreviewController : MonoBehaviour
         cardRect.localScale = new Vector3(2f, 2f, 1.0f);
 
         // Generate any action buttons for the current context.
-        var actions = Game.ResolutionContext?.ValidActionsForCard(cardDisplay.CardData);
+        var actions = Game.ResolutionContext?.ValidActionsForCard(cardDisplay.CardData) ?? new();
         if (actions.Count > 0)
         {
             GenerateActionButtons(actions);
@@ -81,6 +81,8 @@ public class CardPreviewController : MonoBehaviour
 
         foreach (var action in actions)
         {
+            stagingInfo.originalCharacterLocation = Game.TurnContext.CurrentPC.FindCard(action.CardData);
+
             GameObject buttonObj = Instantiate(actionButtonPrefab, actionButtonContainer);
 
             buttonObj.GetComponentInChildren<TextMeshProUGUI>().text = action.ActionType.ToString();

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using static PF;
 
 public class ActionStagingManager : MonoBehaviour
 {
@@ -12,6 +13,8 @@ public class ActionStagingManager : MonoBehaviour
 
     [Header("UI References")]
     public GameObject commitButton;
+    public Sprite commitSprite;
+    public Sprite skipSprite;
     public GameObject undoButton;
     public Transform revealedArea;
     public Transform displayedArea;
@@ -39,8 +42,9 @@ public class ActionStagingManager : MonoBehaviour
             originalCardStates[action.CardData] = new()
             {
                 cardDisplay = cardDisplay,
-                originalScale = cardDisplay.transform.localScale,
                 originalParent = cardDisplay.transform.parent,
+                originalCharacterLocation = Game.TurnContext.CurrentPC.FindCard(action.CardData),
+                originalScale = cardDisplay.transform.localScale,
                 originalSiblingIndex = cardDisplay.transform.GetSiblingIndex()
             };
         }
@@ -64,6 +68,9 @@ public class ActionStagingManager : MonoBehaviour
                 break;
         }
 
+        // We need to handle this here so that damage resolvables behave with hand size.
+        Game.TurnContext.CurrentPC.MoveCard(action.CardData, action.ActionType);
+
         stagedActions.Push(action);
         UpdateUI();
     }
@@ -83,13 +90,23 @@ public class ActionStagingManager : MonoBehaviour
         stagingInfo.cardDisplay.transform.localScale = stagingInfo.originalScale;
         stagingInfo.cardDisplay.gameObject.SetActive(true);
 
+        // Restore the card back to the correct location in the data.
+        if (action.ActionType != ActionType.Reveal)
+        {
+            stagingInfo.originalCharacterLocation.Add(action.CardData);
+        }
+
         UpdateUI();
     }
 
-    private void UpdateUI()
+    public void UpdateUI()
     {
         undoButton.SetActive(stagedActions.Count > 0);
-        commitButton.SetActive(Game.ResolutionContext.IsResolved(stagedActions));
+
+        bool canCommit = stagedActions.Count > 0 && Game.ResolutionContext.IsResolved(stagedActions);
+        bool canSkip = stagedActions.Count == 0 && Game.ResolutionContext.IsResolved(new());
+        commitButton.SetActive(canCommit || canSkip);
+        commitButton.GetComponent<Image>().sprite = canSkip ? skipSprite : commitSprite;
     }
 
     public void Commit()
@@ -127,6 +144,7 @@ public struct CardStagingInfo
 {
     public CardDisplay cardDisplay;
     public Transform originalParent;
+    public List<CardData> originalCharacterLocation;
     public Vector3 originalScale;
     public int originalSiblingIndex;
 }

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 public class CheckResult
 {
-    public int FinalRollTotal {  get; private set; }
+    public int FinalRollTotal {  get; set; }
     public int DC {  get; private set; }
 
     public bool WasSuccess => FinalRollTotal >= DC;

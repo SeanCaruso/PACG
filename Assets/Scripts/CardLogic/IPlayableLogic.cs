@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [AttributeUsage(AttributeTargets.Class, Inherited = false)]
@@ -12,16 +13,21 @@ public class PlayableLogicForAttribute : Attribute
 public interface IPlayableLogic : ICardLogic
 {
     public bool CanPlay => GetAvailableActions().Count > 0;
-    public List<IStagedAction> GetAvailableActions();
+    public List<IStagedAction> GetAvailableActions()
+    {
+        // If the card has any prohibited traits, (e.g. 2-Handed vs. Offhand), just return.
+        if (CardData.traits.Intersect(Game.EncounterContext.ProhibitedTraits).Any())
+            return new();
+
+        return GetAvailableCardActions();
+    }
+    public List<IStagedAction> GetAvailableCardActions();
+
     public void OnStage(int? powerIndex = null);
 
     public void Execute(int? powerIndex = null)
     {
-        if (!Game.CheckContext.PlayedCardTypes.Contains(CardData.cardType))
-        {
-            Game.CheckContext.PlayedCardTypes.Add(CardData.cardType);
-        }
-
+        Game.CheckContext.PlayedCards.Add(CardData);
         ExecuteCardLogic(powerIndex);
     }
 

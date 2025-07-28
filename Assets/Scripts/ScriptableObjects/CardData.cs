@@ -15,6 +15,7 @@ public abstract class CardData : ScriptableObject
 
     [Header("Check(s) to Acquire/Defeat")]
     public CheckRequirement checkRequirement;
+    public int rerollThreshold = 0;
 
     [Header("Powers")]
     [TextArea(3,10)]

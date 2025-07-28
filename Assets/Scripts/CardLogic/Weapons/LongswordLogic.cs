@@ -10,7 +10,7 @@ public class LongswordLogic : IPlayableLogic
     private const int RevealIndex = 0;
     private const int ReloadIndex = 1;
 
-    public List<IStagedAction> GetAvailableActions()
+    public List<IStagedAction> GetAvailableCardActions()
     {
         List<IStagedAction> actions = new();
         if (Game.CheckContext?.CheckCategory == CheckCategory.Combat && Game.CheckContext.CheckPhase == CheckPhase.PlayCards)
