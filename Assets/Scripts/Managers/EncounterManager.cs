@@ -41,7 +41,7 @@ public class EncounterManager : MonoBehaviour
         logicRegistry = ServiceLocator.Get<LogicRegistry>();
         encounterLogic = logicRegistry.GetEncounterLogic(context.EncounteredCardData.cardID);
 
-        Game.NewCheck(new(context.EncounterPC, CheckCategory.Combat, logicRegistry));
+        Game.NewCheck(new(context.EncounterPC, CheckCategory.Combat, new(){ PF.Skill.Strength, PF.Skill.Melee }));
         foreach (EncounterPhase phase in encounterFlow)
         {
             var resolvables = encounterLogic?.Execute(phase) ?? new();
@@ -70,10 +70,12 @@ public class EncounterManager : MonoBehaviour
         context.DicePool.AddDice(context.BlessingCount, Game.TurnContext.CurrentPC.GetSkill(context.UsedSkill).die);
 
         context.CheckPhase = CheckPhase.RollDice;
-        CheckResult checkResult = new(context.DicePool.Roll(), dc, Game.TurnContext.CurrentPC, context.UsedSkill, context.Traits);
+        int rollTotal = context.DicePool.Roll();
+        context.CheckResult = new(rollTotal, dc, Game.TurnContext.CurrentPC, context.UsedSkill, context.Traits);
 
         // See if we need to prompt for rerolls.
-        while (checkResult.MarginOfSuccess < Game.EncounterContext.EncounteredCardData.rerollThreshold)
+        bool skippedReroll = false;
+        while (context.CheckResult.MarginOfSuccess < Game.EncounterContext.EncounteredCardData.rerollThreshold && !skippedReroll)
         {
             bool promptReroll = false;
             var cardsToCheck = Game.TurnContext.CurrentPC.hand;
@@ -101,11 +103,12 @@ public class EncounterManager : MonoBehaviour
 
                 if (Game.CheckContext.ContextData.TryGetValue("doReroll", out var doReroll) && (bool)(doReroll))
                 {
-                    checkResult.FinalRollTotal = context.DicePool.Roll();
+                    context.CheckResult.FinalRollTotal = context.DicePool.Roll();
                 }
                 else
                 {
                     // We skipped - no more rerolls.
+                    skippedReroll = true;
                     ((List<CardData>)Game.CheckContext.ContextData.GetValueOrDefault("rerollCardData", new List<CardData>())).Clear();
                 }
             }
@@ -116,9 +119,9 @@ public class EncounterManager : MonoBehaviour
             }
         }
 
-        if (checkResult.WasSuccess)
+        if (context.CheckResult.WasSuccess)
         {
-            Debug.Log($"Rolled {checkResult.FinalRollTotal} vs. {dc} - Success!");
+            Debug.Log($"Rolled {context.CheckResult.FinalRollTotal} vs. {dc} - Success!");
         }
         else if (false /* avenge? */)
         { }
@@ -126,13 +129,13 @@ public class EncounterManager : MonoBehaviour
         {
             context.CheckPhase = CheckPhase.SufferDamage;
 
-            DamageResolvable damageResolvable = new(Game.TurnContext.CurrentPC, -checkResult.MarginOfSuccess);
+            DamageResolvable damageResolvable = new(Game.TurnContext.CurrentPC, -context.CheckResult.MarginOfSuccess);
             Game.NewResolution(new(damageResolvable));
-            Debug.Log($"Rolled {checkResult.FinalRollTotal} vs. {dc} - Take {damageResolvable.Amount} damage!");
+            Debug.Log($"Rolled {context.CheckResult.FinalRollTotal} vs. {dc} - Take {damageResolvable.Amount} damage!");
             yield return Game.ResolutionContext.WaitForResolution();
             Game.EndResolution();
         }
 
-        yield return checkResult;
+        yield break;
     }
 }

@@ -4,15 +4,15 @@ using UnityEngine;
 
 public class ResolutionContext
 {
-    private IResolvable currentResolvable;
+    public IResolvable CurrentResolvable { get; }
     private bool isResolved = false;
 
-    public List<IStagedAction> ValidActions => currentResolvable?.GetValidActions() ?? new();
-    public List<IStagedAction> ValidActionsForCard(CardData cardData) => currentResolvable?.GetValidActionsForCard(cardData) ?? new();
+    public List<IStagedAction> ValidActions => CurrentResolvable?.GetValidActions() ?? new();
+    public List<IStagedAction> ValidActionsForCard(CardData cardData) => CurrentResolvable?.GetValidActionsForCard(cardData) ?? new();
 
     public ResolutionContext(IResolvable resolvable)
     {
-        currentResolvable = resolvable;
+        CurrentResolvable = resolvable;
     }
 
     public IEnumerator WaitForResolution()
@@ -23,7 +23,7 @@ public class ResolutionContext
 
     public bool IsResolved(Stack<IStagedAction> actions)
     {
-        return currentResolvable.IsResolved(actions);
+        return CurrentResolvable.IsResolved(actions);
     }
 
     public bool Resolve() => isResolved = true;

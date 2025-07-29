@@ -7,8 +7,11 @@ public class LongspearLogic : IPlayableLogic
 {
     public CardData CardData { get; set; }
 
-    private const int RevealIndex = 0;
-    private const int DiscardIndex = 1;
+    private PlayCardAction _revealAction;
+    private PlayCardAction RevealAction => _revealAction ??= new(this, CardData, PF.ActionType.Reveal, ("IsCombat", true));
+
+    private PlayCardAction _rerollAction;
+    private PlayCardAction RerollAction => _rerollAction ??= new(this, CardData, PF.ActionType.Discard, ("IsFreely", true));
 
     public List<IStagedAction> GetAvailableCardActions()
     {
@@ -18,45 +21,46 @@ public class LongspearLogic : IPlayableLogic
             if (Game.CheckContext.CheckPhase == CheckPhase.PlayCards
                 && !Game.CheckContext.StagedCardTypes.Contains(CardData.cardType))
             {
-                actions.Add(new PlayCardAction(this, CardData, PF.ActionType.Reveal, powerIndex: RevealIndex, isCombat: true));
+                actions.Add(RevealAction);
             }
 
             // We can discard to reroll if we're in the roll dice phase and this card is one of the reroll options.
             if (Game.CheckContext.CheckPhase == CheckPhase.RollDice
                 && ((List<CardData>)Game.CheckContext.ContextData.GetValueOrDefault("rerollCardData", new List<CardData>())).Contains(CardData))
             {
-                actions.Add(new PlayCardAction(this, CardData, PF.ActionType.Discard, powerIndex: DiscardIndex));
+                actions.Add(RerollAction);
             }
         }
         return actions;
     }
 
     bool IsCardPlayable => (
-        // All powers on this card are specific to its owner during a combat check.
+        // All powers on this card are specific to its owner during a Strength or Melee combat check.
         Game.CheckContext.CheckPC == CardData.Owner &&
-        Game.CheckContext.CheckCategory == CheckCategory.Combat
+        Game.CheckContext.CheckCategory == CheckCategory.Combat &&
+        Game.CheckContext.CanPlayCardWithSkills(PF.Skill.Strength, PF.Skill.Melee)
     );
 
-    public void OnStage(int? powerIndex = null)
+    public void OnStage(IStagedAction action)
     {
         Game.EncounterContext.AddProhibitedTraits(CardData.Owner, CardData, "Offhand");
-        if (powerIndex == RevealIndex) Game.Stage(CardData);
+        Game.CheckContext.RestrictValidSkills(CardData, PF.Skill.Strength, PF.Skill.Melee);
     }
 
-    public void OnUndo(int? powerIndex = null)
+    public void OnUndo(IStagedAction action)
     {
         Game.EncounterContext.ProhibitedTraits.Remove((CardData.Owner, CardData));
-        if (powerIndex == RevealIndex) Game.Undo(CardData);
+        Game.CheckContext.UndoSkillModification(CardData);
     }
 
-    public void ExecuteCardLogic(int? powerIndex = null)
+    public void ExecuteCardLogic(IStagedAction action)
     {
         if (!Game.CheckContext.ContextData.ContainsKey("rerollCardData"))
             Game.CheckContext.ContextData["rerollCardData"] = new List<CardData>();
         List<CardData> rerollSources = (List<CardData>)Game.CheckContext.ContextData["rerollCardData"];
 
         // Reveal to use Strength or Melee + 1d8.
-        if (powerIndex == RevealIndex)
+        if (action == RevealAction)
         {
             (PF.Skill skill, int die, int bonus) = CardData.Owner.GetBestSkill(PF.Skill.Strength, PF.Skill.Melee);
             Game.CheckContext.UsedSkill = skill;
@@ -67,7 +71,7 @@ public class LongspearLogic : IPlayableLogic
         }
 
         // Discard to reroll.
-        if (powerIndex == DiscardIndex)
+        if (action == RerollAction)
         {
             rerollSources.Remove(CardData);
             Game.CheckContext.ContextData["doReroll"] = true;

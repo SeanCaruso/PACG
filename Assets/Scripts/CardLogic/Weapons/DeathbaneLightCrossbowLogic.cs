@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
 [PlayableLogicFor("DeathbaneLightCrossbow")]
 public class DeathbaneLightCrossbowLogic : IPlayableLogic
 {
@@ -20,9 +21,9 @@ public class DeathbaneLightCrossbowLogic : IPlayableLogic
                 && Game.CheckContext.CheckCategory == CheckCategory.Combat
                 && Game.CheckContext.CheckPhase == CheckPhase.PlayCards)
             {
-                actions.Add(new PlayCardAction(this, CardData, PF.ActionType.Reveal, powerIndex: RevealIndex, isCombat: true));
+                actions.Add(new PlayCardAction(this, CardData, PF.ActionType.Reveal, powerIndex: RevealIndex, isCombatCheck: true));
 
-                // TODO - Add Distant combat check logic.
+                // TODO - Add Distant combat check logic. (And update this entire implementation to match standards.)
             }
         }
         return actions;
@@ -61,3 +62,4 @@ public class DeathbaneLightCrossbowLogic : IPlayableLogic
         }
     }
 }
+*/

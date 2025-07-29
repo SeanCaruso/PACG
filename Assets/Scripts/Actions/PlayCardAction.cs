@@ -1,40 +1,53 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayCardAction : IStagedAction
 {
+    // Data common to all staged actions.
     public IPlayableLogic Playable { get; private set; }
     public CardData CardData { get; private set; }
     public PF.ActionType ActionType { get; private set; }
-    public readonly bool isFreely = false;
-    public bool isCombat = false;
-    private readonly int? powerIndex = null;
+
+    // Dictionary to hold any custom data.
+    public Dictionary<string, object> ActionData { get; } = new();
+
     private readonly string label = null;
 
-    public int? PowerIndex => powerIndex;
-
-    public PlayCardAction(IPlayableLogic playable, CardData cardData, PF.ActionType actionType, string label = null, int? powerIndex = null, bool isCombat = false, bool isFreely = false)
+    public PlayCardAction(IPlayableLogic playable, CardData cardData, PF.ActionType actionType, params (string, object)[] actionData)
     {
         this.Playable = playable;
         this.CardData = cardData;
         this.ActionType = actionType;
-        this.label = label;
-        this.powerIndex = powerIndex;
-        this.isCombat = isCombat;
-        this.isFreely = isFreely;
+
+        foreach ((string key, object value) in actionData)
+            ActionData.Add(key, value);
     }
+
+    // Convenience methods
+    public bool IsCombat => (bool)ActionData.GetValueOrDefault("IsCombat", false);
+    public bool IsFreely => (bool)ActionData.GetValueOrDefault("IsFreely", false);
 
     public string GetLabel()
     {
         return $"{(label is null ? ActionType.ToString() : label)} {CardData.cardName}";
     }
 
-    public void OnStage() => Playable?.OnStage(powerIndex);
+    public void OnStage()
+    {
+        Game.Stage(this);
+        Playable?.OnStage(this);
+    }
 
-    public void OnUndo() => Playable?.OnUndo(powerIndex);
+    public void OnUndo()
+    {
+        Game.Undo(this);
+        Playable?.OnUndo(this);
+    }
 
     public void Commit()
     {
         Game.CheckContext.Traits.AddRange(CardData.traits);
-        Playable.Execute(powerIndex);
+        Playable.Execute(this);
+        Game.TurnContext.CurrentPC.MoveCard(CardData, ActionType);
     }
 }

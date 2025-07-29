@@ -33,7 +33,7 @@ public class CombatResolvable : IResolvable
     {
         foreach (var action in actions)
         {
-            if (action is PlayCardAction playAction && playAction.isCombat)
+            if (action is PlayCardAction playAction && playAction.IsCombat)
                 return true;
         }
         return false;

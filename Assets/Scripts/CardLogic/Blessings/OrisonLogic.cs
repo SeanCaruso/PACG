@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
 [PlayableLogicFor("Orison")]
 public class OrisonLogic : IPlayableLogic
 {
@@ -13,6 +14,7 @@ public class OrisonLogic : IPlayableLogic
 
     public List<IStagedAction> GetAvailableCardActions()
     {
+        // TODO: Update this entire class to match standards.
         List<IStagedAction> actions = new()
         {
             new PlayCardAction(this, CardData, PF.ActionType.Discard, powerIndex: DiscardToBless)
@@ -27,12 +29,10 @@ public class OrisonLogic : IPlayableLogic
 
     public void OnStage(int? powerIndex = null)
     {
-        // TODO: Implement staging
     }
 
     public void OnUndo(int? powerIndex = null)
     {
-        // TODO: Implement undoing
     }
 
     public void ExecuteCardLogic(int? powerIndex = null)
@@ -43,3 +43,4 @@ public class OrisonLogic : IPlayableLogic
         }
     }
 }
+*/

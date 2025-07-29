@@ -7,30 +7,28 @@ public class ThrowingAxeLogic : IPlayableLogic
 {
     public CardData CardData { get; set; }
 
-    private const int RevealIndex = 0;
-    private const int DiscardIndex = 1;
+    private PlayCardAction _revealAction;
+    private PlayCardAction RevealAction => _revealAction ??= new(this, CardData, PF.ActionType.Reveal, ("IsCombat", true));
+
+    private PlayCardAction _discardAction;
+    private PlayCardAction DiscardAction => _discardAction ??= new(this, CardData, PF.ActionType.Discard, ("IsCombat", true), ("IsFreely", true));
 
     public List<IStagedAction> GetAvailableCardActions()
     {
         List<IStagedAction> actions = new();
-        if (CanReveal)
-        {
-            actions.Add(new PlayCardAction(this, CardData, PF.ActionType.Reveal, powerIndex: RevealIndex, isCombat: true));
-        }
-
-        if (CanDiscard)
-        {
-            actions.Add(new PlayCardAction(this, CardData, PF.ActionType.Discard, powerIndex: DiscardIndex, isCombat: true, isFreely: true));
-        }
+        if (CanReveal) actions.Add(RevealAction);
+        if (CanDiscard) actions.Add(DiscardAction);
         return actions;
     }
 
+    readonly PF.Skill[] validSkills = { PF.Skill.Strength, PF.Skill.Dexterity, PF.Skill.Melee, PF.Skill.Ranged };
     bool CanReveal => (
-        // Reveal power can be used by the current owner while playing cards for a combat check.
+        // Reveal power can be used by the current owner while playing cards for a Strength, Dexterity, Melee, or Ranged combat check.
         Game.CheckContext.CheckPC == CardData.Owner &&
         !Game.CheckContext.StagedCardTypes.Contains(CardData.cardType) &&
         Game.CheckContext.CheckCategory == CheckCategory.Combat &&
-        Game.CheckContext.CheckPhase == CheckPhase.PlayCards
+        Game.CheckContext.CheckPhase == CheckPhase.PlayCards &&
+        Game.CheckContext.CanPlayCardWithSkills(validSkills)
         );
 
     bool CanDiscard => (
@@ -41,19 +39,19 @@ public class ThrowingAxeLogic : IPlayableLogic
         true // TODO: Handle checking for local vs. distant.
         );
 
-    public void OnStage(int? powerIndex = null)
+    public void OnStage(IStagedAction action)
     {
-        Game.Stage(CardData, isFreely: powerIndex == DiscardIndex);
+        Game.CheckContext.RestrictValidSkills(CardData, validSkills);
     }
 
-    public void OnUndo(int? powerIndex = null)
+    public void OnUndo(IStagedAction action)
     {
-        Game.Undo(CardData, isFreely: powerIndex == DiscardIndex);
+        Game.CheckContext.UndoSkillModification(CardData);
     }
 
-    public void ExecuteCardLogic(int? powerIndex = null)
+    public void ExecuteCardLogic(IStagedAction action)
     {
-        if (powerIndex == RevealIndex)
+        if (action == RevealAction)
         {
             // Reveal to use Strength, Dexterity, Melee, or Ranged + 1d8.
             var (skill, die, bonus) = Game.TurnContext.CurrentPC.GetBestSkill(PF.Skill.Strength, PF.Skill.Dexterity, PF.Skill.Melee, PF.Skill.Ranged);
@@ -63,7 +61,7 @@ public class ThrowingAxeLogic : IPlayableLogic
         }
 
         // Discard to add 1d6.
-        if (powerIndex == DiscardIndex)
+        if (action == DiscardAction)
         {
             Game.CheckContext.DicePool.AddDice(1, 6);
         }

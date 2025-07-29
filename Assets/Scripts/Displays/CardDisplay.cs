@@ -99,11 +99,11 @@ public class CardDisplay : MonoBehaviour
             var check = cardData.checkRequirement.checkSteps[0];
             if (check.category == CheckCategory.Combat)
             {
-                AddTextToPanel("COMBAT", checksSection);
+                AddTextToPanel("COMBAT", checksSection, 8f);
             }
             else
             {
-                foreach (var skill in check.allowedSkills) AddTextToPanel(skill.ToString().ToUpper(), checksSection);
+                foreach (var skill in check.allowedSkills) AddTextToPanel(skill.ToString().ToUpper(), checksSection, 8f);
             }
 
             int totalDC = check.baseDC + check.adventureLevelMult * Game.GameContext.AdventureNumber;
@@ -128,11 +128,11 @@ public class CardDisplay : MonoBehaviour
             var check2 = cardData.checkRequirement.checkSteps[1];
             if (check2.category == CheckCategory.Combat)
             {
-                AddTextToPanel("COMBAT", checksSection2);
+                AddTextToPanel("COMBAT", checksSection2, 8f);
             }
             else
             {
-                foreach (var skill in check2.allowedSkills) AddTextToPanel(skill.ToString().ToUpper(), checksSection2);
+                foreach (var skill in check2.allowedSkills) AddTextToPanel(skill.ToString().ToUpper(), checksSection2, 8f);
             }
 
             int totalDC = check2.baseDC + check2.adventureLevelMult * Game.GameContext.AdventureNumber;
@@ -156,7 +156,7 @@ public class CardDisplay : MonoBehaviour
         foreach (var trait in cardData.traits) AddTextToPanel(trait.ToString().ToUpper(), traitsSection);
     }
 
-    private void AddTextToPanel(string text, GameObject panel)
+    private void AddTextToPanel(string text, GameObject panel, float fontSize = 9f)
     {
         GameObject textObject = new($"{text}_Object");
         textObject.transform.SetParent(panel.transform, false);
@@ -164,7 +164,7 @@ public class CardDisplay : MonoBehaviour
         TextMeshProUGUI tmp = textObject.AddComponent<TextMeshProUGUI>();
         tmp.text = text;
         tmp.font = cardFont;
-        tmp.fontSize = 9f;
+        tmp.fontSize = fontSize;
         tmp.color = Color.white;
 
         var sizeFitter = textObject.AddComponent<ContentSizeFitter>();

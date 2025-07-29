@@ -4,12 +4,14 @@ using UnityEngine;
 public class DamageResolvable : IResolvable
 {
     public PlayerCharacter PlayerCharacter { get; private set; }
+    public string DamageType { get; set; }
     public int Amount { get; private set; }
 
-    public DamageResolvable(PlayerCharacter playerCharacter, int amount)
+    public DamageResolvable(PlayerCharacter playerCharacter, int amount, string damageType = "Combat")
     {
         PlayerCharacter = playerCharacter;
         Amount = amount;
+        DamageType = damageType;
     }
 
     public List<IStagedAction> GetValidActions()
@@ -31,7 +33,7 @@ public class DamageResolvable : IResolvable
         List<IStagedAction> actions = cardLogic?.GetAvailableActions() ?? new();
 
         // Add default damage discard action.
-        actions.Add(new DamageAction(cardData, PF.ActionType.Discard, 1));
+        actions.Add(new DefaultDamageAction(cardData));
 
         return actions;
     }
@@ -47,8 +49,10 @@ public class DamageResolvable : IResolvable
         int totalResolved = 0;
         foreach (var action in  actions)
         {
-            if (action is DamageAction damageAction)
-                totalResolved += damageAction.Amount;
+            if (action is DefaultDamageAction)
+                totalResolved += 1;
+            else if (action is PlayCardAction playAction)
+                totalResolved += (int)playAction.ActionData.GetValueOrDefault("Damage", 0);
         }
 
         return totalResolved >= Amount;

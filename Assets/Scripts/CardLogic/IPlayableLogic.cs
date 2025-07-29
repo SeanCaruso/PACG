@@ -26,15 +26,15 @@ public interface IPlayableLogic : ICardLogic
     }
     public List<IStagedAction> GetAvailableCardActions();
 
-    public void OnStage(int? powerIndex = null);
+    public void OnStage(IStagedAction action);
 
-    public void OnUndo(int? powerIndex = null);
+    public void OnUndo(IStagedAction action);
 
-    public void Execute(int? powerIndex = null)
+    public void Execute(IStagedAction action)
     {
         Game.CheckContext.StagedCards.Add(CardData);
-        ExecuteCardLogic(powerIndex);
+        ExecuteCardLogic(action);
     }
 
-    public void ExecuteCardLogic(int? powerIndex = null);
+    public void ExecuteCardLogic(IStagedAction action);
 }

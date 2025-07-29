@@ -17,7 +17,7 @@ public static class DiceUtils
 
 public class DicePool
 {
-    private Dictionary<int, int> dice = new(); // Key: Sides; Value: count
+    private readonly Dictionary<int, int> dice = new(); // Key: Sides; Value: count
     private int bonus = 0;
 
     public void AddDice(int count, int sides, int bonus = 0)
@@ -29,6 +29,16 @@ public class DicePool
 
         dice[sides] += count;
         this.bonus += bonus;
+    }
+
+    public int NumDice(params int[] sides)
+    {
+        int total = 0;
+        foreach (int side in sides)
+        {
+            total += dice.GetValueOrDefault(side, 0);
+        }
+        return total;
     }
 
     public int Roll()
