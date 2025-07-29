@@ -49,7 +49,7 @@ public class LongspearLogic : IPlayableLogic
 
     public void OnUndo(IStagedAction action)
     {
-        Game.EncounterContext.ProhibitedTraits.Remove((CardData.Owner, CardData));
+        Game.EncounterContext.UndoProhibitedTraits(CardData.Owner, CardData);
         Game.CheckContext.UndoSkillModification(CardData);
     }
 

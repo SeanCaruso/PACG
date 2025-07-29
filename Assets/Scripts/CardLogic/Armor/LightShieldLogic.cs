@@ -8,7 +8,7 @@ public class LightShieldLogic : IPlayableLogic
     public CardData CardData { get; set; }
 
     private PlayCardAction _damageAction;
-    private PlayCardAction DamageAction => _damageAction ??= new(this, CardData, PF.ActionType.Reveal, ("Damage", 1));
+    private PlayCardAction DamageAction => _damageAction ??= new(this, CardData, PF.ActionType.Reveal, ("IsFreely", true), ("Damage", 1));
 
     private PlayCardAction _rerollAction;
     private PlayCardAction RerollAction => _rerollAction ??= new(this, CardData, PF.ActionType.Recharge, ("IsFreely", true));
@@ -23,15 +23,9 @@ public class LightShieldLogic : IPlayableLogic
 
     bool CanReveal()
     {
-        // We can freely reveal for damage if we have a DamageResolvable for the card's owner.
-        if (Game.ResolutionContext?.CurrentResolvable is DamageResolvable)
-        {
-            var damage = Game.ResolutionContext.CurrentResolvable as DamageResolvable;
-            if (damage.DamageType == "Combat" && damage.PlayerCharacter == CardData.Owner)
-                return true;
-        }
-
-        return false;
+        return (Game.ResolutionContext?.CurrentResolvable is DamageResolvable resolvable
+            && resolvable.DamageType == "Combat"
+            && resolvable.PlayerCharacter == CardData.Owner);
     }
 
     bool CanRecharge()

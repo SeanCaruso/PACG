@@ -135,14 +135,15 @@ public class ActionStagingManager : MonoBehaviour
         Game.ResolutionContext?.Resolve();
 
         // Move all revealed cards back to the hand.
-        foreach (Transform cardTranform in revealedArea)
+        while (revealedArea.childCount > 0)
         {
-            var cardDisplay = cardTranform.GetComponent<CardDisplay>();
+            var cardTransform = revealedArea.GetChild(0);
+            var cardDisplay = cardTransform.GetComponent<CardDisplay>();
             if (cardDisplay != null && originalCardStates.TryGetValue(cardDisplay.CardData, out var stagingInfo))
             {
-                cardTranform.SetParent(stagingInfo.originalParent);
-                cardTranform.localScale = stagingInfo.originalScale;
-                cardTranform.SetSiblingIndex(stagingInfo.originalSiblingIndex);
+                cardTransform.SetParent(stagingInfo.originalParent);
+                cardTransform.localScale = stagingInfo.originalScale;
+                cardTransform.SetSiblingIndex(stagingInfo.originalSiblingIndex);
             }
         }
 
