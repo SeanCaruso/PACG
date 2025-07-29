@@ -2,19 +2,17 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using static PF;
 
 public class ActionStagingManager : MonoBehaviour
 {
-    private readonly Stack<IPlayableLogic> stagingOrder = new();
-    private readonly Dictionary<IPlayableLogic, IStagedAction> stagedActions = new();
+    private readonly Dictionary<PlayerCharacter, List<IStagedAction>> pcsStagedActions = new();
     private readonly Dictionary<CardData, CardStagingInfo> originalCardStates = new();
 
     [Header("UI References")]
     public GameObject commitButton;
     public Sprite commitSprite;
     public Sprite skipSprite;
-    public GameObject undoButton;
+    public GameObject cancelButton;
     public Transform revealedArea;
     public Transform displayedArea;
 
@@ -25,16 +23,15 @@ public class ActionStagingManager : MonoBehaviour
 
     public void StageAction(IStagedAction action, CardStagingInfo? overrideOrigin = null)
     {
-        var logic = Game.GetPlayableLogic(action.CardData);
-
         var cardDisplay = FindCardDisplay(action.CardData);
         if (cardDisplay == null)
         {
-            Debug.LogError($"StageAction --- Unable to find cardDisplay for {action.CardData.cardName}");
+            Debug.LogError($"StageAction --- Unable to find cardDisplay for {action.CardData.cardName}. Action not staged!");
+            return;
         }
 
         // If this is the first time we've staged an action for this card, keep track of where the card will be going if undone.
-        if (!stagedActions.ContainsKey(logic))
+        if (!originalCardStates.ContainsKey(action.CardData))
         {
             if (overrideOrigin.HasValue)
             {
@@ -46,7 +43,7 @@ public class ActionStagingManager : MonoBehaviour
                 {
                     cardDisplay = cardDisplay,
                     originalParent = cardDisplay.transform.parent,
-                    originalCharacterLocation = Game.TurnContext.CurrentPC.FindCard(action.CardData),
+                    originalCharacterLocation = action.CardData.Owner.FindCard(action.CardData),
                     originalScale = cardDisplay.transform.localScale,
                     originalSiblingIndex = cardDisplay.transform.GetSiblingIndex()
                 };
@@ -73,52 +70,53 @@ public class ActionStagingManager : MonoBehaviour
         }
 
         // We need to handle this here so that damage resolvables behave with hand size.
-        Game.TurnContext.CurrentPC.MoveCard(action.CardData, action.ActionType);
+        action.CardData.Owner.MoveCard(action.CardData, action.ActionType);
 
         action.OnStage();
 
-        stagedActions[logic] = (action);
-        if (!stagingOrder.Contains(logic)) stagingOrder.Push(logic);
+        var pcActions = pcsStagedActions.GetValueOrDefault(action.CardData.Owner, new());
+        pcActions.Add(action);
         UpdateUI();
     }
 
-    public void Undo()
+    public void Cancel()
     {
-        var logic = stagingOrder.Pop();
-        if (!stagedActions.TryGetValue(logic, out var action))
+        // TODO: Get currently displayed PC. Use current turn PC for now.
+        PlayerCharacter pc = Game.TurnContext.CurrentPC;
+        foreach (var action in pcsStagedActions[pc])
         {
-            Debug.LogError($"Unable to find staged action for {logic.CardData.cardName}!");
-            return;
+            if (!originalCardStates.TryGetValue(action.CardData, out var stagingInfo))
+            {
+                Debug.LogError($"Unable to find original card state for {action.CardData.cardName}");
+                return;
+            }
+
+            stagingInfo.cardDisplay.transform.SetParent(stagingInfo.originalParent);
+            stagingInfo.cardDisplay.transform.SetSiblingIndex(stagingInfo.originalSiblingIndex);
+            stagingInfo.cardDisplay.transform.localScale = stagingInfo.originalScale;
+            stagingInfo.cardDisplay.gameObject.SetActive(true);
+
+            // Restore the card back to the correct location in the data.
+            if (action.ActionType != PF.ActionType.Reveal)
+            {
+                stagingInfo.originalCharacterLocation.Add(action.CardData);
+            }
+
+            action.OnUndo();
         }
-
-        if (!originalCardStates.TryGetValue(action.CardData, out var stagingInfo))
-        {
-            Debug.LogError($"Unable to find original card state for {action.CardData.cardName}");
-            return;
-        }
-
-        stagingInfo.cardDisplay.transform.SetParent(stagingInfo.originalParent);
-        stagingInfo.cardDisplay.transform.SetSiblingIndex(stagingInfo.originalSiblingIndex);
-        stagingInfo.cardDisplay.transform.localScale = stagingInfo.originalScale;
-        stagingInfo.cardDisplay.gameObject.SetActive(true);
-
-        // Restore the card back to the correct location in the data.
-        if (action.ActionType != ActionType.Reveal)
-        {
-            stagingInfo.originalCharacterLocation.Add(action.CardData);
-        }
-
-        stagedActions.Remove(logic);
-        action.OnUndo();
+        pcsStagedActions[pc].Clear();
 
         UpdateUI();
     }
 
     public void UpdateUI()
     {
-        undoButton.SetActive(stagedActions.Count > 0);
+        // TODO: Update this for the displayed PC. Use Turn PC until then.
+        var pc = Game.TurnContext.CurrentPC;
+        var stagedActions = pcsStagedActions.GetValueOrDefault(pc) ?? (pcsStagedActions[pc] = new());
+        cancelButton.SetActive(stagedActions.Count > 0);
 
-        bool canCommit = stagedActions.Count > 0 && Game.ResolutionContext.IsResolved(new(stagedActions.Values));
+        bool canCommit = stagedActions.Count > 0 && Game.ResolutionContext.IsResolved(stagedActions);
         bool canSkip = stagedActions.Count == 0 && Game.ResolutionContext.IsResolved(new());
         commitButton.SetActive(canCommit || canSkip);
         commitButton.GetComponent<Image>().sprite = canSkip ? skipSprite : commitSprite;
@@ -126,15 +124,15 @@ public class ActionStagingManager : MonoBehaviour
 
     public void Commit()
     {
-        foreach ((_, var action) in stagedActions)
+        foreach (var action in pcsStagedActions.Values.SelectMany(list => list))
         {
             action.Commit();
         }
-        stagingOrder.Clear();
-        stagedActions.Clear();
+        pcsStagedActions.Clear();
         Game.ResolutionContext?.Resolve();
 
         // Move all revealed cards back to the hand.
+        // TODO: This might break when we have multiple PCs.
         while (revealedArea.childCount > 0)
         {
             var cardTransform = revealedArea.GetChild(0);
@@ -147,7 +145,7 @@ public class ActionStagingManager : MonoBehaviour
             }
         }
 
-        undoButton.SetActive(false);
+        cancelButton.SetActive(false);
         commitButton.SetActive(false);
     }
 

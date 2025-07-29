@@ -30,11 +30,5 @@ public interface IPlayableLogic : ICardLogic
 
     public void OnUndo(IStagedAction action);
 
-    public void Execute(IStagedAction action)
-    {
-        Game.CheckContext.StagedCards.Add(CardData);
-        ExecuteCardLogic(action);
-    }
-
-    public void ExecuteCardLogic(IStagedAction action);
+    public void Execute(IStagedAction action);
 }

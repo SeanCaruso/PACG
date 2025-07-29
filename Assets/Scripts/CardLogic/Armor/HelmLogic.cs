@@ -35,7 +35,7 @@ public class HelmLogic : IPlayableLogic
         Game.EncounterContext.UndoProhibitedTraits(CardData.Owner, CardData);
     }
 
-    public void ExecuteCardLogic(IStagedAction _)
+    public void Execute(IStagedAction _)
     {
         // Damage reduction is handled by DamageResolvable.
     }

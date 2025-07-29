@@ -53,7 +53,7 @@ public class LongspearLogic : IPlayableLogic
         Game.CheckContext.UndoSkillModification(CardData);
     }
 
-    public void ExecuteCardLogic(IStagedAction action)
+    public void Execute(IStagedAction action)
     {
         if (!Game.CheckContext.ContextData.ContainsKey("rerollCardData"))
             Game.CheckContext.ContextData["rerollCardData"] = new List<CardData>();

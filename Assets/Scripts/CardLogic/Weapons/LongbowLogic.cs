@@ -52,7 +52,7 @@ public class LongbowLogic : IPlayableLogic
         Game.EncounterContext.ProhibitedTraits.Remove((CardData.Owner, CardData));
     }
 
-    public void ExecuteCardLogic(IStagedAction action)
+    public void Execute(IStagedAction action)
     {
         if (action == RevealAction)
         {

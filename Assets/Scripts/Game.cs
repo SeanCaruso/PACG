@@ -30,9 +30,9 @@ public static class Game
     public static void Stage(IStagedAction action)
     {
         // Skip if we've already staged the card.
-        if (!CheckContext.StagedCards.Contains(action.CardData))
+        if (!CheckContext.StagedActions.Contains(action))
         {
-            CheckContext.StagedCards.Add(action.CardData);
+            CheckContext.StagedActions.Add(action);
             if (!action.IsFreely)
             {
                 if (CheckContext.StagedCardTypes.Contains(action.CardData.cardType)) Debug.LogError($"{action.CardData.cardName} staged a duplicate type!");
@@ -41,13 +41,13 @@ public static class Game
         }
         else
         {
-            Debug.Log($"{action.CardData.cardName} staged multiple times - was this inteded?");
+            Debug.Log($"{action.CardData.cardName}.{action} staged multiple times - was this inteded?");
         }
     }
 
     public static void Undo(IStagedAction action)
     {
-        if (CheckContext.StagedCards.Remove(action.CardData))
+        if (CheckContext.StagedActions.Remove(action))
         {
             if (!action.IsFreely)
             {

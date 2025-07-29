@@ -70,7 +70,7 @@ public class EncounterManager : MonoBehaviour
         context.DicePool.AddDice(context.BlessingCount, Game.TurnContext.CurrentPC.GetSkill(context.UsedSkill).die);
 
         context.CheckPhase = CheckPhase.RollDice;
-        int rollTotal = 9;// context.DicePool.Roll();
+        int rollTotal = context.DicePool.Roll();
         context.CheckResult = new(rollTotal, dc, Game.TurnContext.CurrentPC, context.UsedSkill, context.Traits);
 
         // See if we need to prompt for rerolls.
@@ -129,7 +129,7 @@ public class EncounterManager : MonoBehaviour
         {
             context.CheckPhase = CheckPhase.SufferDamage;
 
-            DamageResolvable damageResolvable = new(Game.TurnContext.CurrentPC, -context.CheckResult.MarginOfSuccess, "Fire");
+            DamageResolvable damageResolvable = new(Game.TurnContext.CurrentPC, -context.CheckResult.MarginOfSuccess);
             Game.NewResolution(new(damageResolvable));
             Debug.Log($"Rolled {context.CheckResult.FinalRollTotal} vs. {dc} - Take {damageResolvable.Amount} damage!");
             yield return Game.ResolutionContext.WaitForResolution();

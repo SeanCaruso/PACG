@@ -32,13 +32,14 @@ public class DamageResolvable : IResolvable
         var cardLogic = Game.GetPlayableLogic(cardData);
         List<IStagedAction> actions = cardLogic?.GetAvailableActions() ?? new();
 
-        // Add default damage discard action.
-        actions.Add(new DefaultDamageAction(cardData));
+        // Add default damage discard action if the card was in the player's hand.
+        if (PlayerCharacter.hand.Contains(cardData))
+            actions.Add(new DefaultDamageAction(cardData));
 
         return actions;
     }
 
-    public bool IsResolved(Stack<IStagedAction> actions)
+    public bool IsResolved(List<IStagedAction> actions)
     {
         // If the player's hand size is less than or equal to the damage amount, this can always be resolved by discarding the entire hand.
         //if (PlayerCharacter.hand.Count <= Amount) return true;

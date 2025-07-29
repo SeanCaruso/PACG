@@ -29,7 +29,7 @@ public class CombatResolvable : IResolvable
         return cardLogic?.GetAvailableActions() ?? new();
     }
 
-    public bool IsResolved(Stack<IStagedAction> actions)
+    public bool IsResolved(List<IStagedAction> actions)
     {
         foreach (var action in actions)
         {

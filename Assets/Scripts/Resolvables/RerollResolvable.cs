@@ -37,5 +37,5 @@ public class RerollResolvable : IResolvable
         return actions;
     }
 
-    public bool IsResolved(Stack<IStagedAction> actions) => true; // We can always resolve by skipping.
+    public bool IsResolved(List<IStagedAction> actions) => true; // We can always resolve by skipping.
 }

@@ -81,7 +81,7 @@ public class CardPreviewController : MonoBehaviour
 
         foreach (var action in actions)
         {
-            stagingInfo.originalCharacterLocation = Game.TurnContext.CurrentPC.FindCard(action.CardData);
+            stagingInfo.originalCharacterLocation = action.CardData.Owner.FindCard(action.CardData);
 
             GameObject buttonObj = Instantiate(actionButtonPrefab, actionButtonContainer);
 

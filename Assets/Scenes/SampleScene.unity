@@ -721,8 +721,8 @@ MonoBehaviour:
   cards:
   - {fileID: 11400000, guid: 91d795d0730e3c94ba316591be2c9675, type: 2}
   - {fileID: 11400000, guid: b959d88ebc9971c4b894065c7086fb50, type: 2}
-  - {fileID: 11400000, guid: 0dc4ee0f4aba5834a918c24011f297f6, type: 2}
   - {fileID: 11400000, guid: 27cbdc2b012f54d4c89c73208dc3e07d, type: 2}
+  - {fileID: 11400000, guid: b8dfb967b7f2f1d4198cd3e6d76ed28e, type: 2}
 --- !u!4 &736764138
 Transform:
   m_ObjectHideFlags: 0
@@ -1187,7 +1187,7 @@ GameObject:
   - component: {fileID: 1011016526}
   - component: {fileID: 1011016525}
   m_Layer: 0
-  m_Name: Undo Button
+  m_Name: Cancel Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1258,7 +1258,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1315803825}
         m_TargetAssemblyTypeName: ActionStagingManager, Runtime
-        m_MethodName: Undo
+        m_MethodName: Cancel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1783,7 +1783,7 @@ MonoBehaviour:
   commitButton: {fileID: 1246359930}
   commitSprite: {fileID: -1328870334784143111, guid: e1925206810ed984a938d01d9ca9331d, type: 3}
   skipSprite: {fileID: 1194653686463983156, guid: 6df9fa9086b1c024cafa12c323f66f03, type: 3}
-  undoButton: {fileID: 1011016523}
+  cancelButton: {fileID: 1011016523}
   revealedArea: {fileID: 1826561647}
   displayedArea: {fileID: 223344267}
 --- !u!1 &1382152290

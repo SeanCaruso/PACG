@@ -58,7 +58,7 @@ public class LongswordLogic : IPlayableLogic
         Game.CheckContext.UndoSkillModification(CardData);
     }
 
-    public void ExecuteCardLogic(IStagedAction action)
+    public void Execute(IStagedAction action)
     {
         if (action == RevealAction || action == RevealAndReloadAction)
         {

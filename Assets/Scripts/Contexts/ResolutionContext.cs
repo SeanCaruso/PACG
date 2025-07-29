@@ -21,7 +21,7 @@ public class ResolutionContext
         yield return new WaitUntil(() => isResolved);
     }
 
-    public bool IsResolved(Stack<IStagedAction> actions)
+    public bool IsResolved(List<IStagedAction> actions)
     {
         return CurrentResolvable.IsResolved(actions);
     }

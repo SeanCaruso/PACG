@@ -34,11 +34,17 @@ public class CheckContext
 
     public void AddValidSkills(CardData card, params PF.Skill[] skills)
     {
-        stagedSkillAdditions.Add(card, new(skills));
+        if (stagedSkillAdditions.ContainsKey(card))
+            stagedSkillAdditions[card].AddRange(skills);
+        else
+            stagedSkillAdditions.Add(card, new(skills));
     }
     public void RestrictValidSkills(CardData card, params PF.Skill[] skills)
     {
-        stagedSkillRestrictions.Add(card, new(skills));
+        if (stagedSkillRestrictions.ContainsKey(card))
+            stagedSkillRestrictions[card].AddRange(skills);
+        else
+            stagedSkillRestrictions.Add(card,new(skills));
     }
     public void UndoSkillModification(CardData source)
     {
@@ -72,8 +78,10 @@ public class CheckContext
         return skills;
     }
 
-    public List<CardData> StagedCards { get; private set; } = new();
+    public List<IStagedAction> StagedActions { get; private set; } = new();
     public List<PF.CardType> StagedCardTypes { get; private set; } = new();
+
+    public List<CardData> StagedCards => StagedActions.Select(action => action.CardData).Distinct().ToList();
 
     // Updated on action executions
     public PF.Skill UsedSkill { get; set; } = new();

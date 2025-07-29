@@ -46,7 +46,7 @@ public class LightShieldLogic : IPlayableLogic
     {
     }
 
-    public void ExecuteCardLogic(IStagedAction action)
+    public void Execute(IStagedAction action)
     {
         // Damage reduction is handled by DamageResolvable.
 
