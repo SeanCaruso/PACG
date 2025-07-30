@@ -38,13 +38,13 @@ public static class Game
             CheckContext.StagedActions.Add(action);
             if (!action.IsFreely)
             {
-                if (CheckContext.StagedCardTypes.Contains(action.CardData.cardType)) Debug.Log($"{action.CardData.cardName} staged a duplicate type - was this intended?");
-                CheckContext.StagedCardTypes.Add(action.CardData.cardType);
+                if (CheckContext.StagedCardTypes.Contains(action.Card.Data.cardType)) Debug.Log($"{action.Card.Data.cardName} staged a duplicate type - was this intended?");
+                CheckContext.StagedCardTypes.Add(action.Card.Data.cardType);
             }
         }
         else
         {
-            Debug.Log($"{action.CardData.cardName}.{action} staged multiple times - was this inteded?");
+            Debug.Log($"{action.Card.Data.cardName}.{action} staged multiple times - was this inteded?");
         }
     }
 
@@ -57,17 +57,17 @@ public static class Game
         {
             if (!action.IsFreely)
             {
-                if (!CheckContext.StagedCardTypes.Remove(action.CardData.cardType))
-                    Debug.LogError($"{action.CardData.cardName} attempted to undo its type without being staged!");
+                if (!CheckContext.StagedCardTypes.Remove(action.Card.Data.cardType))
+                    Debug.LogError($"{action.Card.Data.cardName} attempted to undo its type without being staged!");
             }
         }
         else
         {
-            Debug.LogError($"{action.CardData.cardName} attempted to undo without being staged!");
+            Debug.LogError($"{action.Card.Data.cardName} attempted to undo without being staged!");
         }
     }
 
     // --- Logic ---
-    public static IPlayableLogic GetPlayableLogic(CardData cardData) => ServiceLocator.Get<LogicRegistry>().GetPlayableLogic(cardData);
-    public static IEncounterLogic GetEncounterLogic(CardData cardData) => ServiceLocator.Get<LogicRegistry>().GetEncounterLogic(cardData.cardID);
+    public static IPlayableLogic GetPlayableLogic(CardInstance card) => ServiceLocator.Get<LogicRegistry>().GetPlayableLogic(card);
+    public static IEncounterLogic GetEncounterLogic(CardInstance card) => ServiceLocator.Get<LogicRegistry>().GetEncounterLogic(card);
 }

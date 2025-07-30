@@ -20,15 +20,15 @@ public class CardActionButton : MonoBehaviour
 
     private void UpdateVisuals()
     {
-        if (cardAction == null || cardAction?.CardData == null) return;
+        if (cardAction == null || cardAction?.Card == null) return;
 
         // Set card art if available.
-        if (cardArtImage && cardAction.CardData && cardAction.CardData.cardArt)
-            cardArtImage.sprite = cardAction.CardData.cardArt;
+        if (cardArtImage && cardAction.Card.Data && cardAction.Card.Data.cardArt)
+            cardArtImage.sprite = cardAction.Card.Data.cardArt;
 
         // Set card name.
-        if (cardNameText && cardAction.CardData)
-            cardNameText.text = cardAction.CardData.cardName;
+        if (cardNameText && cardAction.Card.Data)
+            cardNameText.text = cardAction.Card.Data.cardName;
 
         // Set action type.
         if (actionTypeText)

@@ -5,13 +5,13 @@ using UnityEngine;
 [PlayableLogicFor("LightShield")]
 public class LightShieldLogic : IPlayableLogic
 {
-    public CardData CardData { get; set; }
+    public CardInstance Card { get; set; }
 
     private PlayCardAction _damageAction;
-    private PlayCardAction DamageAction => _damageAction ??= new(this, CardData, PF.ActionType.Reveal, ("IsFreely", true), ("Damage", 1));
+    private PlayCardAction DamageAction => _damageAction ??= new(this, Card, PF.ActionType.Reveal, ("IsFreely", true), ("Damage", 1));
 
     private PlayCardAction _rerollAction;
-    private PlayCardAction RerollAction => _rerollAction ??= new(this, CardData, PF.ActionType.Recharge, ("IsFreely", true));
+    private PlayCardAction RerollAction => _rerollAction ??= new(this, Card, PF.ActionType.Recharge, ("IsFreely", true));
 
     public List<IStagedAction> GetAvailableCardActions()
     {
@@ -24,7 +24,7 @@ public class LightShieldLogic : IPlayableLogic
     bool CanReveal => (
         Game.ResolutionContext?.CurrentResolvable is DamageResolvable resolvable
         && resolvable.DamageType == "Combat"
-        && resolvable.PlayerCharacter == CardData.Owner);
+        && resolvable.PlayerCharacter == Card.Owner);
 
     bool CanRecharge => (
         // We can freely recharge to reroll if we're in the dice phase of a Melee combat check and the dice pool has a d4, d6, or d8.
@@ -47,6 +47,6 @@ public class LightShieldLogic : IPlayableLogic
         // Damage reduction is handled by DamageResolvable.
 
         // TODO: Implement reroll die choice.
-        if (action == RerollAction) Debug.LogError($"{CardData.cardName} power not implemented!");
+        if (action == RerollAction) Debug.LogError($"{Card.Data.cardName} power not implemented!");
     }
 }

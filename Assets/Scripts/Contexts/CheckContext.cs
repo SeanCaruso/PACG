@@ -29,24 +29,24 @@ public class CheckContext
 
     // Currently staged info
     public List<PF.Skill> CurrentValidSkills => GetCurrentValidSkills();
-    private readonly Dictionary<CardData, List<PF.Skill>> stagedSkillAdditions = new();
-    private readonly Dictionary<CardData, List<PF.Skill>> stagedSkillRestrictions = new();
+    private readonly Dictionary<CardInstance, List<PF.Skill>> stagedSkillAdditions = new();
+    private readonly Dictionary<CardInstance, List<PF.Skill>> stagedSkillRestrictions = new();
 
-    public void AddValidSkills(CardData card, params PF.Skill[] skills)
+    public void AddValidSkills(CardInstance card, params PF.Skill[] skills)
     {
         if (stagedSkillAdditions.ContainsKey(card))
             stagedSkillAdditions[card].AddRange(skills);
         else
             stagedSkillAdditions.Add(card, new(skills));
     }
-    public void RestrictValidSkills(CardData card, params PF.Skill[] skills)
+    public void RestrictValidSkills(CardInstance card, params PF.Skill[] skills)
     {
         if (stagedSkillRestrictions.ContainsKey(card))
             stagedSkillRestrictions[card].AddRange(skills);
         else
             stagedSkillRestrictions.Add(card,new(skills));
     }
-    public void UndoSkillModification(CardData source)
+    public void UndoSkillModification(CardInstance source)
     {
         stagedSkillAdditions.Remove(source);
         stagedSkillRestrictions.Remove(source);
@@ -81,7 +81,7 @@ public class CheckContext
     public List<IStagedAction> StagedActions { get; private set; } = new();
     public List<PF.CardType> StagedCardTypes { get; private set; } = new();
 
-    public List<CardData> StagedCards => StagedActions.Select(action => action.CardData).Distinct().ToList();
+    public List<CardInstance> StagedCards => StagedActions.Select(action => action.Card).Distinct().ToList();
 
     // Updated on action executions
     public PF.Skill UsedSkill { get; set; } = new();

@@ -40,7 +40,7 @@ public class EncounterManager : MonoBehaviour
         EncounterContext context = Game.EncounterContext;
 
         logicRegistry = ServiceLocator.Get<LogicRegistry>();
-        encounterLogic = logicRegistry.GetEncounterLogic(context.EncounteredCardData.cardID);
+        encounterLogic = logicRegistry.GetEncounterLogic(context.EncounteredCard);
 
         Game.NewCheck(new(context.EncounterPC, CheckCategory.Combat, new(){ PF.Skill.Strength, PF.Skill.Melee }));
         foreach (EncounterPhase phase in encounterFlow)
@@ -76,7 +76,7 @@ public class EncounterManager : MonoBehaviour
 
         // See if we need to prompt for rerolls.
         bool skippedReroll = false;
-        while (context.CheckResult.MarginOfSuccess < Game.EncounterContext.EncounteredCardData.rerollThreshold && !skippedReroll)
+        while (context.CheckResult.MarginOfSuccess < Game.EncounterContext.EncounteredCard.Data.rerollThreshold && !skippedReroll)
         {
             bool promptReroll = false;
             var cardsToCheck = Game.TurnContext.CurrentPC.hand.Union(Game.TurnContext.CurrentPC.displayedCards);
@@ -90,7 +90,7 @@ public class EncounterManager : MonoBehaviour
             }
 
             // No playable cards allow rerolls... check if a played card set the context.
-            promptReroll |= ((List<CardData>)Game.CheckContext.ContextData.GetValueOrDefault("rerollCardData", new List<CardData>())).Count > 0;
+            promptReroll |= ((List<CardInstance>)Game.CheckContext.ContextData.GetValueOrDefault("rerollCards", new List<CardInstance>())).Count > 0;
 
             if (promptReroll)
             {
@@ -109,7 +109,7 @@ public class EncounterManager : MonoBehaviour
                 {
                     // We skipped - no more rerolls.
                     skippedReroll = true;
-                    ((List<CardData>)Game.CheckContext.ContextData.GetValueOrDefault("rerollCardData", new List<CardData>())).Clear();
+                    ((List<CardInstance>)Game.CheckContext.ContextData.GetValueOrDefault("rerollCards", new List<CardInstance>())).Clear();
                 }
             }
             else

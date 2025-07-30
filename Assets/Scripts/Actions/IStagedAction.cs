@@ -2,7 +2,7 @@ using UnityEngine;
 
 public interface IStagedAction
 {
-    public CardData CardData { get; }
+    public CardInstance Card { get; }
     public PF.ActionType ActionType { get; }
     public bool IsFreely { get; }
 

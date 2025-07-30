@@ -3,11 +3,21 @@ using UnityEngine;
 
 public class Deck : MonoBehaviour
 {
-    public List<CardData> cards = new();
-    private readonly List<CardData> activeDeck = new();
+    [Header("Design Time Test Setup")]
+    public List<CardData> cardDatas = new();
+    public PlayerCharacter character = null;
+
+    public List<CardInstance> cards = new();
+    private readonly List<CardInstance> activeDeck = new();
 
     void Awake()
     {
+        cards.Clear();
+        foreach (var cardData in cardDatas)
+        {
+            cards.Add(new(cardData, character));
+        }
+
         activeDeck.AddRange(cards);
         Shuffle();
     }
@@ -21,24 +31,24 @@ public class Deck : MonoBehaviour
         }
     }
 
-    public CardData DrawCard()
+    public CardInstance DrawCard()
     {
         if (activeDeck.Count == 0)
         {
             return null;
         }
 
-        CardData drawnCard = activeDeck[0];
+        CardInstance drawnCard = activeDeck[0];
         activeDeck.RemoveAt(0);
         return drawnCard;
     }
 
-    public void Recharge(CardData card)
+    public void Recharge(CardInstance card)
     {
         activeDeck.Add(card);
     }
 
-    public void Reload(CardData card)
+    public void Reload(CardInstance card)
     {
         activeDeck.Insert(0, card);
     }

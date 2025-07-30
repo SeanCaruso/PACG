@@ -62,7 +62,7 @@ public class CardPreviewController : MonoBehaviour
         cardRect.localScale = new Vector3(2f, 2f, 1.0f);
 
         // Query the card logic for any playable actions.
-        var actions = Game.GetPlayableLogic(cardDisplay.CardData)?.GetAvailableActions() ?? new();
+        var actions = Game.GetPlayableLogic(cardDisplay.Card)?.GetAvailableActions() ?? new();
         if (actions.Count > 0)
         {
             GenerateActionButtons(actions);
@@ -75,14 +75,14 @@ public class CardPreviewController : MonoBehaviour
         {
             cardDisplay = currentlyEnlargedCard,
             originalParent = originalParent,
-            originalCharacterLocation = currentlyEnlargedCard.CardData.Owner.FindCard(currentlyEnlargedCard.CardData),
+            originalCharacterLocation = currentlyEnlargedCard.Card.Owner.FindCard(currentlyEnlargedCard.Card),
             originalScale = originalScale,
             originalSiblingIndex = originalSiblingIndex
         };
 
         foreach (var action in actions)
         {
-            stagingInfo.originalCharacterLocation = action.CardData.Owner.FindCard(action.CardData);
+            stagingInfo.originalCharacterLocation = action.Card.Owner.FindCard(action.Card);
 
             GameObject buttonObj = Instantiate(actionButtonPrefab, actionButtonContainer);
 

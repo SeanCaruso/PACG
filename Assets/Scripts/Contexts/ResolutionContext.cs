@@ -8,7 +8,7 @@ public class ResolutionContext
     private bool isResolved = false;
 
     public List<IStagedAction> ValidActions => CurrentResolvable?.GetValidActions() ?? new();
-    public List<IStagedAction> ValidActionsForCard(CardData cardData) => CurrentResolvable?.GetValidActionsForCard(cardData) ?? new();
+    public List<IStagedAction> ValidActionsForCard(CardInstance card) => CurrentResolvable?.GetValidActionsForCard(card) ?? new();
 
     public ResolutionContext(IResolvable resolvable)
     {

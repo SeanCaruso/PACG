@@ -17,9 +17,9 @@ public class RerollResolvable : IResolvable
     {
         List<IStagedAction> actions = new();
 
-        foreach (var cardData in PlayerCharacter.hand)
+        foreach (var card in PlayerCharacter.hand)
         {
-            actions.AddRange(GetValidActionsForCard(cardData));
+            actions.AddRange(GetValidActionsForCard(card));
         }
         foreach (var cardData in PlayerCharacter.displayedCards)
         {
@@ -29,9 +29,9 @@ public class RerollResolvable : IResolvable
         return actions;
     }
 
-    public List<IStagedAction> GetValidActionsForCard(CardData cardData)
+    public List<IStagedAction> GetValidActionsForCard(CardInstance card)
     {
-        var cardLogic = Game.GetPlayableLogic(cardData);
+        var cardLogic = Game.GetPlayableLogic(card);
         List<IStagedAction> actions = cardLogic?.GetAvailableActions() ?? new();
 
         return actions;

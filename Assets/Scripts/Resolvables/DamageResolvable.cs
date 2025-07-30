@@ -18,23 +18,23 @@ public class DamageResolvable : IResolvable
     {
         List<IStagedAction> actions = new();
 
-        foreach (var cardData in PlayerCharacter.hand)
+        foreach (var card in PlayerCharacter.hand)
         {
-            actions.AddRange(GetValidActionsForCard(cardData));
+            actions.AddRange(GetValidActionsForCard(card));
         }
 
         return actions;
     }
 
-    public List<IStagedAction> GetValidActionsForCard(CardData cardData)
+    public List<IStagedAction> GetValidActionsForCard(CardInstance card)
     {
         // Grab any card-specific options for handling damage.
-        var cardLogic = Game.GetPlayableLogic(cardData);
+        var cardLogic = Game.GetPlayableLogic(card);
         List<IStagedAction> actions = cardLogic?.GetAvailableActions() ?? new();
 
         // Add default damage discard action if the card was in the player's hand.
-        if (PlayerCharacter.hand.Contains(cardData))
-            actions.Add(new DefaultDamageAction(cardData));
+        if (PlayerCharacter.hand.Contains(card))
+            actions.Add(new DefaultDamageAction(card));
 
         return actions;
     }
