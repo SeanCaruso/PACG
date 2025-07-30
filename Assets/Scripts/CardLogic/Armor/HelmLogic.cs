@@ -13,17 +13,15 @@ public class HelmLogic : IPlayableLogic
     public List<IStagedAction> GetAvailableCardActions()
     {
         List<IStagedAction> actions = new();
-        if (CanReveal()) actions.Add(DamageAction);
+        if (CanReveal) actions.Add(DamageAction);
         return actions;
     }
 
-    bool CanReveal()
-    {
+    bool CanReveal => (
         // We can freely reveal for damage if we have a DamageResolvable for the card's owner with Combat damage, or any type of damage if proficient.
-        return (Game.ResolutionContext?.CurrentResolvable is DamageResolvable resolvable
-            && (resolvable.DamageType == "Combat" || CardData.Owner.IsProficient(PF.CardType.Armor))
-            && resolvable.PlayerCharacter == CardData.Owner);
-    }
+        Game.ResolutionContext?.CurrentResolvable is DamageResolvable resolvable
+        && (resolvable.DamageType == "Combat" || CardData.Owner.IsProficient(PF.CardType.Armor))
+        && resolvable.PlayerCharacter == CardData.Owner);
 
     public void OnStage(IStagedAction _)
     {

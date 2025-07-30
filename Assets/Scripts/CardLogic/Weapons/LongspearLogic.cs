@@ -36,10 +36,10 @@ public class LongspearLogic : IPlayableLogic
 
     bool IsCardPlayable => (
         // All powers on this card are specific to its owner during a Strength or Melee combat check.
-        Game.CheckContext.CheckPC == CardData.Owner &&
-        Game.CheckContext.CheckCategory == CheckCategory.Combat &&
-        Game.CheckContext.CanPlayCardWithSkills(PF.Skill.Strength, PF.Skill.Melee)
-    );
+        Game.CheckContext != null
+        && Game.CheckContext.CheckPC == CardData.Owner
+        && Game.CheckContext.CheckCategory == CheckCategory.Combat
+        && Game.CheckContext.CanPlayCardWithSkills(PF.Skill.Strength, PF.Skill.Melee));
 
     public void OnStage(IStagedAction action)
     {

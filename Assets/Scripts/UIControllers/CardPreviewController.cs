@@ -61,8 +61,8 @@ public class CardPreviewController : MonoBehaviour
         cardRect.anchorMax = new(0.5f, 0.5f);
         cardRect.localScale = new Vector3(2f, 2f, 1.0f);
 
-        // Generate any action buttons for the current context.
-        var actions = Game.ResolutionContext?.ValidActionsForCard(cardDisplay.CardData) ?? new();
+        // Query the card logic for any playable actions.
+        var actions = Game.GetPlayableLogic(cardDisplay.CardData)?.GetAvailableActions() ?? new();
         if (actions.Count > 0)
         {
             GenerateActionButtons(actions);
@@ -75,7 +75,8 @@ public class CardPreviewController : MonoBehaviour
         {
             cardDisplay = currentlyEnlargedCard,
             originalParent = originalParent,
-            originalScale = Vector3.one,
+            originalCharacterLocation = currentlyEnlargedCard.CardData.Owner.FindCard(currentlyEnlargedCard.CardData),
+            originalScale = originalScale,
             originalSiblingIndex = originalSiblingIndex
         };
 

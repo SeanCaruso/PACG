@@ -6,10 +6,10 @@ public class PlayerCharacter
     public CharacterData characterData;
 
     public Deck deck;
-    public List<CardData> hand = new();
-    public List<CardData> discards = new();
-    public List<CardData> buriedCards = new();
-    public List<CardData> displayedCards = new();
+    public readonly List<CardData> hand = new();
+    public readonly List<CardData> discards = new();
+    public readonly List<CardData> buriedCards = new();
+    public readonly List<CardData> displayedCards = new();
 
     public bool IsProficient(PF.CardType cardType) => characterData.proficiencies.Contains(cardType);
 
@@ -67,6 +67,7 @@ public class PlayerCharacter
 
     public void MoveCard(CardData card, PF.ActionType action)
     {
+        Debug.Log($"Moving {card} via {action}");
         if (action == PF.ActionType.Reveal)
             return;
 
@@ -91,6 +92,13 @@ public class PlayerCharacter
             default:
                 Debug.LogError($"MoveCard --- Unknown action: {action}"); break;
         }
+    }
+
+    public void MoveCard(CardData card, List<CardData> location)
+    {
+        Debug.Log($"Moving {card} to {location}");
+        RemoveCardFromAllZones(card);
+        location.Add(card);
     }
 
     public List<CardData> FindCard(CardData card)

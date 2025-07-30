@@ -35,7 +35,7 @@ public class OrisonLogic : IPlayableLogic
     {
     }
 
-    public void ExecuteCardLogic(int? powerIndex = null)
+    public void Execute(int? powerIndex = null)
     {
         if (powerIndex == DiscardToBless || powerIndex == RechargeToBless)
         {

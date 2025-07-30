@@ -23,19 +23,21 @@ public class LongbowLogic : IPlayableLogic
 
     bool CanReveal => (
         // Reveal power can be used by the current owner while playing cards for a Dexterity or Ranged combat check.
-        Game.CheckContext.CheckPC == CardData.Owner &&
-        !Game.CheckContext.StagedCardTypes.Contains(CardData.cardType) &&
-        Game.CheckContext.CheckCategory == CheckCategory.Combat &&
-        Game.CheckContext.CheckPhase == CheckPhase.PlayCards &&
-        Game.CheckContext.CanPlayCardWithSkills(PF.Skill.Dexterity, PF.Skill.Ranged)
+        Game.CheckContext != null
+        && Game.CheckContext.CheckPC == CardData.Owner
+        && !Game.CheckContext.StagedCardTypes.Contains(CardData.cardType)
+        && Game.CheckContext.CheckCategory == CheckCategory.Combat
+        && Game.CheckContext.CheckPhase == CheckPhase.PlayCards
+        && Game.CheckContext.CanPlayCardWithSkills(PF.Skill.Dexterity, PF.Skill.Ranged)
         );
 
     bool CanDiscard => (
         // Discard power can be freely used on an another character's combat check while playing cards if the owner is proficient.
-        CardData.Owner != Game.CheckContext.CheckPC &&
-        CardData.Owner.IsProficient(CardData.cardType) &&
-        Game.CheckContext.CheckCategory == CheckCategory.Combat &&
-        Game.CheckContext.CheckPhase == CheckPhase.PlayCards
+        Game.CheckContext != null
+        && CardData.Owner != Game.CheckContext.CheckPC
+        && CardData.Owner.IsProficient(CardData.cardType)
+        && Game.CheckContext.CheckCategory == CheckCategory.Combat
+        && Game.CheckContext.CheckPhase == CheckPhase.PlayCards
         );
 
     public void OnStage(IStagedAction action)

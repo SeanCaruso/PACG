@@ -722,7 +722,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 91d795d0730e3c94ba316591be2c9675, type: 2}
   - {fileID: 11400000, guid: b959d88ebc9971c4b894065c7086fb50, type: 2}
   - {fileID: 11400000, guid: 27cbdc2b012f54d4c89c73208dc3e07d, type: 2}
-  - {fileID: 11400000, guid: b8dfb967b7f2f1d4198cd3e6d76ed28e, type: 2}
+  - {fileID: 11400000, guid: ecf6fd932d3ca5c4794f6d97e4931b08, type: 2}
 --- !u!4 &736764138
 Transform:
   m_ObjectHideFlags: 0
@@ -1784,6 +1784,7 @@ MonoBehaviour:
   commitSprite: {fileID: -1328870334784143111, guid: e1925206810ed984a938d01d9ca9331d, type: 3}
   skipSprite: {fileID: 1194653686463983156, guid: 6df9fa9086b1c024cafa12c323f66f03, type: 3}
   cancelButton: {fileID: 1011016523}
+  handArea: {fileID: 1976661047}
   revealedArea: {fileID: 1826561647}
   displayedArea: {fileID: 223344267}
 --- !u!1 &1382152290

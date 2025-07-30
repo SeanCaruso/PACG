@@ -24,20 +24,20 @@ public class ThrowingAxeLogic : IPlayableLogic
     readonly PF.Skill[] validSkills = { PF.Skill.Strength, PF.Skill.Dexterity, PF.Skill.Melee, PF.Skill.Ranged };
     bool CanReveal => (
         // Reveal power can be used by the current owner while playing cards for a Strength, Dexterity, Melee, or Ranged combat check.
-        Game.CheckContext.CheckPC == CardData.Owner &&
-        !Game.CheckContext.StagedCardTypes.Contains(CardData.cardType) &&
-        Game.CheckContext.CheckCategory == CheckCategory.Combat &&
-        Game.CheckContext.CheckPhase == CheckPhase.PlayCards &&
-        Game.CheckContext.CanPlayCardWithSkills(validSkills)
-        );
+        Game.CheckContext != null
+        && Game.CheckContext.CheckPC == CardData.Owner
+        && !Game.CheckContext.StagedCardTypes.Contains(CardData.cardType)
+        && Game.CheckContext.CheckCategory == CheckCategory.Combat
+        && Game.CheckContext.CheckPhase == CheckPhase.PlayCards
+        && Game.CheckContext.CanPlayCardWithSkills(validSkills));
 
     bool CanDiscard => (
         // Discard power can be freely used on a local combat check while playing cards if the owner is proficient.
-        CardData.Owner.IsProficient(CardData.cardType) &&
-        Game.CheckContext.CheckCategory == CheckCategory.Combat &&
-        Game.CheckContext.CheckPhase == CheckPhase.PlayCards &&
-        true // TODO: Handle checking for local vs. distant.
-        );
+        Game.CheckContext != null
+        && CardData.Owner.IsProficient(CardData.cardType)
+        && Game.CheckContext.CheckCategory == CheckCategory.Combat
+        && Game.CheckContext.CheckPhase == CheckPhase.PlayCards
+        && true); // TODO: Handle checking for local vs. distant.
 
     public void OnStage(IStagedAction action)
     {

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public enum EncounterPhase
@@ -78,8 +79,7 @@ public class EncounterManager : MonoBehaviour
         while (context.CheckResult.MarginOfSuccess < Game.EncounterContext.EncounteredCardData.rerollThreshold && !skippedReroll)
         {
             bool promptReroll = false;
-            var cardsToCheck = Game.TurnContext.CurrentPC.hand;
-            cardsToCheck.AddRange(Game.TurnContext.CurrentPC.displayedCards);
+            var cardsToCheck = Game.TurnContext.CurrentPC.hand.Union(Game.TurnContext.CurrentPC.displayedCards);
             foreach (var card in cardsToCheck)
             {
                 if (logicRegistry.GetPlayableLogic(card).GetAvailableActions().Count > 0)

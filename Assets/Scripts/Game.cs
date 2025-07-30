@@ -29,13 +29,16 @@ public static class Game
     public static void EndCheck() => _contextManager.EndCheck();
     public static void Stage(IStagedAction action)
     {
+        // If we're not in a check, we don't care.
+        if (CheckContext == null) return;
+
         // Skip if we've already staged the card.
         if (!CheckContext.StagedActions.Contains(action))
         {
             CheckContext.StagedActions.Add(action);
             if (!action.IsFreely)
             {
-                if (CheckContext.StagedCardTypes.Contains(action.CardData.cardType)) Debug.LogError($"{action.CardData.cardName} staged a duplicate type!");
+                if (CheckContext.StagedCardTypes.Contains(action.CardData.cardType)) Debug.Log($"{action.CardData.cardName} staged a duplicate type - was this intended?");
                 CheckContext.StagedCardTypes.Add(action.CardData.cardType);
             }
         }
@@ -47,6 +50,9 @@ public static class Game
 
     public static void Undo(IStagedAction action)
     {
+        // If we're not in a check, we don't care.
+        if (CheckContext == null) return;
+
         if (CheckContext.StagedActions.Remove(action))
         {
             if (!action.IsFreely)

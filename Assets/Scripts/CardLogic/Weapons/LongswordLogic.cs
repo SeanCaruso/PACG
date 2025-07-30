@@ -42,11 +42,11 @@ public class LongswordLogic : IPlayableLogic
 
     bool IsCardPlayabe => (
         // All powers are specific to the card's owner while playing cards during a Strength or Melee combat check.
-        Game.CheckContext.CheckPC == CardData.Owner &&
-        Game.CheckContext.CheckCategory == CheckCategory.Combat &&
-        Game.CheckContext.CheckPhase == CheckPhase.PlayCards &&
-        Game.CheckContext.CanPlayCardWithSkills(PF.Skill.Strength, PF.Skill.Melee)
-        );
+        Game.CheckContext != null
+        && Game.CheckContext.CheckPC == CardData.Owner
+        && Game.CheckContext.CheckCategory == CheckCategory.Combat
+        && Game.CheckContext.CheckPhase == CheckPhase.PlayCards
+        && Game.CheckContext.CanPlayCardWithSkills(PF.Skill.Strength, PF.Skill.Melee));
 
     public void OnStage(IStagedAction action)
     {

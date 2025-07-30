@@ -39,7 +39,7 @@ public class DeathbaneLightCrossbowLogic : IPlayableLogic
         Game.Undo(CardData);
     }
 
-    public void ExecuteCardLogic(int? powerIndex = null)
+    public void Execute(int? powerIndex = null)
     {
         if (powerIndex == RevealIndex)
         {

@@ -53,7 +53,10 @@ public class DamageResolvable : IResolvable
             if (action is DefaultDamageAction)
                 totalResolved += 1;
             else if (action is PlayCardAction playAction)
+            {
                 totalResolved += (int)playAction.ActionData.GetValueOrDefault("Damage", 0);
+                Amount = (int)playAction.ActionData.GetValueOrDefault("ReduceDamageTo", Amount);
+            }
         }
 
         return totalResolved >= Amount;

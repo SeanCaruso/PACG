@@ -46,8 +46,8 @@ public class PlayCardAction : IStagedAction
 
     public void Commit()
     {
-        Game.CheckContext.Traits.AddRange(CardData.traits);
+        Game.CheckContext?.Traits.AddRange(CardData.traits);
         Playable.Execute(this);
-        Game.TurnContext.CurrentPC.MoveCard(CardData, ActionType);
+        // The card data on the PlayerCharacter was moved during staging, so don't do it here.
     }
 }

@@ -16,27 +16,23 @@ public class LightShieldLogic : IPlayableLogic
     public List<IStagedAction> GetAvailableCardActions()
     {
         List<IStagedAction> actions = new();
-        if (CanReveal()) actions.Add(DamageAction);
-        if (CanRecharge()) actions.Add(RerollAction);
+        if (CanReveal) actions.Add(DamageAction);
+        if (CanRecharge) actions.Add(RerollAction);
         return actions;
     }
 
-    bool CanReveal()
-    {
-        return (Game.ResolutionContext?.CurrentResolvable is DamageResolvable resolvable
-            && resolvable.DamageType == "Combat"
-            && resolvable.PlayerCharacter == CardData.Owner);
-    }
+    bool CanReveal => (
+        Game.ResolutionContext?.CurrentResolvable is DamageResolvable resolvable
+        && resolvable.DamageType == "Combat"
+        && resolvable.PlayerCharacter == CardData.Owner);
 
-    bool CanRecharge()
-    {
+    bool CanRecharge => (
         // We can freely recharge to reroll if we're in the dice phase of a Melee combat check and the dice pool has a d4, d6, or d8.
-        return (Game.CheckContext.CheckCategory == CheckCategory.Combat &&
-            Game.CheckContext.CheckPhase == CheckPhase.RollDice &&
-            Game.CheckContext.UsedSkill == PF.Skill.Melee &&
-            Game.CheckContext.DicePool.NumDice(4, 6, 8) > 0
-            );
-    }
+        Game.CheckContext != null
+        && Game.CheckContext.CheckCategory == CheckCategory.Combat
+        && Game.CheckContext.CheckPhase == CheckPhase.RollDice
+        && Game.CheckContext.UsedSkill == PF.Skill.Melee
+        && Game.CheckContext.DicePool.NumDice(4, 6, 8) > 0);
 
     public void OnStage(IStagedAction _)
     {

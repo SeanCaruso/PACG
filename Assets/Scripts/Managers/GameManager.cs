@@ -40,6 +40,7 @@ public class GameManager : MonoBehaviour
     {
         // Set up the game context.
         ServiceLocator.Get<ContextManager>().NewGame(new(1));
+        ServiceLocator.Get<ContextManager>().NewTurn(new(hourBlessing, testCharacter));
 
         foreach (var card in playerDeck.cards)
         {

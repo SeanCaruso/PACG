@@ -13,6 +13,7 @@ public class ActionStagingManager : MonoBehaviour
     public Sprite commitSprite;
     public Sprite skipSprite;
     public GameObject cancelButton;
+    public Transform handArea;
     public Transform revealedArea;
     public Transform displayedArea;
 
@@ -58,6 +59,10 @@ public class ActionStagingManager : MonoBehaviour
                 cardDisplay.transform.SetParent(displayedArea);
                 cardDisplay.transform.localScale = new(.6f, .6f);
                 break;
+            case PF.ActionType.Draw:
+                cardDisplay.transform.SetParent(handArea);
+                cardDisplay.transform.localScale = new(1f, 1f);
+                break;
             case PF.ActionType.Reveal:
                 // Move to reveal area.
                 cardDisplay.transform.SetParent(revealedArea);
@@ -76,6 +81,7 @@ public class ActionStagingManager : MonoBehaviour
 
         var pcActions = pcsStagedActions.GetValueOrDefault(action.CardData.Owner, new());
         pcActions.Add(action);
+        pcsStagedActions[action.CardData.Owner] = pcActions;
         UpdateUI();
     }
 
@@ -97,14 +103,16 @@ public class ActionStagingManager : MonoBehaviour
             stagingInfo.cardDisplay.gameObject.SetActive(true);
 
             // Restore the card back to the correct location in the data.
-            if (action.ActionType != PF.ActionType.Reveal)
-            {
-                stagingInfo.originalCharacterLocation.Add(action.CardData);
-            }
+            action.CardData.Owner.MoveCard(action.CardData, stagingInfo.originalCharacterLocation);
+            //if (action.ActionType != PF.ActionType.Reveal)
+            //{
+            //    stagingInfo.originalCharacterLocation.Add(action.CardData);
+            //}
 
             action.OnUndo();
         }
         pcsStagedActions[pc].Clear();
+        originalCardStates.Clear();
 
         UpdateUI();
     }
@@ -116,8 +124,8 @@ public class ActionStagingManager : MonoBehaviour
         var stagedActions = pcsStagedActions.GetValueOrDefault(pc) ?? (pcsStagedActions[pc] = new());
         cancelButton.SetActive(stagedActions.Count > 0);
 
-        bool canCommit = stagedActions.Count > 0 && Game.ResolutionContext.IsResolved(stagedActions);
-        bool canSkip = stagedActions.Count == 0 && Game.ResolutionContext.IsResolved(new());
+        bool canCommit = stagedActions.Count > 0 && (Game.ResolutionContext?.IsResolved(stagedActions) ?? true); // We have actions but no resolvable? We can commit!
+        bool canSkip = stagedActions.Count == 0 && (Game.ResolutionContext?.IsResolved(new()) ?? false); // We don't have any actions and no resolvable to skip, so false!
         commitButton.SetActive(canCommit || canSkip);
         commitButton.GetComponent<Image>().sprite = canSkip ? skipSprite : commitSprite;
     }
@@ -144,6 +152,7 @@ public class ActionStagingManager : MonoBehaviour
                 cardTransform.SetSiblingIndex(stagingInfo.originalSiblingIndex);
             }
         }
+        originalCardStates.Clear();
 
         cancelButton.SetActive(false);
         commitButton.SetActive(false);
