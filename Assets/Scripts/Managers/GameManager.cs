@@ -9,7 +9,6 @@ public class GameManager : MonoBehaviour
     public CharacterData characterData;
     public Deck playerDeck;
     public Deck locationDeck;
-    public CardData hourBlessing;
 
     [Header("UI References")]
     public UIInputController uIInputController;
@@ -40,7 +39,8 @@ public class GameManager : MonoBehaviour
     {
         // Set up the game context.
         ServiceLocator.Get<ContextManager>().NewGame(new(1));
-        ServiceLocator.Get<ContextManager>().NewTurn(new(hourBlessing, testCharacter));
+
+        StartCoroutine(ServiceLocator.Get<TurnManager>().StartTurn(testCharacter));
 
         foreach (var card in playerDeck.cards)
         {
@@ -62,15 +62,15 @@ public class GameManager : MonoBehaviour
     {
         for (int i = 0; i < characterData.handSize; ++i)
         {
-            CardData drawnCard = playerDeck.DrawCard();
-            if (!drawnCard)
+            CardInstance drawnCard = playerDeck.DrawCard();
+            if (drawnCard == null)
                 return;
 
             CreateCardInHand(drawnCard);
         }
     }
 
-    void CreateCardInHand(CardData card)
+    void CreateCardInHand(CardInstance card)
     {
         testCharacter.hand.Add(card);
         PlayerHandController handController = ServiceLocator.Get<PlayerHandController>();
@@ -86,22 +86,20 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator RunEncounter()
     {
-        CardData exploredCard = locationDeck.DrawCard();
+        CardInstance exploredCard = locationDeck.DrawCard();
 
-        if (!exploredCard)
+        if (exploredCard == null)
             yield break;
 
         // Show the encountered card in UI.
         CardDisplay newCard = Instantiate(cardPrefab, encounterZone.transform);
-        newCard.SetCardData(exploredCard);
+        newCard.SetCardInstance(exploredCard);
         newCard.GetComponent<RectTransform>().anchoredPosition = Vector3.zero;
         newCard.transform.localScale = Vector3.one;
 
-        GameObject encounterObject = new($"Encounter_{exploredCard.cardID}");
+        GameObject encounterObject = new($"Encounter_{exploredCard.Data.cardID}");
         EncounterManager encounterManager = encounterObject.AddComponent<EncounterManager>();
 
-        ContextManager contextManager = ServiceLocator.Get<ContextManager>();
-        Game.NewTurn(new(hourBlessing, testCharacter));
         Game.NewEncounter(new(testCharacter, exploredCard));
 
         yield return encounterManager.RunEncounter();
@@ -110,7 +108,7 @@ public class GameManager : MonoBehaviour
 
         if (Game.EncounterContext.CheckResult?.WasSuccess ?? false)
         {
-            if (exploredCard is BoonCardData)
+            if (exploredCard.Data is BoonCardData)
             {
                 Debug.Log("Boon obtained.");
                 CreateCardInHand(exploredCard);

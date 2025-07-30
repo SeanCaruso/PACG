@@ -1,14 +1,14 @@
 
 public class DefaultDamageAction : IStagedAction
 {
-    public CardData CardData { get; protected set; }
+    public CardInstance Card { get; protected set; }
     public PF.ActionType ActionType => PF.ActionType.Discard;
     public bool IsFreely => true;
     public int Amount { get; protected set; }
 
-    public DefaultDamageAction(CardData cardData)
+    public DefaultDamageAction(CardInstance card)
     {
-        CardData = cardData;
+        Card = card;
     }
 
     public void OnStage()
@@ -21,6 +21,6 @@ public class DefaultDamageAction : IStagedAction
 
     public void Commit()
     {
-        Game.TurnContext.CurrentPC.MoveCard(CardData, ActionType);
+        Game.TurnContext.CurrentPC.MoveCard(Card, ActionType);
     }
 }

@@ -47,28 +47,28 @@ public class CardDisplay : MonoBehaviour
     public Vector3 originalScale;
     public int originalSiblingIndex;
 
-    private CardData cardData;
+    private CardInstance cardInstance;
     public IEncounterLogic encounterLogic = null;
     public IPlayableLogic playableLogic = null;
 
-    public void SetCardData(CardData cardData)
+    public void SetCardInstance(CardInstance card)
     {
-        this.cardData = cardData;
+        this.cardInstance = card;
         UpdateCardDisplay();
 
         var logicRegistry = ServiceLocator.Get<LogicRegistry>();
-        encounterLogic = logicRegistry.GetEncounterLogic(cardData.cardID);
-        playableLogic = logicRegistry.GetPlayableLogic(cardData);
+        encounterLogic = logicRegistry.GetEncounterLogic(card);
+        playableLogic = logicRegistry.GetPlayableLogic(card);
     }
 
-    public CardData CardData => cardData;
+    public CardInstance Card => cardInstance;
 
     public void UpdateCardDisplay()
     {
-        if (cardData == null) return;
+        if (cardInstance == null) return;
 
         // Set the various panel colors to the card type's color.
-        Color32 panelColor = GetPanelColor(cardData.cardType);
+        Color32 panelColor = GetPanelColor(cardInstance.Data.cardType);
         topPanel.GetComponent<Image>().color = panelColor;
         checksLabelPanel.GetComponent<Image>().color = Color.Lerp(panelColor, Color.black, 0.75f);
         checksSection.GetComponent<Image>().color = panelColor;
@@ -78,14 +78,14 @@ public class CardDisplay : MonoBehaviour
         bottomPanel.GetComponent<Image>().color = panelColor;
 
         // Top bar.
-        nameText.text = cardData.name;
-        typeText.text = PF.S(cardData.cardType);
-        levelText.text = cardData.cardLevel.ToString();
+        nameText.text = cardInstance.Data.name;
+        typeText.text = PF.S(cardInstance.Data.cardType);
+        levelText.text = cardInstance.Data.cardLevel.ToString();
 
         // Check to acquire/defeat.
-        checksLabelText.text = PF.IsBoon(cardData.cardType) ? "CHECK TO ACQUIRE" : "CHECK TO DEFEAT";
+        checksLabelText.text = PF.IsBoon(cardInstance.Data.cardType) ? "CHECK TO ACQUIRE" : "CHECK TO DEFEAT";
 
-        if (cardData.checkRequirement.mode == CheckMode.None)
+        if (cardInstance.Data.checkRequirement.mode == CheckMode.None)
         {
             // We need to resize the label to fit the whole section width (and get rid of the DC).
             var checksLabelRect = checksLabelPanel.GetComponent<RectTransform>();
@@ -94,9 +94,9 @@ public class CardDisplay : MonoBehaviour
 
             checksLabelText.text = "NONE";
         }
-        else if (cardData.checkRequirement.checkSteps.Count > 0)
+        else if (cardInstance.Data.checkRequirement.checkSteps.Count > 0)
         {
-            var check = cardData.checkRequirement.checkSteps[0];
+            var check = cardInstance.Data.checkRequirement.checkSteps[0];
             if (check.category == CheckCategory.Combat)
             {
                 AddTextToPanel("COMBAT", checksSection, 8f);
@@ -111,21 +111,21 @@ public class CardDisplay : MonoBehaviour
         }
 
         // Add optional section for choice / sequential checks.
-        if (cardData.checkRequirement.checkSteps.Count == 2)
+        if (cardInstance.Data.checkRequirement.checkSteps.Count == 2)
         {
-            if (cardData.checkRequirement.mode == CheckMode.Sequential)
+            if (cardInstance.Data.checkRequirement.mode == CheckMode.Sequential)
             {
                 thenPanel.SetActive(true);
             }
-            else if (cardData.checkRequirement.mode == CheckMode.Choice)
+            else if (cardInstance.Data.checkRequirement.mode == CheckMode.Choice)
             {
                 orPanel.SetActive(true);
             }
             else
             {
-                Debug.LogError($"UpdateCardDisplay --- {cardData.cardName} has multiple checks, but an invalid check mode!");
+                Debug.LogError($"UpdateCardDisplay --- {cardInstance.Data.cardName} has multiple checks, but an invalid check mode!");
             }
-            var check2 = cardData.checkRequirement.checkSteps[1];
+            var check2 = cardInstance.Data.checkRequirement.checkSteps[1];
             if (check2.category == CheckCategory.Combat)
             {
                 AddTextToPanel("COMBAT", checksSection2, 8f);
@@ -138,22 +138,22 @@ public class CardDisplay : MonoBehaviour
             int totalDC = check2.baseDC + check2.adventureLevelMult * Game.GameContext.AdventureNumber;
             checkDC2.text = totalDC.ToString();
         }
-        else if (cardData.checkRequirement.checkSteps.Count > 2)
+        else if (cardInstance.Data.checkRequirement.checkSteps.Count > 2)
         {
-            Debug.LogError($"UpdateCardDisplay --- {cardData.cardName} has too many check steps!");
+            Debug.LogError($"UpdateCardDisplay --- {cardInstance.Data.cardName} has too many check steps!");
         }
 
         // Powers
-        powersText.text = cardData.powers;
-        if (cardData.recovery.Length > 0)
+        powersText.text = cardInstance.Data.powers;
+        if (cardInstance.Data.recovery.Length > 0)
         {
             recoveryLabel.SetActive(true);
             recoveryText.enabled = true;
-            recoveryText.text = cardData.recovery;
+            recoveryText.text = cardInstance.Data.recovery;
         }
 
         // Traits
-        foreach (var trait in cardData.traits) AddTextToPanel(trait.ToString().ToUpper(), traitsSection);
+        foreach (var trait in cardInstance.Data.traits) AddTextToPanel(trait.ToString().ToUpper(), traitsSection);
     }
 
     private void AddTextToPanel(string text, GameObject panel, float fontSize = 9f)

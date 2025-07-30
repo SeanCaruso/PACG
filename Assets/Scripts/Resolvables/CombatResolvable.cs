@@ -16,16 +16,16 @@ public class CombatResolvable : IResolvable
     {
         var allOptions = new List<IStagedAction>();
 
-        foreach (var cardData in Character.hand)
+        foreach (var card in Character.hand)
         {
-            allOptions.AddRange(GetValidActionsForCard(cardData));
+            allOptions.AddRange(GetValidActionsForCard(card));
         }
         return allOptions;
     }
 
-    public List<IStagedAction> GetValidActionsForCard(CardData cardData)
+    public List<IStagedAction> GetValidActionsForCard(CardInstance card)
     {
-        var cardLogic = Game.GetPlayableLogic(cardData);
+        var cardLogic = Game.GetPlayableLogic(card);
         return cardLogic?.GetAvailableActions() ?? new();
     }
 

@@ -6,10 +6,10 @@ public class PlayerCharacter
     public CharacterData characterData;
 
     public Deck deck;
-    public readonly List<CardData> hand = new();
-    public readonly List<CardData> discards = new();
-    public readonly List<CardData> buriedCards = new();
-    public readonly List<CardData> displayedCards = new();
+    public readonly List<CardInstance> hand = new();
+    public readonly List<CardInstance> discards = new();
+    public readonly List<CardInstance> buriedCards = new();
+    public readonly List<CardInstance> displayedCards = new();
 
     public bool IsProficient(PF.CardType cardType) => characterData.proficiencies.Contains(cardType);
 
@@ -65,7 +65,7 @@ public class PlayerCharacter
         return (bestSkill, bestDie, bestBonus);
     }
 
-    public void MoveCard(CardData card, PF.ActionType action)
+    public void MoveCard(CardInstance card, PF.ActionType action)
     {
         Debug.Log($"Moving {card} via {action}");
         if (action == PF.ActionType.Reveal)
@@ -94,14 +94,14 @@ public class PlayerCharacter
         }
     }
 
-    public void MoveCard(CardData card, List<CardData> location)
+    public void MoveCard(CardInstance card, List<CardInstance> location)
     {
         Debug.Log($"Moving {card} to {location}");
         RemoveCardFromAllZones(card);
         location.Add(card);
     }
 
-    public List<CardData> FindCard(CardData card)
+    public List<CardInstance> FindCard(CardInstance card)
     {
         if (hand.Contains(card)) return hand;
         if (discards.Contains(card)) return discards;
@@ -111,7 +111,7 @@ public class PlayerCharacter
         return null;
     }
 
-    private void RemoveCardFromAllZones(CardData card)
+    private void RemoveCardFromAllZones(CardInstance card)
     {
         hand.Remove(card);
         discards.Remove(card);

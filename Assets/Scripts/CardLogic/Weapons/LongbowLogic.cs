@@ -5,13 +5,13 @@ using UnityEngine;
 [PlayableLogicFor("Longbow")]
 public class LongbowLogic : IPlayableLogic
 {
-    public CardData CardData { get; set; }
+    public CardInstance Card { get; set; }
 
     private PlayCardAction _revealAction;
-    private PlayCardAction RevealAction => _revealAction ??= new(this, CardData, PF.ActionType.Reveal, ("IsCombat", true));
+    private PlayCardAction RevealAction => _revealAction ??= new(this, Card, PF.ActionType.Reveal, ("IsCombat", true));
 
     private PlayCardAction _discardAction;
-    private PlayCardAction DiscardAction => _discardAction ??= new(this, CardData, PF.ActionType.Discard, ("IsCombat", true), ("IsFreely", true));
+    private PlayCardAction DiscardAction => _discardAction ??= new(this, Card, PF.ActionType.Discard, ("IsCombat", true), ("IsFreely", true));
 
     public List<IStagedAction> GetAvailableCardActions()
     {
@@ -24,8 +24,8 @@ public class LongbowLogic : IPlayableLogic
     bool CanReveal => (
         // Reveal power can be used by the current owner while playing cards for a Dexterity or Ranged combat check.
         Game.CheckContext != null
-        && Game.CheckContext.CheckPC == CardData.Owner
-        && !Game.CheckContext.StagedCardTypes.Contains(CardData.cardType)
+        && Game.CheckContext.CheckPC == Card.Owner
+        && !Game.CheckContext.StagedCardTypes.Contains(Card.Data.cardType)
         && Game.CheckContext.CheckCategory == CheckCategory.Combat
         && Game.CheckContext.CheckPhase == CheckPhase.PlayCards
         && Game.CheckContext.CanPlayCardWithSkills(PF.Skill.Dexterity, PF.Skill.Ranged)
@@ -34,8 +34,8 @@ public class LongbowLogic : IPlayableLogic
     bool CanDiscard => (
         // Discard power can be freely used on an another character's combat check while playing cards if the owner is proficient.
         Game.CheckContext != null
-        && CardData.Owner != Game.CheckContext.CheckPC
-        && CardData.Owner.IsProficient(CardData.cardType)
+        && Card.Owner != Game.CheckContext.CheckPC
+        && Card.Owner.IsProficient(Card.Data.cardType)
         && Game.CheckContext.CheckCategory == CheckCategory.Combat
         && Game.CheckContext.CheckPhase == CheckPhase.PlayCards
         );
@@ -43,15 +43,15 @@ public class LongbowLogic : IPlayableLogic
     public void OnStage(IStagedAction action)
     {
         if (action == RevealAction)
-            Game.CheckContext.RestrictValidSkills(CardData, PF.Skill.Dexterity, PF.Skill.Ranged);
+            Game.CheckContext.RestrictValidSkills(Card, PF.Skill.Dexterity, PF.Skill.Ranged);
 
-        Game.EncounterContext.AddProhibitedTraits(CardData.Owner, CardData, "Offhand");
+        Game.EncounterContext.AddProhibitedTraits(Card.Owner, Card, "Offhand");
     }
 
     public void OnUndo(IStagedAction action)
     {
-        Game.CheckContext.UndoSkillModification(CardData);
-        Game.EncounterContext.ProhibitedTraits.Remove((CardData.Owner, CardData));
+        Game.CheckContext.UndoSkillModification(Card);
+        Game.EncounterContext.ProhibitedTraits.Remove((Card.Owner, Card));
     }
 
     public void Execute(IStagedAction action)

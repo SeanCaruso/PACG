@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class ActionStagingManager : MonoBehaviour
 {
     private readonly Dictionary<PlayerCharacter, List<IStagedAction>> pcsStagedActions = new();
-    private readonly Dictionary<CardData, CardStagingInfo> originalCardStates = new();
+    private readonly Dictionary<CardInstance, CardStagingInfo> originalCardStates = new();
 
     [Header("UI References")]
     public GameObject commitButton;
@@ -24,27 +24,27 @@ public class ActionStagingManager : MonoBehaviour
 
     public void StageAction(IStagedAction action, CardStagingInfo? overrideOrigin = null)
     {
-        var cardDisplay = FindCardDisplay(action.CardData);
+        var cardDisplay = FindCardDisplay(action.Card);
         if (cardDisplay == null)
         {
-            Debug.LogError($"StageAction --- Unable to find cardDisplay for {action.CardData.cardName}. Action not staged!");
+            Debug.LogError($"StageAction --- Unable to find cardDisplay for {action.Card.Data.cardName}. Action not staged!");
             return;
         }
 
         // If this is the first time we've staged an action for this card, keep track of where the card will be going if undone.
-        if (!originalCardStates.ContainsKey(action.CardData))
+        if (!originalCardStates.ContainsKey(action.Card))
         {
             if (overrideOrigin.HasValue)
             {
-                originalCardStates[action.CardData] = overrideOrigin.Value;
+                originalCardStates[action.Card] = overrideOrigin.Value;
             }
             else
             {
-                originalCardStates[action.CardData] = new()
+                originalCardStates[action.Card] = new()
                 {
                     cardDisplay = cardDisplay,
                     originalParent = cardDisplay.transform.parent,
-                    originalCharacterLocation = action.CardData.Owner.FindCard(action.CardData),
+                    originalCharacterLocation = action.Card.Owner.FindCard(action.Card),
                     originalScale = cardDisplay.transform.localScale,
                     originalSiblingIndex = cardDisplay.transform.GetSiblingIndex()
                 };
@@ -75,13 +75,13 @@ public class ActionStagingManager : MonoBehaviour
         }
 
         // We need to handle this here so that damage resolvables behave with hand size.
-        action.CardData.Owner.MoveCard(action.CardData, action.ActionType);
+        action.Card.Owner.MoveCard(action.Card, action.ActionType);
 
         action.OnStage();
 
-        var pcActions = pcsStagedActions.GetValueOrDefault(action.CardData.Owner, new());
+        var pcActions = pcsStagedActions.GetValueOrDefault(action.Card.Owner, new());
         pcActions.Add(action);
-        pcsStagedActions[action.CardData.Owner] = pcActions;
+        pcsStagedActions[action.Card.Owner] = pcActions;
         UpdateUI();
     }
 
@@ -91,9 +91,9 @@ public class ActionStagingManager : MonoBehaviour
         PlayerCharacter pc = Game.TurnContext.CurrentPC;
         foreach (var action in pcsStagedActions[pc])
         {
-            if (!originalCardStates.TryGetValue(action.CardData, out var stagingInfo))
+            if (!originalCardStates.TryGetValue(action.Card, out var stagingInfo))
             {
-                Debug.LogError($"Unable to find original card state for {action.CardData.cardName}");
+                Debug.LogError($"Unable to find original card state for {action.Card.Data.cardName}");
                 return;
             }
 
@@ -103,7 +103,7 @@ public class ActionStagingManager : MonoBehaviour
             stagingInfo.cardDisplay.gameObject.SetActive(true);
 
             // Restore the card back to the correct location in the data.
-            action.CardData.Owner.MoveCard(action.CardData, stagingInfo.originalCharacterLocation);
+            action.Card.Owner.MoveCard(action.Card, stagingInfo.originalCharacterLocation);
             //if (action.ActionType != PF.ActionType.Reveal)
             //{
             //    stagingInfo.originalCharacterLocation.Add(action.CardData);
@@ -145,7 +145,7 @@ public class ActionStagingManager : MonoBehaviour
         {
             var cardTransform = revealedArea.GetChild(0);
             var cardDisplay = cardTransform.GetComponent<CardDisplay>();
-            if (cardDisplay != null && originalCardStates.TryGetValue(cardDisplay.CardData, out var stagingInfo))
+            if (cardDisplay != null && originalCardStates.TryGetValue(cardDisplay.Card, out var stagingInfo))
             {
                 cardTransform.SetParent(stagingInfo.originalParent);
                 cardTransform.localScale = stagingInfo.originalScale;
@@ -158,9 +158,9 @@ public class ActionStagingManager : MonoBehaviour
         commitButton.SetActive(false);
     }
 
-    private CardDisplay FindCardDisplay(CardData cardData)
+    private CardDisplay FindCardDisplay(CardInstance card)
     {
-        return FindObjectsByType<CardDisplay>(FindObjectsSortMode.None).FirstOrDefault(cd => cd.CardData == cardData);
+        return FindObjectsByType<CardDisplay>(FindObjectsSortMode.None).FirstOrDefault(cd => cd.Card == card);
     }
 }
 
@@ -168,7 +168,7 @@ public struct CardStagingInfo
 {
     public CardDisplay cardDisplay;
     public Transform originalParent;
-    public List<CardData> originalCharacterLocation;
+    public List<CardInstance> originalCharacterLocation;
     public Vector3 originalScale;
     public int originalSiblingIndex;
 }

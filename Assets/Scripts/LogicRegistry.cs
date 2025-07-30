@@ -49,18 +49,18 @@ public class LogicRegistry : MonoBehaviour
     }
 
     // Public getters for logic types.
-    public IEncounterLogic GetEncounterLogic(string cardID)
+    public IEncounterLogic GetEncounterLogic(CardInstance card)
     {
-        encounterLogicMap.TryGetValue(cardID, out var logic);
+        encounterLogicMap.TryGetValue(card.Data.cardID, out var logic);
         return logic;
     }
 
-    public IPlayableLogic GetPlayableLogic(CardData cardData)
+    public IPlayableLogic GetPlayableLogic(CardInstance card)
     {
-        playableLogicMap.TryGetValue(cardData.cardID, out var logic);
+        playableLogicMap.TryGetValue(card.Data.cardID, out var logic);
         if (logic != null)
         {
-            logic.CardData = cardData;
+            logic.Card = card;
         }
         return logic;
     }

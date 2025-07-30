@@ -4,23 +4,23 @@ using UnityEngine;
 public class EncounterContext
 {
     public PlayerCharacter EncounterPC { get; }
-    public CardData EncounteredCardData { get; }
+    public CardInstance EncounteredCard { get; }
 
-    public EncounterContext(PlayerCharacter pc, CardData card)
+    public EncounterContext(PlayerCharacter pc, CardInstance card)
     {
         EncounterPC = pc;
-        EncounteredCardData = card;
+        EncounteredCard = card;
     }
 
     // Set during the encounter
-    private readonly Dictionary<(PlayerCharacter, CardData), List<string>> prohibitedTraits = new(); // Maps CardData to the list of traits that card prohibits.
-    public Dictionary<(PlayerCharacter, CardData), List<string>> ProhibitedTraits => prohibitedTraits;
-    public void AddProhibitedTraits(PlayerCharacter pc, CardData card, params string[] traits)
+    private readonly Dictionary<(PlayerCharacter, CardInstance), List<string>> prohibitedTraits = new(); // Maps CardData to the list of traits that card prohibits.
+    public Dictionary<(PlayerCharacter, CardInstance), List<string>> ProhibitedTraits => prohibitedTraits;
+    public void AddProhibitedTraits(PlayerCharacter pc, CardInstance card, params string[] traits)
     {
         if (!prohibitedTraits.ContainsKey((pc, card))) prohibitedTraits.Add((pc, card), new());
         foreach (var trait in traits) prohibitedTraits[(pc, card)].Add(trait);
     }
-    public void UndoProhibitedTraits(PlayerCharacter pc, CardData card) => prohibitedTraits.Remove((pc, card));
+    public void UndoProhibitedTraits(PlayerCharacter pc, CardInstance card) => prohibitedTraits.Remove((pc, card));
 
     public CheckResult CheckResult { get; set; }
 }
