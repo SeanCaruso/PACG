@@ -438,11 +438,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   testHourData: {fileID: 11400000, guid: 06534aedf16e0b345b540522bee89026, type: 2}
   hourDisplay: {fileID: 1069141961}
-  locationDeckButton: {fileID: 1406389908}
-  giveCardButton: {fileID: 912236915}
-  moveButton: {fileID: 2050713637}
-  resetHandButton: {fileID: 2002062219}
-  endTurnButton: {fileID: 899626749}
   encounterZone: {fileID: 1030914200}
   cardPrefab: {fileID: 8431384695262642363, guid: 665bdf9d8f0b08c448526ebe58d4022e, type: 3}
 --- !u!1 &511264905
@@ -942,7 +937,6 @@ MonoBehaviour:
   uIInputController: {fileID: 0}
   checkButtonText: {fileID: 0}
   handHolder: {fileID: 805748365}
-  diceRollUI: {fileID: 0}
   startingHandSize: 5
 --- !u!4 &836486187
 Transform:
