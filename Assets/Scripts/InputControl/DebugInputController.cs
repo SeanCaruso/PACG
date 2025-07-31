@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class DebugInputController : MonoBehaviour, IInputController
+public class DebugInputController : MonoBehaviour
 {
     private List<PlayCardAction> currentOptions;
     private PlayCardAction selectedAction;

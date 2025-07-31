@@ -19,15 +19,6 @@ public class TurnManager : MonoBehaviour
     public CardData testHourData;
     public CardDisplay hourDisplay;
 
-    [Header("Location")]
-    public Button locationDeckButton;
-
-    [Header("Turn Phase Buttons")]
-    public Button giveCardButton;
-    public Button moveButton;
-    public Button resetHandButton;
-    public Button endTurnButton;
-
     [Header("UI References")]
     public GameObject encounterZone;
 
@@ -48,12 +39,6 @@ public class TurnManager : MonoBehaviour
         {
             hoursDeck.Recharge(ServiceLocator.Get<CardManager>().New(testHourData));
         }
-
-        giveCardButton.enabled = false;
-        moveButton.enabled = false;
-        locationDeckButton.enabled = false;
-        resetHandButton.enabled = false;
-        endTurnButton.enabled = false;
     }
 
     public IEnumerator StartTurn(PlayerCharacter pc, Deck locationDeck)
@@ -68,11 +53,11 @@ public class TurnManager : MonoBehaviour
         // TODO: Apply start of turn effects.
 
         // Set initial state of turn phase buttons.
-        giveCardButton.enabled = true; // TODO: Test for local characters
-        moveButton.enabled = true; // TODO: Implement when we have multiple locations
-        locationDeckButton.GetComponent<Button>().enabled = locationDeck.Count > 0;
-        resetHandButton.enabled = true;
-        endTurnButton.enabled = true;
+        //giveCardButton.enabled = true; // TODO: Test for local characters
+        //moveButton.enabled = true; // TODO: Implement when we have multiple locations
+        //locationDeckButton.GetComponent<Button>().enabled = locationDeck.Count > 0;
+        //resetHandButton.enabled = true;
+        //endTurnButton.enabled = true;
 
         Game.EndTurn();
 
@@ -140,5 +125,10 @@ public class TurnManager : MonoBehaviour
         Game.EndEncounter();
 
         Destroy(encounterObject);
+    }
+
+    public void OnEndTurnClicked()
+    {
+
     }
 }
