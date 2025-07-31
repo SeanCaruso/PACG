@@ -1,55 +1,44 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Deck : MonoBehaviour
+public class Deck
 {
-    [Header("Design Time Test Setup")]
-    public List<CardData> cardDatas = new();
-    public PlayerCharacter character = null;
-
-    public List<CardInstance> cards = new();
-    private readonly List<CardInstance> activeDeck = new();
-
-    void Awake()
-    {
-        cards.Clear();
-        foreach (var cardData in cardDatas)
-        {
-            cards.Add(new(cardData, character));
-        }
-
-        activeDeck.AddRange(cards);
-        Shuffle();
-    }
+    private List<CardInstance> Cards { get; set; } = new(); // Current deck state
+    public int Count => Cards.Count;
 
     public void Shuffle()
     {
-        for (int i = activeDeck.Count - 1; i > 0; i--)
+        for (int i = Cards.Count - 1; i > 0; i--)
         {
             int randomIndex = Random.Range(0, i + 1);
-            (activeDeck[randomIndex], activeDeck[i]) = (activeDeck[i], activeDeck[randomIndex]);
+            (Cards[randomIndex], Cards[i]) = (Cards[i], Cards[randomIndex]);
         }
     }
 
     public CardInstance DrawCard()
     {
-        if (activeDeck.Count == 0)
-        {
-            return null;
-        }
+        if (Cards.Count == 0) return null;
 
-        CardInstance drawnCard = activeDeck[0];
-        activeDeck.RemoveAt(0);
+        CardInstance drawnCard = Cards[0];
+        Cards.RemoveAt(0);
         return drawnCard;
     }
 
     public void Recharge(CardInstance card)
     {
-        activeDeck.Add(card);
+        if (card == null || Cards.Contains(card)) return;
+        Cards.Add(card);
     }
 
     public void Reload(CardInstance card)
     {
-        activeDeck.Insert(0, card);
+        if (card == null || Cards.Contains(card)) return;
+        Cards.Insert(0, card);
+    }
+
+    public void ShuffleIn(CardInstance card)
+    {
+        Reload(card);
+        Shuffle();
     }
 }

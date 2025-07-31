@@ -17,6 +17,7 @@ public static class ServiceLocator
             return;
         }
 
+        Game.Initialize(service);
         services[type] = service;
         Debug.Log($"Service registered: {type.Name}");
     }

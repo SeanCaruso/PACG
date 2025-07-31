@@ -7,18 +7,14 @@ public class GameManager : MonoBehaviour
 {
     [Header("Object References")]
     public CharacterData characterData;
-    public Deck playerDeck;
-    public Deck locationDeck;
+    public List<CardData> playerDeck;
+    public List<CardData> locationCards;
 
     [Header("UI References")]
     public UIInputController uIInputController;
-    public GameObject encounterZone;
     public TextMeshProUGUI checkButtonText;
     public Transform handHolder;
     public DiceRollUI diceRollUI;
-
-    [Header("Prefab References")]
-    public CardDisplay cardPrefab;
 
     [Header("Game Rules")]
     public int startingHandSize = 5;
@@ -28,107 +24,30 @@ public class GameManager : MonoBehaviour
     public void Awake()
     {
         ServiceLocator.Register(this);
-        testCharacter = new()
-        {
-            characterData = characterData,
-            deck = playerDeck
-        };
     }
 
     private void Start()
     {
+        // Set up test data
+        testCharacter = new()
+        {
+            characterData = characterData
+        };
+        foreach (var card in playerDeck) testCharacter.ShuffleIntoDeck(Game.CardManager.New(card, testCharacter));
+        Deck locationDeck = new();
+        foreach (var card in locationCards) locationDeck.ShuffleIn(Game.CardManager.New(card));
+        locationDeck.Shuffle();
+        ServiceLocator.Get<PlayerHandController>().SetCurrentPC(testCharacter);
+
         // Set up the game context.
         ServiceLocator.Get<ContextManager>().NewGame(new(1));
+        testCharacter.DrawToHandSize();
 
-        StartCoroutine(ServiceLocator.Get<TurnManager>().StartTurn(testCharacter));
+        StartCoroutine(ServiceLocator.Get<TurnManager>().StartTurn(testCharacter, locationDeck));
 
-        foreach (var card in playerDeck.cards)
-        {
-            card.OriginalOwner = testCharacter;
-            card.Owner = testCharacter;
-        }
-
-        playerDeck.Shuffle();
-        locationDeck.Shuffle();
-
-        SetupInitialHand();
 
         // Initialize UI if not already done.
         if (!uIInputController)
             uIInputController = FindFirstObjectByType<UIInputController>();
-    }
-
-    void SetupInitialHand()
-    {
-        for (int i = 0; i < characterData.handSize; ++i)
-        {
-            CardInstance drawnCard = playerDeck.DrawCard();
-            if (drawnCard == null)
-                return;
-
-            CreateCardInHand(drawnCard);
-        }
-    }
-
-    void CreateCardInHand(CardInstance card)
-    {
-        testCharacter.hand.Add(card);
-        PlayerHandController handController = ServiceLocator.Get<PlayerHandController>();
-        if (handController == null) Debug.LogError("Unable to find PlayerHandController!");
-
-        handController.AddCard(card);
-    }
-
-    public void OnExploreClicked()
-    {
-        StartCoroutine(RunEncounter());
-    }
-
-    private IEnumerator RunEncounter()
-    {
-        CardInstance exploredCard = locationDeck.DrawCard();
-
-        if (exploredCard == null)
-            yield break;
-
-        // Show the encountered card in UI.
-        CardDisplay newCard = Instantiate(cardPrefab, encounterZone.transform);
-        newCard.SetCardInstance(exploredCard);
-        newCard.GetComponent<RectTransform>().anchoredPosition = Vector3.zero;
-        newCard.transform.localScale = Vector3.one;
-
-        GameObject encounterObject = new($"Encounter_{exploredCard.Data.cardID}");
-        EncounterManager encounterManager = encounterObject.AddComponent<EncounterManager>();
-
-        Game.NewEncounter(new(testCharacter, exploredCard));
-
-        yield return encounterManager.RunEncounter();
-
-        Debug.Log("Encounter finished.");
-
-        if (Game.EncounterContext.CheckResult?.WasSuccess ?? false)
-        {
-            if (exploredCard.Data is BoonCardData)
-            {
-                Debug.Log("Boon obtained.");
-                CreateCardInHand(exploredCard);
-                exploredCard.Owner = testCharacter;
-                exploredCard.OriginalOwner ??= testCharacter;
-            }
-            else
-            {
-                Debug.Log("Bane banished.");
-                Destroy(newCard.gameObject);
-            }
-        }
-        else
-        {
-            Debug.Log("Do damage.");
-            Destroy(newCard.gameObject);
-            // Do damage later.
-        }
-        Game.EndEncounter();
-
-        Destroy(encounterObject);
     }
 }

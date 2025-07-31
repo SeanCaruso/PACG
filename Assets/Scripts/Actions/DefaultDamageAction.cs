@@ -21,6 +21,6 @@ public class DefaultDamageAction : IStagedAction
 
     public void Commit()
     {
-        Game.TurnContext.CurrentPC.MoveCard(Card, ActionType);
+        Card.Owner.Discard(Card);
     }
 }

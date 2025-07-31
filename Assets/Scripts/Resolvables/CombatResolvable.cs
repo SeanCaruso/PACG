@@ -16,7 +16,7 @@ public class CombatResolvable : IResolvable
     {
         var allOptions = new List<IStagedAction>();
 
-        foreach (var card in Character.hand)
+        foreach (var card in Character.Hand)
         {
             allOptions.AddRange(GetValidActionsForCard(card));
         }

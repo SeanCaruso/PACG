@@ -2,14 +2,20 @@ using UnityEngine;
 
 public static class Game
 {
-    private static ContextManager _contextManager;
-
-    public static void Initialize(ContextManager contextManager)
+    public static void Initialize(object manager)
     {
-        _contextManager = contextManager;
+        if (manager is ContextManager contextManager) _contextManager = contextManager;
+        if (manager is CardManager cardManager) _cardManager = cardManager;
     }
 
+    // --- Common card functionality ---
+    private static CardManager _cardManager;
+    public static CardManager CardManager => _cardManager;
+    public static void MoveCard(CardInstance card, CardLocation newLoc) => _cardManager.MoveCard(card, newLoc);
+
     // --- Contexts ---
+    private static ContextManager _contextManager;
+
     public static GameContext GameContext => _contextManager.GameContext;
 
     public static TurnContext TurnContext => _contextManager.TurnContext;

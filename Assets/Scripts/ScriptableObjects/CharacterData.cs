@@ -27,7 +27,7 @@ public struct FavoredCard
 [CreateAssetMenu(fileName = "CharacterName", menuName = "Pathfinder/Character Card")]
 public class CharacterData : ScriptableObject
 {
-    public string Name;
+    public string characterName;
 
     [Header("Skills")]
     public List<AttributeSkill> attributes;

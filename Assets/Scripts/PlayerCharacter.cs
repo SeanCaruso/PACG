@@ -1,17 +1,34 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerCharacter
+public class PlayerCharacter : IDisposable
 {
+    // --- Events
+    public event Action HandChanged;
+    // ----------
+
     public CharacterData characterData;
 
-    public Deck deck;
-    public readonly List<CardInstance> hand = new();
-    public readonly List<CardInstance> discards = new();
-    public readonly List<CardInstance> buriedCards = new();
-    public readonly List<CardInstance> displayedCards = new();
+    private readonly Deck deck = new();
+
+    public List<CardInstance> Hand { get; } = new();
+    public List<CardInstance> Discards { get; } = new();
+    public List<CardInstance> BuriedCards { get; } = new();
+    public List<CardInstance> DisplayedCards { get; } = new();
+    public List<CardInstance> RecoveryCards { get; } = new();
 
     public bool IsProficient(PF.CardType cardType) => characterData.proficiencies.Contains(cardType);
+
+    public PlayerCharacter()
+    {
+        Game.CardManager.OnCardLocationChanged += UpdateCardLists;
+    }
+
+    public void Dispose()
+    {
+        Game.CardManager.OnCardLocationChanged -= UpdateCardLists;
+    }
 
     public (int die, int bonus) GetAttr(PF.Skill attr)
     {
@@ -65,57 +82,161 @@ public class PlayerCharacter
         return (bestSkill, bestDie, bestBonus);
     }
 
+    // --- Card Power Action Types --------------------------------------------------
+    public void Banish(CardInstance card)
+    {
+        if (card == null || card.Owner != this) return;
+        Game.MoveCard(card, CardLocation.Vault);
+    }
+
+    public void Bury(CardInstance card)
+    {
+        if (card == null || card.Owner != this) return;
+        Game.MoveCard(card, CardLocation.Buried);
+    }
+
+    public void Discard(CardInstance card)
+    {
+        if (card == null || card.Owner != this) return;
+        Game.MoveCard(card, CardLocation.Discard);
+    }
+
+    public void Display(CardInstance card)
+    {
+        if (card == null || card.Owner != this) return;
+        Game.MoveCard(card, CardLocation.Displayed);
+    }
+
+    public void Draw(CardInstance card)
+    {
+        // This is specific to the Draw card power, so enforce card ownership.
+        if (card == null || card.Owner != this) return;
+
+        card.Owner = this;
+        Game.MoveCard(card, CardLocation.Hand);
+    }
+
+    public void Recharge(CardInstance card)
+    {
+        if (card == null || card.Owner != this) return;
+        Game.MoveCard(card, CardLocation.Deck);
+        deck.Recharge(card);
+    }
+
+    public void Reload(CardInstance card)
+    {
+        if (card == null || card.Owner != this) return;
+        Game.MoveCard(card, CardLocation.Deck);
+        deck.Reload(card);
+    }
+    // ---------------------------------------------------------------------------------
+
+    // --- Convenience Functions for Card Movement -------------------------------------
+    public void DrawFromDeck()
+    {
+        if (deck.Count == 0)
+        {
+            // TODO: Handle character death.
+            Debug.Log($"{characterData.characterName} must draw but has no more cards left. {characterData.characterName} dies!");
+            return;
+        }
+        Draw(deck.DrawCard());
+    }
+
+    public void DrawToHandSize()
+    {
+        int cardsToDraw = characterData.handSize - Hand.Count;
+        if (cardsToDraw < 0) return;
+
+        if (cardsToDraw > deck.Count)
+        {
+            // TODO: Handle character death.
+            Debug.Log($"{characterData.characterName} must draw {cardsToDraw} but only has {deck.Count} left. {characterData.characterName} dies!");
+            return;
+        }
+
+        for (int i = 0; i < cardsToDraw; i++) DrawFromDeck();
+    }
+
+    public void ShuffleIntoDeck(CardInstance card)
+    {
+        if (card == null) return;
+        Game.MoveCard(card, CardLocation.Deck);
+        deck.ShuffleIn(card);
+    }
+    // ----------------------------------------------------------------------------------
+
     public void MoveCard(CardInstance card, PF.ActionType action)
     {
-        Debug.Log($"Moving {card} via {action}");
-        if (action == PF.ActionType.Reveal)
-            return;
-
-        RemoveCardFromAllZones(card);
+        if (card == null || card.Owner != this)
+        {
+            Debug.LogWarning($"Attempted to {action} a card not owned by {characterData.characterName}.");
+        }
 
         switch (action)
         {
             case PF.ActionType.Banish:
+                Banish(card);
                 break;
             case PF.ActionType.Bury:
-                buriedCards.Add(card); break;
+                Bury(card);
+                break;
             case PF.ActionType.Discard:
-                discards.Add(card); break;
+                Discard(card);
+                break;
             case PF.ActionType.Display:
-                displayedCards.Add(card); break;
+                Display(card);
+                break;
             case PF.ActionType.Draw:
-                hand.Add(card); break;
+                Draw(card);
+                break;
             case PF.ActionType.Recharge:
-                deck.Recharge(card); break;
+                Recharge(card);
+                break;
             case PF.ActionType.Reload:
-                deck.Reload(card); break;
+                Reload(card);
+                break;
+            case PF.ActionType.Reveal:
+                // No action necessary.
+                break;
             default:
-                Debug.LogError($"MoveCard --- Unknown action: {action}"); break;
+                Debug.LogError($"Unsupported action: {action}!");
+                break;
         }
     }
 
-    public void MoveCard(CardInstance card, List<CardInstance> location)
+    private void UpdateCardLists(CardInstance card)
     {
-        Debug.Log($"Moving {card} to {location}");
-        RemoveCardFromAllZones(card);
-        location.Add(card);
-    }
+        // We only care about our own cards.
+        if (card.Owner != this) return;
 
-    public List<CardInstance> FindCard(CardInstance card)
-    {
-        if (hand.Contains(card)) return hand;
-        if (discards.Contains(card)) return discards;
-        if (displayedCards.Contains(card)) return displayedCards;
-        if (buriedCards.Contains(card)) return buriedCards;
+        // Remove from all locations.
+        bool wasInHand = Hand.Remove(card);
+        Discards.Remove(card);
+        BuriedCards.Remove(card);
+        DisplayedCards.Remove(card);
 
-        return null;
-    }
+        bool isNowInHand = false;
+        switch (card.CurrentLocation)
+        {
+            case CardLocation.Buried:
+                BuriedCards.Add(card);
+                break;
+            case CardLocation.Deck:
+                // The Deck class handles its own logic.
+                break;
+            case CardLocation.Discard:
+                Discards.Add(card);
+                break;
+            case CardLocation.Displayed:
+                DisplayedCards.Add(card);
+                break;
+            case CardLocation.Hand:
+                isNowInHand = true;
+                Hand.Add(card);
+                break;
+        }
 
-    private void RemoveCardFromAllZones(CardInstance card)
-    {
-        hand.Remove(card);
-        discards.Remove(card);
-        buriedCards.Remove(card);
-        displayedCards.Remove(card);
+        if (wasInHand != isNowInHand) HandChanged?.Invoke();
     }
 }

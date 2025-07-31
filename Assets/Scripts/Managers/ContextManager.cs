@@ -11,8 +11,6 @@ public class ContextManager : MonoBehaviour
     private void Awake()
     {
         ServiceLocator.Register(this);
-
-        Game.Initialize(this);
     }
 
     public void NewGame(GameContext gameContext) => GameContext = gameContext;

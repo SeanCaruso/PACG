@@ -17,11 +17,11 @@ public class RerollResolvable : IResolvable
     {
         List<IStagedAction> actions = new();
 
-        foreach (var card in PlayerCharacter.hand)
+        foreach (var card in PlayerCharacter.Hand)
         {
             actions.AddRange(GetValidActionsForCard(card));
         }
-        foreach (var cardData in PlayerCharacter.displayedCards)
+        foreach (var cardData in PlayerCharacter.DisplayedCards)
         {
             actions.AddRange(GetValidActionsForCard(cardData));
         }
