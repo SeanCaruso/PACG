@@ -18,7 +18,7 @@ public class DamageResolvable : IResolvable
     {
         List<IStagedAction> actions = new();
 
-        foreach (var card in PlayerCharacter.hand)
+        foreach (var card in PlayerCharacter.Hand)
         {
             actions.AddRange(GetValidActionsForCard(card));
         }
@@ -33,7 +33,7 @@ public class DamageResolvable : IResolvable
         List<IStagedAction> actions = cardLogic?.GetAvailableActions() ?? new();
 
         // Add default damage discard action if the card was in the player's hand.
-        if (PlayerCharacter.hand.Contains(card))
+        if (PlayerCharacter.Hand.Contains(card))
             actions.Add(new DefaultDamageAction(card));
 
         return actions;
@@ -45,7 +45,7 @@ public class DamageResolvable : IResolvable
         //if (PlayerCharacter.hand.Count <= Amount) return true;
 
         // This was presenting issues, so require manually discarding everything for now.
-        if (PlayerCharacter.hand.Count == 0) return true;
+        if (PlayerCharacter.Hand.Count == 0) return true;
 
         int totalResolved = 0;
         foreach (var action in  actions)

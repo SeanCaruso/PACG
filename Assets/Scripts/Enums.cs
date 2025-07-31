@@ -2,7 +2,7 @@
 public static class PF
 {
 
-    public enum ActionType { Draw, Reveal, Display, Reload, Recharge, Discard, Bury, Banish }
+    public enum ActionType { Banish, Bury, Discard, Display, Draw, Recharge, Reload, Reveal }
 
     public enum CardType
     {

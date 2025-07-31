@@ -15,11 +15,30 @@ public class PlayerHandController : MonoBehaviour
     [Header("Card Management")]
     public CardDisplay cardPrefab;
 
-    private List<CardDisplay> cardsInHand = new();
+    private PlayerCharacter _pc = null;
+    private readonly List<CardDisplay> cardsInHand = new();
 
     private void Awake()
     {
         ServiceLocator.Register(this);
+    }
+
+    private void OnDestroy()
+    {
+        
+    }
+
+    public void SetCurrentPC(PlayerCharacter pc)
+    {
+        if (_pc != null) _pc.HandChanged -= OnHandChanged;
+        _pc = pc;
+        _pc.HandChanged += OnHandChanged;
+    }
+
+    private void OnHandChanged()
+    {
+        cardsInHand.Clear();
+        foreach (var card in _pc.Hand) AddCard(card);
     }
 
     public void AddCard(CardInstance card)
@@ -37,14 +56,14 @@ public class PlayerHandController : MonoBehaviour
         //AnimateCardDraw(newCard);
     }
 
-    public void RemoveCard(CardDisplay card)
-    {
-        if (cardsInHand.Remove(card))
-        {
-            card.isInHand = false;
-            ArrangeCards();
-        }
-    }
+    //public void RemoveCard(CardDisplay card)
+    //{
+    //    if (cardsInHand.Remove(card))
+    //    {
+    //        card.isInHand = false;
+    //        ArrangeCards();
+    //    }
+    //}
 
     void ArrangeCards()
     {

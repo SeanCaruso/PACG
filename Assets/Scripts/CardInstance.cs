@@ -13,10 +13,10 @@ public class CardInstance
     {
         Data = data;
         InstanceId = Guid.NewGuid();
-        CurrentLocation = CardLocation.Deck;
+        CurrentLocation = CardLocation.Vault;
         Owner = owner;
         OriginalOwner = owner;
     }
 }
 
-public enum CardLocation { Deck, Hand, Discard, Buried, Displayed }
+public enum CardLocation { Buried, Deck, Discard, Displayed, Hand, Recovery, Vault }

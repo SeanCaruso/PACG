@@ -75,14 +75,14 @@ public class CardPreviewController : MonoBehaviour
         {
             cardDisplay = currentlyEnlargedCard,
             originalParent = originalParent,
-            originalCharacterLocation = currentlyEnlargedCard.Card.Owner.FindCard(currentlyEnlargedCard.Card),
+            originalCharacterLocation = currentlyEnlargedCard.Card.CurrentLocation,
             originalScale = originalScale,
             originalSiblingIndex = originalSiblingIndex
         };
 
         foreach (var action in actions)
         {
-            stagingInfo.originalCharacterLocation = action.Card.Owner.FindCard(action.Card);
+            stagingInfo.originalCharacterLocation = action.Card.CurrentLocation;
 
             GameObject buttonObj = Instantiate(actionButtonPrefab, actionButtonContainer);
 

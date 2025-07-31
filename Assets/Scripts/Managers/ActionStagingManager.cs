@@ -44,7 +44,7 @@ public class ActionStagingManager : MonoBehaviour
                 {
                     cardDisplay = cardDisplay,
                     originalParent = cardDisplay.transform.parent,
-                    originalCharacterLocation = action.Card.Owner.FindCard(action.Card),
+                    originalCharacterLocation = action.Card.CurrentLocation,
                     originalScale = cardDisplay.transform.localScale,
                     originalSiblingIndex = cardDisplay.transform.GetSiblingIndex()
                 };
@@ -103,7 +103,7 @@ public class ActionStagingManager : MonoBehaviour
             stagingInfo.cardDisplay.gameObject.SetActive(true);
 
             // Restore the card back to the correct location in the data.
-            action.Card.Owner.MoveCard(action.Card, stagingInfo.originalCharacterLocation);
+            Game.MoveCard(action.Card, stagingInfo.originalCharacterLocation);
             //if (action.ActionType != PF.ActionType.Reveal)
             //{
             //    stagingInfo.originalCharacterLocation.Add(action.CardData);
@@ -168,7 +168,7 @@ public struct CardStagingInfo
 {
     public CardDisplay cardDisplay;
     public Transform originalParent;
-    public List<CardInstance> originalCharacterLocation;
+    public CardLocation originalCharacterLocation;
     public Vector3 originalScale;
     public int originalSiblingIndex;
 }

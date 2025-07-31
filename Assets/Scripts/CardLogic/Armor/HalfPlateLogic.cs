@@ -27,13 +27,13 @@ public class HalfPlateLogic : IPlayableLogic
 
     bool CanDisplay => (
         // We can display if not currently displayed and we haven't played an Armor during a check.
-        !Card.Owner.displayedCards.Contains(Card) 
+        !Card.Owner.DisplayedCards.Contains(Card) 
         && (Game.CheckContext == null || !Game.CheckContext.StagedCardTypes.Contains(PF.CardType.Armor)));
 
     bool CanDraw => (
         // We can draw for damage if displayed and we have a DamageResolvable for the card's owner with Combat damage.
         Game.CheckContext != null
-        && Card.Owner.displayedCards.Contains(Card)
+        && Card.Owner.DisplayedCards.Contains(Card)
         && (Game.CheckContext.StagedCards.Contains(Card) || !Game.CheckContext.StagedCardTypes.Contains(PF.CardType.Armor)) // If we staged the Display this check, we can freely draw.
         && Game.ResolutionContext?.CurrentResolvable is DamageResolvable resolvable
         && resolvable.DamageType == "Combat" 
@@ -42,7 +42,7 @@ public class HalfPlateLogic : IPlayableLogic
     bool CanBury => (
         // We can bury for damage if displayed, the owner is proficient, and we have a DamageResolvable for the card's owner.
         Game.CheckContext != null
-        && Card.Owner.displayedCards.Contains(Card)
+        && Card.Owner.DisplayedCards.Contains(Card)
         && (Game.CheckContext.StagedCards.Contains(Card) || !Game.CheckContext.StagedCardTypes.Contains(PF.CardType.Armor)) // If we staged the Display this check, we can freely bury.
         && Card.Owner.IsProficient(PF.CardType.Armor)
         && Game.ResolutionContext?.CurrentResolvable is DamageResolvable resolvable

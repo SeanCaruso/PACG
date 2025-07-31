@@ -79,7 +79,7 @@ public class EncounterManager : MonoBehaviour
         while (context.CheckResult.MarginOfSuccess < Game.EncounterContext.EncounteredCard.Data.rerollThreshold && !skippedReroll)
         {
             bool promptReroll = false;
-            var cardsToCheck = Game.TurnContext.CurrentPC.hand.Union(Game.TurnContext.CurrentPC.displayedCards);
+            var cardsToCheck = Game.TurnContext.CurrentPC.Hand.Union(Game.TurnContext.CurrentPC.DisplayedCards);
             foreach (var card in cardsToCheck)
             {
                 if (logicRegistry.GetPlayableLogic(card).GetAvailableActions().Count > 0)
