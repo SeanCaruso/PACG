@@ -1,3 +1,5 @@
+using PACG.Presentation.Cards;
+using PACG.SharedAPI.PresentationContexts;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -32,29 +34,26 @@ public class CardPreviewController : MonoBehaviour
         previewArea.SetActive(false);
     }
 
-    public void EnlargeCard(GameObject cardToEnlarge)
+    public void ShowPreviewForCard(CardDisplay cardDisplay, IReadOnlyCollection<PF.ActionType> actions)
     {
         if (currentlyEnlargedCard != null) return;
 
-        CardDisplay cardDisplay = cardToEnlarge.GetComponent<CardDisplay>();
-        if (cardDisplay == null )
-        {
-            Debug.LogError($"{GetType().Name}.EnlargeCard --- Unable to get card display component!");
-            return;
-        }
+        // Store the original position info in a courier object.
+        //var uiContext = new CardPresentationContext(
+        //    originalZone: )
 
         currentlyEnlargedCard = cardDisplay;
 
         // Store the card's original location and size.
-        originalParent = cardToEnlarge.transform.parent;
-        originalSiblingIndex = cardToEnlarge.transform.GetSiblingIndex();
-        originalScale = cardToEnlarge.transform.localScale;
+        originalParent = cardDisplay.transform.parent;
+        originalSiblingIndex = cardDisplay.transform.GetSiblingIndex();
+        originalScale = cardDisplay.transform.localScale;
 
         // Show the preview area.
         previewArea.SetActive(true);
 
         // Move the card to the preview area and enlarge it.
-        var cardRect = cardToEnlarge.GetComponent<RectTransform>();
+        var cardRect = cardDisplay.GetComponent<RectTransform>();
         cardRect.SetParent(previewArea.transform, false);
         cardRect.anchoredPosition = Vector3.zero;
         cardRect.anchorMin = new(0.5f, 0.5f);
@@ -62,35 +61,23 @@ public class CardPreviewController : MonoBehaviour
         cardRect.localScale = new Vector3(2f, 2f, 1.0f);
 
         // Query the card logic for any playable actions.
-        var actions = ServiceLocator.Get<LogicRegistry>().GetPlayableLogic(cardDisplay.Card)?.GetAvailableActions() ?? new();
         if (actions.Count > 0)
         {
             GenerateActionButtons(actions);
         }
     }
 
-    public void GenerateActionButtons(List<IStagedAction> actions)
+    public void GenerateActionButtons(IReadOnlyCollection<PF.ActionType> actions)
     {
-        CardStagingInfo stagingInfo = new()
-        {
-            cardDisplay = currentlyEnlargedCard,
-            originalParent = originalParent,
-            originalCharacterLocation = currentlyEnlargedCard.Card.CurrentLocation,
-            originalScale = originalScale,
-            originalSiblingIndex = originalSiblingIndex
-        };
-
         foreach (var action in actions)
         {
-            stagingInfo.originalCharacterLocation = action.Card.CurrentLocation;
-
             GameObject buttonObj = Instantiate(actionButtonPrefab, actionButtonContainer);
 
-            buttonObj.GetComponentInChildren<TextMeshProUGUI>().text = action.ActionType.ToString();
+            buttonObj.GetComponentInChildren<TextMeshProUGUI>().text = action.ToString();
             Button button = buttonObj.GetComponent<Button>();
             button.onClick.AddListener(() =>
             {
-                ServiceLocator.Get<ActionStagingManager>().StageAction(action, stagingInfo);
+                //ServiceLocator.Get<ActionStagingManager>().StageAction(action, stagingInfo);
                 EndPreview();
             });
 

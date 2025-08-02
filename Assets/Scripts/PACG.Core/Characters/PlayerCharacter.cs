@@ -1,3 +1,4 @@
+using PACG.Services.Core;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -26,12 +27,12 @@ public class PlayerCharacter : IDisposable
     {
         this.characterData = characterData;
         this.cardManager = cardManager;
-        this.cardManager.OnCardLocationChanged += UpdateCardLists;
+        GameEvents.CardLocationChanged += UpdateCardLists;
     }
 
     public void Dispose()
     {
-        cardManager.OnCardLocationChanged -= UpdateCardLists;
+        GameEvents.CardLocationChanged -= UpdateCardLists;
     }
 
     public (int die, int bonus) GetAttr(PF.Skill attr)
@@ -144,7 +145,9 @@ public class PlayerCharacter : IDisposable
             Debug.Log($"{characterData.characterName} must draw but has no more cards left. {characterData.characterName} dies!");
             return;
         }
-        Draw(deck.DrawCard());
+        var card = deck.DrawCard();
+        card.Owner = this;
+        cardManager.MoveCard(card, CardLocation.Hand, true);
     }
 
     public void DrawToHandSize()
@@ -165,7 +168,7 @@ public class PlayerCharacter : IDisposable
     public void ShuffleIntoDeck(CardInstance card)
     {
         if (card == null) return;
-        cardManager.MoveCard(card, CardLocation.Deck);
+        cardManager.MoveCard(card, CardLocation.Deck, true);
         deck.ShuffleIn(card);
     }
     // ----------------------------------------------------------------------------------

@@ -1,3 +1,4 @@
+using PACG.Services.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,22 +6,20 @@ using UnityEngine;
 
 public class CardManager : MonoBehaviour
 {
-    // --- Events ---
-    public event Action<CardInstance> OnCardLocationChanged;
-    // --------------
-
     private readonly List<CardInstance> allCards = new();
     private readonly List<CardInstance> theVault = new();
+
+    private readonly Dictionary<CardInstance, CardLocation> stagedOriginalLocations = new();
 
     private void Awake()
     {
         ServiceLocator.Register(this);
-        OnCardLocationChanged += HandleCardLocationChanged;
+        GameEvents.CardLocationChanged += HandleCardLocationChanged;
     }
 
     private void OnDestroy()
     {
-        OnCardLocationChanged -= HandleCardLocationChanged;
+        GameEvents.CardLocationChanged -= HandleCardLocationChanged;
     }
 
     public CardInstance New(CardData card, PlayerCharacter owner = null)
@@ -37,7 +36,7 @@ public class CardManager : MonoBehaviour
         return newInstance;
     }
 
-    public void MoveCard(CardInstance card, CardLocation newLocation)
+    public void MoveCard(CardInstance card, CardLocation newLocation, bool skipStage = false)
     {
         if (card == null)
         {
@@ -45,10 +44,29 @@ public class CardManager : MonoBehaviour
             return;
         }
 
+        if (!skipStage)
+        {
+            stagedOriginalLocations.TryAdd(card, card.CurrentLocation);
+        }
+
         card.CurrentLocation = newLocation;
-        OnCardLocationChanged?.Invoke(card);
+        GameEvents.RaiseCardLocationChanged(card);
 
         Debug.Log($"Moved {card.Data.cardName} to {newLocation}");
+    }
+
+    public void RestoreStagedCards()
+    {
+        foreach ((var card, var location) in stagedOriginalLocations)
+        {
+            MoveCard(card, location, true);
+        }
+        stagedOriginalLocations.Clear();
+    }
+
+    public void CommitStagedMoves()
+    {
+        stagedOriginalLocations.Clear();
     }
 
     private void HandleCardLocationChanged(CardInstance card)

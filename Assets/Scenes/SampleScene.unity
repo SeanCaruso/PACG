@@ -977,7 +977,7 @@ GameObject:
   - component: {fileID: 857526835}
   - component: {fileID: 857526836}
   m_Layer: 0
-  m_Name: Player Hand Controller
+  m_Name: Player Cards Controller
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1007,39 +1007,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 857526834}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a1dc18a83b988ba4db5fb029d68f9f46, type: 3}
+  m_Script: {fileID: 11500000, guid: 2f920e1250ead6e46ad649543102f527, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  handContainer: {fileID: 1976661047}
-  maxHandWidth: 1200
-  cardSpacing: 120
-  fanRadius: 600
-  hoverHeight: 40
-  fanCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  cardPrefab: {fileID: 8431384695262642363, guid: 665bdf9d8f0b08c448526ebe58d4022e, type: 3}
 --- !u!1 &899626747
 GameObject:
   m_ObjectHideFlags: 0

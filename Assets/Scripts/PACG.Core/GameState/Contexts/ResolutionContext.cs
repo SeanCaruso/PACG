@@ -1,3 +1,4 @@
+using PACG.Services.Core;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,6 +14,8 @@ public class ResolutionContext
     public ResolutionContext(IResolvable resolvable)
     {
         CurrentResolvable = resolvable;
+
+        GameEvents.ActionsCommitted += Resolve;
     }
 
     public IEnumerator WaitForResolution()
@@ -26,5 +29,9 @@ public class ResolutionContext
         return CurrentResolvable.IsResolved(actions);
     }
 
-    public bool Resolve() => isResolved = true;
+    public void Resolve(List<IStagedAction> _)
+    {
+        isResolved = true;
+        GameEvents.ActionsCommitted -= Resolve;
+    }
 }

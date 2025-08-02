@@ -1,3 +1,4 @@
+using PACG.Presentation.UI.Controllers;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -28,7 +29,7 @@ public class GameManager : GameBehaviour
         Deck locationDeck = new();
         foreach (var card in locationCards) locationDeck.ShuffleIn(Cards.New(card));
         locationDeck.Shuffle();
-        ServiceLocator.Get<PlayerHandController>().SetCurrentPC(testCharacter);
+        ServiceLocator.Get<CardDisplayController>().SetCurrentPC(testCharacter);
 
         // Set up the game context.
         ServiceLocator.Get<ContextManager>().NewGame(new(1));

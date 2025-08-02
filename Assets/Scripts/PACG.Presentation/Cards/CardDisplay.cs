@@ -1,209 +1,128 @@
-using System.Threading;
+using PACG.SharedAPI.ViewModels;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEditor.Progress;
 
-public class CardDisplay : MonoBehaviour
+namespace PACG.Presentation.Cards
 {
-    [Header("System")]
-    public TMP_FontAsset cardFont;
-
-    [Header("Top/Bottom Bars")]
-    public GameObject topPanel;
-    public TextMeshProUGUI nameText;
-    public TextMeshProUGUI typeText;
-    public TextMeshProUGUI levelText;
-    public GameObject bottomPanel;
-
-    [Header("Check to Acquire/Defeat")]
-    public GameObject checksLabelPanel;
-    public TextMeshProUGUI checksLabelText;
-    public GameObject checksSection;
-    public GameObject checkDcPanel;
-    public TextMeshProUGUI checkDC;
-    public GameObject orPanel;
-    public GameObject thenPanel;
-    public GameObject checksSection2Area;
-    public GameObject checksSection2;
-    public TextMeshProUGUI checkDC2;
-
-    [Header("Powers")]
-    public GameObject powersPanel;
-    public TextMeshProUGUI powersText;
-    public GameObject recoveryLabel;
-    public TextMeshProUGUI recoveryText;
-
-    [Header("Traits")]
-    public GameObject traitsSection;
-
-    [Header("States")]
-    public bool isInHand = false;
-    public bool isExpanded = false;
-    public bool isStaged = false;
-
-    public Vector3 originalPosition;
-    public Vector3 originalScale;
-    public int originalSiblingIndex;
-
-    private CardInstance cardInstance;
-    public IEncounterLogic encounterLogic = null;
-    public IPlayableLogic playableLogic = null;
-
-    public void SetCardInstance(CardInstance card)
+    public class CardDisplay : MonoBehaviour
     {
-        this.cardInstance = card;
-        UpdateCardDisplay();
+        [Header("System")]
+        public TMP_FontAsset cardFont;
 
-        var logicRegistry = ServiceLocator.Get<LogicRegistry>();
-        encounterLogic = logicRegistry.GetEncounterLogic(card);
-        playableLogic = logicRegistry.GetPlayableLogic(card);
-    }
+        [Header("Top/Bottom Bars")]
+        public GameObject topPanel;
+        public TextMeshProUGUI nameText;
+        public TextMeshProUGUI typeText;
+        public TextMeshProUGUI levelText;
+        public GameObject bottomPanel;
 
-    public CardInstance Card => cardInstance;
+        [Header("Check to Acquire/Defeat")]
+        public GameObject checksLabelPanel;
+        public TextMeshProUGUI checksLabelText;
+        public GameObject checksSection;
+        public GameObject checkDcPanel;
+        public TextMeshProUGUI checkDC;
+        public GameObject orPanel;
+        public GameObject thenPanel;
+        public GameObject checksSection2Area;
+        public GameObject checksSection2;
+        public TextMeshProUGUI checkDC2;
 
-    public void UpdateCardDisplay()
-    {
-        if (cardInstance == null) return;
+        [Header("Powers")]
+        public GameObject powersPanel;
+        public TextMeshProUGUI powersText;
+        public GameObject recoveryLabel;
+        public TextMeshProUGUI recoveryText;
 
-        // Set the various panel colors to the card type's color.
-        Color32 panelColor = GetPanelColor(cardInstance.Data.cardType);
-        topPanel.GetComponent<Image>().color = panelColor;
-        checksLabelPanel.GetComponent<Image>().color = Color.Lerp(panelColor, Color.black, 0.75f);
-        checksSection.GetComponent<Image>().color = panelColor;
-        checksSection2.GetComponent<Image>().color = panelColor;
-        powersPanel.GetComponent<Image>().color = Color.Lerp(panelColor, Color.white, 0.75f);
-        traitsSection.GetComponent<Image>().color = panelColor;
-        bottomPanel.GetComponent<Image>().color = panelColor;
+        [Header("Traits")]
+        public GameObject traitsSection;
 
-        // Top bar.
-        nameText.text = cardInstance.Data.name;
-        typeText.text = PF.S(cardInstance.Data.cardType);
-        levelText.text = cardInstance.Data.cardLevel.ToString();
-
-        // Check to acquire/defeat.
-        checksLabelText.text = PF.IsBoon(cardInstance.Data.cardType) ? "CHECK TO ACQUIRE" : "CHECK TO DEFEAT";
-
-        if (cardInstance.Data.checkRequirement.mode == CheckMode.None)
+        public void SetViewModel(CardViewModel view)
         {
-            // We need to resize the label to fit the whole section width (and get rid of the DC).
-            var checksLabelRect = checksLabelPanel.GetComponent<RectTransform>();
-            checksLabelRect.sizeDelta = new(80f, checksLabelRect.sizeDelta.y);
-            checkDcPanel.SetActive(false);
+            if (view == null) return;
 
-            checksLabelText.text = "NONE";
-        }
-        else if (cardInstance.Data.checkRequirement.checkSteps.Count > 0)
-        {
-            var check = cardInstance.Data.checkRequirement.checkSteps[0];
-            if (check.category == CheckCategory.Combat)
+            // Set the various panel colors to the card type's color.
+            topPanel.GetComponent<Image>().color = view.PanelColor;
+            checksLabelPanel.GetComponent<Image>().color = Color.Lerp(view.PanelColor, Color.black, 0.75f);
+            checksSection.GetComponent<Image>().color = view.PanelColor;
+            checksSection2.GetComponent<Image>().color = view.PanelColor;
+            powersPanel.GetComponent<Image>().color = Color.Lerp(view.PanelColor, Color.white, 0.75f);
+            traitsSection.GetComponent<Image>().color = view.PanelColor;
+            bottomPanel.GetComponent<Image>().color = view.PanelColor;
+
+            // Top bar.
+            nameText.text = view.Name;
+            typeText.text = view.Type;
+            levelText.text = view.Level;
+
+            // Check to acquire/defeat.
+            UpdateChecksSection(view);
+
+            // Powers
+            powersText.text = view.PowersText;
+            if (view.RecoveryText.Length > 0)
             {
-                AddTextToPanel("COMBAT", checksSection, 8f);
-            }
-            else
-            {
-                foreach (var skill in check.allowedSkills) AddTextToPanel(skill.ToString().ToUpper(), checksSection, 8f);
+                recoveryLabel.SetActive(true);
+                recoveryText.enabled = true;
+                recoveryText.text = view.RecoveryText;
             }
 
-            int totalDC = check.baseDC + check.adventureLevelMult * ServiceLocator.Get<ContextManager>().GameContext.AdventureNumber;
-            checkDC.text = totalDC.ToString();
+            // Traits
+            foreach (var trait in view.Traits) AddTextToPanel(trait, traitsSection);
         }
 
-        // Add optional section for choice / sequential checks.
-        if (cardInstance.Data.checkRequirement.checkSteps.Count == 2)
+        private void UpdateChecksSection(CardViewModel view)
         {
-            if (cardInstance.Data.checkRequirement.mode == CheckMode.Sequential)
+            checksLabelText.text = view.ChecksLabel;
+            foreach (var skill in view.Check1_Skills) AddTextToPanel(skill, checksSection, 8f);
+
+            if (view.CheckMode == CheckMode.None)
+            {
+                // We need to resize the label to fit the whole section width (and get rid of the DC).
+                var checksSectionRect = checksSection.GetComponent<RectTransform>();
+                checksSectionRect.sizeDelta = new(80f, checksSectionRect.sizeDelta.y);
+                checkDcPanel.SetActive(false);
+                return;
+            }
+
+            checkDC.text = view.Check1_DC;
+
+            // If we don't have Check2, return.
+            if (!view.ShowCheck2) return;
+
+            // Set the THEN or OR panel active based on the check mode.
+            if (view.CheckMode == CheckMode.Sequential)
             {
                 thenPanel.SetActive(true);
             }
-            else if (cardInstance.Data.checkRequirement.mode == CheckMode.Choice)
+            else if (view.CheckMode == CheckMode.Choice)
             {
                 orPanel.SetActive(true);
             }
             else
             {
-                Debug.LogError($"UpdateCardDisplay --- {cardInstance.Data.cardName} has multiple checks, but an invalid check mode!");
-            }
-            var check2 = cardInstance.Data.checkRequirement.checkSteps[1];
-            if (check2.category == CheckCategory.Combat)
-            {
-                AddTextToPanel("COMBAT", checksSection2, 8f);
-            }
-            else
-            {
-                foreach (var skill in check2.allowedSkills) AddTextToPanel(skill.ToString().ToUpper(), checksSection2, 8f);
+                Debug.LogError($"UpdateCardDisplay --- {view.Name} has multiple checks, but an invalid check mode!");
             }
 
-            int totalDC = check2.baseDC + check2.adventureLevelMult * ServiceLocator.Get<ContextManager>().GameContext.AdventureNumber;
-            checkDC2.text = totalDC.ToString();
-        }
-        else if (cardInstance.Data.checkRequirement.checkSteps.Count > 2)
-        {
-            Debug.LogError($"UpdateCardDisplay --- {cardInstance.Data.cardName} has too many check steps!");
+            foreach (var skill in view.Check2_Skills) AddTextToPanel(skill, checksSection2, 8f);
+            checkDC2.text = view.Check2_DC;
+
         }
 
-        // Powers
-        powersText.text = cardInstance.Data.powers;
-        if (cardInstance.Data.recovery.Length > 0)
+        private void AddTextToPanel(string text, GameObject panel, float fontSize = 9f)
         {
-            recoveryLabel.SetActive(true);
-            recoveryText.enabled = true;
-            recoveryText.text = cardInstance.Data.recovery;
-        }
+            GameObject textObject = new($"{text}_Object");
+            textObject.transform.SetParent(panel.transform, false);
 
-        // Traits
-        foreach (var trait in cardInstance.Data.traits) AddTextToPanel(trait.ToString().ToUpper(), traitsSection);
-    }
+            TextMeshProUGUI tmp = textObject.AddComponent<TextMeshProUGUI>();
+            tmp.text = text;
+            tmp.font = cardFont;
+            tmp.fontSize = fontSize;
+            tmp.color = Color.white;
 
-    private void AddTextToPanel(string text, GameObject panel, float fontSize = 9f)
-    {
-        GameObject textObject = new($"{text}_Object");
-        textObject.transform.SetParent(panel.transform, false);
-
-        TextMeshProUGUI tmp = textObject.AddComponent<TextMeshProUGUI>();
-        tmp.text = text;
-        tmp.font = cardFont;
-        tmp.fontSize = fontSize;
-        tmp.color = Color.white;
-
-        var sizeFitter = textObject.AddComponent<ContentSizeFitter>();
-        sizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-    }
-
-    private void Start()
-    {
-        //UpdateCardDisplay();
-    }
-
-    private Color32 GetPanelColor(PF.CardType cardType)
-    {
-        switch(cardType)
-        {
-            // Boons
-            case PF.CardType.Ally:
-                return new(68, 98, 153, 255);
-            case PF.CardType.Armor:
-                return new(170, 178, 186, 255);
-            case PF.CardType.Blessing:
-                return new(0, 172, 235, 255);
-            case PF.CardType.Item:
-                return new(96, 133, 132, 255);
-            case PF.CardType.Spell:
-                return new(97, 46, 138, 255);
-            case PF.CardType.Weapon:
-                return new(93, 97, 96, 255);
-
-            // Banes
-            case PF.CardType.Barrier:
-                return new(255, 227, 57, 255);
-            case PF.CardType.Monster:
-                return new(213, 112, 41, 255);
-            case PF.CardType.StoryBane:
-                return new(130, 36, 38, 255);
-            default:
-                Debug.LogError($"GetPanelColor --- Unknown card type: {cardType}");
-                return new(255, 0, 255, 255);
+            var sizeFitter = textObject.AddComponent<ContentSizeFitter>();
+            sizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
         }
     }
 }

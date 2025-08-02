@@ -29,7 +29,7 @@ public class ContextManager : MonoBehaviour
         ResolutionContext = resolutionContext;
 
         // Update the ActionStagingManager in case we need to show a Skip button.
-        ServiceLocator.Get<ActionStagingManager>().UpdateUI();
+        ServiceLocator.Get<ActionStagingManager>().UpdateActionButtonState();
     }
     public void EndResolution() => ResolutionContext = null;
 }
