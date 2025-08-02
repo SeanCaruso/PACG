@@ -1,4 +1,5 @@
 using PACG.Presentation.Cards;
+using PACG.Services.Core;
 using PACG.SharedAPI.PresentationContexts;
 using System.Collections.Generic;
 using TMPro;
@@ -7,7 +8,7 @@ using UnityEngine.UI;
 
 namespace PACG.Presentation.UI.Controllers
 {
-    public class CardPreviewController : MonoBehaviour
+    public class CardPreviewController : GameBehaviour
     {
         [Header("UI Elements")]
         public GameObject previewArea;
@@ -24,11 +25,6 @@ namespace PACG.Presentation.UI.Controllers
 
         private readonly List<GameObject> activeActionButtons = new();
 
-        private void Awake()
-        {
-            ServiceLocator.Register(this);
-        }
-
         private void Start()
         {
             // Add a listener to the background button to handle returning the card.
@@ -36,13 +32,20 @@ namespace PACG.Presentation.UI.Controllers
             previewArea.SetActive(false);
         }
 
-        public void ShowPreviewForCard(CardDisplay cardDisplay, IReadOnlyCollection<PF.ActionType> actions)
+        public void ShowPreviewForCard(CardDisplay cardDisplay)
         {
-            if (currentlyEnlargedCard != null) return;
+            if (currentlyEnlargedCard != null)
+            {
+                Debug.LogError($"Tried to preview {cardDisplay.name}, but {currentlyEnlargedCard.name} is already being previewed!");
+                return;
+            }
 
-            // Store the original position info in a courier object.
-            //var uiContext = new CardPresentationContext(
-            //    originalZone: )
+            var cardInstance = ServiceLocator.Get<CardDisplayController>().GetInstanceFromDisplay(cardDisplay);
+            if (cardInstance == null)
+            {
+                Debug.LogError($"Tried to preview {cardDisplay.name}, but it has no CardInstance!");
+                return;
+            }
 
             currentlyEnlargedCard = cardDisplay;
 
@@ -63,13 +66,10 @@ namespace PACG.Presentation.UI.Controllers
             cardRect.localScale = new Vector3(2f, 2f, 1.0f);
 
             // Query the card logic for any playable actions.
-            if (actions.Count > 0)
-            {
-                GenerateActionButtons(actions);
-            }
+            GenerateActionButtons(Logic.GetPlayableLogic(cardInstance).GetAvailableActions());
         }
 
-        public void GenerateActionButtons(IReadOnlyCollection<PF.ActionType> actions)
+        public void GenerateActionButtons(IReadOnlyCollection<IStagedAction> actions)
         {
             foreach (var action in actions)
             {
@@ -79,7 +79,7 @@ namespace PACG.Presentation.UI.Controllers
                 Button button = buttonObj.GetComponent<Button>();
                 button.onClick.AddListener(() =>
                 {
-                    //ServiceLocator.Get<ActionStagingManager>().StageAction(action, stagingInfo);
+                    ServiceLocator.Get<ActionStagingManager>().StageAction(action);
                     EndPreview();
                 });
 

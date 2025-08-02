@@ -10,7 +10,7 @@ namespace PACG.Presentation.Input.Handlers
         public void OnPointerClick(PointerEventData eventData)
         {
             var cardDisplay = GetComponent<CardDisplay>();
-            ServiceLocator.Get<CardPreviewController>().ShowPreviewForCard(cardDisplay, null);
+            ServiceLocator.Get<CardPreviewController>().ShowPreviewForCard(cardDisplay);
         }
     }
 }

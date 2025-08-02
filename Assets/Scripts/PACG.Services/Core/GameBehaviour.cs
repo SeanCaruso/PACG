@@ -1,22 +1,28 @@
 using PACG.Services.Game;
 using UnityEngine;
 
-public abstract class GameBehaviour : MonoBehaviour
+namespace PACG.Services.Core
 {
-    protected CardManager Cards;
-    protected ContextManager Contexts;
-    protected LogicRegistry Logic;
-
-    void Awake()
+    public abstract class GameBehaviour : MonoBehaviour
     {
-        ServiceLocator.Register(this);
+        protected CardManager Cards;
+        protected ContextManager Contexts;
+        protected LogicRegistry Logic;
 
-        Cards = ServiceLocator.Get<CardManager>();
-        Contexts = ServiceLocator.Get<ContextManager>();
-        Logic = ServiceLocator.Get<LogicRegistry>();
+        void Awake()
+        {
+            ServiceLocator.Register(this);
 
-        OnAwake();
+            OnAwake();
+        }
+
+        private void Start()
+        {
+            Cards = ServiceLocator.Get<CardManager>();
+            Contexts = ServiceLocator.Get<ContextManager>();
+            Logic = ServiceLocator.Get<LogicRegistry>();
+        }
+
+        protected virtual void OnAwake() { }
     }
-
-    protected virtual void OnAwake() { }
 }

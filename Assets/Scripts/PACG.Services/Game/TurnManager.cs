@@ -1,5 +1,6 @@
 using PACG.Core.Characters;
 using PACG.Presentation.Cards;
+using PACG.Services.Core;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,16 +8,6 @@ using UnityEngine.UI;
 
 namespace PACG.Services.Game
 {
-    public enum TurnPhase
-    {
-        AdvanceHour,
-        GiveCard,
-        Move,
-        Explore,
-        CloseLocation,
-        EndTurn
-    }
-
     public class TurnManager : GameBehaviour
     {
         [Header("The Hour")]
@@ -32,6 +23,22 @@ namespace PACG.Services.Game
         private readonly Deck hoursDeck = new();
         private Deck locationDeck = new();
 
+        // ==== TURN PHASE AVAILABILITY ============================
+        private bool canGive = false;
+        public bool CanGive => canGive;
+
+        private bool canMove = false;
+        public bool CanMove => canMove;
+
+        private bool canExplore = false;
+        public bool CanExplore => canExplore;
+
+        private bool canCloseLocation = false;
+        public bool CanCloseLocation => canCloseLocation;
+
+        private bool canEndTurn = false;
+        public bool CanEndTurn => canEndTurn;
+
         public void Start()
         {
             for (int i = 0; i < 30; i++)
@@ -40,7 +47,7 @@ namespace PACG.Services.Game
             }
         }
 
-        public IEnumerator StartTurn(PlayerCharacter pc, Deck locationDeck)
+        public void StartTurn(PlayerCharacter pc, Deck locationDeck)
         {
             this.locationDeck = locationDeck;
 
@@ -51,42 +58,53 @@ namespace PACG.Services.Game
 
             // TODO: Apply start of turn effects.
 
-            // Set initial state of turn phase buttons.
-            //giveCardButton.enabled = true; // TODO: Test for local characters
-            //moveButton.enabled = true; // TODO: Implement when we have multiple locations
-            //locationDeckButton.GetComponent<Button>().enabled = locationDeck.Count > 0;
-            //resetHandButton.enabled = true;
-            //endTurnButton.enabled = true;
+            // Set initial availability of turn actions
+            canGive = true; // TODO: Implement logic after we have multiple characters.
+            canMove = true; // TODO: Implement logic after we have multiple locations
+            canExplore = locationDeck.Count > 0;
+            canCloseLocation = locationDeck.Count == 0;
 
             Contexts.EndTurn();
-
-            yield break;
         }
 
-        public void OnGiveCardClicked()
+        public void GiveCard()
         {
-            StartCoroutine(RunGiveCard());
+            // TODO: Implement giving a card after we have multiple characters.
+            canGive = false;
         }
 
-        private IEnumerator RunGiveCard()
+        public void MoveToLocation()
         {
-            // TODO: Implement giving a card.
-            Contexts.NewResolution(new(new GiveCardResolvable(null)));
-            yield return Contexts.ResolutionContext.WaitForResolution();
-            Contexts.EndResolution();
+            // TODO: Implement moving to a location after we have multiple locations.
+            canGive = false;
+            canMove = false;
         }
 
-        public void OnExploreClicked()
+        public void Explore()
         {
-            StartCoroutine(RunEncounter());
+            canGive = false;
+            canMove = false;
+            canExplore = false;
         }
 
-        private IEnumerator RunEncounter()
+        public void OptionalDiscards()
+        {
+            canGive = false;
+            canMove = false;
+            canExplore = false;
+        }
+
+        public void EndTurn()
+        {
+
+        }
+
+        private void RunEncounter()
         {
             CardInstance exploredCard = locationDeck.DrawCard();
 
             if (exploredCard == null)
-                yield break;
+                return;
 
             // Show the encountered card in UI.
             CardDisplay newCard = Instantiate(cardPrefab, encounterZone.transform);
@@ -94,12 +112,12 @@ namespace PACG.Services.Game
             newCard.GetComponent<RectTransform>().anchoredPosition = Vector3.zero;
             newCard.transform.localScale = Vector3.one;
 
-            GameObject encounterObject = new($"Encounter_{exploredCard.Data.cardID}");
-            EncounterManager encounterManager = encounterObject.AddComponent<EncounterManager>();
+            //GameObject encounterObject = new($"Encounter_{exploredCard.Data.cardID}");
+            EncounterManager encounterManager = ServiceLocator.Get<EncounterManager>(); //encounterObject.AddComponent<EncounterManager>();
 
             Contexts.NewEncounter(new(Contexts.TurnContext.CurrentPC, exploredCard));
 
-            yield return encounterManager.RunEncounter();
+            encounterManager.RunEncounter();
 
             Debug.Log("Encounter finished.");
 

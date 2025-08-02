@@ -24,7 +24,7 @@ public interface IPlayableLogic : ICardLogic
 
         return GetAvailableCardActions();
     }
-    public List<IStagedAction> GetAvailableCardActions();
+    protected List<IStagedAction> GetAvailableCardActions();
 
     public void OnStage(IStagedAction action);
 

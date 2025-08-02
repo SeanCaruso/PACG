@@ -32,6 +32,8 @@ namespace PACG.Presentation.UI.Controllers
 
         private PlayerCharacter _pc = null;
         private readonly Dictionary<CardDisplay, CardInstance> displayToInstanceMap = new();
+        public CardInstance GetInstanceFromDisplay(CardDisplay display) => displayToInstanceMap.GetValueOrDefault(display, null);
+
         private readonly Dictionary<CardInstance, CardStagingInfo> originalCardStates = new();
 
         protected override void OnAwake()

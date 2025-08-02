@@ -6,6 +6,10 @@ namespace PACG.Services.Core
 {
     public static class GameEvents
     {
+        // Turn phase events
+        public static event Action TurnPhaseChanged;
+        public static void RaiseTurnPhaseChanged() => TurnPhaseChanged?.Invoke();
+
         // Card staging events
         public static event Action<IStagedAction> ActionStaged;
         public static void RaiseActionStaged(IStagedAction action) => ActionStaged?.Invoke(action);
