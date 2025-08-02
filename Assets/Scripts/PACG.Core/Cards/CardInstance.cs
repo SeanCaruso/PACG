@@ -1,3 +1,4 @@
+using PACG.Core.Characters;
 using System;
 using UnityEngine;
 

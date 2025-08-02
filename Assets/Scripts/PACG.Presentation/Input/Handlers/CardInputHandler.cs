@@ -3,11 +3,14 @@ using PACG.Presentation.UI.Controllers;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class CardInputHandler : MonoBehaviour, IPointerClickHandler
+namespace PACG.Presentation.Input.Handlers
 {
-    public void OnPointerClick(PointerEventData eventData)
+    public class CardInputHandler : MonoBehaviour, IPointerClickHandler
     {
-        var cardDisplay = GetComponent<CardDisplay>();
-        ServiceLocator.Get<CardPreviewController>().ShowPreviewForCard(cardDisplay, null);
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            var cardDisplay = GetComponent<CardDisplay>();
+            ServiceLocator.Get<CardPreviewController>().ShowPreviewForCard(cardDisplay, null);
+        }
     }
 }

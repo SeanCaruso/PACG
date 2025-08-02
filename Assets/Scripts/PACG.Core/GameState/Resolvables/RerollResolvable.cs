@@ -1,5 +1,6 @@
+using PACG.Core.Characters;
+using PACG.Services.Game;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class RerollResolvable : IResolvable
 {

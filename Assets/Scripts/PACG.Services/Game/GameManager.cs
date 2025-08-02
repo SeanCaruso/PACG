@@ -1,5 +1,6 @@
+using PACG.Core.Characters;
 using PACG.Presentation.UI.Controllers;
-using System.Collections;
+using PACG.Services.Game;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;

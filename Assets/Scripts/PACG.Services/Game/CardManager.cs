@@ -1,5 +1,5 @@
+using PACG.Core.Characters;
 using PACG.Services.Core;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;

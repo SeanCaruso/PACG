@@ -5,110 +5,113 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CardPreviewController : MonoBehaviour
+namespace PACG.Presentation.UI.Controllers
 {
-    [Header("UI Elements")]
-    public GameObject previewArea;
-    public Button backgroundButton;
-
-    [Header("Action Buttons")]
-    public Transform actionButtonContainer;
-    public GameObject actionButtonPrefab;
-
-    private CardDisplay currentlyEnlargedCard;
-    private Transform originalParent;
-    private int originalSiblingIndex;
-    private Vector3 originalScale;
-
-    private readonly List<GameObject> activeActionButtons = new();
-
-    private void Awake()
+    public class CardPreviewController : MonoBehaviour
     {
-        ServiceLocator.Register(this);
-    }
+        [Header("UI Elements")]
+        public GameObject previewArea;
+        public Button backgroundButton;
 
-    private void Start()
-    {
-        // Add a listener to the background button to handle returning the card.
-        backgroundButton.onClick.AddListener(ReturnCardToOrigin);
-        previewArea.SetActive(false);
-    }
+        [Header("Action Buttons")]
+        public Transform actionButtonContainer;
+        public GameObject actionButtonPrefab;
 
-    public void ShowPreviewForCard(CardDisplay cardDisplay, IReadOnlyCollection<PF.ActionType> actions)
-    {
-        if (currentlyEnlargedCard != null) return;
+        private CardDisplay currentlyEnlargedCard;
+        private Transform originalParent;
+        private int originalSiblingIndex;
+        private Vector3 originalScale;
 
-        // Store the original position info in a courier object.
-        //var uiContext = new CardPresentationContext(
-        //    originalZone: )
+        private readonly List<GameObject> activeActionButtons = new();
 
-        currentlyEnlargedCard = cardDisplay;
-
-        // Store the card's original location and size.
-        originalParent = cardDisplay.transform.parent;
-        originalSiblingIndex = cardDisplay.transform.GetSiblingIndex();
-        originalScale = cardDisplay.transform.localScale;
-
-        // Show the preview area.
-        previewArea.SetActive(true);
-
-        // Move the card to the preview area and enlarge it.
-        var cardRect = cardDisplay.GetComponent<RectTransform>();
-        cardRect.SetParent(previewArea.transform, false);
-        cardRect.anchoredPosition = Vector3.zero;
-        cardRect.anchorMin = new(0.5f, 0.5f);
-        cardRect.anchorMax = new(0.5f, 0.5f);
-        cardRect.localScale = new Vector3(2f, 2f, 1.0f);
-
-        // Query the card logic for any playable actions.
-        if (actions.Count > 0)
+        private void Awake()
         {
-            GenerateActionButtons(actions);
+            ServiceLocator.Register(this);
         }
-    }
 
-    public void GenerateActionButtons(IReadOnlyCollection<PF.ActionType> actions)
-    {
-        foreach (var action in actions)
+        private void Start()
         {
-            GameObject buttonObj = Instantiate(actionButtonPrefab, actionButtonContainer);
+            // Add a listener to the background button to handle returning the card.
+            backgroundButton.onClick.AddListener(ReturnCardToOrigin);
+            previewArea.SetActive(false);
+        }
 
-            buttonObj.GetComponentInChildren<TextMeshProUGUI>().text = action.ToString();
-            Button button = buttonObj.GetComponent<Button>();
-            button.onClick.AddListener(() =>
+        public void ShowPreviewForCard(CardDisplay cardDisplay, IReadOnlyCollection<PF.ActionType> actions)
+        {
+            if (currentlyEnlargedCard != null) return;
+
+            // Store the original position info in a courier object.
+            //var uiContext = new CardPresentationContext(
+            //    originalZone: )
+
+            currentlyEnlargedCard = cardDisplay;
+
+            // Store the card's original location and size.
+            originalParent = cardDisplay.transform.parent;
+            originalSiblingIndex = cardDisplay.transform.GetSiblingIndex();
+            originalScale = cardDisplay.transform.localScale;
+
+            // Show the preview area.
+            previewArea.SetActive(true);
+
+            // Move the card to the preview area and enlarge it.
+            var cardRect = cardDisplay.GetComponent<RectTransform>();
+            cardRect.SetParent(previewArea.transform, false);
+            cardRect.anchoredPosition = Vector3.zero;
+            cardRect.anchorMin = new(0.5f, 0.5f);
+            cardRect.anchorMax = new(0.5f, 0.5f);
+            cardRect.localScale = new Vector3(2f, 2f, 1.0f);
+
+            // Query the card logic for any playable actions.
+            if (actions.Count > 0)
             {
-                //ServiceLocator.Get<ActionStagingManager>().StageAction(action, stagingInfo);
-                EndPreview();
-            });
-
-            activeActionButtons.Add(buttonObj);
+                GenerateActionButtons(actions);
+            }
         }
-    }
 
-    private void ReturnCardToOrigin()
-    {
-        if (currentlyEnlargedCard == null) return;
-
-        // Return the card to its original parent and Z-index.
-        currentlyEnlargedCard.transform.SetParent(originalParent, false);
-        currentlyEnlargedCard.transform.SetSiblingIndex(originalSiblingIndex);
-        currentlyEnlargedCard.transform.localScale = originalScale;
-
-        // Clear action buttons.
-        EndPreview();
-    }
-
-    private void EndPreview()
-    {
-        // Hide the preview and clear the card.
-        previewArea.SetActive(false);
-        currentlyEnlargedCard = null;
-
-        // Remove any action buttons.
-        foreach (var button in activeActionButtons)
+        public void GenerateActionButtons(IReadOnlyCollection<PF.ActionType> actions)
         {
-            Destroy(button);
+            foreach (var action in actions)
+            {
+                GameObject buttonObj = Instantiate(actionButtonPrefab, actionButtonContainer);
+
+                buttonObj.GetComponentInChildren<TextMeshProUGUI>().text = action.ToString();
+                Button button = buttonObj.GetComponent<Button>();
+                button.onClick.AddListener(() =>
+                {
+                    //ServiceLocator.Get<ActionStagingManager>().StageAction(action, stagingInfo);
+                    EndPreview();
+                });
+
+                activeActionButtons.Add(buttonObj);
+            }
         }
-        activeActionButtons.Clear();
+
+        private void ReturnCardToOrigin()
+        {
+            if (currentlyEnlargedCard == null) return;
+
+            // Return the card to its original parent and Z-index.
+            currentlyEnlargedCard.transform.SetParent(originalParent, false);
+            currentlyEnlargedCard.transform.SetSiblingIndex(originalSiblingIndex);
+            currentlyEnlargedCard.transform.localScale = originalScale;
+
+            // Clear action buttons.
+            EndPreview();
+        }
+
+        private void EndPreview()
+        {
+            // Hide the preview and clear the card.
+            previewArea.SetActive(false);
+            currentlyEnlargedCard = null;
+
+            // Remove any action buttons.
+            foreach (var button in activeActionButtons)
+            {
+                Destroy(button);
+            }
+            activeActionButtons.Clear();
+        }
     }
 }

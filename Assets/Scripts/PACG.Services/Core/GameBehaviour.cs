@@ -1,3 +1,4 @@
+using PACG.Services.Game;
 using UnityEngine;
 
 public abstract class GameBehaviour : MonoBehaviour

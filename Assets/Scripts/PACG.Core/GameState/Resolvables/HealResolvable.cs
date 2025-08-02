@@ -1,5 +1,5 @@
+using PACG.Core.Characters;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class HealResolvable /*: IResolvable*/
 {

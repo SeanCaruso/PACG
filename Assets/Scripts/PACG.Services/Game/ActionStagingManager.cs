@@ -1,3 +1,4 @@
+using PACG.Core.Characters;
 using PACG.SharedAPI.States;
 using PACG.Services.Core;
 using System.Collections.Generic;

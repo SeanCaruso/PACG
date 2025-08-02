@@ -1,3 +1,4 @@
+using PACG.Core.Characters;
 using PACG.Presentation.Cards;
 using PACG.Services.Core;
 using PACG.Services.ViewModelFactories;
