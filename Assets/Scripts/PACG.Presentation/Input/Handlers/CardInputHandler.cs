@@ -1,9 +1,7 @@
-using PACG.Presentation.Cards;
-using PACG.Presentation.UI.Controllers;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace PACG.Presentation.Input.Handlers
+namespace PACG.Presentation
 {
     public class CardInputHandler : MonoBehaviour, IPointerClickHandler
     {

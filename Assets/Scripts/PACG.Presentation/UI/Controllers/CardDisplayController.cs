@@ -1,12 +1,11 @@
-using PACG.Core.Characters;
-using PACG.Presentation.Cards;
-using PACG.Services.Core;
-using PACG.Services.ViewModelFactories;
+
+using PACG.Gameplay;
+using PACG.SharedAPI;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace PACG.Presentation.UI.Controllers
+namespace PACG.Presentation
 {
     /// <summary>
     /// Controller for all of a player's cards (hand, revealed, display, etc.)

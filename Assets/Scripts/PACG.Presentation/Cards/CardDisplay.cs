@@ -1,9 +1,9 @@
-using PACG.SharedAPI.ViewModels;
+using PACG.SharedAPI;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace PACG.Presentation.Cards
+namespace PACG.Presentation
 {
     public class CardDisplay : MonoBehaviour
     {

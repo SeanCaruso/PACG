@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace PACG.SharedAPI.ViewModels
+namespace PACG.SharedAPI
 {
     public class CardViewModel
     {

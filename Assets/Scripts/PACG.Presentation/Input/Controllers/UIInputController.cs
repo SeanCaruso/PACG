@@ -1,10 +1,10 @@
-using PACG.Services.Core;
-using PACG.Services.Game;
+using PACG.Gameplay;
+using PACG.SharedAPI;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace PACG.Presentation.Input.Controllers
+namespace PACG.Presentation
 {
     public class UIInputController : GameBehaviour
     {

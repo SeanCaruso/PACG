@@ -1,12 +1,10 @@
-using PACG.Presentation.Cards;
-using PACG.Services.Core;
-using PACG.SharedAPI.PresentationContexts;
+using PACG.Gameplay;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace PACG.Presentation.UI.Controllers
+namespace PACG.Presentation
 {
     public class CardPreviewController : GameBehaviour
     {

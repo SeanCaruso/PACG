@@ -1,4 +1,3 @@
-using PACG.Core.Characters;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -28,8 +27,4 @@ public abstract class CardData : ScriptableObject
 
     [Header("Traits")]
     public List<string> traits;
-
-    [Header("Set During Gameplay")]
-    public PlayerCharacter OriginalOwner { get; set; } = null;
-    public PlayerCharacter Owner { get; set; } = null;
 }

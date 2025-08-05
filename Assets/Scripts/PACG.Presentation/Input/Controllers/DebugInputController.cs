@@ -1,58 +1,62 @@
+using PACG.Gameplay;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class DebugInputController : MonoBehaviour
+namespace PACG.Presentation
 {
-    private List<PlayCardAction> currentOptions;
-    private PlayCardAction selectedAction;
-    private bool waitingForInput;
-
-    public PlayCardAction SelectedAction => selectedAction;
-
-    void Update()
+    public class DebugInputController : MonoBehaviour
     {
-        if (!waitingForInput) return;
+        private List<PlayCardAction> currentOptions;
+        private PlayCardAction selectedAction;
+        private bool waitingForInput;
 
-        var keyboard = Keyboard.current;
-        if (keyboard is null) return;
+        public PlayCardAction SelectedAction => selectedAction;
 
-        for (int i = 0; i < currentOptions.Count; i++)
+        void Update()
         {
-            Key key = Key.Digit1 + i;
-            if (keyboard[key].wasPressedThisFrame)
+            if (!waitingForInput) return;
+
+            var keyboard = Keyboard.current;
+            if (keyboard is null) return;
+
+            for (int i = 0; i < currentOptions.Count; i++)
             {
-                selectedAction = currentOptions[i];
-                break;
+                Key key = Key.Digit1 + i;
+                if (keyboard[key].wasPressedThisFrame)
+                {
+                    selectedAction = currentOptions[i];
+                    break;
+                }
             }
         }
-    }
 
-    public IEnumerator PresentCardActionChoices(List<PlayCardAction> actionChoices)
-    {
-        currentOptions = actionChoices;
-        selectedAction = null;
-        waitingForInput = true;
-
-        Debug.Log("--- Choose a card to play: ---");
-        for (int i = 0; i < actionChoices.Count; i++)
+        public IEnumerator PresentCardActionChoices(List<PlayCardAction> actionChoices)
         {
-            Debug.Log($"{i + 1}) {actionChoices[i].GetLabel()}");
+            currentOptions = actionChoices;
+            selectedAction = null;
+            waitingForInput = true;
+
+            Debug.Log("--- Choose a card to play: ---");
+            for (int i = 0; i < actionChoices.Count; i++)
+            {
+                Debug.Log($"{i + 1}) {actionChoices[i].GetLabel()}");
+            }
+
+            yield return new WaitUntil(() => selectedAction != null);
+
+            waitingForInput = false;
         }
 
-        yield return new WaitUntil(() => selectedAction != null);
+        public void CommitActions()
+        {
+            throw new System.NotImplementedException();
+        }
 
-        waitingForInput = false;
-    }
-
-    public void CommitActions()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void UndoAction()
-    {
-        throw new System.NotImplementedException();
+        public void UndoAction()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }
