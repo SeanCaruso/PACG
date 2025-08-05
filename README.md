@@ -65,39 +65,41 @@ Implementing the rules verbatim would kinda suck. These are some considerations 
 ## 🏗️ ARCHITECTURE DECISIONS
 
 ### Current State
-- **Status**: Major rearchitecture in progress
+- **Status**: Major reorganization completed, architectural cleanup in progress
 - **Removed**: Static dependencies (Game class eliminated)
-- **Implementing**: ServiceLocator pattern for dependency injection
-- **Focus**: Clean layer separation (Presentation → Services → Core)
+- **Implemented**: ServiceLocator pattern for dependency injection
+- **Focus**: Incremental architectural improvements without major redesigns
 
 ### Layer Architecture
 ```
-PACG.Core        → Game rules, domain logic (PlayerCharacter, CardInstance)
-PACG.Services    → Game systems, managers (CardManager, TurnManager) 
+PACG.Gameplay    → Consolidated game rules, managers, card logic, contexts
 PACG.Presentation → UI controllers, display logic (CardDisplayController)
 PACG.Data        → ScriptableObject definitions
-PACG.SharedAPI   → Cross-layer enums and data structures
+PACG.SharedAPI   → Cross-layer enums, events, view models
+PACG.Services    → Pure service infrastructure (ServiceLocator)
 ```
 
 ### Key Patterns
-- **ServiceLocator**: `ServiceLocator.Get<T>()` for dependency access
-- **GameBehaviour**: Base class providing auto-registration with ServiceLocator
-- **Events**: `GameEvents` static class for decoupled communication
-- **ViewModels**: `CardViewModel` separates presentation data from domain objects
+- **ServiceLocator**: `ServiceLocator.Get<T>()` for dependency access (in `PACG.Services/`)
+- **GameBehaviour**: Base class providing auto-registration with ServiceLocator (in `PACG.Gameplay/`)
+- **Events**: `GameEvents` static class for decoupled communication (in `PACG.SharedAPI/`)
+- **ViewModels**: `CardViewModel` separates presentation data from domain objects (in `PACG.SharedAPI/`)
+- **Card Logic Registry**: Attribute-based card behavior system (in `PACG.Gameplay/Logic/`)
 
 ---
 
 ## 🚧 KNOWN ISSUES & PLANNED CHANGES
 
 ### Immediate Priorities
-1. **Fix compile errors** - Two remaining from rearchitecture
-2. **Complete TurnManager functionality** - Get basic turn working
-3. **Layer boundary violations** - TurnManager has Presentation dependencies
+1. **Clean up architectural issues** - Incremental improvements to existing design
+2. **Debug runtime issues** - Fix TurnManager.RunEncounter() signature mismatch
+3. **Complete partial implementations** - EndTurn() method and boon acquisition system
 
 ### Architecture Debt
-- **TurnManager**: Currently uses coroutines inappropriately for turn-based game
-- **Missing namespaces**: Some files still lack proper namespace declarations
-- **GameManager**: God class handling multiple responsibilities (test harness)
+- **Major architectural issues remain** - Need cleanup without complete redesign
+- **Some critical bugs**: Runtime errors preventing full functionality
+- **Empty implementations**: Several TODO items and incomplete methods
+- **Mixed patterns**: Some inconsistencies from the reorganization process
 
 ### Technical Constraints
 - **Unity Version**: 6000.1.11f1
