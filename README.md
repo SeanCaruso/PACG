@@ -65,23 +65,21 @@ Implementing the rules verbatim would kinda suck. These are some considerations 
 ## 🏗️ ARCHITECTURE DECISIONS
 
 ### Current State
-- **Status**: Major reorganization completed, architectural cleanup in progress
-- **Removed**: Static dependencies (Game class eliminated)
-- **Implemented**: ServiceLocator pattern for dependency injection
+- **Status**: Major reorganization completed, ServiceLocator removed
+- **Removed**: Static dependencies (Game class eliminated), ServiceLocator pattern
+- **Implemented**: Clean dependency injection throughout
 - **Focus**: Incremental architectural improvements without major redesigns
 
 ### Layer Architecture
 ```
-PACG.Gameplay    → Consolidated game rules, managers, card logic, contexts
-PACG.Presentation → UI controllers, display logic (CardDisplayController)
+PACG.Gameplay    → Pure C# game rules, managers, card logic, contexts
+PACG.Presentation → Unity UI components, display logic
 PACG.Data        → ScriptableObject definitions
-PACG.SharedAPI   → Cross-layer enums, events, view models
-PACG.Services    → Pure service infrastructure (ServiceLocator)
+PACG.SharedAPI   → Cross-layer view controllers, events, view models
 ```
 
 ### Key Patterns
-- **ServiceLocator**: `ServiceLocator.Get<T>()` for dependency access (in `PACG.Services/`)
-- **GameBehaviour**: Base class providing auto-registration with ServiceLocator (in `PACG.Gameplay/`)
+- **Dependency Injection**: Constructor injection for pure C# classes, Initialize() for MonoBehaviours
 - **Events**: `GameEvents` static class for decoupled communication (in `PACG.SharedAPI/`)
 - **ViewModels**: `CardViewModel` separates presentation data from domain objects (in `PACG.SharedAPI/`)
 - **Card Logic Registry**: Attribute-based card behavior system (in `PACG.Gameplay/Logic/`)
@@ -130,9 +128,9 @@ PACG.Services    → Pure service infrastructure (ServiceLocator)
 ## 📝 CHANGE LOG
 
 ### Recent Major Changes
-- **Massive Rearchitecture** (commit 3dbf50a): Removed static Game class, implemented ServiceLocator pattern
-- **CardDisplayController**: Consolidated card display logic, integrated action staging
-- **Namespace Organization**: Added proper namespace declarations for layer enforcement
+- **ServiceLocator Removal** (commit cda0f10): Removed ServiceLocator pattern, implemented clean dependency injection
+- **Massive Rearchitecture** (commit 3dbf50a): Removed static Game class, reorganized into layers
+- **Namespace Organization**: Complete namespace migration matching folder structure
 
 ### Pending Changes
 - Complete turn management without coroutines
