@@ -1,3 +1,4 @@
+using PACG.SharedAPI;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -8,7 +9,13 @@ namespace PACG.Presentation
         public void OnPointerClick(PointerEventData eventData)
         {
             var cardDisplay = GetComponent<CardDisplay>();
-            ServiceLocator.Get<CardPreviewController>().ShowPreviewForCard(cardDisplay);
+            var previewController = FindFirstObjectByType<CardPreviewController>();
+            if (previewController == null)
+            {
+                Debug.LogError("Unable to find CardPreviewController - does it exist in the scene?");
+                return;
+            }
+            previewController.ShowPreviewForCard(cardDisplay);
         }
     }
 }

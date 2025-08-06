@@ -13,7 +13,9 @@ namespace PACG.Gameplay
         private PlayCardAction _rerollAction;
         private PlayCardAction RerollAction => _rerollAction ??= new(this, Card, PF.ActionType.Discard, ("IsFreely", true));
 
-        List<IStagedAction> IPlayableLogic.GetAvailableCardActions()
+        public LongspearLogic(ContextManager contextManager, LogicRegistry logicRegistry) : base(contextManager, logicRegistry) { }
+
+        protected override List<IStagedAction> GetAvailableCardActions()
         {
             List<IStagedAction> actions = new();
             if (IsCardPlayable)

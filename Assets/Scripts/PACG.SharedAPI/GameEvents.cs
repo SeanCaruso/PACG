@@ -11,6 +11,9 @@ namespace PACG.SharedAPI
         public static event Action TurnPhaseChanged;
         public static void RaiseTurnPhaseChanged() => TurnPhaseChanged?.Invoke();
 
+        public static event Action<CardInstance> EncounterStarted;
+        public static void RaiseEncounterStarted(CardInstance encounteredCard) => EncounterStarted?.Invoke(encounteredCard);
+
         // Card staging events
         public static event Action<IStagedAction> ActionStaged;
         public static void RaiseActionStaged(IStagedAction action) => ActionStaged?.Invoke(action);

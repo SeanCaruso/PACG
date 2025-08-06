@@ -1,19 +1,19 @@
-
-
 using System.Collections.Generic;
 
 namespace PACG.Gameplay
 {
     public class RerollResolvable : IResolvable
     {
-        public PlayerCharacter PlayerCharacter { get; private set; }
+        public LogicRegistry LogicRegistry { get; }
+        public PlayerCharacter PlayerCharacter { get; }
 
-        public RerollResolvable(PlayerCharacter playerCharacter)
+        public RerollResolvable(LogicRegistry logicRegistry, PlayerCharacter playerCharacter, CheckContext checkContext)
         {
+            LogicRegistry = logicRegistry;
             PlayerCharacter = playerCharacter;
 
             // Default option is to not reroll.
-            ServiceLocator.Get<ContextManager>().CheckContext.ContextData["doReroll"] = false;
+            checkContext.ContextData["doReroll"] = false;
         }
 
         public List<IStagedAction> GetValidActions()
@@ -23,7 +23,7 @@ namespace PACG.Gameplay
             foreach (var card in PlayerCharacter.Hand)
             {
                 actions.AddRange(GetValidActionsForCard(card));
-            }
+        }
             foreach (var cardData in PlayerCharacter.DisplayedCards)
             {
                 actions.AddRange(GetValidActionsForCard(cardData));
@@ -34,7 +34,7 @@ namespace PACG.Gameplay
 
         public List<IStagedAction> GetValidActionsForCard(CardInstance card)
         {
-            var cardLogic = ServiceLocator.Get<LogicRegistry>().GetPlayableLogic(card);
+            var cardLogic = LogicRegistry.GetPlayableLogic(card);
             List<IStagedAction> actions = cardLogic?.GetAvailableActions() ?? new();
 
             return actions;

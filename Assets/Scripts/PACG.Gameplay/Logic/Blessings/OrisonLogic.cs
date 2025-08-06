@@ -14,7 +14,7 @@ public class OrisonLogic : PlayableLogicBase
     private const int RechargeToBless = 1;
     private const int DiscardToExplore = 2;
 
-    List<IStagedAction> IPlayableLogic.GetAvailableCardActions()
+    protected override List<IStagedAction> GetAvailableCardActions()
     {
         // TODO: Update this entire class to match standards.
         List<IStagedAction> actions = new()

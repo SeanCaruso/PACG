@@ -22,11 +22,21 @@ namespace PACG.Gameplay
         Villain_Defeat
     }
 
-    public class EncounterManager : GameBehaviour
+    public class EncounterManager
     {
-        private LogicRegistry logicRegistry = null;
+        // Populated via dependency injection
+        private readonly LogicRegistry _logic;
+        private readonly ContextManager _contexts;
+        private readonly ActionStagingManager _actionStagingManager;
 
         private IEncounterLogic encounterLogic = null;
+
+        public EncounterManager(LogicRegistry logicRegistry, ContextManager contextManager, ActionStagingManager actionStagingManager)
+        {
+            _logic = logicRegistry;
+            _contexts = contextManager;
+            _actionStagingManager = actionStagingManager;
+        }
 
         public IEnumerator RunEncounter()
         {
@@ -41,12 +51,11 @@ namespace PACG.Gameplay
             EncounterPhase.Avenge,
         };
 
-            EncounterContext context = Contexts.EncounterContext;
+            EncounterContext context = _contexts.EncounterContext;
 
-            logicRegistry = ServiceLocator.Get<LogicRegistry>();
-            encounterLogic = logicRegistry.GetEncounterLogic(context.EncounteredCard);
+            encounterLogic = _logic.GetEncounterLogic(context.EncounteredCard);
 
-            Contexts.NewCheck(new(context.EncounterPC, context.EncounteredCard.Data.checkRequirement.checkSteps[0], Contexts.GameContext));
+            _contexts.NewCheck(new(context.EncounterPC, context.EncounteredCard.Data.checkRequirement.checkSteps[0], _contexts.GameContext));
             foreach (EncounterPhase phase in encounterFlow)
             {
                 var resolvables = encounterLogic?.Execute(phase) ?? new();
@@ -55,38 +64,38 @@ namespace PACG.Gameplay
                 if (resolvables.Count > 0 && resolvables[0] is CombatResolvable)
                 {
                     CombatResolvable combatResolvable = resolvables[0] as CombatResolvable;
-                    Contexts.NewResolution(new(combatResolvable));
-                    yield return Contexts.ResolutionContext.WaitForResolution();
-                    Contexts.EndResolution();
+                    _contexts.NewResolution(new(combatResolvable), _actionStagingManager);
+                    yield return _contexts.ResolutionContext.WaitForResolution();
+                    _contexts.EndResolution();
 
                     yield return ResolveCombatCheck(combatResolvable.Difficulty);
                 }
             }
-            Contexts.EndCheck();
+            _contexts.EndCheck();
 
             yield break;
         }
 
         private IEnumerator ResolveCombatCheck(int dc)
         {
-            CheckContext context = Contexts.CheckContext;
+            CheckContext context = _contexts.CheckContext;
 
             // Add blessing dice.
-            context.DicePool.AddDice(context.BlessingCount, Contexts.TurnContext.CurrentPC.GetSkill(context.UsedSkill).die);
+            context.DicePool.AddDice(context.BlessingCount, _contexts.TurnContext.CurrentPC.GetSkill(context.UsedSkill).die);
 
             context.CheckPhase = CheckPhase.RollDice;
             int rollTotal = context.DicePool.Roll();
-            context.CheckResult = new(rollTotal, dc, Contexts.TurnContext.CurrentPC, context.UsedSkill, context.Traits);
+            context.CheckResult = new(rollTotal, dc, _contexts.TurnContext.CurrentPC, context.UsedSkill, context.Traits);
 
             // See if we need to prompt for rerolls.
             bool skippedReroll = false;
-            while (context.CheckResult.MarginOfSuccess < Contexts.EncounterContext.EncounteredCard.Data.rerollThreshold && !skippedReroll)
+            while (context.CheckResult.MarginOfSuccess < _contexts.EncounterContext.EncounteredCard.Data.rerollThreshold && !skippedReroll)
             {
                 bool promptReroll = false;
-                var cardsToCheck = Contexts.TurnContext.CurrentPC.Hand.Union(Contexts.TurnContext.CurrentPC.DisplayedCards);
+                var cardsToCheck = _contexts.TurnContext.CurrentPC.Hand.Union(_contexts.TurnContext.CurrentPC.DisplayedCards);
                 foreach (var card in cardsToCheck)
                 {
-                    if (logicRegistry.GetPlayableLogic(card).GetAvailableActions().Count > 0)
+                    if (_logic.GetPlayableLogic(card).GetAvailableActions().Count > 0)
                     {
                         promptReroll = true;
                         break;
@@ -94,18 +103,18 @@ namespace PACG.Gameplay
                 }
 
                 // No playable cards allow rerolls... check if a played card set the context.
-                promptReroll |= ((List<CardInstance>)Contexts.CheckContext.ContextData.GetValueOrDefault("rerollCards", new List<CardInstance>())).Count > 0;
+                promptReroll |= ((List<CardInstance>)_contexts.CheckContext.ContextData.GetValueOrDefault("rerollCards", new List<CardInstance>())).Count > 0;
 
                 if (promptReroll)
                 {
                     Debug.Log("Prompting for reroll.");
                     // Reroll Resolvable
-                    RerollResolvable rerollResolvable = new(Contexts.TurnContext.CurrentPC);
-                    Contexts.NewResolution(new(rerollResolvable));
-                    yield return Contexts.ResolutionContext.WaitForResolution();
-                    Contexts.EndResolution();
+                    RerollResolvable rerollResolvable = new(_logic, _contexts.TurnContext.CurrentPC, _contexts.CheckContext);
+                    _contexts.NewResolution(new(rerollResolvable), _actionStagingManager);
+                    yield return _contexts.ResolutionContext.WaitForResolution();
+                    _contexts.EndResolution();
 
-                    if (Contexts.CheckContext.ContextData.TryGetValue("doReroll", out var doReroll) && (bool)(doReroll))
+                    if (_contexts.CheckContext.ContextData.TryGetValue("doReroll", out var doReroll) && (bool)(doReroll))
                     {
                         context.CheckResult.FinalRollTotal = context.DicePool.Roll();
                     }
@@ -113,7 +122,7 @@ namespace PACG.Gameplay
                     {
                         // We skipped - no more rerolls.
                         skippedReroll = true;
-                        ((List<CardInstance>)Contexts.CheckContext.ContextData.GetValueOrDefault("rerollCards", new List<CardInstance>())).Clear();
+                        ((List<CardInstance>)_contexts.CheckContext.ContextData.GetValueOrDefault("rerollCards", new List<CardInstance>())).Clear();
                     }
                 }
                 else
@@ -133,11 +142,11 @@ namespace PACG.Gameplay
             {
                 context.CheckPhase = CheckPhase.SufferDamage;
 
-                DamageResolvable damageResolvable = new(Contexts.TurnContext.CurrentPC, -context.CheckResult.MarginOfSuccess);
-                Contexts.NewResolution(new(damageResolvable));
+                DamageResolvable damageResolvable = new(_logic, _contexts.TurnContext.CurrentPC, -context.CheckResult.MarginOfSuccess);
+                _contexts.NewResolution(new(damageResolvable), _actionStagingManager);
                 Debug.Log($"Rolled {context.CheckResult.FinalRollTotal} vs. {dc} - Take {damageResolvable.Amount} damage!");
-                yield return Contexts.ResolutionContext.WaitForResolution();
-                Contexts.EndResolution();
+                yield return _contexts.ResolutionContext.WaitForResolution();
+                _contexts.EndResolution();
             }
 
             yield break;

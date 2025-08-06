@@ -12,7 +12,7 @@ public class DeathbaneLightCrossbowLogic : PlayableLogicBase
     private const int DiscardIndex = 1;
     private const int ReloadIndex = 2;
 
-    List<IStagedAction> IPlayableLogic.GetAvailableCardActions()
+    protected override List<IStagedAction> GetAvailableCardActions()
     {
         List<IStagedAction> actions = new();
         if (!Contexts.CheckContext.StagedCardTypes.Contains(CardData.cardType))

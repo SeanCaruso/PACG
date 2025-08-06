@@ -8,9 +8,18 @@ using UnityEngine;
 
 namespace PACG.Gameplay
 {
-    public class ActionStagingManager : GameBehaviour
+    public class ActionStagingManager
     {
+        private readonly ContextManager Contexts;
+        private readonly CardManager Cards;
+
         private readonly Dictionary<PlayerCharacter, List<IStagedAction>> pcsStagedActions = new();
+
+        public ActionStagingManager(ContextManager contextManager, CardManager cardManager)
+        {
+            Contexts = contextManager;
+            Cards = cardManager;
+        }
 
         public void StageAction(IStagedAction action)
         {

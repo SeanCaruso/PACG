@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace PACG.Presentation
 {
-    public class UIInputController : GameBehaviour
+    public class UIInputController : MonoBehaviour
     {
         [Header("Turn Flow")]
         public Button giveCardButton;
@@ -20,17 +20,13 @@ namespace PACG.Presentation
         public Button commitButton;
         public Button skipButton;
 
-        public static UIInputController Instance { get; private set; }
-
-        private TurnManager turnManager;
+        // Dependency injections set in Initialize
+        private TurnManager _turnManager;
 
         protected void Start()
         {
             // Subscribe to events.
             GameEvents.TurnPhaseChanged += UpdateTurnButtons;
-
-            turnManager = ServiceLocator.Get<TurnManager>();
-            if (turnManager == null) Debug.LogError("UIInputController can't find TurnManager!");
 
             giveCardButton.onClick.AddListener(() => GiveCardButton_OnClick());
             moveButton.onClick.AddListener(() => MoveButton_OnClick());
@@ -44,20 +40,25 @@ namespace PACG.Presentation
             GameEvents.TurnPhaseChanged -= UpdateTurnButtons;
         }
 
+        public void Initialize(TurnManager turnManager)
+        {
+            _turnManager = turnManager;
+        }
+
         // --- Turn Flow -----------------------------------------
 
-        public void GiveCardButton_OnClick() => turnManager.GiveCard();
-        public void MoveButton_OnClick() => turnManager.MoveToLocation();
-        public void ExploreButton_OnClick() => turnManager.Explore();
-        public void OptionalDiscardButton_OnClick() => turnManager.OptionalDiscards();
-        public void EndTurnButton_OnClick() => turnManager.EndTurn();
+        public void GiveCardButton_OnClick() => _turnManager.GiveCard();
+        public void MoveButton_OnClick() => _turnManager.MoveToLocation();
+        public void ExploreButton_OnClick() => _turnManager.Explore();
+        public void OptionalDiscardButton_OnClick() => _turnManager.OptionalDiscards();
+        public void EndTurnButton_OnClick() => _turnManager.EndTurn();
 
         protected void UpdateTurnButtons()
         {
-            giveCardButton.enabled = turnManager.CanGive;
-            moveButton.enabled = turnManager.CanMove;
-            exploreButton.enabled = turnManager.CanExplore;
-            optionalDiscardButton.enabled = Contexts.TurnContext.CurrentPC.Hand.Count > 0;
+            giveCardButton.enabled = _turnManager.CanGive;
+            moveButton.enabled = _turnManager.CanMove;
+            exploreButton.enabled = _turnManager.CanExplore;
+            optionalDiscardButton.enabled = _turnManager.CurrentPC.Hand.Count > 0;
         }
 
         // --- Action Staging Flow -----------------------------------

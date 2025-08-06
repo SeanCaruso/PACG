@@ -23,14 +23,8 @@ namespace PACG.Gameplay
             Debug.Log($"{Card.Data.cardName} given to {targetName}.");
         }
 
-        public void OnStage(CheckContext _ = null)
-        {
-            ServiceLocator.Get<ActionStagingManager>().StageAction(this);
-        }
+        public void OnStage(CheckContext _ = null) { }
 
-        public void OnUndo(CheckContext _ = null)
-        {
-            ServiceLocator.Get<ActionStagingManager>().Cancel();
-        }
+        public void OnUndo(CheckContext _ = null) { }
     }
 }

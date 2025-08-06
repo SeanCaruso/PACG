@@ -5,19 +5,17 @@ using UnityEngine;
 
 namespace PACG.Gameplay
 {
-    public class LogicRegistry : MonoBehaviour
+    public class LogicRegistry
     {
         private readonly Dictionary<string, IEncounterLogic> encounterLogicMap = new();
         private readonly Dictionary<string, IPlayableLogic> playableLogicMap = new();
 
-        private void Awake()
+        public LogicRegistry(ContextManager contexts)
         {
-            ServiceLocator.Register(this);
-
-            RegisterAllLogic();
+            RegisterAllLogic(contexts);
         }
 
-        private void RegisterAllLogic()
+        private void RegisterAllLogic(ContextManager contexts)
         {
             Assembly assembly = Assembly.GetExecutingAssembly();
             foreach (Type type in assembly.GetTypes())
@@ -28,21 +26,38 @@ namespace PACG.Gameplay
                 if (typeof(IEncounterLogic).IsAssignableFrom(type))
                 {
                     var attribute = type.GetCustomAttribute<EncounterLogicForAttribute>();
-                    if (attribute != null)
+                    if (attribute == null)
+                        continue;
+
+                    try
                     {
-                        var instance = Activator.CreateInstance(type) as IEncounterLogic;
+                        var instance = Activator.CreateInstance(type, contexts, this) as IEncounterLogic;
                         encounterLogicMap[attribute.CardID] = instance;
                     }
+                    catch (MissingMethodException ex)
+                    {
+                        Debug.LogError($"Failed to create {type.Name}: Make sure CreateInstance has the correct constructor signature for IEncounterLogic. Exception: {ex.Message}");
+                        throw; // Re-throw to make it obvious something is wrong
+                    }
+
                 }
 
                 // Check for Playable logic.
                 if (typeof(IPlayableLogic).IsAssignableFrom(type))
                 {
                     var attribute = type.GetCustomAttribute<PlayableLogicForAttribute>();
-                    if (attribute != null)
+                    if (attribute == null)
+                        continue;
+                    
+                    try
                     {
-                        var instance = Activator.CreateInstance(type) as IPlayableLogic;
+                        var instance = Activator.CreateInstance(type, contexts, this) as IPlayableLogic;
                         playableLogicMap[attribute.CardID] = instance;
+                    }
+                    catch (MissingMethodException ex)
+                    {
+                        Debug.LogError($"Failed to create {type.Name}: Make sure CreateInstance has the correct constructor signature for IPlayableLogic. Exception: {ex.Message}");
+                        throw; // Re-throw to make it obvious something is wrong
                     }
                 }
             }

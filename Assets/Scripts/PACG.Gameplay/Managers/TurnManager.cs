@@ -8,19 +8,8 @@ using UnityEngine.UI;
 
 namespace PACG.Gameplay
 {
-    public class TurnManager : GameBehaviour
+    public class TurnManager
     {
-        [Header("The Hour")]
-        public CardData testHourData;
-        public CardDisplay hourDisplay;
-
-        [Header("UI References")]
-        public GameObject encounterZone;
-
-        [Header("Prefab References")]
-        public CardDisplay cardPrefab;
-
-        private readonly Deck hoursDeck = new();
         private Deck locationDeck = new();
 
         // ==== TURN PHASE AVAILABILITY ============================
@@ -39,12 +28,17 @@ namespace PACG.Gameplay
         private bool canEndTurn = false;
         public bool CanEndTurn => canEndTurn;
 
-        public void Start()
+        // ==== RETRIEVABLE PROPERTIES =============================
+        public PlayerCharacter CurrentPC => _contexts.TurnContext.CurrentPC;
+
+        // ==== DEPENDENCIES SET VIA DEPENDENCY INJECTION IN THE CONSTRUCTOR ========================
+        private ContextManager _contexts;
+        private EncounterManager _encounterManager;
+
+        public TurnManager(ContextManager contexts, EncounterManager encounterManager)
         {
-            for (int i = 0; i < 30; i++)
-            {
-                hoursDeck.Recharge(Cards.New(testHourData));
-            }
+            _contexts = contexts;
+            _encounterManager = encounterManager;
         }
 
         public void StartTurn(PlayerCharacter pc, Deck locationDeck)
@@ -52,9 +46,9 @@ namespace PACG.Gameplay
             this.locationDeck = locationDeck;
 
             // Advance the hour - happens automatically.
-            var hourCard = hoursDeck.DrawCard();
-            hourDisplay.SetViewModel(CardViewModelFactory.CreateFrom(hourCard, Contexts.GameContext.AdventureNumber));
-            Contexts.NewTurn(new(hourCard, pc));
+            //var hourCard = hoursDeck.DrawCard();
+            //hourDisplay.SetViewModel(CardViewModelFactory.CreateFrom(hourCard, _contexts.GameContext.AdventureNumber));
+            //_contexts.NewTurn(new(hourCard, pc));
 
             // TODO: Apply start of turn effects.
 
@@ -64,7 +58,7 @@ namespace PACG.Gameplay
             canExplore = locationDeck.Count > 0;
             canCloseLocation = locationDeck.Count == 0;
 
-            Contexts.EndTurn();
+            _contexts.EndTurn();
         }
 
         public void GiveCard()
@@ -99,7 +93,7 @@ namespace PACG.Gameplay
 
         }
 
-        private void RunEncounter()
+        public void RunEncounter()
         {
             CardInstance exploredCard = locationDeck.DrawCard();
 
@@ -107,21 +101,17 @@ namespace PACG.Gameplay
                 return;
 
             // Show the encountered card in UI.
-            CardDisplay newCard = Instantiate(cardPrefab, encounterZone.transform);
-            newCard.SetViewModel(CardViewModelFactory.CreateFrom(exploredCard, Contexts.GameContext.AdventureNumber));
-            newCard.GetComponent<RectTransform>().anchoredPosition = Vector3.zero;
-            newCard.transform.localScale = Vector3.one;
+            GameEvents.RaiseEncounterStarted(exploredCard);
 
             //GameObject encounterObject = new($"Encounter_{exploredCard.Data.cardID}");
-            EncounterManager encounterManager = ServiceLocator.Get<EncounterManager>(); //encounterObject.AddComponent<EncounterManager>();
 
-            Contexts.NewEncounter(new(Contexts.TurnContext.CurrentPC, exploredCard));
+            _contexts.NewEncounter(new(_contexts.TurnContext.CurrentPC, exploredCard));
 
-            encounterManager.RunEncounter();
+            _encounterManager.RunEncounter();
 
             Debug.Log("Encounter finished.");
 
-            if (Contexts.EncounterContext.CheckResult?.WasSuccess ?? false)
+            if (_contexts.EncounterContext.CheckResult?.WasSuccess ?? false)
             {
                 if (exploredCard.Data is BoonCardData)
                 {
@@ -130,16 +120,14 @@ namespace PACG.Gameplay
                 else
                 {
                     Debug.Log("Bane banished.");
-                    Destroy(newCard.gameObject);
                 }
             }
             else
             {
                 Debug.Log("Do damage.");
-                Destroy(newCard.gameObject);
                 // Do damage later.
             }
-            Contexts.EndEncounter();
+            _contexts.EndEncounter();
 
             //Destroy(encounterObject);
         }

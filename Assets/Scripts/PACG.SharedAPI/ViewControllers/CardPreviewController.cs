@@ -1,13 +1,17 @@
 using PACG.Gameplay;
+using PACG.Presentation;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace PACG.Presentation
+namespace PACG.SharedAPI
 {
-    public class CardPreviewController : GameBehaviour
+    public class CardPreviewController : MonoBehaviour
     {
+        [Header("Other Controllers")]
+        public CardDisplayController cardDisplayController;
+
         [Header("UI Elements")]
         public GameObject previewArea;
         public Button backgroundButton;
@@ -23,11 +27,21 @@ namespace PACG.Presentation
 
         private readonly List<GameObject> activeActionButtons = new();
 
+        // Dependencies set up via dependency injection in Initialize.
+        private LogicRegistry _logic;
+        private ActionStagingManager _actionStagingManager;
+
         private void Start()
         {
             // Add a listener to the background button to handle returning the card.
             backgroundButton.onClick.AddListener(ReturnCardToOrigin);
             previewArea.SetActive(false);
+        }
+
+        public void Initialize(LogicRegistry logicRegistry, ActionStagingManager actionStagingManager)
+        {
+            _logic = logicRegistry;
+            _actionStagingManager = actionStagingManager;
         }
 
         public void ShowPreviewForCard(CardDisplay cardDisplay)
@@ -38,7 +52,7 @@ namespace PACG.Presentation
                 return;
             }
 
-            var cardInstance = ServiceLocator.Get<CardDisplayController>().GetInstanceFromDisplay(cardDisplay);
+            var cardInstance = cardDisplayController.GetInstanceFromDisplay(cardDisplay);
             if (cardInstance == null)
             {
                 Debug.LogError($"Tried to preview {cardDisplay.name}, but it has no CardInstance!");
@@ -64,7 +78,7 @@ namespace PACG.Presentation
             cardRect.localScale = new Vector3(2f, 2f, 1.0f);
 
             // Query the card logic for any playable actions.
-            GenerateActionButtons(Logic.GetPlayableLogic(cardInstance).GetAvailableActions());
+            GenerateActionButtons(_logic.GetPlayableLogic(cardInstance).GetAvailableActions());
         }
 
         public void GenerateActionButtons(IReadOnlyCollection<IStagedAction> actions)
@@ -77,7 +91,7 @@ namespace PACG.Presentation
                 Button button = buttonObj.GetComponent<Button>();
                 button.onClick.AddListener(() =>
                 {
-                    ServiceLocator.Get<ActionStagingManager>().StageAction(action);
+                    _actionStagingManager.StageAction(action);
                     EndPreview();
                 });
 

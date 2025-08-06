@@ -14,7 +14,9 @@ namespace PACG.Gameplay
         private PlayCardAction _discardAction;
         private PlayCardAction DiscardAction => _discardAction ??= new(this, Card, PF.ActionType.Discard, ("IsCombat", true), ("IsFreely", true));
 
-        List<IStagedAction> IPlayableLogic.GetAvailableCardActions()
+        public LongbowLogic(ContextManager contextManager, LogicRegistry logicRegistry) : base(contextManager, logicRegistry) { }
+
+        protected override List<IStagedAction> GetAvailableCardActions()
         {
             List<IStagedAction> actions = new();
             if (CanReveal) actions.Add(RevealAction);

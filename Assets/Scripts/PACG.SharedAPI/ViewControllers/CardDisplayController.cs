@@ -1,17 +1,20 @@
-
 using PACG.Gameplay;
-using PACG.SharedAPI;
+using PACG.Presentation;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace PACG.Presentation
+namespace PACG.SharedAPI
 {
     /// <summary>
-    /// Controller for all of a player's cards (hand, revealed, display, etc.)
+    /// Controller for all visible, non-previewed cards (hour, explored, hand, revealed, display, etc.)
     /// </summary>
-    public class CardDisplayController : GameBehaviour
+    public class CardDisplayController : MonoBehaviour
     {
+        [Header("Non-Player Card Container Transforms")]
+        public RectTransform hoursContainer;
+        public RectTransform encounteredContainer;
+
         [Header("Player Card Container Transforms")]
         public RectTransform handContainer;
         public RectTransform displayedContainer;
@@ -35,16 +38,32 @@ namespace PACG.Presentation
 
         private readonly Dictionary<CardInstance, CardStagingInfo> originalCardStates = new();
 
-        protected override void OnAwake()
+        protected void Awake()
         {
+            GameEvents.EncounterStarted += OnEncounterStarted;
+
             GameEvents.ActionStaged += OnActionStaged;
             GameEvents.ActionUnstaged += OnActionUnstaged;
         }
 
         protected void OnDestroy()
         {
+            GameEvents.EncounterStarted -= OnEncounterStarted;
+
             GameEvents.ActionStaged -= OnActionStaged;
             GameEvents.ActionUnstaged -= OnActionUnstaged;
+        }
+
+        // ========================================================================================
+        // ENCOUNTER MANAGEMENT
+        // ========================================================================================
+
+        public void OnEncounterStarted(CardInstance encounteredCard)
+        {
+            CardDisplay cardDisplay = Instantiate(cardPrefab, encounteredContainer);
+            displayToInstanceMap.Add(cardDisplay, encounteredCard);
+            cardDisplay.SetViewModel(CardViewModelFactory.CreateFrom(encounteredCard, 1 /* TODO: Update this via event? */ ));
+            cardDisplay.transform.localScale = Vector3.one;
         }
 
         // ========================================================================================
@@ -76,8 +95,7 @@ namespace PACG.Presentation
         {
             CardDisplay cardDisplay = Instantiate(cardPrefab, handContainer);
             displayToInstanceMap.Add(cardDisplay, card);
-            cardDisplay.SetViewModel(CardViewModelFactory.CreateFrom(card, Contexts.GameContext.AdventureNumber));
-            cardDisplay.transform.SetParent(handContainer);
+            cardDisplay.SetViewModel(CardViewModelFactory.CreateFrom(card, 1 /* TODO: Update this via event? */ ));
             cardDisplay.transform.localScale = Vector3.one;
         }
 

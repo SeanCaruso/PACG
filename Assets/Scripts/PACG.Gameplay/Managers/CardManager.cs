@@ -1,5 +1,3 @@
-
-
 using PACG.SharedAPI;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,23 +5,12 @@ using UnityEngine;
 
 namespace PACG.Gameplay
 {
-    public class CardManager : MonoBehaviour
+    public class CardManager
     {
         private readonly List<CardInstance> allCards = new();
         private readonly List<CardInstance> theVault = new();
 
         private readonly Dictionary<CardInstance, CardLocation> stagedOriginalLocations = new();
-
-        private void Awake()
-        {
-            ServiceLocator.Register(this);
-            GameEvents.CardLocationChanged += HandleCardLocationChanged;
-        }
-
-        private void OnDestroy()
-        {
-            GameEvents.CardLocationChanged -= HandleCardLocationChanged;
-        }
 
         public CardInstance New(CardData card, PlayerCharacter owner = null)
         {

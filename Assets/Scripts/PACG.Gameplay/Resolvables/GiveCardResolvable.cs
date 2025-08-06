@@ -6,19 +6,20 @@ namespace PACG.Gameplay
 {
     public class GiveCardResolvable : IResolvable
     {
-        private readonly PlayerCharacter _targetPc;
+        public PlayerCharacter Actor { get; }
+        public PlayerCharacter TargetPC { get; }
 
-        public GiveCardResolvable(PlayerCharacter targetPc)
+        public GiveCardResolvable(PlayerCharacter actor, PlayerCharacter targetPc)
         {
-            _targetPc = targetPc;
+            Actor = actor;
+            TargetPC = targetPc;
         }
 
         public List<IStagedAction> GetValidActions()
         {
             List<IStagedAction> actions = new();
 
-            var turnContext = ServiceLocator.Get<ContextManager>().TurnContext;
-            foreach (var card in turnContext.CurrentPC.Hand)
+            foreach (var card in Actor.Hand)
             {
                 actions.AddRange(GetValidActionsForCard(card));
             }
@@ -28,7 +29,7 @@ namespace PACG.Gameplay
 
         public List<IStagedAction> GetValidActionsForCard(CardInstance card)
         {
-            return new List<IStagedAction> { new GiveCardAction(card, _targetPc) };
+            return new List<IStagedAction> { new GiveCardAction(card, TargetPC) };
         }
 
         public bool IsResolved(List<IStagedAction> actions)

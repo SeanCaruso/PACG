@@ -7,10 +7,13 @@ namespace PACG.Gameplay
 {
     public class CombatResolvable : IResolvable
     {
-        public PlayerCharacter Character { get; protected set; }
-        public int Difficulty { get; protected set; }
-        public CombatResolvable(PlayerCharacter character, int difficulty)
+        public LogicRegistry LogicRegistry { get; }
+        public PlayerCharacter Character { get; }
+        public int Difficulty { get; }
+
+        public CombatResolvable(LogicRegistry logicRegistry, PlayerCharacter character, int difficulty)
         {
+            LogicRegistry = logicRegistry;
             this.Character = character;
             Difficulty = difficulty;
         }
@@ -28,7 +31,7 @@ namespace PACG.Gameplay
 
         public List<IStagedAction> GetValidActionsForCard(CardInstance card)
         {
-            var cardLogic = ServiceLocator.Get<LogicRegistry>().GetPlayableLogic(card);
+            var cardLogic = LogicRegistry.GetPlayableLogic(card);
             return cardLogic?.GetAvailableActions() ?? new();
         }
 

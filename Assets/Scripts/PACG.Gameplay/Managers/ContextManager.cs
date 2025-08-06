@@ -2,18 +2,13 @@ using UnityEngine;
 
 namespace PACG.Gameplay
 {
-    public class ContextManager : MonoBehaviour
+    public class ContextManager
     {
         public GameContext GameContext { get; private set; } = null;
         public TurnContext TurnContext { get; private set; } = null;
         public EncounterContext EncounterContext { get; private set; } = null;
         public CheckContext CheckContext { get; private set; } = null;
         public ResolutionContext ResolutionContext { get; private set; } = null;
-
-        private void Awake()
-        {
-            ServiceLocator.Register(this);
-        }
 
         public void NewGame(GameContext gameContext) => GameContext = gameContext;
 
@@ -26,12 +21,12 @@ namespace PACG.Gameplay
         public void NewCheck(CheckContext checkContext) => CheckContext = checkContext;
         public void EndCheck() => CheckContext = null;
 
-        public void NewResolution(ResolutionContext resolutionContext)
+        public void NewResolution(ResolutionContext resolutionContext, ActionStagingManager asm)
         {
             ResolutionContext = resolutionContext;
 
             // Update the ActionStagingManager in case we need to show a Skip button.
-            ServiceLocator.Get<ActionStagingManager>().UpdateActionButtonState();
+            asm.UpdateActionButtonState();
         }
         public void EndResolution() => ResolutionContext = null;
     }
