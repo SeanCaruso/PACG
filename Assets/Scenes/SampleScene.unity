@@ -150,6 +150,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardDisplayController: {fileID: 857526836}
   cardPreviewController: {fileID: 1192049682}
+  uIInputController: {fileID: 1864128405}
+  hourCardData: {fileID: 11400000, guid: 06534aedf16e0b345b540522bee89026, type: 2}
   testCharacter: {fileID: 11400000, guid: 7f93a7efbf7cf2c408a01c15431b7656, type: 2}
   characterDeck:
   - {fileID: 11400000, guid: ecf6fd932d3ca5c4794f6d97e4931b08, type: 2}
@@ -946,7 +948,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1864128405}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: UIInputController, Runtime
         m_MethodName: EndTurnButton_OnClick
         m_Mode: 1
@@ -1346,7 +1348,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1864128405}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: UIInputController, Runtime
         m_MethodName: CancelButton_OnClick
         m_Mode: 1
@@ -1513,7 +1515,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1864128405}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: UIInputController, Runtime
         m_MethodName: SkipButton_OnClick
         m_Mode: 1
@@ -1694,7 +1696,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1864128405}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: UIInputController, Runtime
         m_MethodName: CommitButton_OnClick
         m_Mode: 1
@@ -1984,7 +1986,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1864128405}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: UIInputController, Runtime
         m_MethodName: ExploreButton_OnClick
         m_Mode: 1
@@ -2971,7 +2973,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1864128403}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 98d2072ab5cb4084b8d50df621a1921a, type: 3}
+  m_Script: {fileID: 11500000, guid: 72d0d6801371e1a498c4b66e0d6fef7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   giveCardButton: {fileID: 912236915}
@@ -3231,7 +3233,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1864128405}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: UIInputController, Runtime
         m_MethodName: OptionalDiscardButton_OnClick
         m_Mode: 1

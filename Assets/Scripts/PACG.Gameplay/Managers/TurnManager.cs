@@ -1,10 +1,6 @@
 
-using PACG.Presentation;
 using PACG.SharedAPI;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace PACG.Gameplay
 {
@@ -32,8 +28,8 @@ namespace PACG.Gameplay
         public PlayerCharacter CurrentPC => _contexts.TurnContext.CurrentPC;
 
         // ==== DEPENDENCIES SET VIA DEPENDENCY INJECTION IN THE CONSTRUCTOR ========================
-        private ContextManager _contexts;
-        private EncounterManager _encounterManager;
+        private readonly ContextManager _contexts;
+        private readonly EncounterManager _encounterManager;
 
         public TurnManager(ContextManager contexts, EncounterManager encounterManager)
         {
@@ -46,9 +42,9 @@ namespace PACG.Gameplay
             this.locationDeck = locationDeck;
 
             // Advance the hour - happens automatically.
-            //var hourCard = hoursDeck.DrawCard();
-            //hourDisplay.SetViewModel(CardViewModelFactory.CreateFrom(hourCard, _contexts.GameContext.AdventureNumber));
-            //_contexts.NewTurn(new(hourCard, pc));
+            var hourCard = _contexts.GameContext.HourDeck.DrawCard();
+            GameEvents.RaiseHourChanged(hourCard);
+            _contexts.NewTurn(new(hourCard, pc));
 
             // TODO: Apply start of turn effects.
 
@@ -57,6 +53,7 @@ namespace PACG.Gameplay
             canMove = true; // TODO: Implement logic after we have multiple locations
             canExplore = locationDeck.Count > 0;
             canCloseLocation = locationDeck.Count == 0;
+            GameEvents.RaiseTurnStateChanged();
 
             _contexts.EndTurn();
         }
@@ -65,6 +62,7 @@ namespace PACG.Gameplay
         {
             // TODO: Implement giving a card after we have multiple characters.
             canGive = false;
+            GameEvents.RaiseTurnStateChanged();
         }
 
         public void MoveToLocation()
@@ -72,6 +70,7 @@ namespace PACG.Gameplay
             // TODO: Implement moving to a location after we have multiple locations.
             canGive = false;
             canMove = false;
+            GameEvents.RaiseTurnStateChanged();
         }
 
         public void Explore()
@@ -79,6 +78,7 @@ namespace PACG.Gameplay
             canGive = false;
             canMove = false;
             canExplore = false;
+            GameEvents.RaiseTurnStateChanged();
         }
 
         public void OptionalDiscards()
@@ -86,6 +86,7 @@ namespace PACG.Gameplay
             canGive = false;
             canMove = false;
             canExplore = false;
+            GameEvents.RaiseTurnStateChanged();
         }
 
         public void EndTurn()

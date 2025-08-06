@@ -32,7 +32,9 @@ namespace PACG.SharedAPI
         [Header("Card Management")]
         public CardDisplay cardPrefab;
 
-        private PlayerCharacter _pc = null;
+        private PlayerCharacter PC { get; set; } = null;
+        private int AdventureNumber { get; set; }
+
         private readonly Dictionary<CardDisplay, CardInstance> displayToInstanceMap = new();
         public CardInstance GetInstanceFromDisplay(CardDisplay display) => displayToInstanceMap.GetValueOrDefault(display, null);
 
@@ -54,6 +56,11 @@ namespace PACG.SharedAPI
             GameEvents.ActionUnstaged -= OnActionUnstaged;
         }
 
+        public void Initialize(int adventureNumber)
+        {
+            AdventureNumber = adventureNumber;
+        }
+
         // ========================================================================================
         // ENCOUNTER MANAGEMENT
         // ========================================================================================
@@ -72,9 +79,9 @@ namespace PACG.SharedAPI
 
         public void SetCurrentPC(PlayerCharacter pc)
         {
-            if (_pc != null) _pc.HandChanged -= OnHandChanged;
-            _pc = pc;
-            _pc.HandChanged += OnHandChanged;
+            if (PC != null) PC.HandChanged -= OnHandChanged;
+            PC = pc;
+            PC.HandChanged += OnHandChanged;
         }
 
         private void OnHandChanged()
@@ -84,18 +91,18 @@ namespace PACG.SharedAPI
             {
                 var cardDisplay = child.GetComponent<CardDisplay>();
                 displayToInstanceMap.Remove(cardDisplay);
-                Destroy(cardDisplay);
+                Destroy(cardDisplay.gameObject);
             }
 
             // Rebuild the hand
-            foreach (var card in _pc.Hand) AddCardToHand(card);
+            foreach (var card in PC.Hand) AddCardToHand(card);
         }
 
         public void AddCardToHand(CardInstance card)
         {
             CardDisplay cardDisplay = Instantiate(cardPrefab, handContainer);
             displayToInstanceMap.Add(cardDisplay, card);
-            cardDisplay.SetViewModel(CardViewModelFactory.CreateFrom(card, 1 /* TODO: Update this via event? */ ));
+            cardDisplay.SetViewModel(CardViewModelFactory.CreateFrom(card, AdventureNumber));
             cardDisplay.transform.localScale = Vector3.one;
         }
 

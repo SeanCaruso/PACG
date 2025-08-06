@@ -1,10 +1,9 @@
 using PACG.Gameplay;
-using PACG.SharedAPI;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace PACG.Presentation
+namespace PACG.SharedAPI
 {
     public class UIInputController : MonoBehaviour
     {
@@ -26,7 +25,7 @@ namespace PACG.Presentation
         protected void Start()
         {
             // Subscribe to events.
-            GameEvents.TurnPhaseChanged += UpdateTurnButtons;
+            GameEvents.TurnStateChanged += UpdateTurnButtons;
 
             giveCardButton.onClick.AddListener(() => GiveCardButton_OnClick());
             moveButton.onClick.AddListener(() => MoveButton_OnClick());
@@ -37,7 +36,7 @@ namespace PACG.Presentation
 
         protected void OnDestroy()
         {
-            GameEvents.TurnPhaseChanged -= UpdateTurnButtons;
+            GameEvents.TurnStateChanged -= UpdateTurnButtons;
         }
 
         public void Initialize(TurnManager turnManager)

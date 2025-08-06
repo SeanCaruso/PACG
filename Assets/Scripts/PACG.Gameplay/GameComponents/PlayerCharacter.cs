@@ -155,6 +155,7 @@ namespace PACG.Gameplay
         public void DrawToHandSize()
         {
             int cardsToDraw = characterData.handSize - Hand.Count;
+            Debug.Log($"{characterData.characterName} drawing {cardsToDraw} up to {characterData.handSize}");
             if (cardsToDraw < 0) return;
 
             if (cardsToDraw > deck.Count)
