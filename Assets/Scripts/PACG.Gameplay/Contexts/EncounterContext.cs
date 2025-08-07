@@ -1,12 +1,19 @@
-
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace PACG.Gameplay
 {
     public class EncounterContext
     {
+        // Basic information - set on construction
         public PlayerCharacter EncounterPC { get; }
         public CardInstance EncounteredCard { get; }
+
+        // Maps CardData to the list of traits that card prohibits.
+        private readonly Dictionary<(PlayerCharacter, CardInstance), List<string>> prohibitedTraits = new();
+        public Dictionary<(PlayerCharacter, CardInstance), List<string>> ProhibitedTraits => prohibitedTraits;
+
+        public CheckResult CheckResult { get; set; }
 
         public EncounterContext(PlayerCharacter pc, CardInstance card)
         {
@@ -14,9 +21,6 @@ namespace PACG.Gameplay
             EncounteredCard = card;
         }
 
-        // Set during the encounter
-        private readonly Dictionary<(PlayerCharacter, CardInstance), List<string>> prohibitedTraits = new(); // Maps CardData to the list of traits that card prohibits.
-        public Dictionary<(PlayerCharacter, CardInstance), List<string>> ProhibitedTraits => prohibitedTraits;
         public void AddProhibitedTraits(PlayerCharacter pc, CardInstance card, params string[] traits)
         {
             if (!prohibitedTraits.ContainsKey((pc, card))) prohibitedTraits.Add((pc, card), new());
@@ -24,6 +28,5 @@ namespace PACG.Gameplay
         }
         public void UndoProhibitedTraits(PlayerCharacter pc, CardInstance card) => prohibitedTraits.Remove((pc, card));
 
-        public CheckResult CheckResult { get; set; }
     }
 }

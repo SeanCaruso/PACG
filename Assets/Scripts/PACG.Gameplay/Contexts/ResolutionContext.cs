@@ -8,33 +8,19 @@ namespace PACG.Gameplay
     public class ResolutionContext
     {
         public IResolvable CurrentResolvable { get; }
-        private bool isResolved = false;
+        private List<IStagedAction> _stagedActions = new();
+        public IReadOnlyList<IStagedAction> StagedActions => _stagedActions;
 
-        //public List<IStagedAction> ValidActions => CurrentResolvable?.GetValidActions() ?? new();
-        //public List<IStagedAction> ValidActionsForCard(CardInstance card) => CurrentResolvable?.GetValidActionsForCard(card) ?? new();
+        public bool IsResolved(List<IStagedAction> actions) => CurrentResolvable?.IsResolved(actions) ?? true;
 
         public ResolutionContext(IResolvable resolvable)
         {
             CurrentResolvable = resolvable;
-
-            GameEvents.ActionsCommitted += Resolve;
         }
 
-        public IEnumerator WaitForResolution()
+        public void StageAction(IStagedAction action)
         {
-            isResolved = false;
-            yield return new WaitUntil(() => isResolved);
-        }
 
-        public bool IsResolved(List<IStagedAction> actions)
-        {
-            return CurrentResolvable.IsResolved(actions);
-        }
-
-        public void Resolve(List<IStagedAction> _)
-        {
-            isResolved = true;
-            GameEvents.ActionsCommitted -= Resolve;
         }
     }
 }

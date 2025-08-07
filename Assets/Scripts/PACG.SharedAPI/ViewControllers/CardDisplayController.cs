@@ -42,6 +42,7 @@ namespace PACG.SharedAPI
 
         protected void Awake()
         {
+            GameEvents.HourChanged += OnHourChanged;
             GameEvents.EncounterStarted += OnEncounterStarted;
 
             GameEvents.ActionStaged += OnActionStaged;
@@ -50,6 +51,7 @@ namespace PACG.SharedAPI
 
         protected void OnDestroy()
         {
+            GameEvents.HourChanged -= OnHourChanged;
             GameEvents.EncounterStarted -= OnEncounterStarted;
 
             GameEvents.ActionStaged -= OnActionStaged;
@@ -62,14 +64,22 @@ namespace PACG.SharedAPI
         }
 
         // ========================================================================================
-        // ENCOUNTER MANAGEMENT
+        // TURN AND ENCOUNTER MANAGEMENT
         // ========================================================================================
+
+        public void OnHourChanged(CardInstance hourCard)
+        {
+            CardDisplay cardDisplay = Instantiate(cardPrefab, hoursContainer);
+            displayToInstanceMap.Add(cardDisplay, hourCard);
+            cardDisplay.SetViewModel(CardViewModelFactory.CreateFrom(hourCard, AdventureNumber));
+            //cardDisplay.transform.localScale = Vector3.one;
+        }
 
         public void OnEncounterStarted(CardInstance encounteredCard)
         {
             CardDisplay cardDisplay = Instantiate(cardPrefab, encounteredContainer);
             displayToInstanceMap.Add(cardDisplay, encounteredCard);
-            cardDisplay.SetViewModel(CardViewModelFactory.CreateFrom(encounteredCard, 1 /* TODO: Update this via event? */ ));
+            cardDisplay.SetViewModel(CardViewModelFactory.CreateFrom(encounteredCard, AdventureNumber));
             cardDisplay.transform.localScale = Vector3.one;
         }
 

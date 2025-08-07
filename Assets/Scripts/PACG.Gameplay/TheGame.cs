@@ -20,11 +20,7 @@ namespace PACG.Gameplay
         public List<CardData> testLocation;
         // ================================================================================
 
-        ContextManager _contextManager;
-        LogicRegistry _logicRegistry;
-        CardManager _tempCardManager;
-        TurnManager _turnManager;
-        ActionStagingManager _asm;
+        GameServices _gameServices;
 
         private void Awake()
         {
@@ -32,30 +28,37 @@ namespace PACG.Gameplay
             // STEP 1: CONSTRUCT ALL PURE C# SERVICES AND PROCESSORS
             // =================================================================
             // These are just normal C# objects, no Unity dependency.
-            _contextManager = new ContextManager();
+            var contextManager = new ContextManager();
             var cardManager = new CardManager();
 
-            _logicRegistry = new LogicRegistry(_contextManager);
-            _asm = new ActionStagingManager(_contextManager, cardManager);
-            var encounterManager = new EncounterManager(_logicRegistry, _contextManager, _asm);
-            _turnManager = new(_contextManager, encounterManager);
 
-            _tempCardManager = cardManager;
+            var logicRegistry = new LogicRegistry(contextManager);
+            var gameFlowManager = new GameFlowManager(contextManager, logicRegistry);
+            var asm = new ActionStagingManager(gameFlowManager, contextManager, cardManager);
+
+            contextManager.InjectActionStagingManager(asm);
+
+            _gameServices = new(
+                asm,
+                cardManager,
+                contextManager,
+                gameFlowManager,
+                logicRegistry);
         }
 
         // Start is called after all Awake() methods are finished.
         private void Start()
         {
-            _contextManager.NewGame(new(1));
+            _gameServices.Contexts.NewGame(new(1));
             // =================================================================
             // STEP 3: WIRE UP THE PRESENTATION LAYER
             // The presentation layer also needs to know about certain services.
             // We can create an Initialize method for them.
             // =================================================================
 
-            cardDisplayController.Initialize(_contextManager.GameContext.AdventureNumber);
-            cardPreviewController.Initialize(_logicRegistry, _asm);
-            uIInputController.Initialize(_turnManager);
+            cardDisplayController.Initialize(_gameServices.Contexts.GameContext.AdventureNumber);
+            cardPreviewController.Initialize(_gameServices);
+            uIInputController.Initialize(_gameServices);
 
             // The PlayerCardsController needs a way to create ViewModels.
 
@@ -71,21 +74,22 @@ namespace PACG.Gameplay
             // Set up test data
             for (var i = 0; i < 30;  i++)
             {
-                _contextManager.GameContext.HourDeck.ShuffleIn(_tempCardManager.New(hourCardData));
+                _gameServices.Contexts.GameContext.HourDeck.ShuffleIn(_gameServices.Cards.New(hourCardData));
             }
 
             Deck locationDeck = new();
             foreach (var cardData in testLocation)
             {
-                locationDeck.ShuffleIn(_tempCardManager.New(cardData));
+                locationDeck.ShuffleIn(_gameServices.Cards.New(cardData));
             }
 
-            PlayerCharacter testPc = new(testCharacter, _tempCardManager);
-            foreach (var card in characterDeck) testPc.ShuffleIntoDeck(_tempCardManager.New(card, testPc));
+            PlayerCharacter testPc = new(testCharacter, _gameServices.Cards);
+            foreach (var card in characterDeck) testPc.ShuffleIntoDeck(_gameServices.Cards.New(card, testPc));
             cardDisplayController.SetCurrentPC(testPc);
 
             testPc.DrawToHandSize();
-            _turnManager.StartTurn(testPc, locationDeck);
+            var turnProcessor = new TurnProcessor(_gameServices);
+            turnProcessor.StartTurn(testPc, locationDeck);
         }
     }
 }

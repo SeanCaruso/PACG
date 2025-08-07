@@ -1,6 +1,5 @@
 
 using PACG.SharedAPI;
-using PACG.SharedAPI.States;
 
 using System.Collections.Generic;
 using System.Linq;
@@ -10,15 +9,17 @@ namespace PACG.Gameplay
 {
     public class ActionStagingManager
     {
-        private readonly ContextManager Contexts;
-        private readonly CardManager Cards;
+        private readonly GameFlowManager _gameFlowManager;
+        private readonly ContextManager _contexts;
+        private readonly CardManager _cards;
 
         private readonly Dictionary<PlayerCharacter, List<IStagedAction>> pcsStagedActions = new();
 
-        public ActionStagingManager(ContextManager contextManager, CardManager cardManager)
+        public ActionStagingManager(GameFlowManager gameFlowManager, ContextManager contextManager, CardManager cardManager)
         {
-            Contexts = contextManager;
-            Cards = cardManager;
+            _gameFlowManager = gameFlowManager;
+            _contexts = contextManager;
+            _cards = cardManager;
         }
 
         public void StageAction(IStagedAction action)
@@ -40,21 +41,21 @@ namespace PACG.Gameplay
 
             UpdateActionButtonState();
 
-            // Fire event
+            // Fire event to trigger card display updates.
             GameEvents.RaiseActionStaged(action);
         }
 
         public void Cancel()
         {
             // TODO: Get currently displayed PC. Use current turn PC for now.
-            PlayerCharacter pc = Contexts.TurnContext.CurrentPC;
+            PlayerCharacter pc = _contexts.TurnContext.CurrentPC;
             foreach (var action in pcsStagedActions[pc])
             {
                 action.OnUndo();
                 GameEvents.RaiseActionUnstaged(action);
             }
 
-            Cards.RestoreStagedCards();
+            _cards.RestoreStagedCards();
             pcsStagedActions[pc].Clear();
 
             UpdateActionButtonState();
@@ -63,16 +64,16 @@ namespace PACG.Gameplay
         public void UpdateActionButtonState()
         {
             // TODO: Update this for the displayed PC. Use Turn PC until then.
-            var pc = Contexts.TurnContext.CurrentPC;
+            var pc = _contexts.TurnContext.CurrentPC;
             var stagedActions = pcsStagedActions.GetValueOrDefault(pc) ?? (pcsStagedActions[pc] = new());
 
-            bool canCommit = stagedActions.Count > 0 && (Contexts.ResolutionContext?.IsResolved(stagedActions) ?? true); // We have actions but no resolvable? We can commit!
-            bool canSkip = stagedActions.Count == 0 && (Contexts.ResolutionContext?.IsResolved(new()) ?? false); // We don't have any actions and no resolvable to skip, so false!
+            bool canCommit = stagedActions.Count > 0 && (_contexts.ResolutionContext?.IsResolved(stagedActions) ?? true); // We have actions but no resolvable? We can commit!
+            bool canSkip = stagedActions.Count == 0 && (_contexts.ResolutionContext?.IsResolved(new()) ?? false); // We don't have any actions and no resolvable to skip, so false!
 
             StagedActionsState state = new(
-                isCancelButtonVisible: stagedActions.Count > 0,
-                isCommitButtonVisible: canCommit || canSkip,
-                useSkipSprite: canSkip);
+                canCancel: stagedActions.Count > 0,
+                canCommit: canCommit,
+                canSkip: canSkip);
             GameEvents.RaiseStagedActionsStateChanged(state);
         }
 
@@ -83,7 +84,14 @@ namespace PACG.Gameplay
                 action.Commit();
             }
             pcsStagedActions.Clear();
-            Cards.CommitStagedMoves();
+            _cards.CommitStagedMoves();
+
+            // Decide what to do next based on the context.
+            if (_contexts.ResolutionContext != null)
+            {
+                var currentResolvable = _contexts.ResolutionContext.CurrentResolvable;
+                _contexts.EndResolution();
+            }
 
             UpdateActionButtonState();
         }

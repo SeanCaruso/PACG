@@ -65,10 +65,10 @@ Implementing the rules verbatim would kinda suck. These are some considerations 
 ## 🏗️ ARCHITECTURE DECISIONS
 
 ### Current State
-- **Status**: Major reorganization completed, ServiceLocator removed
-- **Removed**: Static dependencies (Game class eliminated), ServiceLocator pattern
-- **Implemented**: Clean dependency injection throughout
-- **Focus**: Incremental architectural improvements without major redesigns
+- **Status**: Processor architecture implemented, Coroutines eliminated
+- **Removed**: Coroutine-based managers (TurnManager, EncounterManager), ServiceLocator pattern
+- **Implemented**: GameFlowManager processor queue system, GameServices dependency bundling
+- **Focus**: Completing processor implementations and end-to-end game flow
 
 ### Layer Architecture
 ```
@@ -79,7 +79,9 @@ PACG.SharedAPI   → Cross-layer view controllers, events, view models
 ```
 
 ### Key Patterns
-- **Dependency Injection**: Constructor injection for pure C# classes, Initialize() for MonoBehaviours
+- **GameFlowManager**: Central processor coordination with dual queue (FIFO + interrupt stack)
+- **Processor Pattern**: Game actions implemented as discrete `IProcessor` instances
+- **GameServices**: Dependency injection via service aggregation bundle
 - **Events**: `GameEvents` static class for decoupled communication (in `PACG.SharedAPI/`)
 - **ViewModels**: `CardViewModel` separates presentation data from domain objects (in `PACG.SharedAPI/`)
 - **Card Logic Registry**: Attribute-based card behavior system (in `PACG.Gameplay/Logic/`)
@@ -89,15 +91,16 @@ PACG.SharedAPI   → Cross-layer view controllers, events, view models
 ## 🚧 KNOWN ISSUES & PLANNED CHANGES
 
 ### Immediate Priorities
-1. **Clean up architectural issues** - Incremental improvements to existing design
-2. **Debug runtime issues** - Fix TurnManager.RunEncounter() signature mismatch
-3. **Complete partial implementations** - EndTurn() method and boon acquisition system
+1. **Complete processor implementations** - Fill in placeholder turn action processors
+2. **Fix encounter initialization** - ExploreProcessor context setup issues
+3. **Expand resolvable coverage** - Add processor mappings for all resolvable types
+4. **Test end-to-end flow** - Verify complete turn and encounter cycles
 
 ### Architecture Debt
-- **Major architectural issues remain** - Need cleanup without complete redesign
-- **Some critical bugs**: Runtime errors preventing full functionality
-- **Empty implementations**: Several TODO items and incomplete methods
-- **Mixed patterns**: Some inconsistencies from the reorganization process
+- **Incomplete processor implementations** - Most turn action processors are placeholders
+- **Encounter flow gaps**: Context initialization and phase transitions need work
+- **Resolvable coverage**: Only basic resolvable types have processor mappings
+- **UI integration**: Some buttons not fully connected to processor pattern
 
 ### Technical Constraints
 - **Unity Version**: 6000.1.11f1
@@ -133,9 +136,10 @@ PACG.SharedAPI   → Cross-layer view controllers, events, view models
 - **Namespace Organization**: Complete namespace migration matching folder structure
 
 ### Pending Changes
-- Complete turn management without coroutines
-- Resolve TurnManager layer boundary violations
-- Implement proper state machine for turn phases
+- Complete processor implementations for all turn actions
+- Fix ExploreProcessor encounter context initialization
+- Expand GameFlowManager resolvable-to-processor mappings
+- Test complete game flow from turn start to turn end
 
 ---
 
@@ -149,7 +153,8 @@ PACG.SharedAPI   → Cross-layer view controllers, events, view models
 - [ ] Card acquisition mechanics
 
 ### Technical Architecture  
-- [ ] State management pattern for turns (vs coroutines)
+- [x] State management pattern for turns (GameFlowManager processor queue)
+- [x] GameServices dependency injection bundle implementation
 - [ ] Event system organization
 - [ ] Testing strategy for complex game interactions
 - [ ] Performance considerations for card display

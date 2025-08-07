@@ -20,12 +20,15 @@ namespace PACG.SharedAPI
         public Button skipButton;
 
         // Dependency injections set in Initialize
-        private TurnManager _turnManager;
+        private TurnContext _turnContext;
+        private GameFlowManager _gameFlowManager;
+        private GameServices _gameServices;
 
         protected void Start()
         {
             // Subscribe to events.
             GameEvents.TurnStateChanged += UpdateTurnButtons;
+            GameEvents.StagedActionsStateChanged += UpdateStagedActionButtons;
 
             giveCardButton.onClick.AddListener(() => GiveCardButton_OnClick());
             moveButton.onClick.AddListener(() => MoveButton_OnClick());
@@ -37,27 +40,30 @@ namespace PACG.SharedAPI
         protected void OnDestroy()
         {
             GameEvents.TurnStateChanged -= UpdateTurnButtons;
+            GameEvents.StagedActionsStateChanged -= UpdateStagedActionButtons;
         }
 
-        public void Initialize(TurnManager turnManager)
+        public void Initialize(GameServices gameServices)
         {
-            _turnManager = turnManager;
+            _gameFlowManager = gameServices.GameFlow;
+            _gameServices = gameServices;
+            _turnContext = gameServices.Contexts.TurnContext;
         }
 
         // --- Turn Flow -----------------------------------------
 
-        public void GiveCardButton_OnClick() => _turnManager.GiveCard();
-        public void MoveButton_OnClick() => _turnManager.MoveToLocation();
-        public void ExploreButton_OnClick() => _turnManager.Explore();
-        public void OptionalDiscardButton_OnClick() => _turnManager.OptionalDiscards();
-        public void EndTurnButton_OnClick() => _turnManager.EndTurn();
+        public void GiveCardButton_OnClick() { } //=> _gameFlowManager.QueueResolvable(new GiveCardResolvable());
+        public void MoveButton_OnClick() { } //=> _turnProcessor.MoveToLocation();
+        public void ExploreButton_OnClick() => _gameFlowManager.QueueProcessor(new ExploreProcessor(_gameServices));
+        public void OptionalDiscardButton_OnClick() { } //=> _turnProcessor.OptionalDiscards();
+        public void EndTurnButton_OnClick() { } //=> _turnProcessor.EndTurn();
 
         protected void UpdateTurnButtons()
         {
-            giveCardButton.enabled = _turnManager.CanGive;
-            moveButton.enabled = _turnManager.CanMove;
-            exploreButton.enabled = _turnManager.CanExplore;
-            optionalDiscardButton.enabled = _turnManager.CurrentPC.Hand.Count > 0;
+            giveCardButton.enabled = _turnContext.CanGive;
+            moveButton.enabled = _turnContext.CanMove;
+            exploreButton.enabled = _turnContext.CanExplore;
+            optionalDiscardButton.enabled = _turnContext.CurrentPC.Hand.Count > 0;
         }
 
         // --- Action Staging Flow -----------------------------------
@@ -70,6 +76,13 @@ namespace PACG.SharedAPI
 
         public event Action OnSkipButtonClicked;
         public void SkipButton_OnClick() => OnSkipButtonClicked?.Invoke();
+
+        protected void UpdateStagedActionButtons(StagedActionsState state)
+        {
+            cancelButton.gameObject.SetActive(state.IsCancelButtonVisible);
+            commitButton.gameObject.SetActive(state.IsCommitButtonVisible);
+            skipButton.gameObject.SetActive(state.IsSkipButtonVisible);
+        }
     }
 }
  

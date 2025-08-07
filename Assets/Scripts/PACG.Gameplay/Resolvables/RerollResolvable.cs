@@ -7,10 +7,10 @@ namespace PACG.Gameplay
         public LogicRegistry LogicRegistry { get; }
         public PlayerCharacter PlayerCharacter { get; }
 
-        public RerollResolvable(LogicRegistry logicRegistry, PlayerCharacter playerCharacter, CheckContext checkContext)
+        public RerollResolvable(LogicRegistry logicRegistry, CheckContext checkContext)
         {
             LogicRegistry = logicRegistry;
-            PlayerCharacter = playerCharacter;
+            PlayerCharacter = checkContext.CheckPC;
 
             // Default option is to not reroll.
             checkContext.ContextData["doReroll"] = false;

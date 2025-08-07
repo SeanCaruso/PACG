@@ -38,10 +38,10 @@ namespace PACG.SharedAPI
             previewArea.SetActive(false);
         }
 
-        public void Initialize(LogicRegistry logicRegistry, ActionStagingManager actionStagingManager)
+        public void Initialize(GameServices gameServices)
         {
-            _logic = logicRegistry;
-            _actionStagingManager = actionStagingManager;
+            _logic = gameServices.Logic;
+            _actionStagingManager = gameServices.ASM;
         }
 
         public void ShowPreviewForCard(CardDisplay cardDisplay)
@@ -78,7 +78,7 @@ namespace PACG.SharedAPI
             cardRect.localScale = new Vector3(2f, 2f, 1.0f);
 
             // Query the card logic for any playable actions.
-            GenerateActionButtons(_logic.GetPlayableLogic(cardInstance).GetAvailableActions());
+            GenerateActionButtons(_logic.GetPlayableLogic(cardInstance)?.GetAvailableActions() ?? new());
         }
 
         public void GenerateActionButtons(IReadOnlyCollection<IStagedAction> actions)
@@ -87,7 +87,7 @@ namespace PACG.SharedAPI
             {
                 GameObject buttonObj = Instantiate(actionButtonPrefab, actionButtonContainer);
 
-                buttonObj.GetComponentInChildren<TextMeshProUGUI>().text = action.ToString();
+                buttonObj.GetComponentInChildren<TextMeshProUGUI>().text = action.ActionType.ToString();
                 Button button = buttonObj.GetComponent<Button>();
                 button.onClick.AddListener(() =>
                 {

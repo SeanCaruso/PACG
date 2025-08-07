@@ -21,13 +21,19 @@ namespace PACG.Gameplay
         public void NewCheck(CheckContext checkContext) => CheckContext = checkContext;
         public void EndCheck() => CheckContext = null;
 
-        public void NewResolution(ResolutionContext resolutionContext, ActionStagingManager asm)
+        public void NewResolution(ResolutionContext resolutionContext)
         {
             ResolutionContext = resolutionContext;
 
             // Update the ActionStagingManager in case we need to show a Skip button.
-            asm.UpdateActionButtonState();
+            _asm.UpdateActionButtonState();
         }
         public void EndResolution() => ResolutionContext = null;
+
+        private ActionStagingManager _asm;
+        public void InjectActionStagingManager(ActionStagingManager asm)
+        {
+            _asm = asm;
+        }
     }
 }
