@@ -22,22 +22,22 @@ namespace PACG.Gameplay
         public void Execute()
         {
             if (Resolvable is CombatResolvable combat)
-                ResolveCombatCheck(combat.Difficulty);
+                ResolveCombatCheck(combat.Character, combat.Difficulty);
         }
 
-        private void ResolveCombatCheck(int dc)
+        private void ResolveCombatCheck(PlayerCharacter pc, int dc)
         {
             CheckContext check = _contexts.CheckContext;
 
             // Add blessing dice.
-            check.DicePool.AddDice(check.BlessingCount, _contexts.TurnContext.CurrentPC.GetSkill(check.UsedSkill).die);
+            check.DicePool.AddDice(check.BlessingCount, pc.GetSkill(check.UsedSkill).die);
             check.CheckPhase = CheckPhase.RollDice;
             int rollTotal = check.DicePool.Roll();
-            check.CheckResult = new(rollTotal, dc, _contexts.TurnContext.CurrentPC, check.UsedSkill, check.Traits);
+            check.CheckResult = new(rollTotal, dc, pc, check.UsedSkill, check.Traits);
 
             bool needsReroll = check.CheckResult.MarginOfSuccess < _contexts.EncounterContext.EncounteredCard.Data.rerollThreshold;
             bool hasRerollOptions = false;
-            var cardsToCheck = _contexts.TurnContext.CurrentPC.Hand.Union(_contexts.TurnContext.CurrentPC.DisplayedCards);
+            var cardsToCheck = pc.Hand.Union(pc.DisplayedCards);
             foreach (var card in cardsToCheck)
             {
                 if (_logic.GetPlayableLogic(card).GetAvailableActions().Count > 0)
@@ -52,7 +52,7 @@ namespace PACG.Gameplay
 
             if (needsReroll && hasRerollOptions)
             {
-                RerollResolvable rerollResolvable = new(_logic, check);
+                RerollResolvable rerollResolvable = new(_logic, pc, check);
                 _contexts.NewResolution(new(rerollResolvable));
                 return; // We're done - GameFlowManager takes over.
             }
@@ -72,7 +72,7 @@ namespace PACG.Gameplay
             {
                 check.CheckPhase = CheckPhase.SufferDamage;
 
-                DamageResolvable damageResolvable = new(_logic, check.CheckPC, -check.CheckResult.MarginOfSuccess);
+                DamageResolvable damageResolvable = new(_logic, check.Resolvable.Character, -check.CheckResult.MarginOfSuccess);
                 _contexts.NewResolution(new(damageResolvable));
                 Debug.Log($"Rolled {check.CheckResult.FinalRollTotal} vs. {dc} - Take {damageResolvable.Amount} damage!");
                 return; // We're done - GameFlowManager takes over.

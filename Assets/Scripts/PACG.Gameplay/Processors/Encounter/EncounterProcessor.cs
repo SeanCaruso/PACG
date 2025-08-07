@@ -26,21 +26,19 @@ namespace PACG.Gameplay
     public class EncounterProcessor : IProcessor
     {
         // Populated via dependency injection
-        private readonly ActionStagingManager _actionStagingManager;
         private readonly ContextManager _contexts;
         private readonly GameFlowManager _gameFlowManager;
         private readonly LogicRegistry _logic;
 
         private readonly CardInstance _encounteredCard;
 
-        public EncounterProcessor(GameServices gameServices)
+        public EncounterProcessor(GameServices gameServices, CardInstance exploredCard)
         {
-            _actionStagingManager = gameServices.ASM;
             _contexts = gameServices.Contexts;
             _gameFlowManager = gameServices.GameFlow;
             _logic = gameServices.Logic;
 
-            _encounteredCard = _contexts.EncounterContext.EncounteredCard;
+            _encounteredCard = exploredCard;
         }
 
         public void Execute()
@@ -48,16 +46,11 @@ namespace PACG.Gameplay
             _contexts.NewEncounter(new(_contexts.TurnContext.CurrentPC, _encounteredCard));
             GameEvents.RaiseEncounterStarted(_encounteredCard);
 
-            // Create and queue up all phases of the encounter.
-            var encounterPhases = new List<IProcessor>
-            {
-                new BeforeActingPhase(_contexts, _logic),
-                new AttemptChecksPhase(_contexts, _logic),
-                new AfterActingPhase(_contexts, _logic),
-                new ResolveEncounterPhase(_contexts, _logic)
-            };
+            var cardLogic = _logic.GetEncounterLogic(_encounteredCard);
+            if (cardLogic == null) Debug.LogError($"[EncounterProcessor] Unable to find encounter logic for {_encounteredCard.Data.name}");
 
-            _gameFlowManager.QueueProcessors(encounterPhases);
+            // The card logic is responsible for creating resolvables and adding them to GFM.
+            cardLogic?.Execute();
         }
     }
 }

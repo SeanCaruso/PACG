@@ -7,6 +7,8 @@ namespace PACG.Gameplay
     [PlayableLogicFor("Longsword")]
     public class LongswordLogic : CardLogicBase, IPlayableLogic
     {
+        private CheckContext Check => GameServices.Contexts.CheckContext;
+
         private PlayCardAction _revealAction;
         private PlayCardAction RevealAction => _revealAction ??= new(this, Card, PF.ActionType.Reveal, ("IsCombat", true));
 
@@ -16,7 +18,7 @@ namespace PACG.Gameplay
         private PlayCardAction _revealAndReloadAction;
         private PlayCardAction RevealAndReloadAction => _revealAndReloadAction ??= new(this, Card, PF.ActionType.Reload, ("IsCombat", true));
 
-        public LongswordLogic(ContextManager contextManager, LogicRegistry logicRegistry) : base(contextManager, logicRegistry) { }
+        public LongswordLogic(GameServices gameServices) : base(gameServices) { }
 
         protected override List<IStagedAction> GetAvailableCardActions()
         {
@@ -24,17 +26,17 @@ namespace PACG.Gameplay
             if (IsCardPlayabe)
             {
                 // If a weapon hasn't been played yet, present one or both options.
-                if (!Contexts.CheckContext.StagedCardTypes.Contains(Card.Data.cardType))
+                if (!Check.StagedCardTypes.Contains(Card.Data.cardType))
                 {
                     actions.Add(RevealAction);
 
-                    if (Contexts.CheckContext.CheckPC.IsProficient(PF.CardType.Weapon))
+                    if (Check.Resolvable is CombatResolvable resolvable && resolvable.Character.IsProficient(PF.CardType.Weapon))
                     {
                         actions.Add(RevealAndReloadAction);
                     }
                 }
                 // Otherwise, if this card has already been played, present the reload option if proficient.
-                else if (Contexts.CheckContext.StagedCards.Contains(Card) && Contexts.CheckContext.CheckPC.IsProficient(PF.CardType.Weapon))
+                else if (Check.StagedCards.Contains(Card) && Check.Resolvable is CombatResolvable res && res.Character.IsProficient(PF.CardType.Weapon))
                 {
                     actions.Add(ReloadAction);
                 }
@@ -44,20 +46,20 @@ namespace PACG.Gameplay
 
         bool IsCardPlayabe => (
             // All powers are specific to the card's owner while playing cards during a Strength or Melee combat check.
-            Contexts.CheckContext != null
-            && Contexts.CheckContext.CheckPC == Card.Owner
-            && Contexts.CheckContext.CheckCategory == CheckCategory.Combat
-            && Contexts.CheckContext.CheckPhase == CheckPhase.PlayCards
-            && Contexts.CheckContext.CanPlayCardWithSkills(PF.Skill.Strength, PF.Skill.Melee));
+            Check != null
+            && Check.Resolvable is CombatResolvable resolvable
+            && resolvable.Character == Card.Owner
+            && Check.CheckPhase == CheckPhase.PlayCards
+            && Check.CanPlayCardWithSkills(PF.Skill.Strength, PF.Skill.Melee));
 
         void IPlayableLogic.OnStage(IStagedAction action)
         {
-            Contexts.CheckContext.RestrictValidSkills(Card, PF.Skill.Strength, PF.Skill.Melee);
+            Check.RestrictValidSkills(Card, PF.Skill.Strength, PF.Skill.Melee);
         }
 
         void IPlayableLogic.OnUndo(IStagedAction action)
         {
-            Contexts.CheckContext.UndoSkillModification(Card);
+            Check.UndoSkillModification(Card);
         }
 
         void IPlayableLogic.Execute(IStagedAction action)
@@ -65,16 +67,17 @@ namespace PACG.Gameplay
             if (action == RevealAction || action == RevealAndReloadAction)
             {
                 // Reveal to use Strength or Melee + 1d8.
-                (PF.Skill skill, int die, int bonus) = Contexts.CheckContext.CheckPC.GetBestSkill(PF.Skill.Strength, PF.Skill.Melee);
-                Contexts.CheckContext.UsedSkill = skill;
-                Contexts.CheckContext.DicePool.AddDice(1, die, bonus);
-                Contexts.CheckContext.DicePool.AddDice(1, 8);
+                var resolvable = (CombatResolvable)Check.Resolvable;
+                (PF.Skill skill, int die, int bonus) = resolvable.Character.GetBestSkill(PF.Skill.Strength, PF.Skill.Melee);
+                Check.UsedSkill = skill;
+                Check.DicePool.AddDice(1, die, bonus);
+                Check.DicePool.AddDice(1, 8);
             }
 
             // Reload to add another 1d4.
             if (action == ReloadAction || action == RevealAndReloadAction)
             {
-                Contexts.CheckContext.DicePool.AddDice(1, 4);
+                Check.DicePool.AddDice(1, 4);
             }
         }
     }

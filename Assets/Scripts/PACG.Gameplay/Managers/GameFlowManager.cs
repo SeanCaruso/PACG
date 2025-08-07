@@ -71,13 +71,26 @@ namespace PACG.Gameplay
 
         private bool ExecuteNextStep()
         {
+            // First priority: execute queued processors
             if (_processorQueue.Count > 0) return ExecuteProcessor();
-            if (HasResolvables)
+
+            // Second: check if we have unresolved resolvables (pause points)
+            if (HasResolvables && _contexts.ResolutionContext == null)
             {
                 var resolvable = GetNextResolvable();
-                QueueProcessorFor(resolvable);
-                return true;
+                _contexts.NewResolution(new(resolvable));
+                return false; // Wait for input!
             }
+
+            // Third: Process completed resolvables after user input
+            if (_contexts.ResolutionContext?.IsResolved == true)
+            {
+                var resolvable = _contexts.ResolutionContext.CurrentResolvable;
+                QueueProcessorFor(resolvable);
+                _contexts.EndResolution();
+                return true; // Continue processing
+            }
+
             return false; // All done!
         }
 
@@ -98,9 +111,12 @@ namespace PACG.Gameplay
             return true; // Continue processing
         }
 
+        /// <summary>
+        /// Queues the appropriate processor to handle a resolved resolvable.
+        /// </summary>
+        /// <param name="resolvable">Resolved resolvable</param>
         private void QueueProcessorFor(IResolvable resolvable)
         {
-            // Based on the type of resolvable that just finished, queue the appropriate next step.
             if (resolvable is CombatResolvable combat)
             {
                 QueueProcessor(new CheckProcessor(combat, _contexts, _logicRegistry, this));

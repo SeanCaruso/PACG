@@ -33,9 +33,7 @@ namespace PACG.Gameplay
                 return;
             }
 
-            _contexts.NewEncounter(new(_contexts.TurnContext.CurrentPC, exploredCard));
-            _gameFlowManager.QueueProcessor(new EncounterProcessor(_gameServices));
-            //_encounterProcessor.InitializeEncounter(_contexts.TurnContext.CurrentPC, exploredCard);
+            _gameFlowManager.QueueProcessor(new EncounterProcessor(_gameServices, exploredCard));
         }
     }
 }

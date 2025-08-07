@@ -9,13 +9,16 @@ namespace PACG.Gameplay
         public CardInstance Card { get; set; }
 
         // Dependency injection of services
+        protected GameServices GameServices { get; }
         protected ContextManager Contexts { get; }
         protected LogicRegistry Logic { get; }
 
-        protected CardLogicBase(ContextManager contextManager, LogicRegistry logicRegistry)
+        protected CardLogicBase(GameServices gameServices)
         {
-            Contexts = contextManager;
-            Logic = logicRegistry;
+            GameServices = gameServices;
+
+            Contexts = gameServices.Contexts;
+            Logic = gameServices.Logic;
         }
 
         public virtual List<IStagedAction> GetAvailableActions()

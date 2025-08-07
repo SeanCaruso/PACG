@@ -2,15 +2,16 @@ using System.Collections.Generic;
 
 namespace PACG.Gameplay
 {
-    public class RerollResolvable : IResolvable
+    public class RerollResolvable : IResolvable, ICheckResolvable
     {
         public LogicRegistry LogicRegistry { get; }
-        public PlayerCharacter PlayerCharacter { get; }
+        public PlayerCharacter Character { get; }
+        public int Difficulty => 0;
 
-        public RerollResolvable(LogicRegistry logicRegistry, CheckContext checkContext)
+        public RerollResolvable(LogicRegistry logicRegistry, PlayerCharacter pc, CheckContext checkContext)
         {
             LogicRegistry = logicRegistry;
-            PlayerCharacter = checkContext.CheckPC;
+            Character = pc;
 
             // Default option is to not reroll.
             checkContext.ContextData["doReroll"] = false;
@@ -20,11 +21,11 @@ namespace PACG.Gameplay
         {
             List<IStagedAction> actions = new();
 
-            foreach (var card in PlayerCharacter.Hand)
+            foreach (var card in Character.Hand)
             {
                 actions.AddRange(GetValidActionsForCard(card));
         }
-            foreach (var cardData in PlayerCharacter.DisplayedCards)
+            foreach (var cardData in Character.DisplayedCards)
             {
                 actions.AddRange(GetValidActionsForCard(cardData));
             }

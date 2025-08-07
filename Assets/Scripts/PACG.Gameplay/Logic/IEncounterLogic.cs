@@ -13,6 +13,9 @@ namespace PACG.Gameplay
 
     public interface IEncounterLogic : ICardLogic
     {
-        List<IResolvable> Execute(EncounterPhase phase);
+        /// <summary>
+        /// Runs a card's encounter logic, adding any resolvables to GameFlowManager
+        /// </summary>
+        void Execute();
     }
 }

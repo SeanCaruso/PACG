@@ -15,8 +15,6 @@ namespace PACG.Gameplay
 
         public void Execute()
         {
-            var encounterLogic = _logic.GetEncounterLogic(_contexts.EncounterContext.EncounteredCard);
-            encounterLogic?.Execute(EncounterPhase.Resolve);
         }
     }
 }

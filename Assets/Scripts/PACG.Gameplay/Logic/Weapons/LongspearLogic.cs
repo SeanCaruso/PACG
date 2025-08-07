@@ -7,28 +7,30 @@ namespace PACG.Gameplay
     [PlayableLogicFor("Longspear")]
     public class LongspearLogic : CardLogicBase, IPlayableLogic
     {
+        private CheckContext Check => GameServices.Contexts.CheckContext;
+
         private PlayCardAction _revealAction;
         private PlayCardAction RevealAction => _revealAction ??= new(this, Card, PF.ActionType.Reveal, ("IsCombat", true));
 
         private PlayCardAction _rerollAction;
         private PlayCardAction RerollAction => _rerollAction ??= new(this, Card, PF.ActionType.Discard, ("IsFreely", true));
 
-        public LongspearLogic(ContextManager contextManager, LogicRegistry logicRegistry) : base(contextManager, logicRegistry) { }
+        public LongspearLogic(GameServices gameServices) : base(gameServices) { }
 
         protected override List<IStagedAction> GetAvailableCardActions()
         {
             List<IStagedAction> actions = new();
             if (IsCardPlayable)
             {
-                if (Contexts.CheckContext.CheckPhase == CheckPhase.PlayCards
-                    && !Contexts.CheckContext.StagedCardTypes.Contains(Card.Data.cardType))
+                if (Check.CheckPhase == CheckPhase.PlayCards
+                    && !Check.StagedCardTypes.Contains(Card.Data.cardType))
                 {
                     actions.Add(RevealAction);
                 }
 
                 // We can discard to reroll if we're in the roll dice phase and this card is one of the reroll options.
-                if (Contexts.CheckContext.CheckPhase == CheckPhase.RollDice
-                    && ((List<CardInstance>)Contexts.CheckContext.ContextData.GetValueOrDefault("rerollCards", new List<CardInstance>())).Contains(Card))
+                if (Check.CheckPhase == CheckPhase.RollDice
+                    && ((List<CardInstance>)Check.ContextData.GetValueOrDefault("rerollCards", new List<CardInstance>())).Contains(Card))
                 {
                     actions.Add(RerollAction);
                 }
@@ -38,36 +40,36 @@ namespace PACG.Gameplay
 
         bool IsCardPlayable => (
             // All powers on this card are specific to its owner during a Strength or Melee combat check.
-            Contexts.CheckContext != null
-            && Contexts.CheckContext.CheckPC == Card.Owner
-            && Contexts.CheckContext.CheckCategory == CheckCategory.Combat
-            && Contexts.CheckContext.CanPlayCardWithSkills(PF.Skill.Strength, PF.Skill.Melee));
+            Check != null
+            && Check.Resolvable is CombatResolvable resolvable
+            && resolvable.Character == Card.Owner
+            && Check.CanPlayCardWithSkills(PF.Skill.Strength, PF.Skill.Melee));
 
         void IPlayableLogic.OnStage(IStagedAction action)
         {
-            Contexts.EncounterContext.AddProhibitedTraits(Card.Owner, Card, "Offhand");
-            Contexts.CheckContext.RestrictValidSkills(Card, PF.Skill.Strength, PF.Skill.Melee);
+            GameServices.Contexts.EncounterContext.AddProhibitedTraits(Card.Owner, Card, "Offhand");
+            Check.RestrictValidSkills(Card, PF.Skill.Strength, PF.Skill.Melee);
         }
 
         void IPlayableLogic.OnUndo(IStagedAction action)
         {
-            Contexts.EncounterContext.UndoProhibitedTraits(Card.Owner, Card);
-            Contexts.CheckContext.UndoSkillModification(Card);
+            GameServices.Contexts.EncounterContext.UndoProhibitedTraits(Card.Owner, Card);
+            Check.UndoSkillModification(Card);
         }
 
         void IPlayableLogic.Execute(IStagedAction action)
         {
-            if (!Contexts.CheckContext.ContextData.ContainsKey("rerollCards"))
-                Contexts.CheckContext.ContextData["rerollCards"] = new List<CardData>();
-            List<CardInstance> rerollSources = (List<CardInstance>)Contexts.CheckContext.ContextData["rerollCards"];
+            if (!Check.ContextData.ContainsKey("rerollCards"))
+                Check.ContextData["rerollCards"] = new List<CardData>();
+            List<CardInstance> rerollSources = (List<CardInstance>)Check.ContextData["rerollCards"];
 
             // Reveal to use Strength or Melee + 1d8.
             if (action == RevealAction)
             {
                 (PF.Skill skill, int die, int bonus) = Card.Owner.GetBestSkill(PF.Skill.Strength, PF.Skill.Melee);
-                Contexts.CheckContext.UsedSkill = skill;
-                Contexts.CheckContext.DicePool.AddDice(1, die, bonus);
-                Contexts.CheckContext.DicePool.AddDice(1, 8);
+                Check.UsedSkill = skill;
+                Check.DicePool.AddDice(1, die, bonus);
+                Check.DicePool.AddDice(1, 8);
 
                 rerollSources.Add(Card);
             }
@@ -76,7 +78,7 @@ namespace PACG.Gameplay
             if (action == RerollAction)
             {
                 rerollSources.Remove(Card);
-                Contexts.CheckContext.ContextData["doReroll"] = true;
+                Check.ContextData["doReroll"] = true;
             }
         }
     }

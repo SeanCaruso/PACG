@@ -32,7 +32,7 @@ namespace PACG.Gameplay
             var cardManager = new CardManager();
 
 
-            var logicRegistry = new LogicRegistry(contextManager);
+            var logicRegistry = new LogicRegistry();
             var gameFlowManager = new GameFlowManager(contextManager, logicRegistry);
             var asm = new ActionStagingManager(gameFlowManager, contextManager, cardManager);
 
@@ -44,6 +44,9 @@ namespace PACG.Gameplay
                 contextManager,
                 gameFlowManager,
                 logicRegistry);
+
+            // Everything's set up - now we can register the logic.
+            logicRegistry.RegisterAllLogic(_gameServices);
         }
 
         // Start is called after all Awake() methods are finished.

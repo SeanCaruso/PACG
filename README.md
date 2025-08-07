@@ -65,10 +65,10 @@ Implementing the rules verbatim would kinda suck. These are some considerations 
 ## 🏗️ ARCHITECTURE DECISIONS
 
 ### Current State
-- **Status**: Processor architecture implemented, Coroutines eliminated
+- **Status**: Processor architecture with resolvable pause/resume system implemented
 - **Removed**: Coroutine-based managers (TurnManager, EncounterManager), ServiceLocator pattern
-- **Implemented**: GameFlowManager processor queue system, GameServices dependency bundling
-- **Focus**: Completing processor implementations and end-to-end game flow
+- **Implemented**: GameFlowManager processor queue with resolvable handling, GameServices dependency bundling, resolvable-based card logic
+- **Focus**: Testing end-to-end game flow and completing remaining processors
 
 ### Layer Architecture
 ```
@@ -79,28 +79,33 @@ PACG.SharedAPI   → Cross-layer view controllers, events, view models
 ```
 
 ### Key Patterns
-- **GameFlowManager**: Central processor coordination with dual queue (FIFO + interrupt stack)
+- **GameFlowManager Pause/Resume**: Central processor coordination with automatic pause on resolvables requiring user input
 - **Processor Pattern**: Game actions implemented as discrete `IProcessor` instances
-- **GameServices**: Dependency injection via service aggregation bundle
+- **GameServices Two-Phase Init**: Dependency injection bundle with delayed LogicRegistry registration to avoid circular dependencies
+- **Resolvable System**: Card logic declares requirements (CombatResolvable, DamageResolvable) that pause GFM for user input
+- **Automatic Context Creation**: ContextManager creates CheckContext automatically for ICheckResolvable types
+- **Action Staging with Commit**: User stages actions, commits to resume GFM processing
 - **Events**: `GameEvents` static class for decoupled communication (in `PACG.SharedAPI/`)
 - **ViewModels**: `CardViewModel` separates presentation data from domain objects (in `PACG.SharedAPI/`)
-- **Card Logic Registry**: Attribute-based card behavior system (in `PACG.Gameplay/Logic/`)
+- **Card Logic Registry**: Attribute-based card behavior system with GameServices constructor injection
+
+### Planned: Hybrid Card Logic Pattern
+For complex conditional effects (e.g., "If undefeated, do X"):
+- **Primary Pattern**: Cards queue all resolvables upfront via `CardLogic.Execute()`
+- **Conditional Extension**: Cards implement `IConditionalCardLogic.OnResolvableCompleted()` 
+- **Reactive Queuing**: Additional resolvables queued based on resolution outcomes
+- **Benefit**: Maintains declarative simplicity while handling conditional card powers
 
 ---
 
 ## 🚧 KNOWN ISSUES & PLANNED CHANGES
 
-### Immediate Priorities
-1. **Complete processor implementations** - Fill in placeholder turn action processors
-2. **Fix encounter initialization** - ExploreProcessor context setup issues
-3. **Expand resolvable coverage** - Add processor mappings for all resolvable types
-4. **Test end-to-end flow** - Verify complete turn and encounter cycles
-
-### Architecture Debt
-- **Incomplete processor implementations** - Most turn action processors are placeholders
-- **Encounter flow gaps**: Context initialization and phase transitions need work
-- **Resolvable coverage**: Only basic resolvable types have processor mappings
-- **UI integration**: Some buttons not fully connected to processor pattern
+### Current Priorities
+1. **Test resolvable flow** - Verify complete encounter cycle from card logic to user input to resolution
+2. **Complete remaining processors** - Implement processors for non-combat resolvables (damage, acquire, etc.)
+3. **End-to-end integration testing** - Full turn and encounter cycles with actual user interaction
+4. **Conditional card effects** - Implement hybrid pattern for "If undefeated" type effects
+5. **Polish UI feedback** - Ensure proper button states and user prompts during resolvable resolution
 
 ### Technical Constraints
 - **Unity Version**: 6000.1.11f1
@@ -128,21 +133,6 @@ PACG.SharedAPI   → Cross-layer view controllers, events, view models
 
 ---
 
-## 📝 CHANGE LOG
-
-### Recent Major Changes
-- **ServiceLocator Removal** (commit cda0f10): Removed ServiceLocator pattern, implemented clean dependency injection
-- **Massive Rearchitecture** (commit 3dbf50a): Removed static Game class, reorganized into layers
-- **Namespace Organization**: Complete namespace migration matching folder structure
-
-### Pending Changes
-- Complete processor implementations for all turn actions
-- Fix ExploreProcessor encounter context initialization
-- Expand GameFlowManager resolvable-to-processor mappings
-- Test complete game flow from turn start to turn end
-
----
-
 ## 🤔 DECISION BACKLOG
 
 ### Game Design
@@ -153,9 +143,13 @@ PACG.SharedAPI   → Cross-layer view controllers, events, view models
 - [ ] Card acquisition mechanics
 
 ### Technical Architecture  
-- [x] State management pattern for turns (GameFlowManager processor queue)
+- [x] State management pattern for turns (GameFlowManager processor queue with pause/resume)
 - [x] GameServices dependency injection bundle implementation
-- [ ] Event system organization
+- [x] Resolvable system for user input coordination
+- [x] Automatic context creation based on resolvable types
+- [x] Two-phase initialization pattern for circular dependencies
+- [ ] Conditional card effect implementation strategy (hybrid pattern)
+- [ ] Event system organization and cleanup
 - [ ] Testing strategy for complex game interactions
 - [ ] Performance considerations for card display
 

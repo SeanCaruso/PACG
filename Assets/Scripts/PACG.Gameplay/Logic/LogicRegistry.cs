@@ -5,17 +5,15 @@ using UnityEngine;
 
 namespace PACG.Gameplay
 {
+    /// <summary>
+    /// RegisterAllLogic must be manually called to register the card logic classes.
+    /// </summary>
     public class LogicRegistry
     {
         private readonly Dictionary<string, IEncounterLogic> encounterLogicMap = new();
         private readonly Dictionary<string, IPlayableLogic> playableLogicMap = new();
 
-        public LogicRegistry(ContextManager contexts)
-        {
-            RegisterAllLogic(contexts);
-        }
-
-        private void RegisterAllLogic(ContextManager contexts)
+        public void RegisterAllLogic(GameServices gameServices)
         {
             Assembly assembly = Assembly.GetExecutingAssembly();
             foreach (Type type in assembly.GetTypes())
@@ -31,7 +29,7 @@ namespace PACG.Gameplay
 
                     try
                     {
-                        var instance = Activator.CreateInstance(type, contexts, this) as IEncounterLogic;
+                        var instance = Activator.CreateInstance(type, gameServices) as IEncounterLogic;
                         encounterLogicMap[attribute.CardID] = instance;
                     }
                     catch (MissingMethodException ex)
@@ -51,7 +49,7 @@ namespace PACG.Gameplay
                     
                     try
                     {
-                        var instance = Activator.CreateInstance(type, contexts, this) as IPlayableLogic;
+                        var instance = Activator.CreateInstance(type, gameServices) as IPlayableLogic;
                         playableLogicMap[attribute.CardID] = instance;
                     }
                     catch (MissingMethodException ex)

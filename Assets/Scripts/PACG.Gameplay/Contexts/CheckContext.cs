@@ -16,18 +16,12 @@ namespace PACG.Gameplay
     {
         // --- Immutable Initial State ---
         // These are set once and should never change.
-        public PlayerCharacter CheckPC { get; }
-        public CheckCategory CheckCategory { get; }
-        public int TotalDC { get; }
+        public ICheckResolvable Resolvable { get; }
         public IReadOnlyList<PF.Skill> BaseValidSkills { get; }
 
-        public CheckContext(PlayerCharacter pc, CheckStep checkStep, GameContext gameContext)
+        public CheckContext(ICheckResolvable resolvable)
         {
-            CheckPC = pc;
-            CheckCategory = checkStep.category;
-            BaseValidSkills = checkStep.category == CheckCategory.Skill ? checkStep.allowedSkills : new() { PF.Skill.Strength, PF.Skill.Melee };
-
-            TotalDC = checkStep.baseDC + (gameContext.AdventureNumber * checkStep.adventureLevelMult);
+            Resolvable = resolvable;
         }
 
         // --- Dynamic Check State ---

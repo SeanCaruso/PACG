@@ -15,20 +15,33 @@ namespace PACG.Gameplay
         public void NewTurn(TurnContext turnContext) => TurnContext = turnContext;
         public void EndTurn() => TurnContext = null;
 
+        // TODO: Think about how this will work in nested encounters - maybe use a stack?
         public void NewEncounter(EncounterContext encounterContext) => EncounterContext = encounterContext;
         public void EndEncounter() => EncounterContext = null;
-
-        public void NewCheck(CheckContext checkContext) => CheckContext = checkContext;
-        public void EndCheck() => CheckContext = null;
 
         public void NewResolution(ResolutionContext resolutionContext)
         {
             ResolutionContext = resolutionContext;
 
+            // Automatic context creation based on resolvable type.
+            if (resolutionContext.CurrentResolvable is ICheckResolvable checkResolvable)
+            {
+                CheckContext = new(checkResolvable);
+            }
+
             // Update the ActionStagingManager in case we need to show a Skip button.
             _asm.UpdateActionButtonState();
         }
-        public void EndResolution() => ResolutionContext = null;
+        public void EndResolution()
+        {
+            // Automatic context clean-up based on resolvable type.
+            if (ResolutionContext.CurrentResolvable is ICheckResolvable)
+            {
+                CheckContext = null;
+            }
+
+            ResolutionContext = null;
+        }
 
         private ActionStagingManager _asm;
         public void InjectActionStagingManager(ActionStagingManager asm)

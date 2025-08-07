@@ -16,14 +16,6 @@ namespace PACG.Gameplay
 
         public void Execute()
         {
-            var encounterLogic = _logic.GetEncounterLogic(_contexts.EncounterContext.EncounteredCard);
-            var resolvables = encounterLogic?.Execute(EncounterPhase.AttemptChecks) ?? new();
-
-            if (resolvables.Any())
-            {
-                // Set up the resolution context. This is the signal for the game to pause.
-                _contexts.NewResolution(new(resolvables.First()));
-            }
         }
     }
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace PACG.Gameplay
 {
-    public class CombatResolvable : IResolvable
+    public class CombatResolvable : IResolvable, ICheckResolvable
     {
         public LogicRegistry LogicRegistry { get; }
         public PlayerCharacter Character { get; }
@@ -14,7 +14,7 @@ namespace PACG.Gameplay
         public CombatResolvable(LogicRegistry logicRegistry, PlayerCharacter character, int difficulty)
         {
             LogicRegistry = logicRegistry;
-            this.Character = character;
+            Character = character;
             Difficulty = difficulty;
         }
 

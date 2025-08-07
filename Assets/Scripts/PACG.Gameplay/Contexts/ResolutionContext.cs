@@ -11,7 +11,8 @@ namespace PACG.Gameplay
         private List<IStagedAction> _stagedActions = new();
         public IReadOnlyList<IStagedAction> StagedActions => _stagedActions;
 
-        public bool IsResolved(List<IStagedAction> actions) => CurrentResolvable?.IsResolved(actions) ?? true;
+        //public bool IsResolved(List<IStagedAction> actions) => CurrentResolvable?.IsResolved(actions) ?? true;
+        public bool IsResolved => CurrentResolvable?.IsResolved(_stagedActions) ?? true;
 
         public ResolutionContext(IResolvable resolvable)
         {

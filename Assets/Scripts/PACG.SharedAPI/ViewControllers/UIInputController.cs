@@ -20,7 +20,7 @@ namespace PACG.SharedAPI
         public Button skipButton;
 
         // Dependency injections set in Initialize
-        private TurnContext _turnContext;
+        private ActionStagingManager _asm;
         private GameFlowManager _gameFlowManager;
         private GameServices _gameServices;
 
@@ -30,11 +30,16 @@ namespace PACG.SharedAPI
             GameEvents.TurnStateChanged += UpdateTurnButtons;
             GameEvents.StagedActionsStateChanged += UpdateStagedActionButtons;
 
-            giveCardButton.onClick.AddListener(() => GiveCardButton_OnClick());
-            moveButton.onClick.AddListener(() => MoveButton_OnClick());
-            exploreButton.onClick.AddListener(() => ExploreButton_OnClick());
-            optionalDiscardButton.onClick.AddListener(() =>  OptionalDiscardButton_OnClick());
-            endTurnButton.onClick.AddListener(() => EndTurnButton_OnClick());
+            // Hook up button clicks.
+            //giveCardButton.onClick.AddListener(() => GiveCardButton_OnClick());
+            //moveButton.onClick.AddListener(() => MoveButton_OnClick());
+            exploreButton.onClick.AddListener(() => _gameFlowManager.QueueAndProcess(new ExploreProcessor(_gameServices)));
+            //optionalDiscardButton.onClick.AddListener(() =>  OptionalDiscardButton_OnClick());
+            //endTurnButton.onClick.AddListener(() => EndTurnButton_OnClick());
+
+            cancelButton.onClick.AddListener(() => _asm.Cancel());
+            commitButton.onClick.AddListener(() => _asm.Commit());
+            skipButton.onClick.AddListener(() => _asm.Commit());
         }
 
         protected void OnDestroy()
@@ -45,18 +50,12 @@ namespace PACG.SharedAPI
 
         public void Initialize(GameServices gameServices)
         {
+            _asm = gameServices.ASM;
             _gameFlowManager = gameServices.GameFlow;
             _gameServices = gameServices;
-            _turnContext = gameServices.Contexts.TurnContext;
         }
 
         // --- Turn Flow -----------------------------------------
-
-        public void GiveCardButton_OnClick() { } //=> _gameFlowManager.QueueResolvable(new GiveCardResolvable());
-        public void MoveButton_OnClick() { } //=> _turnProcessor.MoveToLocation();
-        public void ExploreButton_OnClick() => _gameFlowManager.QueueAndProcess(new ExploreProcessor(_gameServices));
-        public void OptionalDiscardButton_OnClick() { } //=> _turnProcessor.OptionalDiscards();
-        public void EndTurnButton_OnClick() { } //=> _turnProcessor.EndTurn();
 
         protected void UpdateTurnButtons(TurnContext context)
         {
@@ -67,15 +66,6 @@ namespace PACG.SharedAPI
         }
 
         // --- Action Staging Flow -----------------------------------
-
-        public event Action OnCancelButtonClicked;
-        public void CancelButton_OnClick() => OnCancelButtonClicked?.Invoke();
-
-        public event Action OnCommitButtonClicked;
-        public void CommitButton_OnClick() => OnCommitButtonClicked?.Invoke();
-
-        public event Action OnSkipButtonClicked;
-        public void SkipButton_OnClick() => OnSkipButtonClicked?.Invoke();
 
         protected void UpdateStagedActionButtons(StagedActionsState state)
         {
