@@ -6,7 +6,7 @@ namespace PACG.SharedAPI
 {
     public static class CardViewModelFactory
     {
-        public static CardViewModel CreateFrom(CardInstance card, int adventureNumber)
+        public static CardViewModel CreateFrom(CardInstance card)
         {
             if (card == null) return null;
 
@@ -49,7 +49,7 @@ namespace PACG.SharedAPI
                 viewModel.Check1_Skills = new string[] { "COMBAT" };
             else
                 viewModel.Check1_Skills = checkStep1.allowedSkills.Select(s => s.ToString().ToUpper());
-            viewModel.Check1_DC = (checkStep1.baseDC + (checkStep1.adventureLevelMult * adventureNumber)).ToString();
+            viewModel.Check1_DC = CardUtils.GetDC(checkStep1.baseDC, checkStep1.adventureLevelMult).ToString();
             
             if (data.checkRequirement.mode == CheckMode.Single)
             {
@@ -69,7 +69,7 @@ namespace PACG.SharedAPI
                 viewModel.Check2_Skills = new string[] { "COMBAT" };
             else
                 viewModel.Check2_Skills = checkStep2.allowedSkills.Select(s => s.ToString().ToUpper());
-            viewModel.Check2_DC = (checkStep2.baseDC + (checkStep2.adventureLevelMult * adventureNumber)).ToString();
+            viewModel.Check2_DC = CardUtils.GetDC(checkStep2.baseDC, checkStep2.adventureLevelMult).ToString();
 
             return viewModel;
         }

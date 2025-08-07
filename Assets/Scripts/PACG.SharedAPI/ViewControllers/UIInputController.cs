@@ -54,16 +54,16 @@ namespace PACG.SharedAPI
 
         public void GiveCardButton_OnClick() { } //=> _gameFlowManager.QueueResolvable(new GiveCardResolvable());
         public void MoveButton_OnClick() { } //=> _turnProcessor.MoveToLocation();
-        public void ExploreButton_OnClick() => _gameFlowManager.QueueProcessor(new ExploreProcessor(_gameServices));
+        public void ExploreButton_OnClick() => _gameFlowManager.QueueAndProcess(new ExploreProcessor(_gameServices));
         public void OptionalDiscardButton_OnClick() { } //=> _turnProcessor.OptionalDiscards();
         public void EndTurnButton_OnClick() { } //=> _turnProcessor.EndTurn();
 
-        protected void UpdateTurnButtons()
+        protected void UpdateTurnButtons(TurnContext context)
         {
-            giveCardButton.enabled = _turnContext.CanGive;
-            moveButton.enabled = _turnContext.CanMove;
-            exploreButton.enabled = _turnContext.CanExplore;
-            optionalDiscardButton.enabled = _turnContext.CurrentPC.Hand.Count > 0;
+            giveCardButton.enabled = context.CanGive;
+            moveButton.enabled = context.CanMove;
+            exploreButton.enabled = context.CanExplore;
+            optionalDiscardButton.enabled = context.CurrentPC.Hand.Count > 0;
         }
 
         // --- Action Staging Flow -----------------------------------

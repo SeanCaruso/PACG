@@ -46,11 +46,7 @@ namespace PACG.SharedAPI
 
         public void ShowPreviewForCard(CardDisplay cardDisplay)
         {
-            if (currentlyEnlargedCard != null)
-            {
-                Debug.LogError($"Tried to preview {cardDisplay.name}, but {currentlyEnlargedCard.name} is already being previewed!");
-                return;
-            }
+            if (currentlyEnlargedCard != null) return;
 
             var cardInstance = cardDisplayController.GetInstanceFromDisplay(cardDisplay);
             if (cardInstance == null)

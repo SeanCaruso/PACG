@@ -7,8 +7,8 @@ namespace PACG.SharedAPI
     public static class GameEvents
     {
         // Turn phase events
-        public static event Action TurnStateChanged;
-        public static void RaiseTurnStateChanged() => TurnStateChanged?.Invoke();
+        public static event Action<TurnContext> TurnStateChanged;
+        public static void RaiseTurnStateChanged(TurnContext context) => TurnStateChanged?.Invoke(context);
 
         public static event Action<CardInstance> HourChanged;
         public static void RaiseHourChanged(CardInstance hourCard) => HourChanged?.Invoke(hourCard);

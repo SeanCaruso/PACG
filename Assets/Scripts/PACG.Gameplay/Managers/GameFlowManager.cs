@@ -31,7 +31,6 @@ namespace PACG.Gameplay
             _logicRegistry = logicRegistry;
         }
 
-
         public void QueueProcessor(IProcessor processor)
         {
             _processorQueue.Enqueue(processor);
@@ -43,6 +42,16 @@ namespace PACG.Gameplay
             {
                 _processorQueue.Enqueue(processor);
             }
+        }
+
+        /// <summary>
+        /// Convenience function to add a single processor and immediately start processing.
+        /// </summary>
+        /// <param name="processor">IProcessor to kick off</param>
+        public void QueueAndProcess(IProcessor processor)
+        {
+            _processorQueue.Enqueue(processor);
+            Process();
         }
 
         private bool ShouldContinueProcessing => _processorQueue.Count > 0 || HasResolvables;

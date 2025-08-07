@@ -11,12 +11,17 @@ namespace PACG.Gameplay
 
         public List<IResolvable> Execute(EncounterPhase phase)
         {
+            var resolvables = new List<IResolvable>();
+
             if (phase == EncounterPhase.AttemptChecks)
             {
-                return new List<IResolvable> { new CombatResolvable(Logic, Contexts.TurnContext.CurrentPC, Contexts.CheckContext.TotalDC) };
+                foreach (var check in Card.Data.checkRequirement.checkSteps)
+                {
+                    resolvables.Add(new CombatResolvable(Logic, Contexts.TurnContext.CurrentPC, CardUtils.GetDC(check.baseDC, check.adventureLevelMult)));
+                }
             }
 
-            return new();
+            return resolvables;
         }
     }
 }

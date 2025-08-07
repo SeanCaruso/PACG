@@ -71,7 +71,7 @@ namespace PACG.SharedAPI
         {
             CardDisplay cardDisplay = Instantiate(cardPrefab, hoursContainer);
             displayToInstanceMap.Add(cardDisplay, hourCard);
-            cardDisplay.SetViewModel(CardViewModelFactory.CreateFrom(hourCard, AdventureNumber));
+            cardDisplay.SetViewModel(CardViewModelFactory.CreateFrom(hourCard));
             //cardDisplay.transform.localScale = Vector3.one;
         }
 
@@ -79,7 +79,7 @@ namespace PACG.SharedAPI
         {
             CardDisplay cardDisplay = Instantiate(cardPrefab, encounteredContainer);
             displayToInstanceMap.Add(cardDisplay, encounteredCard);
-            cardDisplay.SetViewModel(CardViewModelFactory.CreateFrom(encounteredCard, AdventureNumber));
+            cardDisplay.SetViewModel(CardViewModelFactory.CreateFrom(encounteredCard));
             cardDisplay.transform.localScale = Vector3.one;
         }
 
@@ -112,7 +112,7 @@ namespace PACG.SharedAPI
         {
             CardDisplay cardDisplay = Instantiate(cardPrefab, handContainer);
             displayToInstanceMap.Add(cardDisplay, card);
-            cardDisplay.SetViewModel(CardViewModelFactory.CreateFrom(card, AdventureNumber));
+            cardDisplay.SetViewModel(CardViewModelFactory.CreateFrom(card));
             cardDisplay.transform.localScale = Vector3.one;
         }
 

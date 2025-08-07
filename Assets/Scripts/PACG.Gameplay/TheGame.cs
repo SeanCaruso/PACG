@@ -50,6 +50,7 @@ namespace PACG.Gameplay
         private void Start()
         {
             _gameServices.Contexts.NewGame(new(1));
+            CardUtils.Initialize(_gameServices.Contexts.GameContext.AdventureNumber);
             // =================================================================
             // STEP 3: WIRE UP THE PRESENTATION LAYER
             // The presentation layer also needs to know about certain services.

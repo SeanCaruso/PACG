@@ -69,6 +69,11 @@ namespace PACG.Gameplay
         public IEncounterLogic GetEncounterLogic(CardInstance card)
         {
             encounterLogicMap.TryGetValue(card.Data.cardID, out var logic);
+            if (logic != null)
+            {
+                logic.Card = card;
+            }
+
             return logic;
         }
 
@@ -79,6 +84,7 @@ namespace PACG.Gameplay
             {
                 logic.Card = card;
             }
+
             return logic;
         }
     }

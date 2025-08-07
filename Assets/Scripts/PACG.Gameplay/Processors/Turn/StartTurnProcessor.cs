@@ -29,7 +29,7 @@ namespace PACG.Gameplay
             _contexts.TurnContext.CanExplore = _locationDeck.Count > 0;
             _contexts.TurnContext.CanCloseLocation = _locationDeck.Count == 0;
 
-            GameEvents.RaiseTurnStateChanged();
+            GameEvents.RaiseTurnStateChanged(_contexts.TurnContext);
         }
     }
 }
