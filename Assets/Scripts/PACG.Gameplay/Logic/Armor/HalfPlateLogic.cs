@@ -8,6 +8,7 @@ namespace PACG.Gameplay
     public class HalfPlateLogic : CardLogicBase, IPlayableLogic
     {
         private CheckContext Check => GameServices.Contexts.CheckContext;
+        private ActionStagingManager ASM => GameServices.ASM;
 
         private PlayCardAction _displayAction;
         private PlayCardAction DisplayAction => _displayAction ??= new(this, Card, PF.ActionType.Display);
@@ -38,7 +39,7 @@ namespace PACG.Gameplay
             // We can draw for damage if displayed and we have a DamageResolvable for the card's owner with Combat damage.
             Check != null
             && Card.Owner.DisplayedCards.Contains(Card)
-            && (Check.StagedCards.Contains(Card) || !Check.StagedCardTypes.Contains(PF.CardType.Armor)) // If we staged the Display this check, we can freely draw.
+            && (ASM.CardStaged(Card) || !Check.StagedCardTypes.Contains(PF.CardType.Armor)) // If we staged the Display this check, we can freely draw.
             && GameServices.Contexts.CurrentResolvable is DamageResolvable resolvable
             && resolvable.DamageType == "Combat"
             && resolvable.PlayerCharacter == Card.Owner);
@@ -47,7 +48,7 @@ namespace PACG.Gameplay
             // We can bury for damage if displayed, the owner is proficient, and we have a DamageResolvable for the card's owner.
             Check != null
             && Card.Owner.DisplayedCards.Contains(Card)
-            && (Check.StagedCards.Contains(Card) || !Check.StagedCardTypes.Contains(PF.CardType.Armor)) // If we staged the Display this check, we can freely bury.
+            && (ASM.CardStaged(Card) || !Check.StagedCardTypes.Contains(PF.CardType.Armor)) // If we staged the Display this check, we can freely bury.
             && Card.Owner.IsProficient(PF.CardType.Armor)
             && GameServices.Contexts.CurrentResolvable is DamageResolvable resolvable
             && resolvable.PlayerCharacter == Card.Owner);

@@ -8,6 +8,7 @@ namespace PACG.Gameplay
     public class LongswordLogic : CardLogicBase, IPlayableLogic
     {
         private CheckContext Check => GameServices.Contexts.CheckContext;
+        private ActionStagingManager ASM => GameServices.ASM;
 
         private PlayCardAction _revealAction;
         private PlayCardAction RevealAction => _revealAction ??= new(this, Card, PF.ActionType.Reveal, ("IsCombat", true));
@@ -36,7 +37,7 @@ namespace PACG.Gameplay
                     }
                 }
                 // Otherwise, if this card has already been played, present the reload option if proficient.
-                else if (Check.StagedCards.Contains(Card) && Check.Resolvable is CombatResolvable res && res.Character.IsProficient(PF.CardType.Weapon))
+                else if (ASM.CardStaged(Card) && Check.Resolvable is CombatResolvable res && res.Character.IsProficient(PF.CardType.Weapon))
                 {
                     actions.Add(ReloadAction);
                 }

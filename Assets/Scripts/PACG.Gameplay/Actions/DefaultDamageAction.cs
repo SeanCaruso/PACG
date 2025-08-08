@@ -13,9 +13,9 @@ namespace PACG.Gameplay
             Card = card;
         }
 
-        public void OnStage(CheckContext _ = null) { }
+        public void OnStage() { }
 
-        public void OnUndo(CheckContext _ = null) { }
+        public void OnUndo() { }
 
         public void Commit(CheckContext _ = null) { }
     }

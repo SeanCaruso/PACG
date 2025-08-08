@@ -33,17 +33,9 @@ namespace PACG.Gameplay
             return $"{(label is null ? ActionType.ToString() : label)} {Card.Data.cardName}";
         }
 
-        public void OnStage(CheckContext checkContext = null)
-        {
-            checkContext?.StageAction(this);
-            Playable?.OnStage(this);
-        }
+        public void OnStage() => Playable?.OnStage(this);
 
-        public void OnUndo(CheckContext checkContext = null)
-        {
-            checkContext?.UndoAction(this);
-            Playable?.OnUndo(this);
-        }
+        public void OnUndo() => Playable?.OnUndo(this);
 
         public void Commit(CheckContext checkContext = null)
         {

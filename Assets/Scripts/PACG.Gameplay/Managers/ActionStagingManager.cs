@@ -16,6 +16,8 @@ namespace PACG.Gameplay
         private Dictionary<PlayerCharacter, List<IStagedAction>> PcsStagedActions { get; } = new();
         private Dictionary<CardInstance, CardLocation> OriginalCardLocs { get; } = new();
 
+        public bool CardStaged(CardInstance card) => OriginalCardLocs.Keys.Contains(card);
+
         public ActionStagingManager(GameFlowManager gameFlowManager, ContextManager contextManager, CardManager cardManager)
         {
             _gameFlowManager = gameFlowManager;
@@ -33,16 +35,27 @@ namespace PACG.Gameplay
                 return;
             }
 
+            if (_contexts.CheckContext?.CanStageAction(action) == false)
+            {
+                Debug.LogWarning($"{action.Card.Data.cardName}.{action} can't be staged! How did we get this far?");
+                return;
+            }
+
             // If this is the first staged action for this card, store where it originally came from.
             OriginalCardLocs.TryAdd(action.Card, action.Card.CurrentLocation);
 
-            // Update game state
-            _cards.MoveCard(action.Card, action.ActionType); // We need to handle this here so that damage resolvables behave with hand size.
+            // We need to handle this here so that damage resolvables behave with hand size.
+            _cards.MoveCard(action.Card, action.ActionType);
+            
+            // Perform all required staging logic.
             action.OnStage();
-
             pcActions.Add(action);
             PcsStagedActions[action.Card.Owner] = pcActions;
 
+            // If we're attempting a check, add the action's card type if needed.
+            _contexts.CheckContext?.StageCardTypeIfNeeded(action);
+
+            // Send the UI event to update Cancel/Commit buttons.
             UpdateActionButtonState();
         }
 
@@ -62,6 +75,7 @@ namespace PACG.Gameplay
             GameEvents.RaiseCardLocationsChanged(OriginalCardLocs.Keys.ToList());
 
             PcsStagedActions[pc].Clear();
+            _contexts.CheckContext?.ClearStagedTypes();
 
             UpdateActionButtonState();
         }
@@ -86,7 +100,7 @@ namespace PACG.Gameplay
         {
             foreach (var action in PcsStagedActions.Values.SelectMany(list => list))
             {
-                action.Commit();
+                action.Commit(_contexts.CheckContext);
             }
             PcsStagedActions.Clear();
 

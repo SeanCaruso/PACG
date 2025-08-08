@@ -27,53 +27,38 @@ namespace PACG.Gameplay
         // --- Dynamic Check State ---
         public CheckPhase CheckPhase { get; set; } = CheckPhase.PlayCards;
 
-        // --- Staged Actions & Cards (Encapsulated) ---
-        // Backing fields are private. No one outside this class can touch the raw lists.
-        private readonly List<IStagedAction> _stagedActions = new();
+        // =====================================================================================
+        // CONTEXT-SPECIFIC ACTION STAGING
+        //
+        // Note: ActionStagingManager is responsible for the actual actions and cards that have
+        //       been staged, but is rule-agnostic. CheckContext contains the rule-specific
+        //       logic about which actions *can* be staged during a Check.
+        // =====================================================================================
         private readonly HashSet<PF.CardType> _stagedCardTypes = new();
-
-        // Public access is through a read-only interface. Prevents external .Add() or .Clear().
-        public IReadOnlyList<IStagedAction> StagedActions => _stagedActions;
         public IReadOnlyCollection<PF.CardType> StagedCardTypes => _stagedCardTypes;
-        public IEnumerable<CardInstance> StagedCards => _stagedActions.Select(action => action.Card).Distinct();
 
-        // This is now the ONLY way to add an action to the check.
-        public bool StageAction(IStagedAction action)
+        public bool CanStageAction(IStagedAction action)
         {
-            if (_stagedActions.Contains(action))
+            // Rule: prevent duplicate card types (if not freely playable).
+            if (!action.IsFreely && _stagedCardTypes.Contains(action.Card.Data.cardType))
             {
-                Debug.LogWarning($"{action.Card.Data.cardName}.{action} staged multiple times - was this intended?");
+                Debug.LogWarning($"{action.Card.Data.cardName} staged a duplicate type - was this intended?");
                 return false;
             }
 
-            _stagedActions.Add(action);
-            if (!action.IsFreely)
-            {
-                if (!_stagedCardTypes.Add(action.Card.Data.cardType))
-                    Debug.LogWarning($"{action.Card.Data.cardName} staged a duplicate type - was this intended?");
-            }
             return true;
         }
 
-        public bool UndoAction(IStagedAction action)
+        public void StageCardTypeIfNeeded(IStagedAction action)
         {
-            if (_stagedActions.Remove(action))
-            {
-                if (!action.IsFreely)
-                {
-                    if (!_stagedCardTypes.Remove(action.Card.Data.cardType))
-                        Debug.LogError($"{action.Card.Data.cardName} attempted to undo its type without being staged!");
-                }
-                return true;
-            }
-            else
-            {
-                Debug.LogError($"{action.Card.Data.cardName} attempted to undo without being staged!");
-                return false;
-            }
+            if (!action.IsFreely) _stagedCardTypes.Add(action.Card.Data.cardType);
         }
 
-        // --- Skill Modifications ---
+        public void ClearStagedTypes() => _stagedCardTypes.Clear();
+
+        // =====================================================================================
+        // CHECK SKILL DETERMINATION
+        // =====================================================================================
         private readonly Dictionary<CardInstance, List<PF.Skill>> stagedSkillAdditions = new();
         private readonly Dictionary<CardInstance, List<PF.Skill>> stagedSkillRestrictions = new();
 
@@ -123,7 +108,9 @@ namespace PACG.Gameplay
             return skills;
         }
 
-        // --- Check Results (Encapsulated) ---
+        // =====================================================================================
+        // CHECK RESULTS ENCAPSULATION
+        // =====================================================================================
         private readonly List<string> _traits = new();
         private readonly DicePool _dicePool = new();
 
@@ -135,9 +122,9 @@ namespace PACG.Gameplay
 
         // Public methods to control state changes
         public void AddTraits(params string[] traits) => _traits.AddRange(traits);
-        public void AddToDicePool(int count, int sides, int bonus = 0) => _dicePool.AddDice(count, sides, bonus); // Example
+        public void AddToDicePool(int count, int sides, int bonus = 0) => _dicePool.AddDice(count, sides, bonus);
 
         // --- Custom Data ---
-        public Dictionary<string, object> ContextData { get; } = new(); // Get-only to prevent replacement
+        public Dictionary<string, object> ContextData { get; } = new();
     }
 }

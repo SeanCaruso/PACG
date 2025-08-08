@@ -84,7 +84,7 @@ PACG.SharedAPI   → Cross-layer view controllers, events, view models
 - **GameServices Two-Phase Init**: Dependency injection bundle with delayed LogicRegistry registration to avoid circular dependencies
 - **Resolvable System**: Card logic declares requirements (CombatResolvable, DamageResolvable) that pause GFM for user input
 - **Automatic Context Creation**: ContextManager creates CheckContext automatically for ICheckResolvable types
-- **Action Staging with Location Management**: ActionStagingManager owns complete user input lifecycle including original location tracking
+- **Action Staging with Request-Validate-Commit-Notify Pattern**: ActionStagingManager serves as single source of truth for staged actions, with CheckContext handling validation and check-specific rules
 - **CardManager Single Source of Truth**: All card location queries and updates go through CardManager
 - **Event-Driven UI Updates**: CardLocationChanged events drive UI display updates (Gameplay → Presentation only)
 - **Lazy Card Display Instantiation**: CardDisplayController creates CardDisplay objects on-demand
@@ -105,10 +105,14 @@ For complex conditional effects (e.g., "If undefeated, do X"):
 
 ### Current Priorities
 1. **Test resolvable flow** - Verify complete encounter cycle from card logic to user input to resolution
-2. **Complete remaining processors** - Implement processors for non-combat resolvables (damage, acquire, etc.)
-3. **End-to-end integration testing** - Full turn and encounter cycles with actual user interaction
-4. **Conditional card effects** - Implement hybrid pattern for "If undefeated" type effects
-5. **Polish UI feedback** - Ensure proper button states and user prompts during resolvable resolution
+2. **Complete processor implementations** - Many turn action processors are currently placeholders
+3. **Complete remaining processors** - Implement processors for non-combat resolvables (damage, acquire, etc.)
+4. **Encounter initialization** - ExploreProcessor doesn't properly set up encounter context
+5. **Turn end logic** - EndTurn functionality not connected to processor pattern
+6. **Resolvable coverage** - Only 3 resolvable types have processor mappings
+7. **End-to-end integration testing** - Full turn and encounter cycles with actual user interaction
+8. **Conditional card effects** - Implement hybrid pattern for "If undefeated" type effects
+9. **Polish UI feedback** - Ensure proper button states and user prompts during resolvable resolution
 
 ### Technical Constraints
 - **Unity Version**: 6000.1.11f1
