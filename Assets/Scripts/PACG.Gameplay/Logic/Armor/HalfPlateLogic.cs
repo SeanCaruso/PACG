@@ -39,7 +39,7 @@ namespace PACG.Gameplay
             Check != null
             && Card.Owner.DisplayedCards.Contains(Card)
             && (Check.StagedCards.Contains(Card) || !Check.StagedCardTypes.Contains(PF.CardType.Armor)) // If we staged the Display this check, we can freely draw.
-            && GameServices.Contexts.ResolutionContext?.CurrentResolvable is DamageResolvable resolvable
+            && GameServices.Contexts.CurrentResolvable is DamageResolvable resolvable
             && resolvable.DamageType == "Combat"
             && resolvable.PlayerCharacter == Card.Owner);
 
@@ -49,7 +49,7 @@ namespace PACG.Gameplay
             && Card.Owner.DisplayedCards.Contains(Card)
             && (Check.StagedCards.Contains(Card) || !Check.StagedCardTypes.Contains(PF.CardType.Armor)) // If we staged the Display this check, we can freely bury.
             && Card.Owner.IsProficient(PF.CardType.Armor)
-            && GameServices.Contexts.ResolutionContext?.CurrentResolvable is DamageResolvable resolvable
+            && GameServices.Contexts.CurrentResolvable is DamageResolvable resolvable
             && resolvable.PlayerCharacter == Card.Owner);
 
         void IPlayableLogic.OnStage(IStagedAction action) { }

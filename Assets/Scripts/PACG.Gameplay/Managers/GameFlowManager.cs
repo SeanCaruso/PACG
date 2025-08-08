@@ -75,20 +75,11 @@ namespace PACG.Gameplay
             if (_processorQueue.Count > 0) return ExecuteProcessor();
 
             // Second: check if we have unresolved resolvables (pause points)
-            if (HasResolvables && _contexts.ResolutionContext == null)
+            if (HasResolvables && _contexts.CurrentResolvable == null)
             {
                 var resolvable = GetNextResolvable();
-                _contexts.NewResolution(new(resolvable));
+                _contexts.NewResolution(resolvable);
                 return false; // Wait for input!
-            }
-
-            // Third: Process completed resolvables after user input
-            if (_contexts.ResolutionContext?.IsResolved == true)
-            {
-                var resolvable = _contexts.ResolutionContext.CurrentResolvable;
-                QueueProcessorFor(resolvable);
-                _contexts.EndResolution();
-                return true; // Continue processing
             }
 
             return false; // All done!
@@ -102,7 +93,7 @@ namespace PACG.Gameplay
 
             // If a processor sets up a resolution context, it's asking for user input.
             // We must pause execution and wait for the player to act.
-            if (_contexts.ResolutionContext != null)
+            if (_contexts.CurrentResolvable != null)
             {
                 Debug.Log($"[GameFlowManager] Pausing for user input...");
                 return false;
@@ -115,7 +106,7 @@ namespace PACG.Gameplay
         /// Queues the appropriate processor to handle a resolved resolvable.
         /// </summary>
         /// <param name="resolvable">Resolved resolvable</param>
-        private void QueueProcessorFor(IResolvable resolvable)
+        public void QueueProcessorFor(IResolvable resolvable)
         {
             if (resolvable is CombatResolvable combat)
             {

@@ -26,7 +26,7 @@ namespace PACG.Gameplay
         }
 
         bool CanReveal => (
-            GameServices.Contexts.ResolutionContext?.CurrentResolvable is DamageResolvable resolvable
+            GameServices.Contexts.CurrentResolvable is DamageResolvable resolvable
             && resolvable.DamageType == "Combat"
             && resolvable.PlayerCharacter == Card.Owner);
 

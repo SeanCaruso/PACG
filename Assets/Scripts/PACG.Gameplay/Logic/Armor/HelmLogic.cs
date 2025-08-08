@@ -23,7 +23,7 @@ namespace PACG.Gameplay
 
         bool CanReveal => (
             // We can freely reveal for damage if we have a DamageResolvable for the card's owner with Combat damage, or any type of damage if proficient.
-            GameServices.Contexts.ResolutionContext?.CurrentResolvable is DamageResolvable resolvable
+            GameServices.Contexts.CurrentResolvable is DamageResolvable resolvable
             && (resolvable.DamageType == "Combat" || Card.Owner.IsProficient(PF.CardType.Armor))
             && resolvable.PlayerCharacter == Card.Owner);
 

@@ -67,8 +67,8 @@ namespace PACG.Gameplay
             var pc = _contexts.TurnContext.CurrentPC;
             var stagedActions = pcsStagedActions.GetValueOrDefault(pc) ?? (pcsStagedActions[pc] = new());
 
-            bool canCommit = stagedActions.Count > 0 && (_contexts.ResolutionContext?.IsResolved ?? true); // We have actions but no resolvable? We can commit!
-            bool canSkip = stagedActions.Count == 0 && (_contexts.ResolutionContext?.IsResolved ?? false); // We don't have any actions and no resolvable to skip, so false!
+            bool canCommit = stagedActions.Count > 0 && (_contexts.CurrentResolvable?.IsResolved(stagedActions) ?? true); // We have actions but no resolvable? We can commit!
+            bool canSkip = stagedActions.Count == 0 && (_contexts.CurrentResolvable?.IsResolved(stagedActions) ?? false); // We don't have any actions and no resolvable to skip, so false!
 
             StagedActionsState state = new(
                 canCancel: stagedActions.Count > 0,
@@ -86,14 +86,17 @@ namespace PACG.Gameplay
             pcsStagedActions.Clear();
             _cards.CommitStagedMoves();
 
-            // Decide what to do next based on the context.
-            if (_contexts.ResolutionContext != null)
+            // If we were able to commit with a current resolvable, that resolvable has now been resolved.
+            if (_contexts.CurrentResolvable != null)
             {
-                var currentResolvable = _contexts.ResolutionContext.CurrentResolvable;
+                _gameFlowManager.QueueProcessorFor(_contexts.CurrentResolvable);
                 _contexts.EndResolution();
             }
 
             UpdateActionButtonState();
+
+            // We're done committing actions. Tell the GameFlowManager to continue.
+            _gameFlowManager.Process();
         }
     }
 }

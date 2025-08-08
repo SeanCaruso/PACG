@@ -53,7 +53,7 @@ namespace PACG.Gameplay
             if (needsReroll && hasRerollOptions)
             {
                 RerollResolvable rerollResolvable = new(_logic, pc, check);
-                _contexts.NewResolution(new(rerollResolvable));
+                _gameFlowManager.QueueResolvable(rerollResolvable);
                 return; // We're done - GameFlowManager takes over.
             }
 
@@ -73,7 +73,7 @@ namespace PACG.Gameplay
                 check.CheckPhase = CheckPhase.SufferDamage;
 
                 DamageResolvable damageResolvable = new(_logic, check.Resolvable.Character, -check.CheckResult.MarginOfSuccess);
-                _contexts.NewResolution(new(damageResolvable));
+                _gameFlowManager.QueueResolvable(damageResolvable);
                 Debug.Log($"Rolled {check.CheckResult.FinalRollTotal} vs. {dc} - Take {damageResolvable.Amount} damage!");
                 return; // We're done - GameFlowManager takes over.
             }

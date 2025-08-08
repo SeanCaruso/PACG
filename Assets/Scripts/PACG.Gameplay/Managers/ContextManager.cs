@@ -8,7 +8,7 @@ namespace PACG.Gameplay
         public TurnContext TurnContext { get; private set; } = null;
         public EncounterContext EncounterContext { get; private set; } = null;
         public CheckContext CheckContext { get; private set; } = null;
-        public ResolutionContext ResolutionContext { get; private set; } = null;
+        public IResolvable CurrentResolvable { get; private set; } = null;
 
         public void NewGame(GameContext gameContext) => GameContext = gameContext;
 
@@ -19,12 +19,16 @@ namespace PACG.Gameplay
         public void NewEncounter(EncounterContext encounterContext) => EncounterContext = encounterContext;
         public void EndEncounter() => EncounterContext = null;
 
-        public void NewResolution(ResolutionContext resolutionContext)
+        /// <summary>
+        /// THIS SHOULD ONLY BE CALLED BY GameFlowManager!!! Call GameFlowManager.QueueResolvable instead!
+        /// </summary>
+        /// <param name="resolvable"></param>
+        public void NewResolution(IResolvable resolvable)
         {
-            ResolutionContext = resolutionContext;
+            CurrentResolvable = resolvable;
 
             // Automatic context creation based on resolvable type.
-            if (resolutionContext.CurrentResolvable is ICheckResolvable checkResolvable)
+            if (CurrentResolvable is ICheckResolvable checkResolvable)
             {
                 CheckContext = new(checkResolvable);
             }
@@ -35,12 +39,12 @@ namespace PACG.Gameplay
         public void EndResolution()
         {
             // Automatic context clean-up based on resolvable type.
-            if (ResolutionContext.CurrentResolvable is ICheckResolvable)
+            if (CurrentResolvable is ICheckResolvable)
             {
                 CheckContext = null;
             }
 
-            ResolutionContext = null;
+            CurrentResolvable = null;
         }
 
         private ActionStagingManager _asm;

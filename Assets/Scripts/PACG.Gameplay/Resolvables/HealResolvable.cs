@@ -15,10 +15,5 @@ namespace PACG.Gameplay
             Count = count;
             TypeFilter = typeFilter;
         }
-
-        public List<PlayCardAction> GetValidActions(CheckContext context, ResolutionContext resolutionManager)
-        {
-            throw new System.NotImplementedException();
-        }
     }
 }
