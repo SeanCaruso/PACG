@@ -17,9 +17,6 @@ namespace PACG.Gameplay
 
         public void OnUndo(CheckContext _ = null) { }
 
-        public void Commit(CheckContext _ = null)
-        {
-            Card.Owner.Discard(Card);
-        }
+        public void Commit(CheckContext _ = null) { }
     }
 }

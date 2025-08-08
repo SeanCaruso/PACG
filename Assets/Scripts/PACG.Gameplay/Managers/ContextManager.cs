@@ -38,12 +38,6 @@ namespace PACG.Gameplay
         }
         public void EndResolution()
         {
-            // Automatic context clean-up based on resolvable type.
-            if (CurrentResolvable is ICheckResolvable)
-            {
-                CheckContext = null;
-            }
-
             CurrentResolvable = null;
         }
 

@@ -10,8 +10,6 @@ namespace PACG.Gameplay
         private readonly List<CardInstance> allCards = new();
         private readonly List<CardInstance> theVault = new();
 
-        private readonly Dictionary<CardInstance, CardLocation> stagedOriginalLocations = new();
-
         public CardInstance New(CardData card, PlayerCharacter owner = null)
         {
             if (card == null)
@@ -26,17 +24,12 @@ namespace PACG.Gameplay
             return newInstance;
         }
 
-        public void MoveCard(CardInstance card, CardLocation newLocation, bool skipStage = false)
+        public void MoveCard(CardInstance card, CardLocation newLocation)
         {
             if (card == null)
             {
                 Debug.LogError($"Attempted to move null card to {newLocation}!");
                 return;
-            }
-
-            if (!skipStage)
-            {
-                stagedOriginalLocations.TryAdd(card, card.CurrentLocation);
             }
 
             card.CurrentLocation = newLocation;
@@ -45,18 +38,41 @@ namespace PACG.Gameplay
             Debug.Log($"Moved {card.Data.cardName} to {newLocation}");
         }
 
-        public void RestoreStagedCards()
+        public void MoveCard(CardInstance card, PF.ActionType action)
         {
-            foreach ((var card, var location) in stagedOriginalLocations)
+            switch (action)
             {
-                MoveCard(card, location, true);
+                case PF.ActionType.Banish:
+                    MoveCard(card, CardLocation.Vault);
+                    // Don't clear out the owner yet - we might undo this.
+                    break;
+                case PF.ActionType.Bury:
+                    MoveCard(card, CardLocation.Buried);
+                    break;
+                case PF.ActionType.Discard:
+                    MoveCard(card, CardLocation.Discard);
+                    break;
+                case PF.ActionType.Display:
+                    MoveCard(card, CardLocation.Displayed);
+                    break;
+                case PF.ActionType.Draw:
+                    MoveCard(card, CardLocation.Hand);
+                    break;
+                case PF.ActionType.Recharge:
+                    MoveCard(card, CardLocation.Deck);
+                    card.Owner.Recharge(card);
+                    break;
+                case PF.ActionType.Reload:
+                    MoveCard(card, CardLocation.Deck);
+                    card.Owner.Reload(card);
+                    break;
+                case PF.ActionType.Reveal:
+                    MoveCard(card, CardLocation.Revealed);
+                    break;
+                default:
+                    Debug.LogError($"Unsupported action: {action}!");
+                    break;
             }
-            stagedOriginalLocations.Clear();
-        }
-
-        public void CommitStagedMoves()
-        {
-            stagedOriginalLocations.Clear();
         }
 
         private void HandleCardLocationChanged(CardInstance card)
@@ -73,7 +89,9 @@ namespace PACG.Gameplay
         public List<CardInstance> GetCardsInLocation(CardLocation location) => FindAll(card => card.CurrentLocation == location);
         // ... owned by a specific player
         public List<CardInstance> GetCardsOwnedBy(PlayerCharacter owner) => FindAll(card => card.Owner == owner);
-        // ... in a specific player's hand
-        public List<CardInstance> GetCardsInPlayerHand(PlayerCharacter player) => FindAll(card => card.Owner == player && card.CurrentLocation == CardLocation.Hand);
+        // ... owned by a specific player in a specific location
+        public List<CardInstance> GetCardsOwnedBy(PlayerCharacter owner, CardLocation location) => FindAll(card => card.Owner == owner && card.CurrentLocation == location);
+        // ... are considered part of a specific player's hand (in hand and revealed)
+        public List<CardInstance> GetCardsInHand(PlayerCharacter owner) => FindAll(card => card.Owner == owner && (card.CurrentLocation == CardLocation.Hand || card.CurrentLocation == CardLocation.Revealed));
     }
 }

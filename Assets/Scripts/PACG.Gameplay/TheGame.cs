@@ -60,7 +60,6 @@ namespace PACG.Gameplay
             // We can create an Initialize method for them.
             // =================================================================
 
-            cardDisplayController.Initialize(_gameServices.Contexts.GameContext.AdventureNumber);
             cardPreviewController.Initialize(_gameServices);
             uIInputController.Initialize(_gameServices);
 

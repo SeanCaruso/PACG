@@ -27,5 +27,5 @@ namespace PACG.Gameplay
         }
     }
 
-    public enum CardLocation { Buried, Deck, Discard, Displayed, Hand, Recovery, Vault }
+    public enum CardLocation { Buried, Deck, Discard, Displayed, Hand, Recovery, Revealed, Vault }
 }

@@ -20,6 +20,8 @@ namespace PACG.SharedAPI
         public RectTransform displayedContainer;
         public RectTransform revealedContainer;
         public RectTransform discardsContainer;
+        public RectTransform recoveryContainer;
+        public RectTransform hiddenContainer;
 
         [Header("Hand Layout")]
         // TODO: Implement hand fanning at large hand sizes
@@ -33,20 +35,17 @@ namespace PACG.SharedAPI
         public CardDisplay cardPrefab;
 
         private PlayerCharacter PC { get; set; } = null;
-        private int AdventureNumber { get; set; }
 
-        private readonly Dictionary<CardDisplay, CardInstance> displayToInstanceMap = new();
-        public CardInstance GetInstanceFromDisplay(CardDisplay display) => displayToInstanceMap.GetValueOrDefault(display, null);
-
-        private readonly Dictionary<CardInstance, CardStagingInfo> originalCardStates = new();
+        private readonly Dictionary<CardInstance, CardDisplay> instanceToDisplayMap = new();
+        public CardInstance GetInstanceFromDisplay(CardDisplay display) => instanceToDisplayMap.FirstOrDefault(kvp => kvp.Value == display).Key;
 
         protected void Awake()
         {
             GameEvents.HourChanged += OnHourChanged;
             GameEvents.EncounterStarted += OnEncounterStarted;
 
-            GameEvents.ActionStaged += OnActionStaged;
-            GameEvents.ActionUnstaged += OnActionUnstaged;
+            GameEvents.CardLocationChanged += OnCardLocationChanged;
+            GameEvents.CardLocationsChanged += OnCardLocationsChanged;
         }
 
         protected void OnDestroy()
@@ -54,13 +53,8 @@ namespace PACG.SharedAPI
             GameEvents.HourChanged -= OnHourChanged;
             GameEvents.EncounterStarted -= OnEncounterStarted;
 
-            GameEvents.ActionStaged -= OnActionStaged;
-            GameEvents.ActionUnstaged -= OnActionUnstaged;
-        }
-
-        public void Initialize(int adventureNumber)
-        {
-            AdventureNumber = adventureNumber;
+            GameEvents.CardLocationChanged -= OnCardLocationChanged;
+            GameEvents.CardLocationsChanged -= OnCardLocationsChanged;
         }
 
         // ========================================================================================
@@ -70,7 +64,7 @@ namespace PACG.SharedAPI
         public void OnHourChanged(CardInstance hourCard)
         {
             CardDisplay cardDisplay = Instantiate(cardPrefab, hoursContainer);
-            displayToInstanceMap.Add(cardDisplay, hourCard);
+            instanceToDisplayMap.Add(hourCard, cardDisplay);
             cardDisplay.SetViewModel(CardViewModelFactory.CreateFrom(hourCard));
             //cardDisplay.transform.localScale = Vector3.one;
         }
@@ -78,7 +72,7 @@ namespace PACG.SharedAPI
         public void OnEncounterStarted(CardInstance encounteredCard)
         {
             CardDisplay cardDisplay = Instantiate(cardPrefab, encounteredContainer);
-            displayToInstanceMap.Add(cardDisplay, encounteredCard);
+            instanceToDisplayMap.Add(encounteredCard, cardDisplay);
             cardDisplay.SetViewModel(CardViewModelFactory.CreateFrom(encounteredCard));
             cardDisplay.transform.localScale = Vector3.one;
         }
@@ -89,109 +83,73 @@ namespace PACG.SharedAPI
 
         public void SetCurrentPC(PlayerCharacter pc)
         {
-            if (PC != null) PC.HandChanged -= OnHandChanged;
             PC = pc;
-            PC.HandChanged += OnHandChanged;
-        }
-
-        private void OnHandChanged()
-        {
-            // Clear the hand
-            foreach (Transform child in handContainer)
-            {
-                var cardDisplay = child.GetComponent<CardDisplay>();
-                displayToInstanceMap.Remove(cardDisplay);
-                Destroy(cardDisplay.gameObject);
-            }
-
-            // Rebuild the hand
-            foreach (var card in PC.Hand) AddCardToHand(card);
-        }
-
-        public void AddCardToHand(CardInstance card)
-        {
-            CardDisplay cardDisplay = Instantiate(cardPrefab, handContainer);
-            displayToInstanceMap.Add(cardDisplay, card);
-            cardDisplay.SetViewModel(CardViewModelFactory.CreateFrom(card));
-            cardDisplay.transform.localScale = Vector3.one;
         }
 
         // ========================================================================================
-        // ACTION STAGING
+        // CARD MOVEMENT
         // ========================================================================================
 
-        private void OnActionStaged(IStagedAction action)
+        private void OnCardLocationChanged(CardInstance card)
         {
-            var cardDisplay = FindCardDisplay(action.Card);
+            var cardDisplay = GetCardDisplay(card);
             if (cardDisplay == null)
             {
-                Debug.LogError($"StageAction --- Unable to find cardDisplay for {action.Card.Data.cardName}. Action not staged!");
+                Debug.LogError($"StageAction --- Unable to find cardDisplay for {card.Data.cardName}. Action not staged!");
                 return;
             }
 
-            // If this is the first time we've staged an action for this card, keep track of where the card will be going if undone.
-            if (!originalCardStates.ContainsKey(action.Card))
-            {
-                originalCardStates[action.Card] = new()
-                {
-                    cardDisplay = cardDisplay,
-                    originalParent = cardDisplay.transform.parent,
-                    originalScale = cardDisplay.transform.localScale,
-                    originalSiblingIndex = cardDisplay.transform.GetSiblingIndex()
-                };
-            }
+            if (card.Owner != PC) return;
 
             // Hide/move the card based on the action type.
-            switch (action.ActionType)
+            switch (card.CurrentLocation)
             {
-                case PF.ActionType.Display:
+                // Locations where the card is hidden
+                case CardLocation.Buried:
+                case CardLocation.Deck:
+                case CardLocation.Discard: // TODO: Display last discarded card in discard pile?
+                case CardLocation.Vault:
+                    cardDisplay.transform.SetParent(hiddenContainer);
+                    break;
+                case CardLocation.Displayed:
                     // Move to display area.
                     cardDisplay.transform.SetParent(displayedContainer);
                     cardDisplay.transform.localScale = new(.6f, .6f);
                     break;
-                case PF.ActionType.Draw:
+                case CardLocation.Hand:
                     cardDisplay.transform.SetParent(handContainer);
                     cardDisplay.transform.localScale = new(1f, 1f);
                     break;
-                case PF.ActionType.Reveal:
+                case CardLocation.Recovery:
+                    cardDisplay.transform.SetParent(recoveryContainer);
+                    cardDisplay.transform.localScale = new(.6f, .6f);
+                    break;
+                case CardLocation.Revealed:
                     // Move to reveal area.
                     cardDisplay.transform.SetParent(revealedContainer);
                     cardDisplay.transform.localScale = new(.6f, .6f);
                     break;
                 default:
-                    // Hide the card.
-                    cardDisplay.gameObject.SetActive(false);
+                    Debug.LogError($"[CardDisplayController] Unknown card location: {card.CurrentLocation} for {card.Data.cardName}");
                     break;
             }
         }
 
-        private void OnActionUnstaged(IStagedAction action)
+        private void OnCardLocationsChanged(List<CardInstance> cards)
         {
-            if (!originalCardStates.TryGetValue(action.Card, out var stagingInfo))
-            {
-                Debug.LogError($"Unable to find original card state for {action.Card.Data.cardName}");
-                return;
-            }
-
-            stagingInfo.cardDisplay.transform.SetParent(stagingInfo.originalParent);
-            stagingInfo.cardDisplay.transform.SetSiblingIndex(stagingInfo.originalSiblingIndex);
-            stagingInfo.cardDisplay.transform.localScale = stagingInfo.originalScale;
-            stagingInfo.cardDisplay.gameObject.SetActive(true);
-
-            originalCardStates.Remove(action.Card);
+            foreach (var card in cards) OnCardLocationChanged(card);
         }
 
-        private CardDisplay FindCardDisplay(CardInstance card)
+        private CardDisplay GetCardDisplay(CardInstance card)
         {
-            return displayToInstanceMap.FirstOrDefault(kvp => kvp.Value == card).Key;
-        }
-    }
+            // If it already exists, return it.
+            if (instanceToDisplayMap.TryGetValue(card, out var display)) return display;
 
-    public struct CardStagingInfo
-    {
-        public CardDisplay cardDisplay;
-        public Transform originalParent;
-        public Vector3 originalScale;
-        public int originalSiblingIndex;
+            // Otherwise, create a new one.
+            CardDisplay cardDisplay = Instantiate(cardPrefab);
+            cardDisplay.SetViewModel(CardViewModelFactory.CreateFrom(card));
+            instanceToDisplayMap.Add(card, cardDisplay);
+            return cardDisplay;
+        }
     }
 }

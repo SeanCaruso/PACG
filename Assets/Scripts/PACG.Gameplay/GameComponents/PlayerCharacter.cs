@@ -5,11 +5,8 @@ using UnityEngine;
 
 namespace PACG.Gameplay
 {
-    public class PlayerCharacter : IDisposable
+    public class PlayerCharacter
     {
-        // --- Events
-        public event Action HandChanged;
-
         // --- Dependency Injections
         private readonly CardManager cardManager;
 
@@ -17,25 +14,25 @@ namespace PACG.Gameplay
 
         private readonly Deck deck = new();
 
-        public List<CardInstance> Hand { get; } = new();
-        public List<CardInstance> Discards { get; } = new();
-        public List<CardInstance> BuriedCards { get; } = new();
-        public List<CardInstance> DisplayedCards { get; } = new();
-        public List<CardInstance> RecoveryCards { get; } = new();
-
-        public bool IsProficient(PF.CardType cardType) => characterData.proficiencies.Contains(cardType);
-
         public PlayerCharacter(CharacterData characterData, CardManager cardManager)
         {
             this.characterData = characterData;
             this.cardManager = cardManager;
-            GameEvents.CardLocationChanged += UpdateCardLists;
         }
 
-        public void Dispose()
-        {
-            GameEvents.CardLocationChanged -= UpdateCardLists;
-        }
+        // ==============================================================================
+        // CONVENIENCE FUNCTIONS - PASS-THROUGHS TO CardManager
+        // ==============================================================================
+        public IReadOnlyList<CardInstance> Hand => cardManager.GetCardsInHand(this);
+        public IReadOnlyList<CardInstance> Discards => cardManager.GetCardsOwnedBy(this, CardLocation.Discard);
+        public IReadOnlyList<CardInstance> BuriedCards => cardManager.GetCardsOwnedBy(this, CardLocation.Buried);
+        public IReadOnlyList<CardInstance> DisplayedCards => cardManager.GetCardsOwnedBy(this, CardLocation.Displayed);
+        public IReadOnlyList<CardInstance> RecoveryCards => cardManager.GetCardsOwnedBy(this, CardLocation.Recovery);
+
+        // ==============================================================================
+        // SKILLS AND ATTRIBUTES
+        // ==============================================================================
+        public bool IsProficient(PF.CardType cardType) => characterData.proficiencies.Contains(cardType);
 
         public (int die, int bonus) GetAttr(PF.Skill attr)
         {
@@ -89,40 +86,9 @@ namespace PACG.Gameplay
             return (bestSkill, bestDie, bestBonus);
         }
 
-        // --- Card Power Action Types --------------------------------------------------
-        public void Banish(CardInstance card)
-        {
-            if (card == null || card.Owner != this) return;
-            cardManager.MoveCard(card, CardLocation.Vault);
-        }
-
-        public void Bury(CardInstance card)
-        {
-            if (card == null || card.Owner != this) return;
-            cardManager.MoveCard(card, CardLocation.Buried);
-        }
-
-        public void Discard(CardInstance card)
-        {
-            if (card == null || card.Owner != this) return;
-            cardManager.MoveCard(card, CardLocation.Discard);
-        }
-
-        public void Display(CardInstance card)
-        {
-            if (card == null || card.Owner != this) return;
-            cardManager.MoveCard(card, CardLocation.Displayed);
-        }
-
-        public void Draw(CardInstance card)
-        {
-            // This is specific to the Draw card power, so enforce card ownership.
-            if (card == null || card.Owner != this) return;
-
-            card.Owner = this;
-            cardManager.MoveCard(card, CardLocation.Hand);
-        }
-
+        // ==============================================================================
+        // CARD MOVEMENT INVOLVING THE PLAYER'S DECK
+        // ==============================================================================
         public void Recharge(CardInstance card)
         {
             if (card == null || card.Owner != this) return;
@@ -136,9 +102,7 @@ namespace PACG.Gameplay
             cardManager.MoveCard(card, CardLocation.Deck);
             deck.Reload(card);
         }
-        // ---------------------------------------------------------------------------------
 
-        // --- Convenience Functions for Card Movement -------------------------------------
         public void DrawFromDeck()
         {
             if (deck.Count == 0)
@@ -149,7 +113,7 @@ namespace PACG.Gameplay
             }
             var card = deck.DrawCard();
             card.Owner = this;
-            cardManager.MoveCard(card, CardLocation.Hand, true);
+            cardManager.MoveCard(card, CardLocation.Hand);
         }
 
         public void DrawToHandSize()
@@ -171,83 +135,8 @@ namespace PACG.Gameplay
         public void ShuffleIntoDeck(CardInstance card)
         {
             if (card == null) return;
-            cardManager.MoveCard(card, CardLocation.Deck, true);
+            cardManager.MoveCard(card, CardLocation.Deck);
             deck.ShuffleIn(card);
-        }
-        // ----------------------------------------------------------------------------------
-
-        public void MoveCard(CardInstance card, PF.ActionType action)
-        {
-            if (card == null || card.Owner != this)
-            {
-                Debug.LogWarning($"Attempted to {action} a card not owned by {characterData.characterName}.");
-            }
-
-            switch (action)
-            {
-                case PF.ActionType.Banish:
-                    Banish(card);
-                    break;
-                case PF.ActionType.Bury:
-                    Bury(card);
-                    break;
-                case PF.ActionType.Discard:
-                    Discard(card);
-                    break;
-                case PF.ActionType.Display:
-                    Display(card);
-                    break;
-                case PF.ActionType.Draw:
-                    Draw(card);
-                    break;
-                case PF.ActionType.Recharge:
-                    Recharge(card);
-                    break;
-                case PF.ActionType.Reload:
-                    Reload(card);
-                    break;
-                case PF.ActionType.Reveal:
-                    // No action necessary.
-                    break;
-                default:
-                    Debug.LogError($"Unsupported action: {action}!");
-                    break;
-            }
-        }
-
-        private void UpdateCardLists(CardInstance card)
-        {
-            // We only care about our own cards.
-            if (card.Owner != this) return;
-
-            // Remove from all locations.
-            bool wasInHand = Hand.Remove(card);
-            Discards.Remove(card);
-            BuriedCards.Remove(card);
-            DisplayedCards.Remove(card);
-
-            bool isNowInHand = false;
-            switch (card.CurrentLocation)
-            {
-                case CardLocation.Buried:
-                    BuriedCards.Add(card);
-                    break;
-                case CardLocation.Deck:
-                    // The Deck class handles its own logic.
-                    break;
-                case CardLocation.Discard:
-                    Discards.Add(card);
-                    break;
-                case CardLocation.Displayed:
-                    DisplayedCards.Add(card);
-                    break;
-                case CardLocation.Hand:
-                    isNowInHand = true;
-                    Hand.Add(card);
-                    break;
-            }
-
-            if (wasInHand != isNowInHand) HandChanged?.Invoke();
         }
     }
 }

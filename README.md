@@ -84,7 +84,10 @@ PACG.SharedAPI   → Cross-layer view controllers, events, view models
 - **GameServices Two-Phase Init**: Dependency injection bundle with delayed LogicRegistry registration to avoid circular dependencies
 - **Resolvable System**: Card logic declares requirements (CombatResolvable, DamageResolvable) that pause GFM for user input
 - **Automatic Context Creation**: ContextManager creates CheckContext automatically for ICheckResolvable types
-- **Action Staging with Commit**: User stages actions, commits to resume GFM processing
+- **Action Staging with Location Management**: ActionStagingManager owns complete user input lifecycle including original location tracking
+- **CardManager Single Source of Truth**: All card location queries and updates go through CardManager
+- **Event-Driven UI Updates**: CardLocationChanged events drive UI display updates (Gameplay → Presentation only)
+- **Lazy Card Display Instantiation**: CardDisplayController creates CardDisplay objects on-demand
 - **Events**: `GameEvents` static class for decoupled communication (in `PACG.SharedAPI/`)
 - **ViewModels**: `CardViewModel` separates presentation data from domain objects (in `PACG.SharedAPI/`)
 - **Card Logic Registry**: Attribute-based card behavior system with GameServices constructor injection
@@ -137,19 +140,13 @@ For complex conditional effects (e.g., "If undefeated, do X"):
 
 ### Game Design
 - [ ] Turn phase enforcement strategy
-- [ ] Multiple actions per turn rules
+- [ ] Multiple actions per turn rules  
 - [ ] Turn end conditions
 - [ ] Damage resolution flow
 - [ ] Card acquisition mechanics
 
-### Technical Architecture  
-- [x] State management pattern for turns (GameFlowManager processor queue with pause/resume)
-- [x] GameServices dependency injection bundle implementation
-- [x] Resolvable system for user input coordination
-- [x] Automatic context creation based on resolvable types
-- [x] Two-phase initialization pattern for circular dependencies
+### Technical Architecture - Active Decisions
 - [ ] Conditional card effect implementation strategy (hybrid pattern)
-- [ ] Event system organization and cleanup
 - [ ] Testing strategy for complex game interactions
 - [ ] Performance considerations for card display
 
