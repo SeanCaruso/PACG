@@ -37,5 +37,11 @@ namespace PACG.Gameplay
             // We can always resolve.
             return true;
         }
+
+        public IProcessor CreateProcessor(GameServices gameServices)
+        {
+            // TODO: Return a processor for GiveCardResolvable
+            return null;
+        }
     }
 }

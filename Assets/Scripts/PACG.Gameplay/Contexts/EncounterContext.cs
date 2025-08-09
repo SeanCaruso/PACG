@@ -3,11 +3,28 @@ using UnityEngine;
 
 namespace PACG.Gameplay
 {
+    public enum EncounterPhase
+    {
+        OnEncounter,
+        Evasion,
+        BeforeActing,
+        AttemptCheck, // Might happen multiple times
+        AfterActing,
+        Resolve,
+        Avenge
+    }
+
     public class EncounterContext
     {
         // Basic information - set on construction
         public PlayerCharacter EncounterPC { get; }
-        public CardInstance EncounteredCard { get; }
+        public CardLogicBase CardLogic { get; set; }
+
+        // Convenience properties
+        public CardInstance CardInstance => CardLogic.Card;
+        public CardData CardData => CardInstance.Data;
+
+        // This should be set on creation.
 
         // Maps CardData to the list of traits that card prohibits.
         private readonly Dictionary<(PlayerCharacter, CardInstance), List<string>> prohibitedTraits = new();
@@ -15,10 +32,10 @@ namespace PACG.Gameplay
 
         public CheckResult CheckResult { get; set; }
 
-        public EncounterContext(PlayerCharacter pc, CardInstance card)
+        public EncounterContext(PlayerCharacter pc, CardLogicBase cardLogic)
         {
             EncounterPC = pc;
-            EncounteredCard = card;
+            CardLogic = cardLogic;
         }
 
         public void AddProhibitedTraits(PlayerCharacter pc, CardInstance card, params string[] traits)

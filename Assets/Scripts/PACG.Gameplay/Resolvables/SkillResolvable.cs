@@ -20,5 +20,11 @@ namespace PACG.Gameplay
         {
             return false;
         }
+
+        public IProcessor CreateProcessor(GameServices gameServices)
+        {
+            // TODO: Return a processor for SkillResolvable
+            return null;
+        }
     }
 }

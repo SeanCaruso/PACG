@@ -5,7 +5,7 @@ namespace PACG.Gameplay
     public class PlayCardAction : IStagedAction
     {
         // Data common to all staged actions.
-        public IPlayableLogic Playable { get; private set; }
+        public CardLogicBase Playable { get; private set; }
         public CardInstance Card { get; private set; }
         public PF.ActionType ActionType { get; private set; }
 
@@ -14,7 +14,7 @@ namespace PACG.Gameplay
 
         private readonly string label = null;
 
-        public PlayCardAction(IPlayableLogic playable, CardInstance card, PF.ActionType actionType, params (string, object)[] actionData)
+        public PlayCardAction(CardLogicBase playable, CardInstance card, PF.ActionType actionType, params (string, object)[] actionData)
         {
             this.Playable = playable;
             this.Card = card;

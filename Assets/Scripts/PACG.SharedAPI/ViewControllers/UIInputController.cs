@@ -33,7 +33,7 @@ namespace PACG.SharedAPI
             // Hook up button clicks.
             //giveCardButton.onClick.AddListener(() => GiveCardButton_OnClick());
             //moveButton.onClick.AddListener(() => MoveButton_OnClick());
-            exploreButton.onClick.AddListener(() => _gameFlowManager.QueueAndProcess(new ExploreProcessor(_gameServices)));
+            exploreButton.onClick.AddListener(() => _gameFlowManager.StartPhase(new ExploreProcessor(_gameServices)));
             //optionalDiscardButton.onClick.AddListener(() =>  OptionalDiscardButton_OnClick());
             //endTurnButton.onClick.AddListener(() => EndTurnButton_OnClick());
 

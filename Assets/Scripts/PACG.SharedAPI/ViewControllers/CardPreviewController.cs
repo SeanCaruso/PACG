@@ -74,7 +74,7 @@ namespace PACG.SharedAPI
             cardRect.localScale = new Vector3(2f, 2f, 1.0f);
 
             // Query the card logic for any playable actions.
-            GenerateActionButtons(_logic.GetPlayableLogic(cardInstance)?.GetAvailableActions() ?? new());
+            GenerateActionButtons(_logic.GetCardLogic(cardInstance)?.GetAvailableActions() ?? new());
         }
 
         public void GenerateActionButtons(IReadOnlyCollection<IStagedAction> actions)

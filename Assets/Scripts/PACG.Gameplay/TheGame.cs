@@ -33,7 +33,7 @@ namespace PACG.Gameplay
 
 
             var logicRegistry = new LogicRegistry();
-            var gameFlowManager = new GameFlowManager(contextManager, logicRegistry);
+            var gameFlowManager = new GameFlowManager(_gameServices);
             var asm = new ActionStagingManager(gameFlowManager, contextManager, cardManager);
 
             contextManager.InjectActionStagingManager(asm);
@@ -91,8 +91,8 @@ namespace PACG.Gameplay
             cardDisplayController.SetCurrentPC(testPc);
 
             testPc.DrawToHandSize();
-            var turnProcessor = new TurnProcessor(_gameServices);
-            turnProcessor.StartTurn(testPc, locationDeck);
+            var turnProcessor = new StartTurnProcessor(testPc, locationDeck, _gameServices);
+            _gameServices.GameFlow.StartPhase(turnProcessor);
         }
     }
 }

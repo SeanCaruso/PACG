@@ -5,13 +5,6 @@ using UnityEngine;
 
 namespace PACG.Gameplay
 {
-    public enum CheckPhase
-    {
-        PlayCards,
-        RollDice,
-        SufferDamage
-    }
-
     public class CheckContext
     {
         // --- Immutable Initial State ---

@@ -31,7 +31,7 @@ namespace PACG.Gameplay
 
         public List<IStagedAction> GetValidActionsForCard(CardInstance card)
         {
-            var cardLogic = LogicRegistry.GetPlayableLogic(card);
+            var cardLogic = LogicRegistry.GetCardLogic(card);
             return cardLogic?.GetAvailableActions() ?? new();
         }
 
@@ -43,6 +43,11 @@ namespace PACG.Gameplay
                     return true;
             }
             return false;
+        }
+
+        public IProcessor CreateProcessor(GameServices gameServices)
+        {
+            return new CheckProcessor(this, gameServices);
         }
     }
 }

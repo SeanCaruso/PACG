@@ -90,7 +90,7 @@ PACG.SharedAPI   → Cross-layer view controllers, events, view models
 - **Lazy Card Display Instantiation**: CardDisplayController creates CardDisplay objects on-demand
 - **Events**: `GameEvents` static class for decoupled communication (in `PACG.SharedAPI/`)
 - **ViewModels**: `CardViewModel` separates presentation data from domain objects (in `PACG.SharedAPI/`)
-- **Card Logic Registry**: Attribute-based card behavior system with GameServices constructor injection
+- **Unified Card Logic System**: Single `CardLogicBase` inheritance (no interfaces), unified `LogicRegistry.GetCardLogic()` for all card types, attribute-based registration
 
 ### Planned: Hybrid Card Logic Pattern
 For complex conditional effects (e.g., "If undefeated, do X"):

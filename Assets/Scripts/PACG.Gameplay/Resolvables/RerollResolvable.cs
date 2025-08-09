@@ -35,12 +35,18 @@ namespace PACG.Gameplay
 
         public List<IStagedAction> GetValidActionsForCard(CardInstance card)
         {
-            var cardLogic = LogicRegistry.GetPlayableLogic(card);
+            var cardLogic = LogicRegistry.GetCardLogic(card);
             List<IStagedAction> actions = cardLogic?.GetAvailableActions() ?? new();
 
             return actions;
         }
 
         public bool IsResolved(List<IStagedAction> actions) => true; // We can always resolve by skipping.
+
+        public IProcessor CreateProcessor(GameServices gameServices)
+        {
+            // TODO: Return a processor for RerollResolvable
+            return null;
+        }
     }
 }

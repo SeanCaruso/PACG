@@ -33,7 +33,7 @@ namespace PACG.Gameplay
         public List<IStagedAction> GetValidActionsForCard(CardInstance card)
         {
             // Grab any card-specific options for handling damage.
-            var cardLogic = LogicRegistry.GetPlayableLogic(card);
+            var cardLogic = LogicRegistry.GetCardLogic(card);
             List<IStagedAction> actions = cardLogic?.GetAvailableActions() ?? new();
 
             // Add default damage discard action if the card was in the player's hand.
@@ -64,6 +64,12 @@ namespace PACG.Gameplay
             }
 
             return totalResolved >= Amount;
+        }
+
+        public IProcessor CreateProcessor(GameServices gameServices)
+        {
+            // TODO: Return a processor for DamageResolvable
+            return null;
         }
     }
 }
