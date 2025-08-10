@@ -47,7 +47,7 @@ namespace PACG.Gameplay
 
         public IProcessor CreateProcessor(GameServices gameServices)
         {
-            return new CheckProcessor(this, gameServices);
+            return new CheckController(this, gameServices);
         }
     }
 }

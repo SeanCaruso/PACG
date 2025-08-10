@@ -865,6 +865,8 @@ MonoBehaviour:
   displayedContainer: {fileID: 223344267}
   revealedContainer: {fileID: 1826561647}
   discardsContainer: {fileID: 1795788760}
+  recoveryContainer: {fileID: 0}
+  hiddenContainer: {fileID: 0}
   cardPrefab: {fileID: 8431384695262642363, guid: 665bdf9d8f0b08c448526ebe58d4022e, type: 3}
 --- !u!1 &899626747
 GameObject:
@@ -1986,9 +1988,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1864128405}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: PACG.SharedAPI.UIInputController, Runtime
-        m_MethodName: ExploreButton_OnClick
+        m_MethodName: 
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

@@ -9,20 +9,22 @@ namespace PACG.Gameplay
 {
     public class ActionStagingManager
     {
-        private readonly GameFlowManager _gameFlowManager;
-        private readonly ContextManager _contexts;
-        private readonly CardManager _cards;
+        private CardManager _cards;
+        private ContextManager _contexts;
+        private GameFlowManager _gameFlow;     // Commit -> Continue processing
+        private GameServices _gameServices;    // Passed in to IResolvable.CreateProcessor
 
         private Dictionary<PlayerCharacter, List<IStagedAction>> PcsStagedActions { get; } = new();
         private Dictionary<CardInstance, CardLocation> OriginalCardLocs { get; } = new();
 
         public bool CardStaged(CardInstance card) => OriginalCardLocs.Keys.Contains(card);
 
-        public ActionStagingManager(GameFlowManager gameFlowManager, ContextManager contextManager, CardManager cardManager)
+        public void Iniitalize(GameServices gameServices)
         {
-            _gameFlowManager = gameFlowManager;
-            _contexts = contextManager;
-            _cards = cardManager;
+            _cards = gameServices.Cards;
+            _contexts = gameServices.Contexts;
+            _gameFlow = gameServices.GameFlow;
+            _gameServices = gameServices;
         }
 
         public void StageAction(IStagedAction action)
@@ -106,8 +108,16 @@ namespace PACG.Gameplay
 
             UpdateActionButtonState();
 
+            // If we have a resolvable, the fact that we committed means that it's been resolved.
+            if (_contexts.CurrentResolvable != null)
+            {
+                var processor = _contexts.CurrentResolvable.CreateProcessor(_gameServices);
+                _gameFlow.QueueNextPhase(processor);
+                _contexts.EndResolution();
+            }
+
             // We're done committing actions. Tell the GameFlowManager to continue.
-            _gameFlowManager.Process();
+            _gameFlow.Process();
         }
     }
 }

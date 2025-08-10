@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
 namespace PACG.Gameplay
@@ -8,14 +7,13 @@ namespace PACG.Gameplay
     {
         private readonly Queue<IProcessor> _phaseQueue = new();         // The future to-do list
         private readonly Stack<IProcessor> _phaseStack = new();         // The processors we're processing right now
-        private readonly Stack<IResolvable> _resolvableStack = new();   // Sub-processes (higher priority Resolvables)
 
         // Dependency injection
-        private readonly GameServices _gameServices;
+        private ContextManager _contexts;
 
-        public GameFlowManager(GameServices gameServices)
+        public void Initialize(GameServices gameServices)
         {
-            _gameServices = gameServices;
+            _contexts = gameServices.Contexts;
         }
 
         // ========================================================================================
@@ -23,20 +21,10 @@ namespace PACG.Gameplay
         // ========================================================================================
 
         /// <summary>
-        /// Pause the current processor and run a sub-process.
-        /// </summary>
-        /// <param name="resolvable">Sub-process to immediately process</param>
-        public void Interrupt(IResolvable resolvable)
-        {
-            _resolvableStack.Push(resolvable);
-            Process();
-        }
-
-        /// <summary>
         /// Adds a processor to the 
         /// </summary>
         /// <param name="processor"></param>
-        public void QueueNextPhase(IProcessor processor) => _phaseStack.Push(processor);
+        public void QueueNextPhase(IProcessor processor) => _phaseQueue.Enqueue(processor);
 
         /// <summary>
         /// Call this when finished processing.
@@ -48,11 +36,12 @@ namespace PACG.Gameplay
         }
 
         /// <summary>
-        /// Entry point for starting a new phase (like a turn).
+        /// Entry point for immediately starting a new phase (like a turn).
         /// </summary>
         /// <param name="phaseProcessor">Processor for the new phase</param>
         public void StartPhase(IProcessor phaseProcessor)
         {
+            Debug.Log($"[GFM] StartPhase called with {phaseProcessor.GetType().Name}");
             _phaseStack.Push(phaseProcessor);
             Process();
         }
@@ -61,8 +50,10 @@ namespace PACG.Gameplay
 
         public void Process()
         {
-            // Blocking sub-processes are top priority.
-            while (_resolvableStack.Count > 0) _resolvableStack.Pop().CreateProcessor(_gameServices).Execute();
+            Debug.Log("[GFM] Process() called");
+
+            // Pause if we have a pending resolvable.
+            if (_contexts.CurrentResolvable != null) return;
 
             // No current phase, see if we have another one to do and set it.
             if (_phaseStack.Count == 0 && _phaseQueue.Count > 0) _phaseStack.Push(_phaseQueue.Dequeue());

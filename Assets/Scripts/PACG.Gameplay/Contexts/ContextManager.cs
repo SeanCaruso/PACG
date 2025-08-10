@@ -4,11 +4,21 @@ namespace PACG.Gameplay
 {
     public class ContextManager
     {
+        private ActionStagingManager _asm;
+        public void Iniitalize(GameServices gameServices)
+        {
+            _asm = gameServices.ASM;
+        }
+
+        // ======================================================================
+        // THE CONTEXTS
+        // ======================================================================
         public GameContext GameContext { get; private set; } = null;
         public TurnContext TurnContext { get; private set; } = null;
         public EncounterContext EncounterContext { get; private set; } = null;
         public CheckContext CheckContext { get; private set; } = null;
         public IResolvable CurrentResolvable { get; private set; } = null;
+        // ======================================================================
 
         public void NewGame(GameContext gameContext) => GameContext = gameContext;
 
@@ -20,10 +30,10 @@ namespace PACG.Gameplay
         public void EndEncounter() => EncounterContext = null;
 
         /// <summary>
-        /// THIS SHOULD ONLY BE CALLED BY GameFlowManager!!! Call GameFlowManager.QueueResolvable instead!
+        /// Adds a new resolvable to pause the game for user input (and create a CheckContext if needed).
         /// </summary>
         /// <param name="resolvable"></param>
-        public void NewResolution(IResolvable resolvable)
+        public void NewResolvable(IResolvable resolvable)
         {
             if (CurrentResolvable != null) Debug.LogWarning($"[ContextManager] Created {resolvable} is overwriting {CurrentResolvable}!");
 
@@ -41,12 +51,6 @@ namespace PACG.Gameplay
         public void EndResolution()
         {
             CurrentResolvable = null;
-        }
-
-        private ActionStagingManager _asm;
-        public void InjectActionStagingManager(ActionStagingManager asm)
-        {
-            _asm = asm;
         }
     }
 }

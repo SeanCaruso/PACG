@@ -4,18 +4,19 @@ namespace PACG.Gameplay
 {
     public class AttemptChecksProcessor : BaseProcessor
     {
-        private readonly EncounterContext _context;
+        private readonly ContextManager _contexts;
 
-        public AttemptChecksProcessor(EncounterContext context, GameServices gameServices)
+        public AttemptChecksProcessor(GameServices gameServices)
             : base(gameServices)
         {
-            _context = context;
+            _contexts = gameServices.Contexts;
         }
 
         protected override void OnExecute()
         {
-            var resolvables = _context.CardLogic.GetCheckResolvables();
-            foreach (var resolvable in resolvables) GFM.Interrupt(resolvable);
+            var resolvables = _contexts.EncounterContext.CardLogic.GetCheckResolvables();
+            // TODO: Handle multiple resolvables
+            if (resolvables.Count > 0) _contexts.NewResolvable(resolvables[0]);
         }
     }
 }

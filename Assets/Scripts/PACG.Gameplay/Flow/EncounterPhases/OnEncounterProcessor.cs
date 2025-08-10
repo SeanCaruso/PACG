@@ -6,18 +6,19 @@ namespace PACG.Gameplay
 {
     public class OnEncounterProcessor : BaseProcessor
     {
-        private readonly EncounterContext _context;
+        private readonly ContextManager _contexts;
 
-        public OnEncounterProcessor(EncounterContext context, GameServices gameServices)
+        public OnEncounterProcessor(GameServices gameServices)
             : base(gameServices)
         {
-            _context = context;
+            _contexts = gameServices.Contexts;
         }
 
         protected override void OnExecute()
         {
-            var resolvables = _context.CardLogic.GetOnEncounterResolvables();
-            foreach ( var resolvable in resolvables ) GFM.Interrupt(resolvable);
+            var resolvables = _contexts.EncounterContext.CardLogic.GetOnEncounterResolvables();
+            // TODO: Handle multiple resolvables
+            if (resolvables.Count > 0 ) _contexts.NewResolvable(resolvables[0]);
         }
     }
 }

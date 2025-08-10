@@ -28,15 +28,11 @@ namespace PACG.Gameplay
             // STEP 1: CONSTRUCT ALL PURE C# SERVICES AND PROCESSORS
             // =================================================================
             // These are just normal C# objects, no Unity dependency.
-            var contextManager = new ContextManager();
+            var asm = new ActionStagingManager();
             var cardManager = new CardManager();
-
-
+            var contextManager = new ContextManager();
+            var gameFlowManager = new GameFlowManager();
             var logicRegistry = new LogicRegistry();
-            var gameFlowManager = new GameFlowManager(_gameServices);
-            var asm = new ActionStagingManager(gameFlowManager, contextManager, cardManager);
-
-            contextManager.InjectActionStagingManager(asm);
 
             _gameServices = new(
                 asm,
@@ -44,6 +40,11 @@ namespace PACG.Gameplay
                 contextManager,
                 gameFlowManager,
                 logicRegistry);
+
+            // Initialize now that GameServices is set up.
+            asm.Iniitalize(_gameServices);
+            contextManager.Iniitalize(_gameServices);
+            gameFlowManager.Initialize(_gameServices);
 
             // Everything's set up - now we can register the logic.
             logicRegistry.RegisterAllLogic(_gameServices);

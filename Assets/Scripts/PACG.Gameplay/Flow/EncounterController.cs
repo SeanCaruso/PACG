@@ -25,11 +25,12 @@ namespace PACG.Gameplay
             _gameServices.Contexts.NewEncounter(context);
             GameEvents.RaiseEncounterStarted(_cardLogic.Card);
 
-            GFM.QueueNextPhase(new OnEncounterProcessor(context, _gameServices));
-            GFM.QueueNextPhase(new BeforeActingProcessor(context, _gameServices));
-            GFM.QueueNextPhase(new AttemptChecksProcessor(context, _gameServices));
-            GFM.QueueNextPhase(new AfterActingProcessor(context, _gameServices));
-            GFM.QueueNextPhase(new ResolveEncounterProcessor(context, _gameServices));
+            // TODO: Add all encounter phases.
+            //GFM.QueueNextPhase(new OnEncounterProcessor(_gameServices));
+            //GFM.QueueNextPhase(new BeforeActingProcessor(_gameServices));
+            GFM.QueueNextPhase(new AttemptChecksProcessor(_gameServices));
+            //GFM.QueueNextPhase(new AfterActingProcessor(_gameServices));
+            GFM.QueueNextPhase(new ResolveEncounterProcessor(_gameServices));
 
             GFM.CompleteCurrentPhase();
         }

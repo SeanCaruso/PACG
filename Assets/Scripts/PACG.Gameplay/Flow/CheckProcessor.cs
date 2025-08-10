@@ -4,13 +4,6 @@ using UnityEngine;
 
 namespace PACG.Gameplay
 {
-    public enum CheckPhase
-    {
-        PlayCards,
-        RollDice,
-        SufferDamage
-    }
-
     public class CheckProcessor : IProcessor
     {
         private readonly ContextManager _contexts;
@@ -68,7 +61,7 @@ namespace PACG.Gameplay
             if (needsReroll && hasRerollOptions)
             {
                 RerollResolvable rerollResolvable = new(_logic, pc, check);
-                _gameFlowManager.Interrupt(rerollResolvable);
+                _contexts.NewResolvable(rerollResolvable);
                 return; // We're done - GameFlowManager takes over.
             }
 
@@ -88,7 +81,7 @@ namespace PACG.Gameplay
                 check.CheckPhase = CheckPhase.SufferDamage;
 
                 DamageResolvable damageResolvable = new(_logic, check.Resolvable.Character, -check.CheckResult.MarginOfSuccess);
-                _gameFlowManager.Interrupt(damageResolvable);
+                _contexts.NewResolvable(damageResolvable);
                 Debug.Log($"Rolled {check.CheckResult.FinalRollTotal} vs. {dc} - Take {damageResolvable.Amount} damage!");
                 return; // We're done - GameFlowManager takes over.
             }

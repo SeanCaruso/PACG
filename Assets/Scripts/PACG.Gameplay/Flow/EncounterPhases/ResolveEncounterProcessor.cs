@@ -4,19 +4,18 @@ namespace PACG.Gameplay
 {
     public class ResolveEncounterProcessor : BaseProcessor
     {
-        private readonly EncounterContext _context;
+        private readonly ContextManager _contexts;
 
-        public ResolveEncounterProcessor(EncounterContext context, GameServices gameServices)
+        public ResolveEncounterProcessor(GameServices gameServices)
             : base(gameServices)
         {
-            _context = context;
+            _contexts = gameServices.Contexts;
         }
 
         protected override void OnExecute()
         {
             // TODO
-
-            _gameServices.Contexts.EndEncounter();
+            _contexts.EndEncounter();
         }
     }
 }

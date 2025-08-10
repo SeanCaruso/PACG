@@ -4,18 +4,19 @@ namespace PACG.Gameplay
 {
     public class BeforeActingProcessor : BaseProcessor
     {
-        private readonly EncounterContext _context;
+        private readonly ContextManager _contexts;
 
-        public BeforeActingProcessor(EncounterContext context, GameServices gameServices)
+        public BeforeActingProcessor(GameServices gameServices)
             : base(gameServices)
         {
-            _context = context;
+            _contexts = gameServices.Contexts;
         }
 
         protected override void OnExecute()
         {
-            var resolvables = _context.CardLogic.GetBeforeActingResolvables();
-            foreach (var resolvable in resolvables) GFM.Interrupt(resolvable);
+            var resolvables = _contexts.EncounterContext.CardLogic.GetBeforeActingResolvables();
+            // TODO: Handle multiple resolvables
+            if (resolvables.Count > 0) _contexts.NewResolvable(resolvables[0]);
         }
     }
 }

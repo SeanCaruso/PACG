@@ -20,6 +20,8 @@ namespace PACG.Gameplay
 
         public void Execute()
         {
+            Debug.Log("[ExploreProcessor] Starting explore...");
+
             // Set initial availability of turn actions
             _contexts.TurnContext.CanGive = false;
             _contexts.TurnContext.CanMove = false;
@@ -42,7 +44,7 @@ namespace PACG.Gameplay
                 return;
             }
 
-            _gameFlowManager.StartPhase(new EncounterController(_contexts.TurnContext.CurrentPC, cardLogic, _gameServices));
+            _gameFlowManager.QueueNextPhase(new EncounterController(_contexts.TurnContext.CurrentPC, cardLogic, _gameServices));
 
             _gameFlowManager.CompleteCurrentPhase();
         }

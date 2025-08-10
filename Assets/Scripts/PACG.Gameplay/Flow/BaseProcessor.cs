@@ -4,13 +4,11 @@ namespace PACG.Gameplay
 {
     public abstract class BaseProcessor : IProcessor
     {
-        protected readonly GameServices _gameServices;
-        protected GameFlowManager GFM => _gameServices.GameFlow;
-        protected LogicRegistry Logic => _gameServices.Logic;
+        private readonly GameFlowManager _gameFlow;
 
         protected BaseProcessor(GameServices gameServices)
         {
-            _gameServices = gameServices;
+            _gameFlow = gameServices.GameFlow;
         }
 
         public void Execute()
@@ -19,9 +17,12 @@ namespace PACG.Gameplay
             OnExecute();
 
             // Automatically complete the current phase.
-            GFM.CompleteCurrentPhase();
+            _gameFlow.CompleteCurrentPhase();
         }
 
+        /// <summary>
+        /// Sub-processor-specific functionality. GameFlowManager.CompleteCurrentPhase is handled by BaseProcessor.
+        /// </summary>
         protected abstract void OnExecute();
     }
 }
