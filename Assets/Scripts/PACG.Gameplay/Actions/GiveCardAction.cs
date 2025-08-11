@@ -19,7 +19,7 @@ namespace PACG.Gameplay
 
         public void Commit(CheckContext _ = null)
         {
-            string targetName = _targetPc?.characterData.characterName ?? "nonexistent PC";
+            string targetName = _targetPc?.CharacterData.characterName ?? "nonexistent PC";
             Debug.Log($"{Card.Data.cardName} given to {targetName}.");
         }
 

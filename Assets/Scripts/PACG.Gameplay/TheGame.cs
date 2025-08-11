@@ -52,7 +52,7 @@ namespace PACG.Gameplay
         // Start is called after all Awake() methods are finished.
         private void Start()
         {
-            _gameServices.Contexts.NewGame(new(1));
+            _gameServices.Contexts.NewGame(new(1, _gameServices.Cards));
             CardUtils.Initialize(_gameServices.Contexts.GameContext.AdventureNumber);
             // =================================================================
             // STEP 3: WIRE UP THE PRESENTATION LAYER
@@ -62,12 +62,6 @@ namespace PACG.Gameplay
 
             cardPreviewController.Initialize(_gameServices);
             uIInputController.Initialize(_gameServices);
-
-            // The PlayerCardsController needs a way to create ViewModels.
-
-            // TODO: This is currently a static class... is that right?
-            //var viewModelFactory = new CardViewModelFactory();
-            //_playerCardsController.Initialize(viewModelFactory, _gameFlowManager); // Pass it the GFM to make requests
 
             // =================================================================
             // STEP 4: PRESS THE "ON" BUTTON
@@ -80,7 +74,7 @@ namespace PACG.Gameplay
                 _gameServices.Contexts.GameContext.HourDeck.ShuffleIn(_gameServices.Cards.New(hourCardData));
             }
 
-            Deck locationDeck = new();
+            Deck locationDeck = new(_gameServices.Cards);
             foreach (var cardData in testLocation)
             {
                 locationDeck.ShuffleIn(_gameServices.Cards.New(cardData));

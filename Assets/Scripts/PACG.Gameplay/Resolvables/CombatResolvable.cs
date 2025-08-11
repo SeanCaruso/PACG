@@ -8,18 +8,16 @@ namespace PACG.Gameplay
         public PlayerCharacter Character { get; }
         public int Difficulty { get; }
 
-        public CombatResolvable(LogicRegistry logicRegistry, PlayerCharacter character, int difficulty)
+        public CombatResolvable(PlayerCharacter character, int difficulty)
         {
             Character = character;
             Difficulty = difficulty;
         }
 
-        public List<IStagedAction> GetValidActions()
+        public List<IStagedAction> GetAdditionalActionsForCard(CardInstance card)
         {
-            var allOptions = new List<IStagedAction>();
-            foreach (var card in Character.Hand) allOptions.AddRange(card.GetAvailableActions());
-
-            return allOptions;
+            // Combat resolvables don't add any additional actions beyond what cards provide
+            return new List<IStagedAction>();
         }
 
         public bool IsResolved(List<IStagedAction> actions)

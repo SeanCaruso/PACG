@@ -7,23 +7,18 @@ namespace PACG.Gameplay
     public abstract class CardLogicBase
     {
         // Dependency injection of services
-        protected GameServices GameServices { get; }
-        protected ContextManager Contexts { get; }
-        protected LogicRegistry Logic { get; }
+        private readonly ContextManager _contexts;
 
         protected CardLogicBase(GameServices gameServices)
         {
-            GameServices = gameServices;
-
-            Contexts = gameServices.Contexts;
-            Logic = gameServices.Logic;
+            _contexts = gameServices.Contexts;
         }
 
         // Playable card methods (default implementations for non-playable cards)
         public virtual List<IStagedAction> GetAvailableActions(CardInstance card)
         {
             // If the card has any prohibited traits, (e.g. 2-Handed vs. Offhand), just return.
-            foreach (((var character, _), var prohibitedTraits) in Contexts.EncounterContext?.ProhibitedTraits ?? new())
+            foreach (((var character, _), var prohibitedTraits) in _contexts.EncounterContext?.ProhibitedTraits ?? new())
             {
                 if (character == card.Owner && card.Data.traits.Intersect(prohibitedTraits).Any())
                     return new();
@@ -48,7 +43,7 @@ namespace PACG.Gameplay
             foreach (var check in card.Data.checkRequirement.checkSteps)
             {
                 if (check.category == CheckCategory.Combat)
-                    resolvables.Insert(0, new CombatResolvable(GameServices.Logic, GameServices.Contexts.TurnContext.CurrentPC, CardUtils.GetDC(check.baseDC, check.adventureLevelMult)));
+                    resolvables.Insert(0, new CombatResolvable(_contexts.TurnContext.CurrentPC, CardUtils.GetDC(check.baseDC, check.adventureLevelMult)));
                 else
                     Debug.LogWarning($"[CardLogicBase] {card.Data.cardName} has a skill check that isn't implemented yet!");
             }

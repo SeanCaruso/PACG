@@ -30,6 +30,13 @@ namespace PACG.Gameplay
         }
 
         // ========================================================================================
+        // CONVENIENCE PROPERTIES AND FUNCTIONS FOR COMMON CARD QUERIES
+        // ========================================================================================
+
+        public bool IsBane => PF.IsBane(Data.cardType);
+        public bool IsBoon => PF.IsBoon(Data.cardType);
+
+        // ========================================================================================
         // FACADE PATTERN - CONVENIENCE CALLS TO CARD LOGIC
         // ========================================================================================
 

@@ -6,11 +6,16 @@ namespace PACG.Gameplay
 {
     public class HelmLogic : CardLogicBase
     {
-        private CheckContext Check => GameServices.Contexts.CheckContext;
+        private readonly ContextManager _contexts;
 
-        private PlayCardAction GetDamageAction(CardInstance card) => new(this, card, PF.ActionType.Reveal, ("IsFreely", true), ("Damage", 1));
+        private CheckContext Check => _contexts.CheckContext;
 
-        public HelmLogic(GameServices gameServices) : base(gameServices) { }
+        private PlayCardAction GetDamageAction(CardInstance card) => new(card, PF.ActionType.Reveal, ("IsFreely", true), ("Damage", 1));
+
+        public HelmLogic(GameServices gameServices) : base(gameServices) 
+        {
+            _contexts = gameServices.Contexts;
+        }
 
         protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)
         {
@@ -21,18 +26,18 @@ namespace PACG.Gameplay
 
         bool CanReveal(CardInstance card) => (
             // We can freely reveal for damage if we have a DamageResolvable for the card's owner with Combat damage, or any type of damage if proficient.
-            GameServices.Contexts.CurrentResolvable is DamageResolvable resolvable
+            _contexts.CurrentResolvable is DamageResolvable resolvable
             && (resolvable.DamageType == "Combat" || card.Owner.IsProficient(PF.CardType.Armor))
             && resolvable.PlayerCharacter == card.Owner);
 
         public override void OnStage(CardInstance card, IStagedAction _)
         {
-            GameServices.Contexts.EncounterContext.AddProhibitedTraits(card.Owner, card, "Helm");
+            _contexts.EncounterContext.AddProhibitedTraits(card.Owner, card, "Helm");
         }
 
         public override void OnUndo(CardInstance card, IStagedAction _)
         {
-            GameServices.Contexts.EncounterContext.UndoProhibitedTraits(card.Owner, card);
+            _contexts.EncounterContext.UndoProhibitedTraits(card.Owner, card);
         }
 
     }

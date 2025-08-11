@@ -29,6 +29,7 @@ namespace PACG.SharedAPI
 
         // Dependencies set up via dependency injection in Initialize.
         private ActionStagingManager _actionStagingManager;
+        private ContextManager _contexts;
 
         private void Start()
         {
@@ -40,6 +41,7 @@ namespace PACG.SharedAPI
         public void Initialize(GameServices gameServices)
         {
             _actionStagingManager = gameServices.ASM;
+            _contexts = gameServices.Contexts;
         }
 
         public void ShowPreviewForCard(CardDisplay cardDisplay)
@@ -71,8 +73,11 @@ namespace PACG.SharedAPI
             cardRect.anchorMax = new(0.5f, 0.5f);
             cardRect.localScale = new Vector3(2f, 2f, 1.0f);
 
-            // Query the card logic for any playable actions.
-            GenerateActionButtons(cardInstance.GetAvailableActions());
+            // If there's a resolvable, grab any additional actions (damage, give, etc.).
+            List<IStagedAction> playableActions = _contexts.CurrentResolvable?.GetAdditionalActionsForCard(cardInstance) ?? new();
+            playableActions.AddRange(cardInstance.GetAvailableActions());
+
+            GenerateActionButtons(playableActions);
         }
 
         public void GenerateActionButtons(IReadOnlyCollection<IStagedAction> actions)

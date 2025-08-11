@@ -16,6 +16,12 @@ namespace PACG.Gameplay
             Difficulty = difficulty;
         }
 
+        public List<IStagedAction> GetAdditionalActionsForCard(CardInstance card)
+        {
+            // Skill resolvables don't add any additional actions beyond what cards provide
+            return new List<IStagedAction>();
+        }
+
         public bool IsResolved(List<IStagedAction> actions)
         {
             return false;

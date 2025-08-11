@@ -6,14 +6,20 @@ namespace PACG.Gameplay
 {
     public class LongswordLogic : CardLogicBase
     {
-        private CheckContext Check => GameServices.Contexts.CheckContext;
-        private ActionStagingManager ASM => GameServices.ASM;
+        private readonly ContextManager _contexts;
+        private readonly ActionStagingManager _asm;
 
-        private PlayCardAction GetRevealAction(CardInstance card) => new(this, card, PF.ActionType.Reveal, ("IsCombat", true));
-        private PlayCardAction GetReloadAction(CardInstance card) => new(this, card, PF.ActionType.Reload, ("IsCombat", true), ("IsFreely", true));
-        private PlayCardAction GetRevealAndReloadAction(CardInstance card) => new(this, card, PF.ActionType.Reload, ("IsCombat", true));
+        private CheckContext Check => _contexts.CheckContext;
 
-        public LongswordLogic(GameServices gameServices) : base(gameServices) { }
+        private PlayCardAction GetRevealAction(CardInstance card) => new(card, PF.ActionType.Reveal, ("IsCombat", true));
+        private PlayCardAction GetReloadAction(CardInstance card) => new(card, PF.ActionType.Reload, ("IsCombat", true), ("IsFreely", true));
+        private PlayCardAction GetRevealAndReloadAction(CardInstance card) => new(card, PF.ActionType.Reload, ("IsCombat", true));
+
+        public LongswordLogic(GameServices gameServices) : base(gameServices) 
+        {
+            _contexts = gameServices.Contexts;
+            _asm = gameServices.ASM;
+        }
 
         protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)
         {
@@ -31,7 +37,7 @@ namespace PACG.Gameplay
                     }
                 }
                 // Otherwise, if this card has already been played, present the reload option if proficient.
-                else if (ASM.CardStaged(card) && Check.Resolvable is CombatResolvable res && res.Character.IsProficient(PF.CardType.Weapon))
+                else if (_asm.CardStaged(card) && Check.Resolvable is CombatResolvable res && res.Character.IsProficient(PF.CardType.Weapon))
                 {
                     actions.Add(GetReloadAction(card));
                 }

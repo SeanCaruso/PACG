@@ -39,14 +39,28 @@ namespace PACG.Gameplay
                 return;
             }
 
+            if (card.CurrentLocation == newLocation)
+            {
+                return;
+            }
+
             card.CurrentLocation = newLocation;
             GameEvents.RaiseCardLocationChanged(card);
-
-            Debug.Log($"Moved {card.Data.cardName} to {newLocation}");
         }
 
+        /// <summary>
+        /// Convenience function to handle cards moved by PlayerCharacter actions.
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="action"></param>
         public void MoveCard(CardInstance card, PF.ActionType action)
         {
+            if (card.Owner == null)
+            {
+                Debug.LogError($"[{GetType().Name}] {card.Data.cardName} has no owner - use MoveCard(CardInstance, CardLocation) instead!");
+                return;
+            }
+
             switch (action)
             {
                 case PF.ActionType.Banish:
@@ -79,6 +93,15 @@ namespace PACG.Gameplay
                 default:
                     Debug.LogError($"Unsupported action: {action}!");
                     break;
+            }
+        }
+
+        public void RestoreRevealedCardsToHand()
+        {
+            var revealedCards = GetCardsInLocation(CardLocation.Revealed);
+            foreach (var card in revealedCards)
+            {
+                MoveCard(card, CardLocation.Hand);
             }
         }
 

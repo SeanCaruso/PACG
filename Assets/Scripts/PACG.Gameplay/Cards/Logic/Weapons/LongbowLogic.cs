@@ -6,12 +6,17 @@ namespace PACG.Gameplay
 {
     public class LongbowLogic : CardLogicBase
     {
-        private CheckContext Check => GameServices.Contexts.CheckContext;
+        private readonly ContextManager _contexts;
 
-        private PlayCardAction GetRevealAction(CardInstance card) => new(this, card, PF.ActionType.Reveal, ("IsCombat", true));
-        private PlayCardAction GetDiscardAction(CardInstance card) => new(this, card, PF.ActionType.Discard, ("IsCombat", true), ("IsFreely", true));
+        private CheckContext Check => _contexts.CheckContext;
 
-        public LongbowLogic(GameServices gameServices) : base(gameServices) { }
+        private PlayCardAction GetRevealAction(CardInstance card) => new(card, PF.ActionType.Reveal, ("IsCombat", true));
+        private PlayCardAction GetDiscardAction(CardInstance card) => new(card, PF.ActionType.Discard, ("IsCombat", true), ("IsFreely", true));
+
+        public LongbowLogic(GameServices gameServices) : base(gameServices) 
+        {
+            _contexts = gameServices.Contexts;
+        }
 
         protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)
         {
@@ -46,13 +51,13 @@ namespace PACG.Gameplay
             if (action.ActionType == revealAction.ActionType && action.Card == card)
                 Check.RestrictValidSkills(card, PF.Skill.Dexterity, PF.Skill.Ranged);
 
-            GameServices.Contexts.EncounterContext.AddProhibitedTraits(card.Owner, card, "Offhand");
+            _contexts.EncounterContext.AddProhibitedTraits(card.Owner, card, "Offhand");
         }
 
         public override void OnUndo(CardInstance card, IStagedAction action)
         {
             Check.UndoSkillModification(card);
-            GameServices.Contexts.EncounterContext.ProhibitedTraits.Remove((card.Owner, card));
+            _contexts.EncounterContext.UndoProhibitedTraits(card.Owner, card);
         }
 
         public override void Execute(CardInstance card, IStagedAction action)
@@ -63,7 +68,7 @@ namespace PACG.Gameplay
             if (action.ActionType == revealAction.ActionType && action.Card == card)
             {
                 // Reveal to use Dexterity or Ranged + 1d8.
-                var (skill, die, bonus) = GameServices.Contexts.TurnContext.CurrentPC.GetBestSkill(PF.Skill.Dexterity, PF.Skill.Ranged);
+                var (skill, die, bonus) = _contexts.TurnContext.CurrentPC.GetBestSkill(PF.Skill.Dexterity, PF.Skill.Ranged);
                 Check.UsedSkill = skill;
                 Check.DicePool.AddDice(1, die, bonus);
                 Check.DicePool.AddDice(1, 8);

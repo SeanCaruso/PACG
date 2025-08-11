@@ -43,6 +43,7 @@ namespace PACG.SharedAPI
         {
             GameEvents.HourChanged += OnHourChanged;
             GameEvents.EncounterStarted += OnEncounterStarted;
+            GameEvents.EncounterEnded += OnEncounterEnded;
 
             GameEvents.CardLocationChanged += OnCardLocationChanged;
             GameEvents.CardLocationsChanged += OnCardLocationsChanged;
@@ -52,6 +53,7 @@ namespace PACG.SharedAPI
         {
             GameEvents.HourChanged -= OnHourChanged;
             GameEvents.EncounterStarted -= OnEncounterStarted;
+            GameEvents.EncounterEnded -= OnEncounterEnded;
 
             GameEvents.CardLocationChanged -= OnCardLocationChanged;
             GameEvents.CardLocationsChanged -= OnCardLocationsChanged;
@@ -63,18 +65,24 @@ namespace PACG.SharedAPI
 
         public void OnHourChanged(CardInstance hourCard)
         {
-            CardDisplay cardDisplay = Instantiate(cardPrefab, hoursContainer);
-            instanceToDisplayMap.Add(hourCard, cardDisplay);
-            cardDisplay.SetViewModel(CardViewModelFactory.CreateFrom(hourCard));
-            //cardDisplay.transform.localScale = Vector3.one;
+            var cardDisplay = GetCardDisplay(hourCard);
+            cardDisplay.transform.SetParent(hoursContainer, worldPositionStays: false);
+            cardDisplay.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
         }
 
         public void OnEncounterStarted(CardInstance encounteredCard)
         {
-            CardDisplay cardDisplay = Instantiate(cardPrefab, encounteredContainer);
-            instanceToDisplayMap.Add(encounteredCard, cardDisplay);
-            cardDisplay.SetViewModel(CardViewModelFactory.CreateFrom(encounteredCard));
-            cardDisplay.transform.localScale = Vector3.one;
+            var cardDisplay = GetCardDisplay(encounteredCard);
+            cardDisplay.transform.SetParent(encounteredContainer, worldPositionStays: false);
+            cardDisplay.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+        }
+
+        public void OnEncounterEnded()
+        {
+            for (int i = encounteredContainer.childCount - 1; i >= 0; i--)
+            {
+                Destroy(encounteredContainer.GetChild(i).gameObject);
+            }
         }
 
         // ========================================================================================

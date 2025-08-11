@@ -16,6 +16,9 @@ namespace PACG.SharedAPI
         public static event Action<CardInstance> EncounterStarted;
         public static void RaiseEncounterStarted(CardInstance encounteredCard) => EncounterStarted?.Invoke(encounteredCard);
 
+        public static event Action EncounterEnded;
+        public static void RaiseEncounterEnded() => EncounterEnded?.Invoke();
+
         // Card staging events
         public static event Action<StagedActionsState> StagedActionsStateChanged;
         public static void RaiseStagedActionsStateChanged(StagedActionsState stagedActionsState) =>

@@ -6,12 +6,17 @@ namespace PACG.Gameplay
 {
     public class ThrowingAxeLogic : CardLogicBase
     {
-        private CheckContext Check => GameServices.Contexts.CheckContext;
+        private readonly ContextManager _contexts;
 
-        private PlayCardAction GetRevealAction(CardInstance card) => new(this, card, PF.ActionType.Reveal, ("IsCombat", true));
-        private PlayCardAction GetDiscardAction(CardInstance card) => new(this, card, PF.ActionType.Discard, ("IsCombat", true), ("IsFreely", true));
+        private CheckContext Check => _contexts.CheckContext;
 
-        public ThrowingAxeLogic(GameServices gameServices) : base(gameServices) { }
+        private PlayCardAction GetRevealAction(CardInstance card) => new(card, PF.ActionType.Reveal, ("IsCombat", true));
+        private PlayCardAction GetDiscardAction(CardInstance card) => new(card, PF.ActionType.Discard, ("IsCombat", true), ("IsFreely", true));
+
+        public ThrowingAxeLogic(GameServices gameServices) : base(gameServices) 
+        {
+            _contexts = gameServices.Contexts;
+        }
 
         protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)
         {
@@ -57,7 +62,7 @@ namespace PACG.Gameplay
             if (action.ActionType == revealAction.ActionType && action.Card == card)
             {
                 // Reveal to use Strength, Dexterity, Melee, or Ranged + 1d8.
-                var (skill, die, bonus) = GameServices.Contexts.TurnContext.CurrentPC.GetBestSkill(PF.Skill.Strength, PF.Skill.Dexterity, PF.Skill.Melee, PF.Skill.Ranged);
+                var (skill, die, bonus) = _contexts.TurnContext.CurrentPC.GetBestSkill(PF.Skill.Strength, PF.Skill.Dexterity, PF.Skill.Melee, PF.Skill.Ranged);
                 Check.UsedSkill = skill;
                 Check.DicePool.AddDice(1, die, bonus);
                 Check.DicePool.AddDice(1, 8);

@@ -5,13 +5,14 @@ namespace PACG.Gameplay
     {
         private readonly ICheckResolvable _resolvable;
 
+        private readonly GameFlowManager _gameFlow;
         private readonly GameServices _gameServices;
-        private GameFlowManager GFM => _gameServices.GameFlow;
 
         public CheckController(ICheckResolvable resolvable, GameServices gameServices)
         {
             _resolvable = resolvable;
 
+            _gameFlow = gameServices.GameFlow;
             _gameServices = gameServices;
         }
 
@@ -19,14 +20,16 @@ namespace PACG.Gameplay
         {
             // CheckContext creation is handled by GameFlowManager calling NewResolution.
 
-            GFM.QueueNextProcessor(new Check_RollDiceProcessor(_gameServices));
+            _gameFlow.QueueNextProcessor(new Check_RollDiceProcessor(_gameServices));
 
             if (_resolvable is CombatResolvable)
             {
-                GFM.QueueNextProcessor(new Check_DamageProcessor(_gameServices));
+                _gameFlow.QueueNextProcessor(new Check_DamageProcessor(_gameServices));
             }
 
-            GFM.CompleteCurrentPhase();
+            _gameFlow.QueueNextProcessor(new Check_EndCheckProcessor(_gameServices));
+
+            _gameFlow.CompleteCurrentPhase();
         }
     }
 }

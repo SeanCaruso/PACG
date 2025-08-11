@@ -6,12 +6,17 @@ namespace PACG.Gameplay
 {
     public class LongspearLogic : CardLogicBase
     {
-        private CheckContext Check => GameServices.Contexts.CheckContext;
+        private readonly ContextManager _contexts;
 
-        private PlayCardAction GetRevealAction(CardInstance card) => new(this, card, PF.ActionType.Reveal, ("IsCombat", true));
-        private PlayCardAction GetRerollAction(CardInstance card) => new(this, card, PF.ActionType.Discard, ("IsFreely", true));
+        private CheckContext Check => _contexts.CheckContext;
 
-        public LongspearLogic(GameServices gameServices) : base(gameServices) { }
+        private PlayCardAction GetRevealAction(CardInstance card) => new(card, PF.ActionType.Reveal, ("IsCombat", true));
+        private PlayCardAction GetRerollAction(CardInstance card) => new(card, PF.ActionType.Discard, ("IsFreely", true));
+
+        public LongspearLogic(GameServices gameServices) : base(gameServices) 
+        {
+            _contexts = gameServices.Contexts;
+        }
 
         protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)
         {
@@ -43,13 +48,13 @@ namespace PACG.Gameplay
 
         public override void OnStage(CardInstance card, IStagedAction action)
         {
-            GameServices.Contexts.EncounterContext.AddProhibitedTraits(card.Owner, card, "Offhand");
+            _contexts.EncounterContext.AddProhibitedTraits(card.Owner, card, "Offhand");
             Check.RestrictValidSkills(card, PF.Skill.Strength, PF.Skill.Melee);
         }
 
         public override void OnUndo(CardInstance card, IStagedAction action)
         {
-            GameServices.Contexts.EncounterContext.UndoProhibitedTraits(card.Owner, card);
+            _contexts.EncounterContext.UndoProhibitedTraits(card.Owner, card);
             Check.UndoSkillModification(card);
         }
 

@@ -1,11 +1,11 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace PACG.Gameplay
 {
-    public class RerollResolvable : IResolvable, ICheckResolvable
+    public class RerollResolvable : IResolvable
     {
         public PlayerCharacter Character { get; }
-        public int Difficulty => 0; // Unused - implemented for ICheckResolvable
 
         public RerollResolvable(PlayerCharacter pc, CheckContext checkContext)
         {
@@ -15,31 +15,25 @@ namespace PACG.Gameplay
             checkContext.ContextData["doReroll"] = false;
         }
 
-        public List<IStagedAction> GetValidActions()
+        public List<IStagedAction> GetAdditionalActionsForCard(CardInstance card)
         {
-            List<IStagedAction> actions = new();
-
-            foreach (var card in Character.Hand)
-            {
-                actions.AddRange(GetValidActionsForCard(card));
-        }
-            foreach (var cardData in Character.DisplayedCards)
-            {
-                actions.AddRange(GetValidActionsForCard(cardData));
-            }
-
-            return actions;
-        }
-
-        public List<IStagedAction> GetValidActionsForCard(CardInstance card)
-        {
-            List<IStagedAction> actions = card.Logic?.GetAvailableActions(card) ?? new();
-
-            return actions;
+            // Reroll resolvables don't add any additional actions beyond what cards provide
+            return new List<IStagedAction>();
         }
 
         public bool IsResolved(List<IStagedAction> actions) => true; // We can always resolve by skipping.
 
-        public IProcessor CreateProcessor(GameServices gameServices) => new Check_RollDiceProcessor(gameServices);
+        public IProcessor CreateProcessor(GameServices gameServices)
+        {
+            // If something set the "doReroll" context data to true, process the roll again.
+            if ((bool)gameServices.Contexts.CheckContext.ContextData["doReroll"] == true)
+            {
+                Debug.Log($"[{GetType().Name}] User chose to reroll - returning a processor.");
+                return new Check_RollDiceProcessor(gameServices);
+            }
+
+            // No reroll - continue flow as normal.
+            return null;
+        }
     }
 }

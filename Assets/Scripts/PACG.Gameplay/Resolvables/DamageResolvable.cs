@@ -16,22 +16,9 @@ namespace PACG.Gameplay
             DamageType = damageType;
         }
 
-        public List<IStagedAction> GetValidActions()
+        public List<IStagedAction> GetAdditionalActionsForCard(CardInstance card)
         {
             List<IStagedAction> actions = new();
-
-            foreach (var card in PlayerCharacter.Hand)
-            {
-                actions.AddRange(GetValidActionsForCard(card));
-            }
-
-            return actions;
-        }
-
-        public List<IStagedAction> GetValidActionsForCard(CardInstance card)
-        {
-            // Grab any card-specific options for handling damage.
-            List<IStagedAction> actions = card.GetAvailableActions();
 
             // Add default damage discard action if the card was in the player's hand.
             if (PlayerCharacter.Hand.Contains(card))

@@ -105,8 +105,7 @@ namespace PACG.Gameplay
                 action.Commit(_contexts.CheckContext);
             }
             PcsStagedActions.Clear();
-
-            UpdateActionButtonState();
+            _cards.RestoreRevealedCardsToHand();
 
             // If we have a resolvable, the fact that we committed means that it's been resolved.
             if (_contexts.CurrentResolvable != null)
@@ -122,8 +121,10 @@ namespace PACG.Gameplay
                 {
                     Debug.Log($"[{GetType().Name}] {_contexts.CurrentResolvable} didn't queue a processor.");
                 }
-                _contexts.EndResolution();
+                _contexts.EndResolvable();
             }
+
+            UpdateActionButtonState();
 
             // We're done committing actions. Tell the GameFlowManager to continue.
             _gameFlow.Process();

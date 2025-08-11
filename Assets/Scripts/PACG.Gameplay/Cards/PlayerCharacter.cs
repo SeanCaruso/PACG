@@ -7,36 +7,37 @@ namespace PACG.Gameplay
 {
     public class PlayerCharacter
     {
+
+        public CharacterData CharacterData { get; }
+        private readonly Deck _deck;
+
         // --- Dependency Injections
-        private readonly CardManager cardManager;
-
-        public CharacterData characterData;
-
-        private readonly Deck deck = new();
+        private readonly CardManager _cardManager;
 
         public PlayerCharacter(CharacterData characterData, CardManager cardManager)
         {
-            this.characterData = characterData;
-            this.cardManager = cardManager;
+            CharacterData = characterData;
+            _deck = new(cardManager);
+            _cardManager = cardManager;
         }
 
         // ==============================================================================
         // CONVENIENCE FUNCTIONS - PASS-THROUGHS TO CardManager
         // ==============================================================================
-        public IReadOnlyList<CardInstance> Hand => cardManager.GetCardsInHand(this);
-        public IReadOnlyList<CardInstance> Discards => cardManager.GetCardsOwnedBy(this, CardLocation.Discard);
-        public IReadOnlyList<CardInstance> BuriedCards => cardManager.GetCardsOwnedBy(this, CardLocation.Buried);
-        public IReadOnlyList<CardInstance> DisplayedCards => cardManager.GetCardsOwnedBy(this, CardLocation.Displayed);
-        public IReadOnlyList<CardInstance> RecoveryCards => cardManager.GetCardsOwnedBy(this, CardLocation.Recovery);
+        public IReadOnlyList<CardInstance> Hand => _cardManager.GetCardsInHand(this);
+        public IReadOnlyList<CardInstance> Discards => _cardManager.GetCardsOwnedBy(this, CardLocation.Discard);
+        public IReadOnlyList<CardInstance> BuriedCards => _cardManager.GetCardsOwnedBy(this, CardLocation.Buried);
+        public IReadOnlyList<CardInstance> DisplayedCards => _cardManager.GetCardsOwnedBy(this, CardLocation.Displayed);
+        public IReadOnlyList<CardInstance> RecoveryCards => _cardManager.GetCardsOwnedBy(this, CardLocation.Recovery);
 
         // ==============================================================================
         // SKILLS AND ATTRIBUTES
         // ==============================================================================
-        public bool IsProficient(PF.CardType cardType) => characterData.proficiencies.Contains(cardType);
+        public bool IsProficient(PF.CardType cardType) => CharacterData.proficiencies.Contains(cardType);
 
         public (int die, int bonus) GetAttr(PF.Skill attr)
         {
-            foreach (var charAttr in characterData.attributes)
+            foreach (var charAttr in CharacterData.attributes)
             {
                 if (charAttr.attribute == attr)
                 {
@@ -48,7 +49,7 @@ namespace PACG.Gameplay
 
         public (int die, int bonus) GetSkill(PF.Skill skill)
         {
-            foreach (var charSkill in characterData.skills)
+            foreach (var charSkill in CharacterData.skills)
             {
                 if (charSkill.skill == skill)
                 {
@@ -92,40 +93,45 @@ namespace PACG.Gameplay
         public void Recharge(CardInstance card)
         {
             if (card == null || card.Owner != this) return;
-            cardManager.MoveCard(card, CardLocation.Deck);
-            deck.Recharge(card);
+            _cardManager.MoveCard(card, CardLocation.Deck);
+            _deck.Recharge(card);
         }
 
         public void Reload(CardInstance card)
         {
             if (card == null || card.Owner != this) return;
-            cardManager.MoveCard(card, CardLocation.Deck);
-            deck.Reload(card);
+            _cardManager.MoveCard(card, CardLocation.Deck);
+            _deck.Reload(card);
+        }
+
+        public void AddToHand(CardInstance card)
+        {
+            card.Owner = this;
+            _cardManager.MoveCard(card, CardLocation.Hand);
         }
 
         public void DrawFromDeck()
         {
-            if (deck.Count == 0)
+            if (_deck.Count == 0)
             {
                 // TODO: Handle character death.
-                Debug.Log($"{characterData.characterName} must draw but has no more cards left. {characterData.characterName} dies!");
+                Debug.Log($"{CharacterData.characterName} must draw but has no more cards left. {CharacterData.characterName} dies!");
                 return;
             }
-            var card = deck.DrawCard();
-            card.Owner = this;
-            cardManager.MoveCard(card, CardLocation.Hand);
+            var card = _deck.DrawCard();
+            AddToHand(card);
         }
 
         public void DrawToHandSize()
         {
-            int cardsToDraw = characterData.handSize - Hand.Count;
-            Debug.Log($"{characterData.characterName} drawing {cardsToDraw} up to {characterData.handSize}");
+            int cardsToDraw = CharacterData.handSize - Hand.Count;
+            Debug.Log($"{CharacterData.characterName} drawing {cardsToDraw} up to {CharacterData.handSize}");
             if (cardsToDraw < 0) return;
 
-            if (cardsToDraw > deck.Count)
+            if (cardsToDraw > _deck.Count)
             {
                 // TODO: Handle character death.
-                Debug.Log($"{characterData.characterName} must draw {cardsToDraw} but only has {deck.Count} left. {characterData.characterName} dies!");
+                Debug.Log($"{CharacterData.characterName} must draw {cardsToDraw} but only has {_deck.Count} left. {CharacterData.characterName} dies!");
                 return;
             }
 
@@ -135,8 +141,8 @@ namespace PACG.Gameplay
         public void ShuffleIntoDeck(CardInstance card)
         {
             if (card == null) return;
-            cardManager.MoveCard(card, CardLocation.Deck);
-            deck.ShuffleIn(card);
+            _cardManager.MoveCard(card, CardLocation.Deck);
+            _deck.ShuffleIn(card);
         }
     }
 }

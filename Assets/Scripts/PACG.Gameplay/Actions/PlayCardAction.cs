@@ -5,7 +5,6 @@ namespace PACG.Gameplay
     public class PlayCardAction : IStagedAction
     {
         // Data common to all staged actions.
-        public CardLogicBase Playable { get; private set; }
         public CardInstance Card { get; private set; }
         public PF.ActionType ActionType { get; private set; }
 
@@ -14,11 +13,10 @@ namespace PACG.Gameplay
 
         private readonly string label = null;
 
-        public PlayCardAction(CardLogicBase playable, CardInstance card, PF.ActionType actionType, params (string, object)[] actionData)
+        public PlayCardAction(CardInstance card, PF.ActionType actionType, params (string, object)[] actionData)
         {
-            this.Playable = playable;
-            this.Card = card;
-            this.ActionType = actionType;
+            Card = card;
+            ActionType = actionType;
 
             foreach ((string key, object value) in actionData)
                 ActionData.Add(key, value);
@@ -33,14 +31,14 @@ namespace PACG.Gameplay
             return $"{(label is null ? ActionType.ToString() : label)} {Card.Data.cardName}";
         }
 
-        public void OnStage() => Playable?.OnStage(Card, this);
+        public void OnStage() => Card.Logic?.OnStage(Card, this);
 
-        public void OnUndo() => Playable?.OnUndo(Card, this);
+        public void OnUndo() => Card.Logic?.OnUndo(Card, this);
 
         public void Commit(CheckContext checkContext = null)
         {
             checkContext?.AddTraits(Card.Data.traits.ToArray());
-            Playable.Execute(Card, this);
+            Card.Logic?.Execute(Card, this);
             // The card instance on the PlayerCharacter was moved during staging, so don't do it here.
         }
     }

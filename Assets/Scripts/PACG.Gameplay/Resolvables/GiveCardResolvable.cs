@@ -1,6 +1,5 @@
-
-
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PACG.Gameplay
 {
@@ -15,21 +14,12 @@ namespace PACG.Gameplay
             TargetPC = targetPc;
         }
 
-        public List<IStagedAction> GetValidActions()
+        public List<IStagedAction> GetAdditionalActionsForCard(CardInstance card)
         {
-            List<IStagedAction> actions = new();
-
-            foreach (var card in Actor.Hand)
-            {
-                actions.AddRange(GetValidActionsForCard(card));
-            }
-
-            return actions;
-        }
-
-        public List<IStagedAction> GetValidActionsForCard(CardInstance card)
-        {
-            return new List<IStagedAction> { new GiveCardAction(card, TargetPC) };
+            // Only provide the give card action if the card is in the actor's hand
+            if (Actor.Hand.Contains(card))
+                return new List<IStagedAction> { new GiveCardAction(card, TargetPC) };
+            return new List<IStagedAction>();
         }
 
         public bool IsResolved(List<IStagedAction> actions)

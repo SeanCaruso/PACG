@@ -27,7 +27,10 @@ namespace PACG.Gameplay
 
         // TODO: Think about how this will work in nested encounters - maybe use a stack?
         public void NewEncounter(EncounterContext encounterContext) => EncounterContext = encounterContext;
-        public void EndEncounter() => EncounterContext = null;
+        public void EndEncounter()
+        {
+            EncounterContext = null;
+        }
 
         /// <summary>
         /// Adds a new resolvable to pause the game for user input (and create a CheckContext if needed).
@@ -52,6 +55,8 @@ namespace PACG.Gameplay
         /// <summary>
         /// THIS SHOULD ONLY BE CALLED BY ActionStagingManager.Commit!
         /// </summary>
-        public void EndResolution() => CurrentResolvable = null;
+        public void EndResolvable() => CurrentResolvable = null;
+
+        public void EndCheck() => CheckContext = null;
     }
 }
