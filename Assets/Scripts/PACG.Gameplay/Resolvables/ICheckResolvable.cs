@@ -7,7 +7,6 @@ namespace PACG.Gameplay
     /// </summary>
     public interface ICheckResolvable
     {
-        public LogicRegistry LogicRegistry { get; }
         public PlayerCharacter Character { get; }
         public int Difficulty { get; }
     }

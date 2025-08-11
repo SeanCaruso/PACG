@@ -6,24 +6,24 @@ namespace PACG.Gameplay
     public class EncounterController : IProcessor
     {
         private readonly PlayerCharacter _pc;
-        private readonly CardLogicBase _cardLogic;
+        private readonly CardInstance _card;
 
         private readonly GameServices _gameServices;
         public GameFlowManager GFM => _gameServices.GameFlow;
 
-        public EncounterController(PlayerCharacter pc, CardLogicBase cardLogic, GameServices gameServices)
+        public EncounterController(PlayerCharacter pc, CardInstance card, GameServices gameServices)
         {
             _pc = pc;
-            _cardLogic = cardLogic;
+            _card = card;
 
             _gameServices = gameServices;
         }
 
         public void Execute()
         {
-            EncounterContext context = new(_pc, _cardLogic);
+            EncounterContext context = new(_pc, _card);
             _gameServices.Contexts.NewEncounter(context);
-            GameEvents.RaiseEncounterStarted(_cardLogic.Card);
+            GameEvents.RaiseEncounterStarted(_card);
 
             // TODO: Add all encounter phases.
             //GFM.QueueNextPhase(new OnEncounterProcessor(_gameServices));

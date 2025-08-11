@@ -43,11 +43,10 @@ namespace PACG.Gameplay
 
             // Initialize now that GameServices is set up.
             asm.Iniitalize(_gameServices);
+            cardManager.Initialize(_gameServices);
             contextManager.Iniitalize(_gameServices);
             gameFlowManager.Initialize(_gameServices);
-
-            // Everything's set up - now we can register the logic.
-            logicRegistry.RegisterAllLogic(_gameServices);
+            logicRegistry.Initialize(_gameServices);
         }
 
         // Start is called after all Awake() methods are finished.

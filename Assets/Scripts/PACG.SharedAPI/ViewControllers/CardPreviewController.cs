@@ -28,7 +28,6 @@ namespace PACG.SharedAPI
         private readonly List<GameObject> activeActionButtons = new();
 
         // Dependencies set up via dependency injection in Initialize.
-        private LogicRegistry _logic;
         private ActionStagingManager _actionStagingManager;
 
         private void Start()
@@ -40,7 +39,6 @@ namespace PACG.SharedAPI
 
         public void Initialize(GameServices gameServices)
         {
-            _logic = gameServices.Logic;
             _actionStagingManager = gameServices.ASM;
         }
 
@@ -74,7 +72,7 @@ namespace PACG.SharedAPI
             cardRect.localScale = new Vector3(2f, 2f, 1.0f);
 
             // Query the card logic for any playable actions.
-            GenerateActionButtons(_logic.GetCardLogic(cardInstance)?.GetAvailableActions() ?? new());
+            GenerateActionButtons(cardInstance.GetAvailableActions());
         }
 
         public void GenerateActionButtons(IReadOnlyCollection<IStagedAction> actions)

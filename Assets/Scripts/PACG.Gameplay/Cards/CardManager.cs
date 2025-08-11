@@ -7,8 +7,15 @@ namespace PACG.Gameplay
 {
     public class CardManager
     {
+        private LogicRegistry _logic;
+
         private readonly List<CardInstance> allCards = new();
         private readonly List<CardInstance> theVault = new();
+
+        public void Initialize(GameServices gameServices)
+        {
+            _logic = gameServices.Logic;
+        }
 
         public CardInstance New(CardData card, PlayerCharacter owner = null)
         {
@@ -18,7 +25,7 @@ namespace PACG.Gameplay
                 return null;
             }
 
-            CardInstance newInstance = new(card, owner);
+            CardInstance newInstance = new(card, _logic.GetCardLogic(card.cardID), owner);
             allCards.Add(newInstance);
 
             return newInstance;

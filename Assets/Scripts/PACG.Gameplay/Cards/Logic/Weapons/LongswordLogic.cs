@@ -4,68 +4,67 @@ using System.Linq;
 
 namespace PACG.Gameplay
 {
-    [PlayableLogicFor("Longsword")]
     public class LongswordLogic : CardLogicBase
     {
         private CheckContext Check => GameServices.Contexts.CheckContext;
         private ActionStagingManager ASM => GameServices.ASM;
 
-        private PlayCardAction _revealAction;
-        private PlayCardAction RevealAction => _revealAction ??= new(this, Card, PF.ActionType.Reveal, ("IsCombat", true));
-
-        private PlayCardAction _reloadAction;
-        private PlayCardAction ReloadAction => _reloadAction ??= new(this, Card, PF.ActionType.Reload, ("IsCombat", true), ("IsFreely", true));
-
-        private PlayCardAction _revealAndReloadAction;
-        private PlayCardAction RevealAndReloadAction => _revealAndReloadAction ??= new(this, Card, PF.ActionType.Reload, ("IsCombat", true));
+        private PlayCardAction GetRevealAction(CardInstance card) => new(this, card, PF.ActionType.Reveal, ("IsCombat", true));
+        private PlayCardAction GetReloadAction(CardInstance card) => new(this, card, PF.ActionType.Reload, ("IsCombat", true), ("IsFreely", true));
+        private PlayCardAction GetRevealAndReloadAction(CardInstance card) => new(this, card, PF.ActionType.Reload, ("IsCombat", true));
 
         public LongswordLogic(GameServices gameServices) : base(gameServices) { }
 
-        protected override List<IStagedAction> GetAvailableCardActions()
+        protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)
         {
             List<IStagedAction> actions = new();
-            if (IsCardPlayabe)
+            if (IsCardPlayabe(card))
             {
                 // If a weapon hasn't been played yet, present one or both options.
-                if (!Check.StagedCardTypes.Contains(Card.Data.cardType))
+                if (!Check.StagedCardTypes.Contains(card.Data.cardType))
                 {
-                    actions.Add(RevealAction);
+                    actions.Add(GetRevealAction(card));
 
                     if (Check.Resolvable is CombatResolvable resolvable && resolvable.Character.IsProficient(PF.CardType.Weapon))
                     {
-                        actions.Add(RevealAndReloadAction);
+                        actions.Add(GetRevealAndReloadAction(card));
                     }
                 }
                 // Otherwise, if this card has already been played, present the reload option if proficient.
-                else if (ASM.CardStaged(Card) && Check.Resolvable is CombatResolvable res && res.Character.IsProficient(PF.CardType.Weapon))
+                else if (ASM.CardStaged(card) && Check.Resolvable is CombatResolvable res && res.Character.IsProficient(PF.CardType.Weapon))
                 {
-                    actions.Add(ReloadAction);
+                    actions.Add(GetReloadAction(card));
                 }
             }
             return actions;
         }
 
-        bool IsCardPlayabe => (
+        bool IsCardPlayabe(CardInstance card) => (
             // All powers are specific to the card's owner while playing cards during a Strength or Melee combat check.
             Check != null
             && Check.Resolvable is CombatResolvable resolvable
-            && resolvable.Character == Card.Owner
+            && resolvable.Character == card.Owner
             && Check.CheckPhase == CheckPhase.PlayCards
             && Check.CanPlayCardWithSkills(PF.Skill.Strength, PF.Skill.Melee));
 
-        public override void OnStage(IStagedAction action)
+        public override void OnStage(CardInstance card, IStagedAction action)
         {
-            Check.RestrictValidSkills(Card, PF.Skill.Strength, PF.Skill.Melee);
+            Check.RestrictValidSkills(card, PF.Skill.Strength, PF.Skill.Melee);
         }
 
-        public override void OnUndo(IStagedAction action)
+        public override void OnUndo(CardInstance card, IStagedAction action)
         {
-            Check.UndoSkillModification(Card);
+            Check.UndoSkillModification(card);
         }
 
-        public override void Execute(IStagedAction action)
+        public override void Execute(CardInstance card, IStagedAction action)
         {
-            if (action == RevealAction || action == RevealAndReloadAction)
+            var revealAction = GetRevealAction(card);
+            var reloadAction = GetReloadAction(card);
+            var revealAndReloadAction = GetRevealAndReloadAction(card);
+            
+            if ((action.ActionType == revealAction.ActionType && action.Card == card) || 
+                (action.ActionType == revealAndReloadAction.ActionType && action.Card == card))
             {
                 // Reveal to use Strength or Melee + 1d8.
                 var resolvable = (CombatResolvable)Check.Resolvable;
@@ -76,7 +75,8 @@ namespace PACG.Gameplay
             }
 
             // Reload to add another 1d4.
-            if (action == ReloadAction || action == RevealAndReloadAction)
+            if ((action.ActionType == reloadAction.ActionType && action.Card == card) || 
+                (action.ActionType == revealAndReloadAction.ActionType && action.Card == card))
             {
                 Check.DicePool.AddDice(1, 4);
             }

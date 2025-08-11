@@ -33,14 +33,14 @@ namespace PACG.Gameplay
             return $"{(label is null ? ActionType.ToString() : label)} {Card.Data.cardName}";
         }
 
-        public void OnStage() => Playable?.OnStage(this);
+        public void OnStage() => Playable?.OnStage(Card, this);
 
-        public void OnUndo() => Playable?.OnUndo(this);
+        public void OnUndo() => Playable?.OnUndo(Card, this);
 
         public void Commit(CheckContext checkContext = null)
         {
             checkContext?.AddTraits(Card.Data.traits.ToArray());
-            Playable.Execute(this);
+            Playable.Execute(Card, this);
             // The card instance on the PlayerCharacter was moved during staging, so don't do it here.
         }
     }

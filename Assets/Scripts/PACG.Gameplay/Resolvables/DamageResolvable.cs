@@ -5,14 +5,12 @@ namespace PACG.Gameplay
 {
     public class DamageResolvable : IResolvable
     {
-        public LogicRegistry LogicRegistry { get; }
         public PlayerCharacter PlayerCharacter { get; }
         public string DamageType { get; }
         public int Amount { get; protected set; }
 
         public DamageResolvable(LogicRegistry logicRegistry, PlayerCharacter playerCharacter, int amount, string damageType = "Combat")
         {
-            LogicRegistry = logicRegistry;
             PlayerCharacter = playerCharacter;
             Amount = amount;
             DamageType = damageType;
@@ -33,8 +31,7 @@ namespace PACG.Gameplay
         public List<IStagedAction> GetValidActionsForCard(CardInstance card)
         {
             // Grab any card-specific options for handling damage.
-            var cardLogic = LogicRegistry.GetCardLogic(card);
-            List<IStagedAction> actions = cardLogic?.GetAvailableActions() ?? new();
+            List<IStagedAction> actions = card.GetAvailableActions();
 
             // Add default damage discard action if the card was in the player's hand.
             if (PlayerCharacter.Hand.Contains(card))

@@ -16,7 +16,7 @@ namespace PACG.Gameplay
 
         protected override void OnExecute()
         {
-            var resolvables = _contexts.EncounterContext.CardLogic.GetOnEncounterResolvables();
+            var resolvables = _contexts.EncounterContext.Card.GetOnEncounterResolvables();
             // TODO: Handle multiple resolvables
             if (resolvables.Count > 0 ) _contexts.NewResolvable(resolvables[0]);
         }

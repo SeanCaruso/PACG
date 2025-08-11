@@ -8,14 +8,12 @@ namespace PACG.Gameplay
         private readonly ContextManager _contexts;
         private readonly GameFlowManager _gameFlowManager;
         private readonly GameServices _gameServices;
-        private readonly LogicRegistry _logic;
 
         public ExploreProcessor(GameServices gameServices)
         {
             _contexts = gameServices.Contexts;
             _gameFlowManager = gameServices.GameFlow;
             _gameServices = gameServices;
-            _logic = gameServices.Logic;
         }
 
         public void Execute()
@@ -37,14 +35,7 @@ namespace PACG.Gameplay
                 return;
             }
 
-            var cardLogic = _logic.GetCardLogic(exploredCard);
-            if (cardLogic == null )
-            {
-                Debug.LogError("[ExploreProcessor] Explored card logic was null!");
-                return;
-            }
-
-            _gameFlowManager.QueueNextPhase(new EncounterController(_contexts.TurnContext.CurrentPC, cardLogic, _gameServices));
+            _gameFlowManager.QueueNextPhase(new EncounterController(_contexts.TurnContext.CurrentPC, exploredCard, _gameServices));
 
             _gameFlowManager.CompleteCurrentPhase();
         }

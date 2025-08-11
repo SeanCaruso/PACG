@@ -48,7 +48,7 @@ namespace PACG.Gameplay
             var cardsToCheck = pc.Hand.Union(pc.DisplayedCards);
             foreach (var card in cardsToCheck)
             {
-                if (_logic.GetCardLogic(card).GetAvailableActions().Count > 0)
+                if (card.GetAvailableActions().Count > 0)
                 {
                     hasRerollOptions = true;
                     break;
@@ -60,7 +60,7 @@ namespace PACG.Gameplay
 
             if (needsReroll && hasRerollOptions)
             {
-                RerollResolvable rerollResolvable = new(_logic, pc, check);
+                RerollResolvable rerollResolvable = new(pc, check);
                 _contexts.NewResolvable(rerollResolvable);
                 return; // We're done - GameFlowManager takes over.
             }

@@ -4,13 +4,11 @@ namespace PACG.Gameplay
 {
     public class RerollResolvable : IResolvable, ICheckResolvable
     {
-        public LogicRegistry LogicRegistry { get; }
         public PlayerCharacter Character { get; }
         public int Difficulty => 0;
 
-        public RerollResolvable(LogicRegistry logicRegistry, PlayerCharacter pc, CheckContext checkContext)
+        public RerollResolvable(PlayerCharacter pc, CheckContext checkContext)
         {
-            LogicRegistry = logicRegistry;
             Character = pc;
 
             // Default option is to not reroll.
@@ -35,8 +33,7 @@ namespace PACG.Gameplay
 
         public List<IStagedAction> GetValidActionsForCard(CardInstance card)
         {
-            var cardLogic = LogicRegistry.GetCardLogic(card);
-            List<IStagedAction> actions = cardLogic?.GetAvailableActions() ?? new();
+            List<IStagedAction> actions = card.Logic?.GetAvailableActions(card) ?? new();
 
             return actions;
         }

@@ -4,63 +4,63 @@ using System.Linq;
 
 namespace PACG.Gameplay
 {
-    [PlayableLogicFor("Longbow")]
     public class LongbowLogic : CardLogicBase
     {
         private CheckContext Check => GameServices.Contexts.CheckContext;
 
-        private PlayCardAction _revealAction;
-        private PlayCardAction RevealAction => _revealAction ??= new(this, Card, PF.ActionType.Reveal, ("IsCombat", true));
-
-        private PlayCardAction _discardAction;
-        private PlayCardAction DiscardAction => _discardAction ??= new(this, Card, PF.ActionType.Discard, ("IsCombat", true), ("IsFreely", true));
+        private PlayCardAction GetRevealAction(CardInstance card) => new(this, card, PF.ActionType.Reveal, ("IsCombat", true));
+        private PlayCardAction GetDiscardAction(CardInstance card) => new(this, card, PF.ActionType.Discard, ("IsCombat", true), ("IsFreely", true));
 
         public LongbowLogic(GameServices gameServices) : base(gameServices) { }
 
-        protected override List<IStagedAction> GetAvailableCardActions()
+        protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)
         {
             List<IStagedAction> actions = new();
-            if (CanReveal) actions.Add(RevealAction);
-            if (CanDiscard) actions.Add(DiscardAction);
+            if (CanReveal(card)) actions.Add(GetRevealAction(card));
+            if (CanDiscard(card)) actions.Add(GetDiscardAction(card));
             return actions;
         }
 
-        bool CanReveal => (
+        bool CanReveal(CardInstance card) => (
             // Reveal power can be used by the current owner while playing cards for a Dexterity or Ranged combat check.
             Check != null
             && Check.Resolvable is CombatResolvable resolvable
-            && resolvable.Character == Card.Owner
-            && !Check.StagedCardTypes.Contains(Card.Data.cardType)
+            && resolvable.Character == card.Owner
+            && !Check.StagedCardTypes.Contains(card.Data.cardType)
             && Check.CheckPhase == CheckPhase.PlayCards
             && Check.CanPlayCardWithSkills(PF.Skill.Dexterity, PF.Skill.Ranged)
             );
 
-        bool CanDiscard => (
+        bool CanDiscard(CardInstance card) => (
             // Discard power can be freely used on an another character's combat check while playing cards if the owner is proficient.
             Check != null
             && Check.Resolvable is CombatResolvable resolvable
-            && resolvable.Character != Card.Owner
-            && Card.Owner.IsProficient(Card.Data.cardType)
+            && resolvable.Character != card.Owner
+            && card.Owner.IsProficient(card.Data.cardType)
             && Check.CheckPhase == CheckPhase.PlayCards
             );
 
-        public override void OnStage(IStagedAction action)
+        public override void OnStage(CardInstance card, IStagedAction action)
         {
-            if (action == RevealAction)
-                Check.RestrictValidSkills(Card, PF.Skill.Dexterity, PF.Skill.Ranged);
+            var revealAction = GetRevealAction(card);
+            if (action.ActionType == revealAction.ActionType && action.Card == card)
+                Check.RestrictValidSkills(card, PF.Skill.Dexterity, PF.Skill.Ranged);
 
-            GameServices.Contexts.EncounterContext.AddProhibitedTraits(Card.Owner, Card, "Offhand");
+            GameServices.Contexts.EncounterContext.AddProhibitedTraits(card.Owner, card, "Offhand");
         }
 
-        public override void OnUndo(IStagedAction action)
+        public override void OnUndo(CardInstance card, IStagedAction action)
         {
-            Check.UndoSkillModification(Card);
-            GameServices.Contexts.EncounterContext.ProhibitedTraits.Remove((Card.Owner, Card));
+            Check.UndoSkillModification(card);
+            GameServices.Contexts.EncounterContext.ProhibitedTraits.Remove((card.Owner, card));
         }
 
-        public override void Execute(IStagedAction action)
+        public override void Execute(CardInstance card, IStagedAction action)
         {
-            if (action == RevealAction)
+            var revealAction = GetRevealAction(card);
+            var discardAction = GetDiscardAction(card);
+            
+            if (action.ActionType == revealAction.ActionType && action.Card == card)
             {
                 // Reveal to use Dexterity or Ranged + 1d8.
                 var (skill, die, bonus) = GameServices.Contexts.TurnContext.CurrentPC.GetBestSkill(PF.Skill.Dexterity, PF.Skill.Ranged);
@@ -70,7 +70,7 @@ namespace PACG.Gameplay
             }
 
             // Discard to add 1d6.
-            if (action == DiscardAction)
+            if (action.ActionType == discardAction.ActionType && action.Card == card)
             {
                 Check.DicePool.AddDice(1, 8);
             }

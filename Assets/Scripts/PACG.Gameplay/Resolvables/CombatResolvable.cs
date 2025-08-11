@@ -1,5 +1,3 @@
-
-
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,13 +5,11 @@ namespace PACG.Gameplay
 {
     public class CombatResolvable : IResolvable, ICheckResolvable
     {
-        public LogicRegistry LogicRegistry { get; }
         public PlayerCharacter Character { get; }
         public int Difficulty { get; }
 
         public CombatResolvable(LogicRegistry logicRegistry, PlayerCharacter character, int difficulty)
         {
-            LogicRegistry = logicRegistry;
             Character = character;
             Difficulty = difficulty;
         }
@@ -21,18 +17,9 @@ namespace PACG.Gameplay
         public List<IStagedAction> GetValidActions()
         {
             var allOptions = new List<IStagedAction>();
+            foreach (var card in Character.Hand) allOptions.AddRange(card.GetAvailableActions());
 
-            foreach (var card in Character.Hand)
-            {
-                allOptions.AddRange(GetValidActionsForCard(card));
-            }
             return allOptions;
-        }
-
-        public List<IStagedAction> GetValidActionsForCard(CardInstance card)
-        {
-            var cardLogic = LogicRegistry.GetCardLogic(card);
-            return cardLogic?.GetAvailableActions() ?? new();
         }
 
         public bool IsResolved(List<IStagedAction> actions)
@@ -45,9 +32,6 @@ namespace PACG.Gameplay
             return false;
         }
 
-        public IProcessor CreateProcessor(GameServices gameServices)
-        {
-            return new CheckController(this, gameServices);
-        }
+        public IProcessor CreateProcessor(GameServices gameServices) => new CheckController(this, gameServices);
     }
 }

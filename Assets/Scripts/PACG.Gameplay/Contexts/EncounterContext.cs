@@ -18,13 +18,10 @@ namespace PACG.Gameplay
     {
         // Basic information - set on construction
         public PlayerCharacter EncounterPC { get; }
-        public CardLogicBase CardLogic { get; set; }
+        public CardInstance Card { get; set; }
 
         // Convenience properties
-        public CardInstance CardInstance => CardLogic.Card;
-        public CardData CardData => CardInstance.Data;
-
-        // This should be set on creation.
+        public CardData CardData => Card.Data;
 
         // Maps CardData to the list of traits that card prohibits.
         private readonly Dictionary<(PlayerCharacter, CardInstance), List<string>> prohibitedTraits = new();
@@ -32,10 +29,10 @@ namespace PACG.Gameplay
 
         public CheckResult CheckResult { get; set; }
 
-        public EncounterContext(PlayerCharacter pc, CardLogicBase cardLogic)
+        public EncounterContext(PlayerCharacter pc, CardInstance card)
         {
             EncounterPC = pc;
-            CardLogic = cardLogic;
+            Card = card;
         }
 
         public void AddProhibitedTraits(PlayerCharacter pc, CardInstance card, params string[] traits)

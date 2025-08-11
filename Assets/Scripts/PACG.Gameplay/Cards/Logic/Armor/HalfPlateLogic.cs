@@ -4,53 +4,47 @@ using System.Linq;
 
 namespace PACG.Gameplay
 {
-    [PlayableLogicFor("HalfPlate")]
     public class HalfPlateLogic : CardLogicBase
     {
         private CheckContext Check => GameServices.Contexts.CheckContext;
         private ActionStagingManager ASM => GameServices.ASM;
 
-        private PlayCardAction _displayAction;
-        private PlayCardAction DisplayAction => _displayAction ??= new(this, Card, PF.ActionType.Display);
-
-        private PlayCardAction _drawAction;
-        private PlayCardAction DrawAction => _drawAction ??= new(this, Card, PF.ActionType.Draw, ("Damage", 2));
-
-        private PlayCardAction _buryAction;
-        private PlayCardAction BuryAction => _buryAction ??= new(this, Card, PF.ActionType.Bury, ("ReduceDamageTo", 0));
+        private PlayCardAction GetDisplayAction(CardInstance card) => new(this, card, PF.ActionType.Display);
+        private PlayCardAction GetDrawAction(CardInstance card) => new(this, card, PF.ActionType.Draw, ("Damage", 2));
+        private PlayCardAction GetBuryAction(CardInstance card) => new(this, card, PF.ActionType.Bury, ("ReduceDamageTo", 0));
 
         public HalfPlateLogic(GameServices gameServices) : base(gameServices) { }
 
-        protected override List<IStagedAction> GetAvailableCardActions()
+        protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)
         {
             List<IStagedAction> actions = new();
-            if (CanDisplay) actions.Add(DisplayAction);
-            if (CanDraw) actions.Add(DrawAction);
-            if (CanBury) actions.Add(BuryAction);
+            if (CanDisplay(card)) actions.Add(GetDisplayAction(card));
+            if (CanDraw(card)) actions.Add(GetDrawAction(card));
+            if (CanBury(card)) actions.Add(GetBuryAction(card));
             return actions;
         }
 
-        bool CanDisplay => (
+        bool CanDisplay(CardInstance card) => (
             // We can display if not currently displayed and we haven't played an Armor during a check.
-            !Card.Owner.DisplayedCards.Contains(Card)
+            !card.Owner.DisplayedCards.Contains(card)
             && (Check == null || !Check.StagedCardTypes.Contains(PF.CardType.Armor)));
 
-        bool CanDraw => (
+        bool CanDraw(CardInstance card) => (
             // We can draw for damage if displayed and we have a DamageResolvable for the card's owner with Combat damage.
             Check != null
-            && Card.Owner.DisplayedCards.Contains(Card)
-            && (ASM.CardStaged(Card) || !Check.StagedCardTypes.Contains(PF.CardType.Armor)) // If we staged the Display this check, we can freely draw.
+            && card.Owner.DisplayedCards.Contains(card)
+            && (ASM.CardStaged(card) || !Check.StagedCardTypes.Contains(PF.CardType.Armor)) // If we staged the Display this check, we can freely draw.
             && GameServices.Contexts.CurrentResolvable is DamageResolvable resolvable
             && resolvable.DamageType == "Combat"
-            && resolvable.PlayerCharacter == Card.Owner);
+            && resolvable.PlayerCharacter == card.Owner);
 
-        bool CanBury => (
+        bool CanBury(CardInstance card) => (
             // We can bury for damage if displayed, the owner is proficient, and we have a DamageResolvable for the card's owner.
             Check != null
-            && Card.Owner.DisplayedCards.Contains(Card)
-            && (ASM.CardStaged(Card) || !Check.StagedCardTypes.Contains(PF.CardType.Armor)) // If we staged the Display this check, we can freely bury.
-            && Card.Owner.IsProficient(PF.CardType.Armor)
+            && card.Owner.DisplayedCards.Contains(card)
+            && (ASM.CardStaged(card) || !Check.StagedCardTypes.Contains(PF.CardType.Armor)) // If we staged the Display this check, we can freely bury.
+            && card.Owner.IsProficient(PF.CardType.Armor)
             && GameServices.Contexts.CurrentResolvable is DamageResolvable resolvable
-            && resolvable.PlayerCharacter == Card.Owner);
+            && resolvable.PlayerCharacter == card.Owner);
     }
 }
