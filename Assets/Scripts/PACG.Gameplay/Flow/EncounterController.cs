@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace PACG.Gameplay
 {
-    public class EncounterController : IProcessor
+    public class EncounterController : IProcessor, IPhaseController
     {
         private readonly PlayerCharacter _pc;
         private readonly CardInstance _card;
@@ -28,9 +28,9 @@ namespace PACG.Gameplay
             // TODO: Add all encounter phases.
             //GFM.QueueNextPhase(new OnEncounterProcessor(_gameServices));
             //GFM.QueueNextPhase(new BeforeActingProcessor(_gameServices));
-            GFM.QueueNextPhase(new AttemptChecksProcessor(_gameServices));
+            GFM.QueueNextProcessor(new AttemptChecksProcessor(_gameServices));
             //GFM.QueueNextPhase(new AfterActingProcessor(_gameServices));
-            GFM.QueueNextPhase(new ResolveEncounterProcessor(_gameServices));
+            GFM.QueueNextProcessor(new ResolveEncounterProcessor(_gameServices));
 
             GFM.CompleteCurrentPhase();
         }

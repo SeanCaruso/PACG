@@ -27,7 +27,7 @@ PACG.SharedAPI   → Cross-layer view controllers, events, view models
 ```
 
 ### Key Patterns
-- **Processor Pattern**: Game actions as discrete `IProcessor` instances with pause/resume
+- **Hierarchical Processor Pattern**: Game actions as `IProcessor` instances with `Stack<Queue<IProcessor>>` for proper phase nesting
 - **GameServices**: Dependency injection bundle for simplified parameter passing
 - **Action Staging**: Request-Validate-Commit-Notify pattern with undo support
 - **Card Logic Integration**: Logic stored on `CardInstance` with facade pattern

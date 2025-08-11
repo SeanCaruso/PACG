@@ -5,8 +5,8 @@ namespace PACG.Gameplay
 {
     public class GameFlowManager
     {
-        private readonly Queue<IProcessor> _phaseQueue = new();         // The future to-do list
-        private readonly Stack<IProcessor> _phaseStack = new();         // The processors we're processing right now
+        private readonly Stack<Queue<IProcessor>> _queueStack = new(); // Hierarchical flow structure
+        private Queue<IProcessor> Current => _queueStack.Peek();
 
         // Dependency injection
         private ContextManager _contexts;
@@ -21,17 +21,18 @@ namespace PACG.Gameplay
         // ========================================================================================
 
         /// <summary>
-        /// Adds a processor to the 
+        /// Adds a processor to the current phase queue.
         /// </summary>
         /// <param name="processor"></param>
-        public void QueueNextPhase(IProcessor processor) => _phaseQueue.Enqueue(processor);
+        public void QueueNextProcessor(IProcessor processor) => Current.Enqueue(processor);
 
         /// <summary>
         /// Call this when finished processing.
         /// </summary>
         public void CompleteCurrentPhase()
         {
-            if (_phaseStack.Count > 0) _phaseStack.Pop();
+            // The processor already dequeued itself in Process.
+            Debug.Log($"[{GetType().Name}] Processor completed.");
             Process(); // Continue with whatever's next.
         }
 
@@ -41,8 +42,17 @@ namespace PACG.Gameplay
         /// <param name="phaseProcessor">Processor for the new phase</param>
         public void StartPhase(IProcessor phaseProcessor)
         {
-            Debug.Log($"[GFM] StartPhase called with {phaseProcessor.GetType().Name}");
-            _phaseStack.Push(phaseProcessor);
+            if (phaseProcessor is not IPhaseController)
+            {
+                Debug.LogWarning($"[{GetType().Name}] StartPhase called with {phaseProcessor}... should it be an IPhaseController?");
+            }
+            else
+            {
+                Debug.Log($"[{GetType().Name}] StartPhase called with {phaseProcessor}");
+            }
+            var queue = new Queue<IProcessor>();
+            queue.Enqueue(phaseProcessor);
+            _queueStack.Push(queue);
             Process();
         }
 
@@ -50,16 +60,27 @@ namespace PACG.Gameplay
 
         public void Process()
         {
-            Debug.Log("[GFM] Process() called");
-
             // Pause if we have a pending resolvable.
-            if (_contexts.CurrentResolvable != null) return;
+            if (_contexts.CurrentResolvable != null)
+            {
+                Debug.Log($"[{GetType().Name}] Process paused - found {_contexts.CurrentResolvable}");
+                return;
+            }
 
-            // No current phase, see if we have another one to do and set it.
-            if (_phaseStack.Count == 0 && _phaseQueue.Count > 0) _phaseStack.Push(_phaseQueue.Dequeue());
+            // Clean up empty queues (pop back to parent phase).
+            while (_queueStack.Count > 0 && Current.Count == 0)
+            {
+                Debug.Log($"[{GetType().Name}] Finished phase queue, popping stack.");
+                _queueStack.Pop();
+            }
 
-            // No sub-processes, continue our current phase. Leave it in the stack until it says it's done.
-            if (_phaseStack.Count > 0) _phaseStack.Peek().Execute();
+            // Execute the next processor in the current queue.
+            if (_queueStack.Count > 0 && Current.Count > 0)
+            {
+                var processor = Current.Dequeue();
+                Debug.Log($"[{GetType().Name}] Executing {processor}");
+                processor.Execute();
+            }
         }
     }
 }

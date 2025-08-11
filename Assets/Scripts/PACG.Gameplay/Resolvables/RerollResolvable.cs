@@ -5,7 +5,7 @@ namespace PACG.Gameplay
     public class RerollResolvable : IResolvable, ICheckResolvable
     {
         public PlayerCharacter Character { get; }
-        public int Difficulty => 0;
+        public int Difficulty => 0; // Unused - implemented for ICheckResolvable
 
         public RerollResolvable(PlayerCharacter pc, CheckContext checkContext)
         {
@@ -40,10 +40,6 @@ namespace PACG.Gameplay
 
         public bool IsResolved(List<IStagedAction> actions) => true; // We can always resolve by skipping.
 
-        public IProcessor CreateProcessor(GameServices gameServices)
-        {
-            // TODO: Return a processor for RerollResolvable
-            return null;
-        }
+        public IProcessor CreateProcessor(GameServices gameServices) => new Check_RollDiceProcessor(gameServices);
     }
 }

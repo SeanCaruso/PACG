@@ -48,9 +48,10 @@ namespace PACG.Gameplay
             // Update the ActionStagingManager in case we need to show a Skip button.
             _asm.UpdateActionButtonState();
         }
-        public void EndResolution()
-        {
-            CurrentResolvable = null;
-        }
+
+        /// <summary>
+        /// THIS SHOULD ONLY BE CALLED BY ActionStagingManager.Commit!
+        /// </summary>
+        public void EndResolution() => CurrentResolvable = null;
     }
 }

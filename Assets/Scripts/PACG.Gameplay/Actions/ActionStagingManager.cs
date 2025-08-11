@@ -48,7 +48,7 @@ namespace PACG.Gameplay
 
             // We need to handle this here so that damage resolvables behave with hand size.
             _cards.MoveCard(action.Card, action.ActionType);
-            
+
             // Perform all required staging logic.
             action.OnStage();
             pcActions.Add(action);
@@ -111,8 +111,17 @@ namespace PACG.Gameplay
             // If we have a resolvable, the fact that we committed means that it's been resolved.
             if (_contexts.CurrentResolvable != null)
             {
+                // If it requires a processor, kick off a new phase immediately.
                 var processor = _contexts.CurrentResolvable.CreateProcessor(_gameServices);
-                _gameFlow.QueueNextPhase(processor);
+                if (processor != null)
+                {
+                    Debug.Log($"[{GetType().Name}] {_contexts.CurrentResolvable} created {processor}");
+                    _gameFlow.StartPhase(processor);
+                }
+                else
+                {
+                    Debug.Log($"[{GetType().Name}] {_contexts.CurrentResolvable} didn't queue a processor.");
+                }
                 _contexts.EndResolution();
             }
 

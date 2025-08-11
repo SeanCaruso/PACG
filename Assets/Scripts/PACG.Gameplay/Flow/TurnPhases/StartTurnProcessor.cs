@@ -3,22 +3,18 @@ using UnityEngine;
 
 namespace PACG.Gameplay
 {
-    public class StartTurnProcessor : IProcessor
+    public class StartTurnProcessor : BaseProcessor
     {
         private readonly ContextManager _contexts;
         private readonly GameFlowManager _gameFlow;
 
-        public GameFlowManager GFM => _gameFlow;
-
-        public StartTurnProcessor(PlayerCharacter pc, Deck locationDeck, GameServices gameServices)
+        public StartTurnProcessor(GameServices gameServices) : base(gameServices)
         {
             _contexts = gameServices.Contexts;
             _gameFlow = gameServices.GameFlow;
-
-            _contexts.NewTurn(new(pc, locationDeck));
         }
 
-        public void Execute()
+        protected override void OnExecute()
         {
             var hourCard = _contexts.GameContext.HourDeck.DrawCard();
             _contexts.TurnContext.HourCard = hourCard;
@@ -36,13 +32,7 @@ namespace PACG.Gameplay
 
             GameEvents.RaiseTurnStateChanged(_contexts.TurnContext); // Update turn action button states.
 
-            Finish();
-        }
-
-        public void Finish()
-        {
             _contexts.TurnContext.CurrentPhase = TurnPhase.TurnActions;
-            _gameFlow.CompleteCurrentPhase();
         }
     }
 }

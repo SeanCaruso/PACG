@@ -9,7 +9,7 @@ namespace PACG.Gameplay
         public string DamageType { get; }
         public int Amount { get; protected set; }
 
-        public DamageResolvable(LogicRegistry logicRegistry, PlayerCharacter playerCharacter, int amount, string damageType = "Combat")
+        public DamageResolvable(PlayerCharacter playerCharacter, int amount, string damageType = "Combat")
         {
             PlayerCharacter = playerCharacter;
             Amount = amount;
@@ -63,10 +63,6 @@ namespace PACG.Gameplay
             return totalResolved >= Amount;
         }
 
-        public IProcessor CreateProcessor(GameServices gameServices)
-        {
-            // TODO: Return a processor for DamageResolvable
-            return null;
-        }
+        public IProcessor CreateProcessor(GameServices gameServices) => null; // No processor necessary.
     }
 }

@@ -91,8 +91,8 @@ namespace PACG.Gameplay
             cardDisplayController.SetCurrentPC(testPc);
 
             testPc.DrawToHandSize();
-            var turnProcessor = new StartTurnProcessor(testPc, locationDeck, _gameServices);
-            _gameServices.GameFlow.StartPhase(turnProcessor);
+            var turnController = new TurnController(testPc, locationDeck, _gameServices);
+            _gameServices.GameFlow.StartPhase(turnController);
         }
     }
 }

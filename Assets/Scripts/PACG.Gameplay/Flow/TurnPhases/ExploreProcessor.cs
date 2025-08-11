@@ -35,7 +35,7 @@ namespace PACG.Gameplay
                 return;
             }
 
-            _gameFlowManager.QueueNextPhase(new EncounterController(_contexts.TurnContext.CurrentPC, exploredCard, _gameServices));
+            _gameFlowManager.StartPhase(new EncounterController(_contexts.TurnContext.CurrentPC, exploredCard, _gameServices));
 
             _gameFlowManager.CompleteCurrentPhase();
         }
