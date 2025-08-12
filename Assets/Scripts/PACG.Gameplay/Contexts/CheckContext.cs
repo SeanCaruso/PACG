@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -5,6 +6,7 @@ using UnityEngine;
 
 namespace PACG.Gameplay
 {
+    [Obsolete("The current resolvable is a better indicator of this.")]
     public enum CheckPhase
     {
         PlayCards,
@@ -23,9 +25,6 @@ namespace PACG.Gameplay
         {
             Resolvable = resolvable;
         }
-
-        // --- Dynamic Check State ---
-        public CheckPhase CheckPhase { get; set; } = CheckPhase.PlayCards;
 
         // =====================================================================================
         // CONTEXT-SPECIFIC ACTION STAGING

@@ -17,6 +17,7 @@ namespace PACG.Gameplay
         private Dictionary<PlayerCharacter, List<IStagedAction>> PcsStagedActions { get; } = new();
         private Dictionary<CardInstance, CardLocation> OriginalCardLocs { get; } = new();
 
+        public IReadOnlyList<CardInstance> StagedCards => OriginalCardLocs.Keys.ToList();
         public bool CardStaged(CardInstance card) => OriginalCardLocs.Keys.Contains(card);
 
         public void Iniitalize(GameServices gameServices)

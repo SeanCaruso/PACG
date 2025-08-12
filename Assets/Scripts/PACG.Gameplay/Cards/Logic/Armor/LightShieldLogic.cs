@@ -36,10 +36,9 @@ namespace PACG.Gameplay
             && resolvable.PlayerCharacter == card.Owner);
 
         bool CanRecharge(CardInstance card) => (
-            // We can freely recharge to reroll if we're in the dice phase of a Melee combat check and the dice pool has a d4, d6, or d8.
+            // We can freely recharge to reroll if we're processing a RerollResolvable and the dice pool has a d4, d6, or d8.
             Check != null
-            && Check.Resolvable is CombatResolvable
-            && Check.CheckPhase == CheckPhase.RollDice
+            && _contexts.CurrentResolvable is RerollResolvable
             && Check.UsedSkill == PF.Skill.Melee
             && Check.DicePool.NumDice(4, 6, 8) > 0);
     }

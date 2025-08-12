@@ -58,14 +58,8 @@ namespace PACG.Gameplay
         /// <param name="name">Name for the queue</param>
         public void StartPhase(IProcessor phaseProcessor, string name)
         {
-            if (phaseProcessor is not IPhaseController)
-            {
-                Debug.LogWarning($"[{GetType().Name}] StartPhase called with {phaseProcessor}... should it be an IPhaseController?");
-            }
-            else
-            {
-                Debug.Log($"[{GetType().Name}] StartPhase called with {phaseProcessor}");
-            }
+            Debug.Log($"[{GetType().Name}] StartPhase called with {phaseProcessor}");
+
             var queue = new PhaseQueue(name);
             queue.Enqueue(phaseProcessor);
             _queueStack.Push(queue);

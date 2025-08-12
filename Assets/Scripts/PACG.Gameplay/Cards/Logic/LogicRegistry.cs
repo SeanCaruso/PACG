@@ -7,7 +7,7 @@ namespace PACG.Gameplay
 {
     public class LogicRegistry
     {
-        private readonly Dictionary<string, CardLogicBase> _cardLogicMap = new();
+        private readonly Dictionary<string, ILogicBase> _logicMap = new();
 
         private GameServices _gameServices;
 
@@ -16,7 +16,7 @@ namespace PACG.Gameplay
             _gameServices = gameServices;
         }
 
-        private CardLogicBase LoadLogic(string cardID)
+        private ILogicBase LoadLogic(string cardID)
         {
             string logicClassName = $"PACG.Gameplay.{cardID}Logic";
             Type logicType = Assembly.GetExecutingAssembly().GetType(logicClassName);
@@ -27,24 +27,33 @@ namespace PACG.Gameplay
                 return null;
             }
 
-            if (!typeof(CardLogicBase).IsAssignableFrom(logicType))
+            if (!typeof(ILogicBase).IsAssignableFrom(logicType))
             {
-                Debug.LogError($"[{GetType().Name}] Unable to assign {logicClassName} to CardLogicBase!");
+                Debug.LogError($"[{GetType().Name}] Unable to assign {logicClassName} to ILogicBase!");
                 return null;
             }
 
-            return Activator.CreateInstance(logicType, _gameServices) as CardLogicBase;
+            return Activator.CreateInstance(logicType, _gameServices) as ILogicBase;
         }
 
-        // Public getter for card logic
         public CardLogicBase GetCardLogic(string cardID)
         {
-            if (!_cardLogicMap.ContainsKey(cardID))
+            if (!_logicMap.ContainsKey(cardID))
             {
-                _cardLogicMap.Add(cardID, LoadLogic(cardID));
+                _logicMap.Add(cardID, LoadLogic(cardID));
             }
 
-            return _cardLogicMap[cardID];
+            return _logicMap[cardID] as CardLogicBase;
+        }
+
+        public CharacterLogicBase GetCharacterLogic(string characterName)
+        {
+            if (!_logicMap.ContainsKey(characterName))
+            {
+                _logicMap.Add(characterName, LoadLogic(characterName));
+            }
+
+            return _logicMap[characterName] as CharacterLogicBase;
         }
     }
 }

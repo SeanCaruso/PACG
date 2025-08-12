@@ -31,7 +31,6 @@ namespace PACG.Gameplay
 
             // Add blessing dice.
             check.DicePool.AddDice(check.BlessingCount, pc.GetSkill(check.UsedSkill).die);
-            check.CheckPhase = CheckPhase.RollDice;
             int rollTotal = check.DicePool.Roll();
             check.CheckResult = new(rollTotal, dc, pc, check.UsedSkill, check.Traits);
 

@@ -24,20 +24,20 @@ namespace PACG.Gameplay
         protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)
         {
             List<IStagedAction> actions = new();
-            if (IsCardPlayabe(card))
+            if (IsCardPlayable(card))
             {
                 // If a weapon hasn't been played yet, present one or both options.
                 if (!Check.StagedCardTypes.Contains(card.Data.cardType))
                 {
                     actions.Add(GetRevealAction(card));
 
-                    if (Check.Resolvable is CombatResolvable resolvable && resolvable.Character.IsProficient(PF.CardType.Weapon))
+                    if (_contexts.CurrentResolvable is CombatResolvable resolvable && resolvable.Character.IsProficient(PF.CardType.Weapon))
                     {
                         actions.Add(GetRevealAndReloadAction(card));
                     }
                 }
                 // Otherwise, if this card has already been played, present the reload option if proficient.
-                else if (_asm.CardStaged(card) && Check.Resolvable is CombatResolvable res && res.Character.IsProficient(PF.CardType.Weapon))
+                else if (_asm.CardStaged(card) && _contexts.CurrentResolvable is CombatResolvable res && res.Character.IsProficient(PF.CardType.Weapon))
                 {
                     actions.Add(GetReloadAction(card));
                 }
@@ -45,12 +45,11 @@ namespace PACG.Gameplay
             return actions;
         }
 
-        bool IsCardPlayabe(CardInstance card) => (
+        bool IsCardPlayable(CardInstance card) => (
             // All powers are specific to the card's owner while playing cards during a Strength or Melee combat check.
             Check != null
-            && Check.Resolvable is CombatResolvable resolvable
+            && _contexts.CurrentResolvable is CombatResolvable resolvable
             && resolvable.Character == card.Owner
-            && Check.CheckPhase == CheckPhase.PlayCards
             && Check.CanPlayCardWithSkills(PF.Skill.Strength, PF.Skill.Melee));
 
         public override void OnStage(CardInstance card, IStagedAction action)
@@ -63,26 +62,17 @@ namespace PACG.Gameplay
             Check.UndoSkillModification(card);
         }
 
-        public override void Execute(CardInstance card, IStagedAction action)
+        public override void Execute(IStagedAction action)
         {
-            var revealAction = GetRevealAction(card);
-            var reloadAction = GetReloadAction(card);
-            var revealAndReloadAction = GetRevealAndReloadAction(card);
-            
-            if ((action.ActionType == revealAction.ActionType && action.Card == card) || 
-                (action.ActionType == revealAndReloadAction.ActionType && action.Card == card))
-            {
-                // Reveal to use Strength or Melee + 1d8.
-                var resolvable = (CombatResolvable)Check.Resolvable;
-                (PF.Skill skill, int die, int bonus) = resolvable.Character.GetBestSkill(PF.Skill.Strength, PF.Skill.Melee);
-                Check.UsedSkill = skill;
-                Check.DicePool.AddDice(1, die, bonus);
-                Check.DicePool.AddDice(1, 8);
-            }
+            // Always Reveal to use Strength or Melee + 1d8.
+            var resolvable = (CombatResolvable)_contexts.CurrentResolvable;
+            (PF.Skill skill, int die, int bonus) = resolvable.Character.GetBestSkill(PF.Skill.Strength, PF.Skill.Melee);
+            Check.UsedSkill = skill;
+            Check.DicePool.AddDice(1, die, bonus);
+            Check.DicePool.AddDice(1, 8);
 
             // Reload to add another 1d4.
-            if ((action.ActionType == reloadAction.ActionType && action.Card == card) || 
-                (action.ActionType == revealAndReloadAction.ActionType && action.Card == card))
+            if (action.ActionType == PF.ActionType.Reload)
             {
                 Check.DicePool.AddDice(1, 4);
             }

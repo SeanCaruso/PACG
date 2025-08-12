@@ -1,13 +1,13 @@
 
 namespace PACG.Gameplay
 {
-    public class TurnController : IProcessor, IPhaseController
+    public class StartTurnController : IProcessor, IPhaseController
     {
         private readonly ContextManager _contexts;
         private readonly GameFlowManager _gameFlow;
         private readonly GameServices _gameServices;
 
-        public TurnController(PlayerCharacter pc, Deck locationDeck, GameServices gameServices)
+        public StartTurnController(PlayerCharacter pc, Deck locationDeck, GameServices gameServices)
         {
             _contexts = gameServices.Contexts;
             _gameFlow = gameServices.GameFlow;

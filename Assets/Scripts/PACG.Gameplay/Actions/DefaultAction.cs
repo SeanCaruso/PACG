@@ -1,16 +1,16 @@
 
 namespace PACG.Gameplay
 {
-    public class DefaultDamageAction : IStagedAction
+    public class DefaultAction : IStagedAction
     {
         public CardInstance Card { get; protected set; }
+        private readonly PF.ActionType _actionType;
         public PF.ActionType ActionType => PF.ActionType.Discard;
         public bool IsFreely => true;
-        public int Amount { get; protected set; }
 
-        public DefaultDamageAction(CardInstance card)
+        public DefaultAction(PF.ActionType actionType)
         {
-            Card = card;
+            _actionType = actionType;
         }
 
         public void OnStage() { }

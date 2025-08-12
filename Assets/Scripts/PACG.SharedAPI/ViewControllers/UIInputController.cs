@@ -35,7 +35,7 @@ namespace PACG.SharedAPI
             //moveButton.onClick.AddListener(() => MoveButton_OnClick());
             exploreButton.onClick.AddListener(() => _gameFlowManager.StartPhase(new Turn_ExploreProcessor(_gameServices), "Explore"));
             //optionalDiscardButton.onClick.AddListener(() =>  OptionalDiscardButton_OnClick());
-            endTurnButton.onClick.AddListener(() => _gameFlowManager.StartPhase(new Turn_NextTurnProcessor(_gameServices), "Turn"));
+            endTurnButton.onClick.AddListener(() => _gameFlowManager.StartPhase(new Turn_EndOfTurnProcessor(_gameServices), "Turn"));
 
             cancelButton.onClick.AddListener(() => _asm.Cancel());
             commitButton.onClick.AddListener(() => _asm.Commit());

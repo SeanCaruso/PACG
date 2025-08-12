@@ -22,7 +22,7 @@ namespace PACG.Gameplay
 
             // Add default damage discard action if the card was in the player's hand.
             if (PlayerCharacter.Hand.Contains(card))
-                actions.Add(new DefaultDamageAction(card));
+                actions.Add(new DefaultAction(PF.ActionType.Discard));
 
             return actions;
         }
@@ -38,7 +38,7 @@ namespace PACG.Gameplay
             int totalResolved = 0;
             foreach (var action in actions)
             {
-                if (action is DefaultDamageAction)
+                if (action is DefaultAction)
                     totalResolved += 1;
                 else if (action is PlayCardAction playAction)
                 {

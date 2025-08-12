@@ -30,18 +30,16 @@ namespace PACG.Gameplay
         bool CanReveal(CardInstance card) => (
             // Reveal power can be used by the current owner while playing cards for a Strength, Dexterity, Melee, or Ranged combat check.
             Check != null
-            && Check.Resolvable is CombatResolvable resolvable
+            && _contexts.CurrentResolvable is CombatResolvable resolvable
             && resolvable.Character == card.Owner
             && !Check.StagedCardTypes.Contains(card.Data.cardType)
-            && Check.CheckPhase == CheckPhase.PlayCards
             && Check.CanPlayCardWithSkills(validSkills));
 
         bool CanDiscard(CardInstance card) => (
             // Discard power can be freely used on a local combat check while playing cards if the owner is proficient.
             Check != null
             && card.Owner.IsProficient(card.Data.cardType)
-            && Check.Resolvable is CombatResolvable
-            && Check.CheckPhase == CheckPhase.PlayCards
+            && _contexts.CurrentResolvable is CombatResolvable
             && true); // TODO: Handle checking for local vs. distant.
 
         public override void OnStage(CardInstance card, IStagedAction action)
@@ -54,22 +52,20 @@ namespace PACG.Gameplay
             Check.UndoSkillModification(card);
         }
 
-        public override void Execute(CardInstance card, IStagedAction action)
+        public override void Execute(/*CardInstance card, */IStagedAction action)
         {
-            var revealAction = GetRevealAction(card);
-            var discardAction = GetDiscardAction(card);
-            
-            if (action.ActionType == revealAction.ActionType && action.Card == card)
+            // Reveal to use Strength, Dexterity, Melee, or Ranged + 1d8.       
+            if (action.ActionType == PF.ActionType.Reveal)
             {
-                // Reveal to use Strength, Dexterity, Melee, or Ranged + 1d8.
-                var (skill, die, bonus) = _contexts.TurnContext.CurrentPC.GetBestSkill(PF.Skill.Strength, PF.Skill.Dexterity, PF.Skill.Melee, PF.Skill.Ranged);
+                var resolvable = _contexts.CurrentResolvable as CombatResolvable;
+                var (skill, die, bonus) = resolvable.Character.GetBestSkill(PF.Skill.Strength, PF.Skill.Dexterity, PF.Skill.Melee, PF.Skill.Ranged);
                 Check.UsedSkill = skill;
                 Check.DicePool.AddDice(1, die, bonus);
                 Check.DicePool.AddDice(1, 8);
             }
 
             // Discard to add 1d6.
-            if (action.ActionType == discardAction.ActionType && action.Card == card)
+            if (action.ActionType == PF.ActionType.Discard)
             {
                 Check.DicePool.AddDice(1, 6);
             }

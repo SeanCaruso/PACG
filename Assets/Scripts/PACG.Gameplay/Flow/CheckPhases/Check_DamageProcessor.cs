@@ -23,8 +23,6 @@ namespace PACG.Gameplay
             { }
             else
             {
-                check.CheckPhase = CheckPhase.SufferDamage;
-
                 DamageResolvable damageResolvable = new(check.Resolvable.Character, -check.CheckResult.MarginOfSuccess);
                 _contexts.NewResolvable(damageResolvable);
                 Debug.Log($"Rolled {check.CheckResult.FinalRollTotal} vs. {check.Resolvable.Difficulty} - Take {damageResolvable.Amount} damage!");

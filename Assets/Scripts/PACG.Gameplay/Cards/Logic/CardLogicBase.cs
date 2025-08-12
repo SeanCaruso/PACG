@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace PACG.Gameplay
 {
-    public abstract class CardLogicBase
+    public abstract class CardLogicBase : ILogicBase
     {
         // Dependency injection of services
         private readonly ContextManager _contexts;
@@ -17,6 +17,12 @@ namespace PACG.Gameplay
         // Playable card methods (default implementations for non-playable cards)
         public virtual List<IStagedAction> GetAvailableActions(CardInstance card)
         {
+            // If we're in an encounter with a card with immunities...
+            if (_contexts.EncounterContext?.CardData.immunities.Count > 0)
+            {
+
+            }
+
             // If the card has any prohibited traits, (e.g. 2-Handed vs. Offhand), just return.
             foreach (((var character, _), var prohibitedTraits) in _contexts.EncounterContext?.ProhibitedTraits ?? new())
             {
@@ -29,7 +35,7 @@ namespace PACG.Gameplay
 
         public virtual void OnStage(CardInstance card, IStagedAction _) { }
         public virtual void OnUndo(CardInstance card, IStagedAction _) { }
-        public virtual void Execute(CardInstance card, IStagedAction _) { }
+        public virtual void Execute(/*CardInstance card, */IStagedAction _) { }
 
         protected virtual List<IStagedAction> GetAvailableCardActions(CardInstance card) { return new(); }
 
