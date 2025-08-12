@@ -23,7 +23,13 @@ namespace PACG.Gameplay
         public void NewGame(GameContext gameContext) => GameContext = gameContext;
 
         public void NewTurn(TurnContext turnContext) => TurnContext = turnContext;
-        public void EndTurn() => TurnContext = null;
+        public void EndTurn()
+        {
+            if (CheckContext != null) Debug.LogWarning($"[{GetType().Name}] Ending turn with a CheckContext still active!");
+            if (EncounterContext != null) Debug.LogWarning($"[{GetType().Name}] Ending turn with an EncounterContext still active!");
+
+            TurnContext = null;
+        }
 
         // TODO: Think about how this will work in nested encounters - maybe use a stack?
         public void NewEncounter(EncounterContext encounterContext) => EncounterContext = encounterContext;

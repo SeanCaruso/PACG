@@ -32,10 +32,30 @@ namespace PACG.Gameplay
             return actions;
         }
 
-        bool CanDisplay(CardInstance card) => (
-            // We can display if not currently displayed and we haven't played an Armor during a check.
-            !card.Owner.DisplayedCards.Contains(card)
-            && (Check == null || !Check.StagedCardTypes.Contains(PF.CardType.Armor)));
+        bool CanDisplay(CardInstance card)
+        {
+            // Can't display if already displayed.
+            if (card.Owner?.DisplayedCards.Contains(card) == true)
+                return false;
+
+            // Can't display if another armor was played on the check.
+            if (Check?.StagedCardTypes.Contains(card.Data.cardType) == true)
+                return false;
+
+            // If we're in an encounter...
+            if (_contexts.EncounterContext != null)
+            {
+                // We can only display if there's a DamageResolvable for this card's owner.
+                var resolvable = _contexts.CurrentResolvable as DamageResolvable;
+                if (resolvable != null && resolvable.PlayerCharacter == card.Owner)
+                    return true;
+
+                return false;
+            }
+
+            // If we made it here, no reason we can't play it.
+            return true;
+        }
 
         bool CanDraw(CardInstance card) => (
             // We can draw for damage if displayed and we have a DamageResolvable for the card's owner with Combat damage.

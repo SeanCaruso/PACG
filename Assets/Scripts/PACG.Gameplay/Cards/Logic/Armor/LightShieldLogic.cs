@@ -7,8 +7,9 @@ namespace PACG.Gameplay
     public class LightShieldLogic : CardLogicBase
     {
         private readonly ActionStagingManager _asm;
-        private readonly CheckContext _check;
         private readonly ContextManager _contexts;
+
+        private CheckContext Check => _contexts.CheckContext;
 
         private PlayCardAction GetDamageAction(CardInstance card) => new(card, PF.ActionType.Reveal, ("IsFreely", true), ("Damage", 1));
         private PlayCardAction GetRerollAction(CardInstance card) => new(card, PF.ActionType.Recharge, ("IsFreely", true));
@@ -17,8 +18,6 @@ namespace PACG.Gameplay
         {
             _asm = gameServices.ASM;
             _contexts = gameServices.Contexts;
-
-            _check = _contexts.CheckContext;
         }
 
         protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)
@@ -38,10 +37,10 @@ namespace PACG.Gameplay
 
         bool CanRecharge(CardInstance card) => (
             // We can freely recharge to reroll if we're in the dice phase of a Melee combat check and the dice pool has a d4, d6, or d8.
-            _check != null
-            && _check.Resolvable is CombatResolvable
-            && _check.CheckPhase == CheckPhase.RollDice
-            && _check.UsedSkill == PF.Skill.Melee
-            && _check.DicePool.NumDice(4, 6, 8) > 0);
+            Check != null
+            && Check.Resolvable is CombatResolvable
+            && Check.CheckPhase == CheckPhase.RollDice
+            && Check.UsedSkill == PF.Skill.Melee
+            && Check.DicePool.NumDice(4, 6, 8) > 0);
     }
 }

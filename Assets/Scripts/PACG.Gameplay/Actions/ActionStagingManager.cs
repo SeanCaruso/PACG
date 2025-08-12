@@ -76,6 +76,7 @@ namespace PACG.Gameplay
             }
             GameEvents.RaiseCardLocationsChanged(OriginalCardLocs.Keys.ToList());
 
+            OriginalCardLocs.Clear();
             PcsStagedActions[pc].Clear();
             _contexts.CheckContext?.ClearStagedTypes();
 
@@ -104,6 +105,7 @@ namespace PACG.Gameplay
             {
                 action.Commit(_contexts.CheckContext);
             }
+            OriginalCardLocs.Clear();
             PcsStagedActions.Clear();
             _cards.RestoreRevealedCardsToHand();
 
@@ -115,7 +117,7 @@ namespace PACG.Gameplay
                 if (processor != null)
                 {
                     Debug.Log($"[{GetType().Name}] {_contexts.CurrentResolvable} created {processor}");
-                    _gameFlow.StartPhase(processor);
+                    _gameFlow.StartPhase(processor, _contexts.CurrentResolvable.GetType().Name);
                 }
                 else
                 {

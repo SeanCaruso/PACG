@@ -81,7 +81,7 @@ namespace PACG.SharedAPI
         {
             for (int i = encounteredContainer.childCount - 1; i >= 0; i--)
             {
-                Destroy(encounteredContainer.GetChild(i).gameObject);
+                encounteredContainer.GetChild(i).SetParent(hiddenContainer);
             }
         }
 
@@ -154,7 +154,7 @@ namespace PACG.SharedAPI
             if (instanceToDisplayMap.TryGetValue(card, out var display)) return display;
 
             // Otherwise, create a new one.
-            CardDisplay cardDisplay = Instantiate(cardPrefab);
+            CardDisplay cardDisplay = Instantiate(cardPrefab, hiddenContainer);
             cardDisplay.SetViewModel(CardViewModelFactory.CreateFrom(card));
             instanceToDisplayMap.Add(card, cardDisplay);
             return cardDisplay;

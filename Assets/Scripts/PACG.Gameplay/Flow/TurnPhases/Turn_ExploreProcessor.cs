@@ -3,13 +3,13 @@ using UnityEngine;
 
 namespace PACG.Gameplay
 {
-    public class ExploreProcessor : IProcessor
+    public class Turn_ExploreProcessor : IProcessor, IPhaseController
     {
         private readonly ContextManager _contexts;
         private readonly GameFlowManager _gameFlowManager;
         private readonly GameServices _gameServices;
 
-        public ExploreProcessor(GameServices gameServices)
+        public Turn_ExploreProcessor(GameServices gameServices)
         {
             _contexts = gameServices.Contexts;
             _gameFlowManager = gameServices.GameFlow;
@@ -20,7 +20,6 @@ namespace PACG.Gameplay
         {
             Debug.Log("[ExploreProcessor] Starting explore...");
 
-            // Set initial availability of turn actions
             _contexts.TurnContext.CanGive = false;
             _contexts.TurnContext.CanMove = false;
             _contexts.TurnContext.CanExplore = false;
@@ -35,7 +34,7 @@ namespace PACG.Gameplay
                 return;
             }
 
-            _gameFlowManager.StartPhase(new EncounterController(_contexts.TurnContext.CurrentPC, exploredCard, _gameServices));
+            _gameFlowManager.StartPhase(new EncounterController(_contexts.TurnContext.CurrentPC, exploredCard, _gameServices), $"Explore_{exploredCard.Data.cardName}");
 
             _gameFlowManager.CompleteCurrentPhase();
         }

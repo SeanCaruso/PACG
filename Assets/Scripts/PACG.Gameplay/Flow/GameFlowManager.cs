@@ -3,10 +3,25 @@ using UnityEngine;
 
 namespace PACG.Gameplay
 {
+    public class PhaseQueue
+    {
+        public Queue<IProcessor> Processors { get; } = new();
+        public string Name { get; } = "";
+
+        public int Count => Processors.Count;
+        public void Enqueue(IProcessor processor) => Processors.Enqueue(processor);
+        public IProcessor Dequeue() => Processors.Dequeue();
+
+        public PhaseQueue(string name)
+        {
+            Name = name;
+        }
+    }
+
     public class GameFlowManager
     {
-        private readonly Stack<Queue<IProcessor>> _queueStack = new(); // Hierarchical flow structure
-        private Queue<IProcessor> Current => _queueStack.Peek();
+        private readonly Stack<PhaseQueue> _queueStack = new(); // Hierarchical flow structure
+        private PhaseQueue Current => _queueStack.Peek();
 
         // Dependency injection
         private ContextManager _contexts;
@@ -40,7 +55,8 @@ namespace PACG.Gameplay
         /// Entry point for immediately starting a new phase (like a turn).
         /// </summary>
         /// <param name="phaseProcessor">Processor for the new phase</param>
-        public void StartPhase(IProcessor phaseProcessor)
+        /// <param name="name">Name for the queue</param>
+        public void StartPhase(IProcessor phaseProcessor, string name)
         {
             if (phaseProcessor is not IPhaseController)
             {
@@ -50,7 +66,7 @@ namespace PACG.Gameplay
             {
                 Debug.Log($"[{GetType().Name}] StartPhase called with {phaseProcessor}");
             }
-            var queue = new Queue<IProcessor>();
+            var queue = new PhaseQueue(name);
             queue.Enqueue(phaseProcessor);
             _queueStack.Push(queue);
             Process();
@@ -70,7 +86,7 @@ namespace PACG.Gameplay
             // Clean up empty queues (pop back to parent phase).
             while (_queueStack.Count > 0 && Current.Count == 0)
             {
-                Debug.Log($"[{GetType().Name}] Finished phase queue, popping stack.");
+                Debug.Log($"[{GetType().Name}] Finished phase queue {Current.Name}, popping stack.");
                 _queueStack.Pop();
             }
 
@@ -78,7 +94,7 @@ namespace PACG.Gameplay
             if (_queueStack.Count > 0 && Current.Count > 0)
             {
                 var processor = Current.Dequeue();
-                Debug.Log($"[{GetType().Name}] Executing {processor}");
+                Debug.Log($"[{GetType().Name}] Executing phase {Current.Name} processor: {processor}");
                 processor.Execute();
             }
         }

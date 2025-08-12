@@ -18,7 +18,7 @@ namespace PACG.Gameplay
 
         public void Execute()
         {
-            _gameFlow.QueueNextProcessor(new StartTurnProcessor(_gameServices));
+            _gameFlow.QueueNextProcessor(new Turn_StartTurnProcessor(_gameServices));
 
             _gameFlow.CompleteCurrentPhase();
         }
