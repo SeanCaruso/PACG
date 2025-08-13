@@ -33,9 +33,9 @@ namespace PACG.Gameplay
             return GetAvailableCardActions(card);
         }
 
-        public virtual void OnStage(CardInstance card, IStagedAction _) { }
-        public virtual void OnUndo(CardInstance card, IStagedAction _) { }
-        public virtual void Execute(/*CardInstance card, */IStagedAction _) { }
+        public virtual void OnStage(CardInstance card, IStagedAction action) { }
+        public virtual void OnUndo(CardInstance card, IStagedAction action) { }
+        public virtual void Execute(CardInstance card, IStagedAction action) { }
 
         protected virtual List<IStagedAction> GetAvailableCardActions(CardInstance card) { return new(); }
 

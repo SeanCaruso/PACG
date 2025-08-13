@@ -39,7 +39,16 @@ namespace PACG.Gameplay
         /// Adds a processor to the current phase queue.
         /// </summary>
         /// <param name="processor"></param>
-        public void QueueNextProcessor(IProcessor processor) => Current.Enqueue(processor);
+        public void QueueNextProcessor(IProcessor processor)
+        {
+            if (_queueStack.Count == 0)
+            {
+                Debug.LogError($"[{GetType().Name}] Attempted to queue {processor} without a current phase!");
+                return;
+            }
+
+            Current.Enqueue(processor);
+        }
 
         /// <summary>
         /// Call this when finished processing.

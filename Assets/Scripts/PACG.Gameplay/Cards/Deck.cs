@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace PACG.Gameplay
@@ -66,6 +67,22 @@ namespace PACG.Gameplay
         {
             Reload(card);
             Shuffle();
+        }
+
+        public CardInstance DrawFirstCardWith(PF.CardType type, params string[] traits)
+        {
+            var traitList = traits.ToList();
+            var matchingCards = _cards.Where(card => card.Data.cardType == type && (traitList.Count == 0 || traitList.Intersect(card.Data.traits).Any())).ToList();
+
+            if (matchingCards.Count == 0)
+                return null;
+            else
+            {
+                var card = matchingCards[0];
+                _cards.Remove(card);
+                _examinedCards.Remove(card);
+                return card;
+            }
         }
     }
 }

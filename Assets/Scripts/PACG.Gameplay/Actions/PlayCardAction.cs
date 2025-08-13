@@ -38,7 +38,7 @@ namespace PACG.Gameplay
         public void Commit(CheckContext checkContext = null)
         {
             checkContext?.AddTraits(Card.Data.traits.ToArray());
-            Card.Logic?.Execute(/*Card, */this);
+            Card.Logic?.Execute(Card, this);
             // The card instance on the PlayerCharacter was moved during staging, so don't do it here.
         }
     }

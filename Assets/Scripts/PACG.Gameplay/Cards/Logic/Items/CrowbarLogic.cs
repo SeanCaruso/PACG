@@ -77,7 +77,7 @@ namespace PACG.Gameplay
             Check.UndoSkillModification(card);
         }
 
-        public override void Execute(/*CardInstance card, */IStagedAction action)
+        public override void Execute(CardInstance card, IStagedAction action)
         {
             // Reveal to add 1d8.
             Check.DicePool.AddDice(1, 8);

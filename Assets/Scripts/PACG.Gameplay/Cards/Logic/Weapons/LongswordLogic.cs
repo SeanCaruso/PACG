@@ -62,7 +62,7 @@ namespace PACG.Gameplay
             Check.UndoSkillModification(card);
         }
 
-        public override void Execute(IStagedAction action)
+        public override void Execute(CardInstance card, IStagedAction action)
         {
             // Always Reveal to use Strength or Melee + 1d8.
             var resolvable = (CombatResolvable)_contexts.CurrentResolvable;

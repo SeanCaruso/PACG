@@ -24,5 +24,14 @@ MonoBehaviour:
       adventureLevelMult: 0
       category: 1
       allowedSkills: 0400000009000000
+  rerollThreshold: 0
+  powers: 'On a local check, discard to bless. If the hour''s level is 0, you may
+    recharge instead.
+
+
+    Discard to explore.'
+  recovery: 
+  immunities: []
+  vulnerabilities: []
   traits:
   - Divine

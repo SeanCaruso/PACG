@@ -44,9 +44,9 @@ namespace PACG.Gameplay
                 logicRegistry);
 
             // Initialize now that GameServices is set up.
-            asm.Iniitalize(_gameServices);
+            asm.Initialize(_gameServices);
             cardManager.Initialize(_gameServices);
-            contextManager.Iniitalize(_gameServices);
+            contextManager.Initialize(_gameServices);
             gameFlowManager.Initialize(_gameServices);
             logicRegistry.Initialize(_gameServices);
         }
@@ -91,7 +91,8 @@ namespace PACG.Gameplay
 
             _gameServices.Contexts.GameContext.SetPcLocation(testPc, location);
 
-            testPc.DrawToHandSize();
+            testPc.DrawInitialHand();
+
             var turnController = new StartTurnController(testPc, _gameServices);
             _gameServices.GameFlow.StartPhase(turnController, "Turn");
         }

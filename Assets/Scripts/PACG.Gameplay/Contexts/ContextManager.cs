@@ -5,7 +5,7 @@ namespace PACG.Gameplay
     public class ContextManager
     {
         private ActionStagingManager _asm;
-        public void Iniitalize(GameServices gameServices)
+        public void Initialize(GameServices gameServices)
         {
             _asm = gameServices.ASM;
         }
@@ -76,7 +76,16 @@ namespace PACG.Gameplay
         // CONVENIENCE FUNCTIONS
         // ======================================================================
 
+        // Get relevant locations
         public Location TurnPcLocation => GameContext.GetPcLocation(TurnContext.Character);
         public Location EncounterPcLocation => GameContext.GetPcLocation(EncounterContext.Character);
+
+        // Test for additional explorations
+        public bool CanExploreAgain => (    // We can explore again if...
+            !TurnContext.CanExplore &&      // ... we can't normally explore...
+            CurrentResolvable == null &&    // ... we don't have a resolvable...
+            TurnPcLocation.Count > 0 &&     // ... we have more cards in the location...
+            _asm.StagedCards.Count == 0     // ... and we don't have any currently staged cards.
+            );
     }
 }

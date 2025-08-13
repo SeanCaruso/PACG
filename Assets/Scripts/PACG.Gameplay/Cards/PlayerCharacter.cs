@@ -122,6 +122,18 @@ namespace PACG.Gameplay
             GameEvents.RaisePlayerDeckCountChanged(_deck.Count);
         }
 
+        public void DrawInitialHand()
+        {
+            // TODO: Handle multiple favored card types.
+            var fav = CharacterData.favoredCards[0];
+
+            var card = _deck.DrawFirstCardWith(fav.cardType, fav.trait);
+            if (card != null)
+                AddToHand(card);
+
+            DrawToHandSize();
+        }
+
         public void DrawToHandSize()
         {
             int cardsToDraw = CharacterData.handSize - Hand.Count;
@@ -158,7 +170,7 @@ namespace PACG.Gameplay
         public IReadOnlyList<CardInstance> DeckCards => _cardManager.GetCardsOwnedBy(this, CardLocation.Deck);
 
         // Pass-throughs to ContextManager
-        public IReadOnlyList<PlayerCharacter> LocalCharacters => _contexts.GameContext.GetPcsAt(Location).Except(new[] { this }).ToList();
+        public IReadOnlyList<PlayerCharacter> LocalCharacters => _contexts.GameContext.GetCharactersAt(Location).Except(new[] { this }).ToList();
         public Location Location => _contexts.GameContext.GetPcLocation(this);
         public void Move(Location newLoc) => _contexts.GameContext.MoveCharacter(this, newLoc);
 

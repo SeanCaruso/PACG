@@ -21,6 +21,8 @@ namespace PACG.Gameplay
         public ICheckResolvable Resolvable { get; }
         public IReadOnlyList<PF.Skill> BaseValidSkills { get; }
 
+        public PlayerCharacter Character => Resolvable.Character;
+
         public CheckContext(ICheckResolvable resolvable)
         {
             Resolvable = resolvable;

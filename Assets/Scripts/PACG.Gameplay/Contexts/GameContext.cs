@@ -32,7 +32,7 @@ namespace PACG.Gameplay
             return null;
         }
 
-        public IReadOnlyList<PlayerCharacter> GetPcsAt(Location loc) => _locationPcs.GetValueOrDefault(loc, new());
+        public IReadOnlyList<PlayerCharacter> GetCharactersAt(Location loc) => _locationPcs.GetValueOrDefault(loc, new());
 
         public void MoveCharacter(PlayerCharacter pc, Location newLoc)
         {

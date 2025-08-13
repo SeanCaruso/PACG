@@ -50,7 +50,7 @@ namespace PACG.SharedAPI
             // Hook up button clicks.
             //giveCardButton.onClick.AddListener(() => GiveCardButton_OnClick());
             //moveButton.onClick.AddListener(() => MoveButton_OnClick());
-            exploreButton.onClick.AddListener(() => _gameFlowManager.StartPhase(new Turn_ExploreProcessor(_gameServices), "Explore"));
+            exploreButton.onClick.AddListener(() => ExploreButton_OnClick());
             optionalDiscardButton.onClick.AddListener(() => _gameFlowManager.StartPhase(new EndTurnController(false, _gameServices), "Turn"));
             endTurnButton.onClick.AddListener(() => _gameFlowManager.StartPhase(new EndTurnController(true, _gameServices), "Turn"));
 
@@ -144,6 +144,20 @@ namespace PACG.SharedAPI
             optionalDiscardButton.enabled = turn.Character.Hand.Count > 0;
         }
 
+        protected void ExploreButton_OnClick()
+        {
+            if (_asm.HasExploreStaged)
+            {
+                _gameFlowManager.QueueNextProcessor(new Turn_ExploreProcessor(_gameServices));
+                _asm.Commit();
+            }
+            else
+            {
+                _gameFlowManager.StartPhase(new Turn_ExploreProcessor(_gameServices), "Explore");
+            }
+
+        }
+
         // --- Action Staging Flow -----------------------------------
 
         protected void UpdateStagedActionButtons(StagedActionsState state)
@@ -151,6 +165,8 @@ namespace PACG.SharedAPI
             cancelButton.gameObject.SetActive(state.IsCancelButtonVisible);
             commitButton.gameObject.SetActive(state.IsCommitButtonVisible);
             skipButton.gameObject.SetActive(state.IsSkipButtonVisible);
+
+            exploreButton.enabled = state.IsExploreEnabled;
         }
     }
 }

@@ -47,7 +47,7 @@ namespace PACG.Gameplay
             }
 
             // No playable cards allow rerolls... check if a played card set the context.
-            hasRerollOptions |= ((List<CardInstance>)_contexts.CheckContext.ContextData.GetValueOrDefault("rerollCards", new List<CardInstance>())).Count > 0;
+            hasRerollOptions |= ((List<CardLogicBase>)_contexts.CheckContext.ContextData.GetValueOrDefault("rerollCards", new List<CardLogicBase>())).Count > 0;
 
             if (needsReroll && hasRerollOptions)
             {

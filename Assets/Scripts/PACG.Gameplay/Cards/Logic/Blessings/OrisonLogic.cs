@@ -1,49 +1,48 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace PACG.Gameplay
 {
-/*
-[PlayableLogicFor("Orison")]
-public class OrisonLogic : CardLogicBase
-{
-    public CardData CardData { get; set; }
-
-    private const int DiscardToBless = 0;
-    private const int RechargeToBless = 1;
-    private const int DiscardToExplore = 2;
-
-    protected override List<IStagedAction> GetAvailableCardActions()
+    public class OrisonLogic : CardLogicBase
     {
-        // TODO: Update this entire class to match standards.
-        List<IStagedAction> actions = new()
-        {
-            new PlayCardAction(this, CardData, PF.ActionType.Discard, powerIndex: DiscardToBless)
-        };
+        ContextManager _contexts;
 
-        if (Game.TurnContext.HourBlessing.cardLevel == 0)
+        public OrisonLogic(GameServices gameServices) : base(gameServices)
         {
-            actions.Add(new PlayCardAction(this, CardData, PF.ActionType.Recharge, powerIndex: RechargeToBless));
+            _contexts = gameServices.Contexts;
         }
-        return actions;
-    }
 
-    public override void OnStage(int? powerIndex = null)
-    {
-    }
-
-    public override void OnUndo(int? powerIndex = null)
-    {
-    }
-
-    public override void Execute(int? powerIndex = null)
-    {
-        if (powerIndex == DiscardToBless || powerIndex == RechargeToBless)
+        public override void Execute(CardInstance card, IStagedAction action)
         {
-            ++Contexts.CheckContext.BlessingCount;
+            if (action is not ExtraExploreAction)
+                _contexts.CheckContext.BlessingCount++;
         }
+
+        protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)
+        {
+            var actions = new List<IStagedAction>();
+            if (CanBless(card))
+            {
+                actions.Add(new PlayCardAction(card, PF.ActionType.Discard));
+
+                if (_contexts.TurnContext.HourCard.Data.cardLevel == 0)
+                    actions.Add(new PlayCardAction(card, PF.ActionType.Recharge));
+            }
+            else if (_contexts.CanExploreAgain)
+            {
+                actions.Add(new ExtraExploreAction(card, PF.ActionType.Discard));
+            }
+
+                return actions;
+        }
+
+        // We can bless on a local check.
+        private bool CanBless(CardInstance card) => (
+            _contexts.CheckContext != null
+            && !_contexts.CheckContext.StagedCardTypes.Contains(PF.CardType.Blessing)
+            && _contexts.CheckContext.Character.Location.Characters.Contains(card.Owner)
+        );
     }
-}
-*/
 }

@@ -58,7 +58,7 @@ namespace PACG.Gameplay
             _contexts.EncounterContext.UndoProhibitedTraits(card.Owner, card);
         }
 
-        public override void Execute(IStagedAction action)
+        public override void Execute(CardInstance card, IStagedAction action)
         {
             // Reveal to use Dexterity or Ranged + 1d8.        
             if (action.ActionType == PF.ActionType.Reveal)

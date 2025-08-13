@@ -52,7 +52,7 @@ namespace PACG.Gameplay
             Check.UndoSkillModification(card);
         }
 
-        public override void Execute(/*CardInstance card, */IStagedAction action)
+        public override void Execute(CardInstance card, IStagedAction action)
         {
             // Reveal to use Strength, Dexterity, Melee, or Ranged + 1d8.       
             if (action.ActionType == PF.ActionType.Reveal)

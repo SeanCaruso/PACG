@@ -58,7 +58,7 @@ namespace PACG.Gameplay
             Check.UndoSkillModification(card);
         }
 
-        public override void Execute(/*CardInstance card, */IStagedAction action)
+        public override void Execute(CardInstance card, IStagedAction action)
         {
             if (!Check.ContextData.ContainsKey("rerollCards"))
                 Check.ContextData["rerollCards"] = new List<CardLogicBase>();
