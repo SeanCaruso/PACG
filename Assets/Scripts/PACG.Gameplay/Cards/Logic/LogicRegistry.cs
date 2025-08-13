@@ -36,24 +36,14 @@ namespace PACG.Gameplay
             return Activator.CreateInstance(logicType, _gameServices) as ILogicBase;
         }
 
-        public CardLogicBase GetCardLogic(string cardID)
+        public T GetLogic<T>(string key) where T : class, ILogicBase
         {
-            if (!_logicMap.ContainsKey(cardID))
+            if (!_logicMap.ContainsKey(key))
             {
-                _logicMap.Add(cardID, LoadLogic(cardID));
+                _logicMap.Add(key, LoadLogic(key));
             }
 
-            return _logicMap[cardID] as CardLogicBase;
-        }
-
-        public CharacterLogicBase GetCharacterLogic(string characterName)
-        {
-            if (!_logicMap.ContainsKey(characterName))
-            {
-                _logicMap.Add(characterName, LoadLogic(characterName));
-            }
-
-            return _logicMap[characterName] as CharacterLogicBase;
+            return _logicMap[key] as T;
         }
     }
 }

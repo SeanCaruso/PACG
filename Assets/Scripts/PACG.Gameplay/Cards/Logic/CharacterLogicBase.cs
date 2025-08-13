@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace PACG.Gameplay
 {
-    public class CharacterLogicBase : ILogicBase
+    public abstract class CharacterLogicBase : ILogicBase
     {
         private readonly GameServices _gameServices;
 

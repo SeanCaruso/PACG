@@ -1,19 +1,20 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace PACG.Gameplay
 {
     public class SkillResolvable : BaseResolvable, ICheckResolvable
     {
-        public LogicRegistry LogicRegistry { get; }
         public PlayerCharacter Character { get; }
+        public List<PF.Skill> Skills { get; }
         public int Difficulty { get; }
 
-        public SkillResolvable(LogicRegistry logicRegistry, PlayerCharacter character, int difficulty)
+        public SkillResolvable(PlayerCharacter character, int difficulty, params PF.Skill[] skills)
         {
-            LogicRegistry = logicRegistry;
             Character = character;
+            Skills = skills.ToList();
             Difficulty = difficulty;
         }
 

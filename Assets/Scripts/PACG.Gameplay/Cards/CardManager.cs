@@ -25,7 +25,7 @@ namespace PACG.Gameplay
                 return null;
             }
 
-            CardInstance newInstance = new(card, _logic.GetCardLogic(card.cardID), owner);
+            CardInstance newInstance = new(card, _logic.GetLogic<CardLogicBase>(card.cardID), owner);
             allCards.Add(newInstance);
 
             return newInstance;

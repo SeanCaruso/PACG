@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2055319bda4c23c4085fa2e92def0349, type: 3}
+  m_Name: Caravan
+  m_EditorClassIdentifier: 
+  LocationName: Caravan
+  Power_AtLocation: At the start of your turn, each local character may move.
+  Power_ToClose: Either succeed at a Wisdom or Perception 5+# check or summon and
+    defeat the danger.
+  Power_WhenClosed: After you move, you may give a card to a local character.
+  NumMonsters: 1
+  NumBarriers: 2
+  NumWeapons: 1
+  NumSpells: 1
+  NumArmors: 1
+  NumItems: 1
+  NumAllies: 2
+  NumBlessings: 0
+  Traits:
+  - Urban
