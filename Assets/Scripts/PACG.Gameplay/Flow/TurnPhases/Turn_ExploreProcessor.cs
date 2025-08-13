@@ -27,14 +27,14 @@ namespace PACG.Gameplay
 
             GameEvents.RaiseTurnStateChanged();
 
-            CardInstance exploredCard = _contexts.TurnContext.LocationDeck.DrawCard();
+            CardInstance exploredCard = _contexts.TurnPcLocation.DrawCard();
             if (exploredCard ==  null )
             {
                 Debug.LogError("[ExploreProcessor] Explored card was null!");
                 return;
             }
 
-            _gameFlowManager.StartPhase(new EncounterController(_contexts.TurnContext.CurrentPC, exploredCard, _gameServices), $"Explore_{exploredCard.Data.cardName}");
+            _gameFlowManager.StartPhase(new EncounterController(_contexts.TurnContext.Character, exploredCard, _gameServices), $"Explore_{exploredCard.Data.cardName}");
 
             _gameFlowManager.CompleteCurrentPhase();
         }

@@ -1,3 +1,4 @@
+using PACG.Data;
 using PACG.SharedAPI;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,7 +18,8 @@ namespace PACG.Gameplay
         public CardData hourCardData;
         public CharacterData testCharacter;
         public List<CardData> characterDeck;
-        public List<CardData> testLocation;
+        public LocationData testLocation;
+        public List<CardData> testLocationDeck;
         // ================================================================================
 
         GameServices _gameServices;
@@ -74,19 +76,23 @@ namespace PACG.Gameplay
                 _gameServices.Contexts.GameContext.HourDeck.ShuffleIn(_gameServices.Cards.New(hourCardData));
             }
 
-            Deck locationDeck = new(_gameServices.Cards);
-            foreach (var cardData in testLocation)
+            var locationLogic = _gameServices.Logic.GetLogic<LocationLogicBase>(testLocation.LocationName);
+            Location location = new(testLocation, locationLogic, _gameServices);
+
+            foreach (var cardData in testLocationDeck)
             {
-                locationDeck.ShuffleIn(_gameServices.Cards.New(cardData));
+                location.ShuffleIn(_gameServices.Cards.New(cardData));
             }
 
             var pcLogic = _gameServices.Logic.GetLogic<CharacterLogicBase>(testCharacter.characterName);
-            PlayerCharacter testPc = new(testCharacter, pcLogic, _gameServices.Cards);
+            PlayerCharacter testPc = new(testCharacter, pcLogic, _gameServices);
             foreach (var card in characterDeck) testPc.ShuffleIntoDeck(_gameServices.Cards.New(card, testPc));
             cardDisplayController.SetCurrentPC(testPc);
 
+            _gameServices.Contexts.GameContext.SetPcLocation(testPc, location);
+
             testPc.DrawToHandSize();
-            var turnController = new StartTurnController(testPc, locationDeck, _gameServices);
+            var turnController = new StartTurnController(testPc, _gameServices);
             _gameServices.GameFlow.StartPhase(turnController, "Turn");
         }
     }

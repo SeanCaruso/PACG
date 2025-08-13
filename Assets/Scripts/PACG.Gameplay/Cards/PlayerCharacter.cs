@@ -1,6 +1,8 @@
+using PACG.Data;
 using PACG.SharedAPI;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace PACG.Gameplay
@@ -14,24 +16,17 @@ namespace PACG.Gameplay
 
         // --- Dependency Injections
         private readonly CardManager _cardManager;
+        private readonly ContextManager _contexts;
 
-        public PlayerCharacter(CharacterData characterData, CharacterLogicBase logic, CardManager cardManager)
+        public PlayerCharacter(CharacterData characterData, CharacterLogicBase logic, GameServices gameServices)
         {
             CharacterData = characterData;
             Logic = logic;
-            _deck = new(cardManager);
-            _cardManager = cardManager;
-        }
+            _deck = new(gameServices.Cards);
 
-        // ==============================================================================
-        // CONVENIENCE FUNCTIONS - PASS-THROUGHS TO CardManager
-        // ==============================================================================
-        public IReadOnlyList<CardInstance> Hand => _cardManager.GetCardsInHand(this);
-        public IReadOnlyList<CardInstance> Discards => _cardManager.GetCardsOwnedBy(this, CardLocation.Discard);
-        public IReadOnlyList<CardInstance> BuriedCards => _cardManager.GetCardsOwnedBy(this, CardLocation.Buried);
-        public IReadOnlyList<CardInstance> DisplayedCards => _cardManager.GetCardsOwnedBy(this, CardLocation.Displayed);
-        public IReadOnlyList<CardInstance> RecoveryCards => _cardManager.GetCardsOwnedBy(this, CardLocation.Recovery);
-        public IReadOnlyList<CardInstance> DeckCards => _cardManager.GetCardsOwnedBy(this, CardLocation.Deck);
+            _cardManager = gameServices.Cards;
+            _contexts = gameServices.Contexts;
+        }
 
         // ==============================================================================
         // SKILLS AND ATTRIBUTES
@@ -150,10 +145,24 @@ namespace PACG.Gameplay
             _deck.ShuffleIn(card);
         }
 
-        // ========================================================================================
-        // FACADE PATTERN - CONVENIENCE CALLS TO Character LOGIC
-        // ========================================================================================
+        // ==============================================================================
+        // CONVENIENCE FUNCTIONS
+        // ==============================================================================
 
+        // Pass-throughs to CardManager
+        public IReadOnlyList<CardInstance> Hand => _cardManager.GetCardsInHand(this);
+        public IReadOnlyList<CardInstance> Discards => _cardManager.GetCardsOwnedBy(this, CardLocation.Discard);
+        public IReadOnlyList<CardInstance> BuriedCards => _cardManager.GetCardsOwnedBy(this, CardLocation.Buried);
+        public IReadOnlyList<CardInstance> DisplayedCards => _cardManager.GetCardsOwnedBy(this, CardLocation.Displayed);
+        public IReadOnlyList<CardInstance> RecoveryCards => _cardManager.GetCardsOwnedBy(this, CardLocation.Recovery);
+        public IReadOnlyList<CardInstance> DeckCards => _cardManager.GetCardsOwnedBy(this, CardLocation.Deck);
+
+        // Pass-throughs to ContextManager
+        public IReadOnlyList<PlayerCharacter> LocalCharacters => _contexts.GameContext.GetPcsAt(Location).Except(new[] { this }).ToList();
+        public Location Location => _contexts.GameContext.GetPcLocation(this);
+        public void Move(Location newLoc) => _contexts.GameContext.MoveCharacter(this, newLoc);
+
+        // Facade pattern for CharacterLogic
         public virtual List<IResolvable> GetStartOfTurnResolvables() => Logic.GetStartOfTurnResolvables(this);
         public virtual List<IResolvable> GetEndOfTurnResolvables() => Logic.GetEndOfTurnResolvables(this);
     }

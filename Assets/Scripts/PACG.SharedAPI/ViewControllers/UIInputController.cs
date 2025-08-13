@@ -1,3 +1,4 @@
+using PACG.Data;
 using PACG.Gameplay;
 using System;
 using System.Collections.Generic;
@@ -27,7 +28,7 @@ namespace PACG.SharedAPI
         public GameObject power3Button;
 
         private List<GameObject> PowerButtons => new() { power1Button, power2Button, power3Button };
-        private Dictionary<CharacterPower, GameObject> _powerButtonMap = new();
+        private readonly Dictionary<CharacterPower, GameObject> _powerButtonMap = new();
 
         // Dependency injections set in Initialize
         private ActionStagingManager _asm;
@@ -140,7 +141,7 @@ namespace PACG.SharedAPI
             giveCardButton.enabled = turn.CanGive;
             moveButton.enabled = turn.CanMove;
             exploreButton.enabled = turn.CanExplore;
-            optionalDiscardButton.enabled = turn.CurrentPC.Hand.Count > 0;
+            optionalDiscardButton.enabled = turn.Character.Hand.Count > 0;
         }
 
         // --- Action Staging Flow -----------------------------------

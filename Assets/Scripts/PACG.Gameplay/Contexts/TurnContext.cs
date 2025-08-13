@@ -15,8 +15,7 @@ namespace PACG.Gameplay
 
     public class TurnContext
     {
-        public PlayerCharacter CurrentPC { get; }
-        public Deck LocationDeck { get; }
+        public PlayerCharacter Character { get; }
 
         public TurnPhase CurrentPhase { get; set; } = TurnPhase.TurnStart;
 
@@ -28,10 +27,9 @@ namespace PACG.Gameplay
         public bool CanCloseLocation { get; set; }
         public bool CanEndTurn { get; set; }
 
-        public TurnContext(PlayerCharacter currentPC, Deck locationDeck)
+        public TurnContext(PlayerCharacter currentPC)
         {
-            CurrentPC = currentPC;
-            LocationDeck = locationDeck;
+            Character = currentPC;
         }
     }
 }

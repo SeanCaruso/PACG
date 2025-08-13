@@ -22,15 +22,14 @@ namespace PACG.Gameplay
         protected override void OnExecute()
         {
             // Draw up to the current player's hand size.
-            _contexts.TurnContext.CurrentPC.DrawToHandSize();
+            _contexts.TurnContext.Character.DrawToHandSize();
 
             // TODO: Get next player
-            var nextPc = _contexts.TurnContext.CurrentPC;
-            var locationDeck = _contexts.TurnContext.LocationDeck;
+            var nextPc = _contexts.TurnContext.Character;
 
             // End the current turn.
             _contexts.EndTurn();
-            _gameFlow.QueueNextProcessor(new StartTurnController(nextPc, locationDeck, _gameServices));
+            _gameFlow.QueueNextProcessor(new StartTurnController(nextPc, _gameServices));
         }
     }
 }

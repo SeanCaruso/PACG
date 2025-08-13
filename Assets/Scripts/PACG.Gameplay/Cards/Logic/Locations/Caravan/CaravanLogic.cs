@@ -17,7 +17,7 @@ namespace PACG.Gameplay
             int dc = 5 + _contexts.GameContext.AdventureNumber;
 
             // TODO: Handle when a character who avenges can close.
-            return new() { new SkillResolvable(_contexts.TurnContext.CurrentPC, dc, PF.Skill.Wisdom, PF.Skill.Perception) };
+            return new() { new SkillResolvable(_contexts.TurnContext.Character, dc, PF.Skill.Wisdom, PF.Skill.Perception) };
         }
 
         // TODO: Implement when we have multiple characters and locations.

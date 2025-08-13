@@ -27,7 +27,7 @@ namespace PACG.Gameplay
             if (_cardManager.GetCardsInLocation(CardLocation.Recovery).Count > 0)
                 _gameFlow.QueueNextProcessor(new Turn_RecoveryProcessor(_gameServices));
 
-            var pc = _contexts.TurnContext.CurrentPC;
+            var pc = _contexts.TurnContext.Character;
             if (!_skipOptionalDiscards || _cardManager.GetCardsInHand(pc).Count > pc.CharacterData.handSize)
                 _gameFlow.QueueNextProcessor(new Turn_DiscardDuringResetProcessor(_gameServices));
 

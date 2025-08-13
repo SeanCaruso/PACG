@@ -90,7 +90,7 @@ namespace PACG.Gameplay
         private void CancelActions()
         {
             // TODO: Get currently displayed PC. Use current turn PC for now.
-            PlayerCharacter pc = _contexts.TurnContext.CurrentPC;
+            PlayerCharacter pc = _contexts.TurnContext.Character;
             foreach (var action in PcsStagedActions[pc])
             {
                 action.OnUndo();
@@ -107,7 +107,7 @@ namespace PACG.Gameplay
         public void UpdateActionButtonState()
         {
             // TODO: Update this for the displayed PC. Use Turn PC until then.
-            var pc = _contexts.TurnContext.CurrentPC;
+            var pc = _contexts.TurnContext.Character;
             var stagedActions = PcsStagedActions.GetValueOrDefault(pc) ?? (PcsStagedActions[pc] = new());
 
             bool canCommit = stagedActions.Count > 0 && (_contexts.CurrentResolvable?.IsResolved(stagedActions) ?? true); // We have actions but no resolvable? We can commit!

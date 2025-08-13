@@ -18,7 +18,7 @@ namespace PACG.Gameplay
             var resolvables = new List<IResolvable>();
             foreach (var check in card.Data.checkRequirement.checkSteps)
             {
-                resolvables.Add(new CombatResolvable(_contexts.TurnContext.CurrentPC, CardUtils.GetDC(check.baseDC, check.adventureLevelMult)));
+                resolvables.Add(new CombatResolvable(_contexts.TurnContext.Character, CardUtils.GetDC(check.baseDC, check.adventureLevelMult)));
             }
             return resolvables;
         }

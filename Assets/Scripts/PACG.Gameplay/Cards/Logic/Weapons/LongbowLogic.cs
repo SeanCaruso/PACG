@@ -63,7 +63,7 @@ namespace PACG.Gameplay
             // Reveal to use Dexterity or Ranged + 1d8.        
             if (action.ActionType == PF.ActionType.Reveal)
             {
-                var (skill, die, bonus) = _contexts.TurnContext.CurrentPC.GetBestSkill(PF.Skill.Dexterity, PF.Skill.Ranged);
+                var (skill, die, bonus) = _contexts.TurnContext.Character.GetBestSkill(PF.Skill.Dexterity, PF.Skill.Ranged);
                 Check.UsedSkill = skill;
                 Check.DicePool.AddDice(1, die, bonus);
                 Check.DicePool.AddDice(1, 8);

@@ -18,6 +18,9 @@ namespace PACG.Gameplay
         public EncounterContext EncounterContext { get; private set; } = null;
         public CheckContext CheckContext { get; private set; } = null;
         public IResolvable CurrentResolvable { get; private set; } = null;
+
+        // ======================================================================
+        // STARTING / ENDING CONTEXTS
         // ======================================================================
 
         public void NewGame(GameContext gameContext) => GameContext = gameContext;
@@ -68,5 +71,12 @@ namespace PACG.Gameplay
         }
 
         public void EndCheck() => CheckContext = null;
+
+        // ======================================================================
+        // CONVENIENCE FUNCTIONS
+        // ======================================================================
+
+        public Location TurnPcLocation => GameContext.GetPcLocation(TurnContext.Character);
+        public Location EncounterPcLocation => GameContext.GetPcLocation(EncounterContext.Character);
     }
 }

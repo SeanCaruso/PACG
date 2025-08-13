@@ -25,10 +25,10 @@ namespace PACG.Gameplay
             // TODO: Handle start-of-turn effects.
 
             // Set initial availability of turn actions
-            _contexts.TurnContext.CanGive = false; // TODO: Implement logic after we have multiple characters.
-            _contexts.TurnContext.CanMove = false; // TODO: Implement logic after we have multiple locations
-            _contexts.TurnContext.CanExplore = _contexts.TurnContext.LocationDeck.Count > 0;
-            _contexts.TurnContext.CanCloseLocation = _contexts.TurnContext.LocationDeck.Count == 0;
+            _contexts.TurnContext.CanGive = _contexts.TurnContext.Character.LocalCharacters.Count > 0;
+            _contexts.TurnContext.CanMove = _contexts.GameContext.Locations.Count > 1;
+            _contexts.TurnContext.CanExplore = _contexts.TurnPcLocation.Count > 0;
+            _contexts.TurnContext.CanCloseLocation = _contexts.TurnPcLocation.Count == 0;
 
             GameEvents.RaiseTurnStateChanged(); // Update turn action button states.
 

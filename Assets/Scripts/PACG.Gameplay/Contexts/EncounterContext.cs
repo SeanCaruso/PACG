@@ -17,7 +17,7 @@ namespace PACG.Gameplay
     public class EncounterContext
     {
         // Basic information - set on construction
-        public PlayerCharacter EncounterPC { get; }
+        public PlayerCharacter Character { get; }
         public CardInstance Card { get; set; }
 
         // Convenience properties
@@ -31,7 +31,7 @@ namespace PACG.Gameplay
 
         public EncounterContext(PlayerCharacter pc, CardInstance card)
         {
-            EncounterPC = pc;
+            Character = pc;
             Card = card;
         }
 

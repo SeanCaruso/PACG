@@ -8,9 +8,9 @@ namespace PACG.Gameplay
     public class GameServices
     {
         public ActionStagingManager ASM { get; }
-        public CardManager Cards {  get; }
+        public CardManager Cards { get; }
         public ContextManager Contexts { get; }
-        public GameFlowManager GameFlow {  get; }
+        public GameFlowManager GameFlow { get; }
         public LogicRegistry Logic { get; }
 
         public GameServices(
