@@ -42,8 +42,8 @@ namespace PACG.Gameplay
             if (Check?.StagedCardTypes.Contains(card.Data.cardType) == true)
                 return false;
 
-            // If we're in an encounter...
-            if (_contexts.EncounterContext != null)
+            // If we're in an encounter or resolvable...
+            if (_contexts.EncounterContext != null || _contexts.CurrentResolvable != null)
             {
                 // We can only display if there's a DamageResolvable for this card's owner.
                 var resolvable = _contexts.CurrentResolvable as DamageResolvable;

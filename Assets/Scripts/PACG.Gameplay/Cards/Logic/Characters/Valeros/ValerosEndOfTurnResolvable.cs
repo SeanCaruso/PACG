@@ -1,10 +1,11 @@
+using PACG.SharedAPI;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 namespace PACG.Gameplay
 {
-    public class ValerosEndOfTurnResolvable : IResolvable
+    public class ValerosEndOfTurnResolvable : BaseResolvable
     {
         private readonly IReadOnlyList<CardInstance> _validCards;
 
@@ -17,10 +18,7 @@ namespace PACG.Gameplay
             _asm = gameServices.ASM;
         }
 
-        // No processor necessary.
-        public IProcessor CreateProcessor(GameServices gameServices) => null;
-
-        public List<IStagedAction> GetAdditionalActionsForCard(CardInstance card)
+        public override List<IStagedAction> GetAdditionalActionsForCard(CardInstance card)
         {
             // Only one card allowed.
             if (_asm.StagedCards.Count > 0)
@@ -28,11 +26,23 @@ namespace PACG.Gameplay
 
             List<IStagedAction> actions = new();
             if (_validCards.Contains(card))
-                actions.Add(new DefaultAction(PF.ActionType.Recharge));
+                actions.Add(new DefaultAction(card, PF.ActionType.Recharge));
 
             return actions;
         }
 
-        public bool IsResolved(List<IStagedAction> actions) => actions.Count == 1;
+        public override bool IsResolved(List<IStagedAction> actions)
+        {
+            if (actions.Count == 1)
+            {
+                GameEvents.SetStatusText("");
+                return true;
+            }
+            else
+            {
+                GameEvents.SetStatusText("Recharge a weapon or an armor from your hand or discards.");
+                return false;
+            }
+        }
     }
 }

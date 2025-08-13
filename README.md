@@ -36,10 +36,17 @@ PACG.SharedAPI   → Cross-layer view controllers, events, view models
 
 ## Current Status
 
-### Priorities
+### Recent Completions
+- ✅ **Character Power System** - Dynamic UI with power button enabling/disabling
+- ✅ **BaseResolvable Architecture** - Common functionality for all resolvables
+- ✅ **End-of-turn Flow** - Complete turn progression with power integration
+- ✅ **Resolvable Sequencing** - Proper transitions between complex user interactions
+
+### Current Priorities
 1. **Complete processor implementations** - Many turn action processors are placeholders
 2. **Fix encounter initialization** - ExploreProcessor context setup issues
 3. **End-to-end testing** - Verify complete turn and encounter cycles
+4. **Character power expansion** - Implement remaining character abilities
 
 ### Technical Info
 - **Unity Version**: 6000.1.11f1

@@ -9,14 +9,16 @@ namespace PACG.Gameplay
     {
 
         public CharacterData CharacterData { get; }
+        public CharacterLogicBase Logic { get; }
         private readonly Deck _deck;
 
         // --- Dependency Injections
         private readonly CardManager _cardManager;
 
-        public PlayerCharacter(CharacterData characterData, CardManager cardManager)
+        public PlayerCharacter(CharacterData characterData, CharacterLogicBase logic, CardManager cardManager)
         {
             CharacterData = characterData;
+            Logic = logic;
             _deck = new(cardManager);
             _cardManager = cardManager;
         }
@@ -29,6 +31,7 @@ namespace PACG.Gameplay
         public IReadOnlyList<CardInstance> BuriedCards => _cardManager.GetCardsOwnedBy(this, CardLocation.Buried);
         public IReadOnlyList<CardInstance> DisplayedCards => _cardManager.GetCardsOwnedBy(this, CardLocation.Displayed);
         public IReadOnlyList<CardInstance> RecoveryCards => _cardManager.GetCardsOwnedBy(this, CardLocation.Recovery);
+        public IReadOnlyList<CardInstance> DeckCards => _cardManager.GetCardsOwnedBy(this, CardLocation.Deck);
 
         // ==============================================================================
         // SKILLS AND ATTRIBUTES
@@ -120,6 +123,8 @@ namespace PACG.Gameplay
             }
             var card = _deck.DrawCard();
             AddToHand(card);
+
+            GameEvents.RaisePlayerDeckCountChanged(_deck.Count);
         }
 
         public void DrawToHandSize()
@@ -144,5 +149,12 @@ namespace PACG.Gameplay
             _cardManager.MoveCard(card, CardLocation.Deck);
             _deck.ShuffleIn(card);
         }
+
+        // ========================================================================================
+        // FACADE PATTERN - CONVENIENCE CALLS TO Character LOGIC
+        // ========================================================================================
+
+        public virtual List<IResolvable> GetStartOfTurnResolvables() => Logic.GetStartOfTurnResolvables(this);
+        public virtual List<IResolvable> GetEndOfTurnResolvables() => Logic.GetEndOfTurnResolvables(this);
     }
 }

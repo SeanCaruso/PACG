@@ -25,7 +25,7 @@ namespace PACG.Gameplay
             _contexts.TurnContext.CanExplore = false;
             _contexts.TurnContext.CanCloseLocation = false;
 
-            GameEvents.RaiseTurnStateChanged(_contexts.TurnContext);
+            GameEvents.RaiseTurnStateChanged();
 
             CardInstance exploredCard = _contexts.TurnContext.LocationDeck.DrawCard();
             if (exploredCard ==  null )

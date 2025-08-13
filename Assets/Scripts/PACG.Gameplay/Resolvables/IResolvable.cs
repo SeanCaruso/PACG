@@ -7,5 +7,6 @@ namespace PACG.Gameplay
         public List<IStagedAction> GetAdditionalActionsForCard(CardInstance card);
         public bool IsResolved(List<IStagedAction> actions);
         IProcessor CreateProcessor(GameServices gameServices);
+        public void Resolve();
     }
 }

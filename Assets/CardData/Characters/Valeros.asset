@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b9caa4de1a44a24690a5d7218d08e5f, type: 3}
   m_Name: Valeros
   m_EditorClassIdentifier: 
-  Name: Valeros
+  characterName: Valeros
   attributes:
   - attribute: 0
     die: 10
@@ -50,6 +50,21 @@ MonoBehaviour:
   traits:
   - Human
   - Fighter
+  powers:
+  - isActivated: 1
+    spriteEnabled: {fileID: 1194653686463983156, guid: 6df9fa9086b1c024cafa12c323f66f03, type: 3}
+    spriteDisabled: {fileID: 1194653686463983156, guid: 6df9fa9086b1c024cafa12c323f66f03, type: 3}
+    text: On a local combat check, you may reload or recharge a weapon or an armor
+      to add 1d4.
+  - isActivated: 1
+    spriteEnabled: {fileID: -4954916378388845608, guid: 26a00c91664c4fd4e9f8460f010f676d, type: 3}
+    spriteDisabled: {fileID: -7868651897635250705, guid: 9a1a4f781dc4c964ebf5d1e5a2aeb1ef, type: 3}
+    text: At the end of your turn, you may recharge a weapon or an armor from your
+      hand or discards.
+  - isActivated: 1
+    spriteEnabled: {fileID: 8483075871000149727, guid: 8ea1af156c8d10747a92d608e1964128, type: 3}
+    spriteDisabled: {fileID: 8483075871000149727, guid: 8ea1af156c8d10747a92d608e1964128, type: 3}
+    text: You may avenge by discarding a card.
   weapons: 4
   spells: 0
   armors: 3

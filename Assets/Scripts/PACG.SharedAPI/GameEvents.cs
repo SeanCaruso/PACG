@@ -7,8 +7,8 @@ namespace PACG.SharedAPI
     public static class GameEvents
     {
         // Turn phase events
-        public static event Action<TurnContext> TurnStateChanged;
-        public static void RaiseTurnStateChanged(TurnContext context) => TurnStateChanged?.Invoke(context);
+        public static event Action TurnStateChanged;
+        public static void RaiseTurnStateChanged() => TurnStateChanged?.Invoke();
 
         public static event Action<CardInstance> HourChanged;
         public static void RaiseHourChanged(CardInstance hourCard) => HourChanged?.Invoke(hourCard);
@@ -30,5 +30,22 @@ namespace PACG.SharedAPI
 
         public static event Action<List<CardInstance>> CardLocationsChanged;
         public static void RaiseCardLocationsChanged(List<CardInstance> cards) => CardLocationsChanged?.Invoke(cards);
+
+        // Player Character events
+        public static event Action<PlayerCharacter> PlayerCharacterChanged;
+        public static void RaisePlayerCharacterChanged(PlayerCharacter pc) => PlayerCharacterChanged?.Invoke(pc);
+
+        public static event Action<CharacterPower, bool, IResolvable> PlayerPowerEnabled;
+        public static void RaisePlayerPowerEnabled(CharacterPower power, bool enabled, IResolvable powerResolvable = null) =>
+            PlayerPowerEnabled?.Invoke(power, enabled, powerResolvable);
+
+        public static event Action<int> PlayerDeckCountChanged;
+        public static void RaisePlayerDeckCountChanged(int count) => PlayerDeckCountChanged?.Invoke(count);
+
+        // General game status events
+        public static event Action<string> SetStatusTextEvent;
+        public static void SetStatusText(string text) => SetStatusTextEvent?.Invoke(text);
+
+
     }
 }

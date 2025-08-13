@@ -31,6 +31,8 @@ namespace PACG.Gameplay
             if (!_skipOptionalDiscards || _cardManager.GetCardsInHand(pc).Count > pc.CharacterData.handSize)
                 _gameFlow.QueueNextProcessor(new Turn_DiscardDuringResetProcessor(_gameServices));
 
+            _gameFlow.QueueNextProcessor(new Turn_NextTurnProcessor(_gameServices));
+
             _gameFlow.CompleteCurrentPhase();
         }
     }

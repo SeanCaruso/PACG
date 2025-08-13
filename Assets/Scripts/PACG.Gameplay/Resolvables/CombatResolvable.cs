@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace PACG.Gameplay
 {
-    public class CombatResolvable : IResolvable, ICheckResolvable
+    public class CombatResolvable : BaseResolvable, ICheckResolvable
     {
         public PlayerCharacter Character { get; }
         public int Difficulty { get; }
@@ -14,13 +14,7 @@ namespace PACG.Gameplay
             Difficulty = difficulty;
         }
 
-        public List<IStagedAction> GetAdditionalActionsForCard(CardInstance card)
-        {
-            // Combat resolvables don't add any additional actions beyond what cards provide
-            return new List<IStagedAction>();
-        }
-
-        public bool IsResolved(List<IStagedAction> actions)
+        public override bool IsResolved(List<IStagedAction> actions)
         {
             foreach (var action in actions)
             {
@@ -30,6 +24,6 @@ namespace PACG.Gameplay
             return false;
         }
 
-        public IProcessor CreateProcessor(GameServices gameServices) => new CheckController(this, gameServices);
+        public override IProcessor CreateProcessor(GameServices gameServices) => new CheckController(this, gameServices);
     }
 }

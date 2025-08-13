@@ -5,11 +5,12 @@ namespace PACG.Gameplay
     {
         public CardInstance Card { get; protected set; }
         private readonly PF.ActionType _actionType;
-        public PF.ActionType ActionType => PF.ActionType.Discard;
+        public PF.ActionType ActionType => _actionType;
         public bool IsFreely => true;
 
-        public DefaultAction(PF.ActionType actionType)
+        public DefaultAction(CardInstance card, PF.ActionType actionType)
         {
+            Card = card;
             _actionType = actionType;
         }
 

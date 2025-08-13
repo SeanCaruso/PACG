@@ -1,9 +1,10 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace PACG.Gameplay
 {
-    public class SkillResolvable : IResolvable, ICheckResolvable
+    public class SkillResolvable : BaseResolvable, ICheckResolvable
     {
         public LogicRegistry LogicRegistry { get; }
         public PlayerCharacter Character { get; }
@@ -16,20 +17,11 @@ namespace PACG.Gameplay
             Difficulty = difficulty;
         }
 
-        public List<IStagedAction> GetAdditionalActionsForCard(CardInstance card)
+        public override bool IsResolved(List<IStagedAction> actions)
         {
-            // Skill resolvables don't add any additional actions beyond what cards provide
-            return new List<IStagedAction>();
+            throw new NotImplementedException();
         }
 
-        public bool IsResolved(List<IStagedAction> actions)
-        {
-            return false;
-        }
-
-        public IProcessor CreateProcessor(GameServices gameServices)
-        {
-            return new CheckController(this, gameServices);
-        }
+        public override IProcessor CreateProcessor(GameServices gameServices) => new CheckController(this, gameServices);
     }
 }

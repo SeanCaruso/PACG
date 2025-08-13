@@ -30,7 +30,7 @@ namespace PACG.Gameplay
             _contexts.TurnContext.CanExplore = _contexts.TurnContext.LocationDeck.Count > 0;
             _contexts.TurnContext.CanCloseLocation = _contexts.TurnContext.LocationDeck.Count == 0;
 
-            GameEvents.RaiseTurnStateChanged(_contexts.TurnContext); // Update turn action button states.
+            GameEvents.RaiseTurnStateChanged(); // Update turn action button states.
 
             _contexts.TurnContext.CurrentPhase = TurnPhase.TurnActions;
         }

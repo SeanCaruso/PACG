@@ -80,7 +80,8 @@ namespace PACG.Gameplay
                 locationDeck.ShuffleIn(_gameServices.Cards.New(cardData));
             }
 
-            PlayerCharacter testPc = new(testCharacter, _gameServices.Cards);
+            var pcLogic = _gameServices.Logic.GetCharacterLogic(testCharacter.characterName);
+            PlayerCharacter testPc = new(testCharacter, pcLogic, _gameServices.Cards);
             foreach (var card in characterDeck) testPc.ShuffleIntoDeck(_gameServices.Cards.New(card, testPc));
             cardDisplayController.SetCurrentPC(testPc);
 

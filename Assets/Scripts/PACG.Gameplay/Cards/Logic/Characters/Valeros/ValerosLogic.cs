@@ -1,3 +1,4 @@
+using PACG.SharedAPI;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -8,7 +9,7 @@ namespace PACG.Gameplay
     {
         private readonly GameServices _gameServices;
 
-        protected ValerosLogic(GameServices gameServices) : base(gameServices)
+        public ValerosLogic(GameServices gameServices) : base(gameServices)
         {
             _gameServices = gameServices;
         }
@@ -20,7 +21,10 @@ namespace PACG.Gameplay
                 .ToList();
 
             if (validCards.Count > 0)
-                return new() { new ValerosEndOfTurnResolvable(validCards, _gameServices) };
+            {
+                GameEvents.SetStatusText("End of Turn Actions.");
+                return new() { new PlayerPowerAvailableResolvable(pc.CharacterData.powers[1], new ValerosEndOfTurnResolvable(validCards, _gameServices), _gameServices) };
+            }
             else
                 return new();
         }

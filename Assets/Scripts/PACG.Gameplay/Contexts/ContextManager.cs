@@ -61,7 +61,11 @@ namespace PACG.Gameplay
         /// <summary>
         /// THIS SHOULD ONLY BE CALLED BY ActionStagingManager.Commit!
         /// </summary>
-        public void EndResolvable() => CurrentResolvable = null;
+        public void EndResolvable()
+        {
+            CurrentResolvable?.Resolve();
+            CurrentResolvable = null;
+        }
 
         public void EndCheck() => CheckContext = null;
     }

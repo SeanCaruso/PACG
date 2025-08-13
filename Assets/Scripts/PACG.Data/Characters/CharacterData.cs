@@ -24,6 +24,16 @@ public struct FavoredCard
     public string trait;
 }
 
+[System.Serializable]
+public struct CharacterPower
+{
+    public bool isActivated;
+    public Sprite spriteEnabled;
+    public Sprite spriteDisabled;
+    [TextArea(2,3)]
+    public string text;
+}
+
 [CreateAssetMenu(fileName = "CharacterName", menuName = "Pathfinder/Character Card")]
 public class CharacterData : ScriptableObject
 {
@@ -37,6 +47,9 @@ public class CharacterData : ScriptableObject
     public int handSize;
     public List<PF.CardType> proficiencies;
     public List<string> traits;
+
+    [Header("Powers")]
+    public List<CharacterPower> powers;
 
     [Header("Deck List")]
     public int weapons;

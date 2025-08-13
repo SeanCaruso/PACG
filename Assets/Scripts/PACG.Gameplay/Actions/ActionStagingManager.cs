@@ -102,6 +102,9 @@ namespace PACG.Gameplay
 
         public void Commit()
         {
+            // Clear status text first.
+            GameEvents.SetStatusText("");
+
             foreach (var action in PcsStagedActions.Values.SelectMany(list => list))
             {
                 action.Commit(_contexts.CheckContext);

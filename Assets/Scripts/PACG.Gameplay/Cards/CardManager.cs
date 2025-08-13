@@ -46,6 +46,9 @@ namespace PACG.Gameplay
 
             card.CurrentLocation = newLocation;
             GameEvents.RaiseCardLocationChanged(card);
+
+            if (card.Owner != null)
+                GameEvents.RaisePlayerDeckCountChanged(card.Owner.DeckCards.Count);
         }
 
         /// <summary>
