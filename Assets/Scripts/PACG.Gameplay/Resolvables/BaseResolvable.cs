@@ -12,5 +12,7 @@ namespace PACG.Gameplay
         public virtual bool IsResolved(List<IStagedAction> actions) => true;
 
         public virtual void Resolve() { }
+
+        public virtual bool CancelAbortsPhase => false;
     }
 }

@@ -11,6 +11,8 @@ namespace PACG.Gameplay
 
         private readonly ActionStagingManager _asm;
 
+        public override bool CancelAbortsPhase => true;
+
         public ValerosEndOfTurnResolvable(List<CardInstance> cards, GameServices gameServices)
         {
             _validCards = cards;

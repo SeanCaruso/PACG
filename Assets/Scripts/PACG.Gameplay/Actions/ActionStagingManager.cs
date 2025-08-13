@@ -64,6 +64,31 @@ namespace PACG.Gameplay
 
         public void Cancel()
         {
+            if (_contexts.CurrentResolvable?.CancelAbortsPhase == true)
+            {
+                AbortPhase();
+            }
+            else
+            {
+                CancelActions();
+            }
+
+            OriginalCardLocs.Clear();
+            _contexts.CheckContext?.ClearStagedTypes();
+
+            UpdateActionButtonState();
+        }
+
+        private void AbortPhase()
+        {
+            GameEvents.SetStatusText("");
+            _gameFlow.AbortPhase();
+            _contexts.EndResolvable();
+            PcsStagedActions.Clear();
+        }
+
+        private void CancelActions()
+        {
             // TODO: Get currently displayed PC. Use current turn PC for now.
             PlayerCharacter pc = _contexts.TurnContext.CurrentPC;
             foreach (var action in PcsStagedActions[pc])
@@ -76,12 +101,7 @@ namespace PACG.Gameplay
                 _cards.MoveCard(card, location);
             }
             GameEvents.RaiseCardLocationsChanged(OriginalCardLocs.Keys.ToList());
-
-            OriginalCardLocs.Clear();
             PcsStagedActions[pc].Clear();
-            _contexts.CheckContext?.ClearStagedTypes();
-
-            UpdateActionButtonState();
         }
 
         public void UpdateActionButtonState()
@@ -94,7 +114,7 @@ namespace PACG.Gameplay
             bool canSkip = stagedActions.Count == 0 && (_contexts.CurrentResolvable?.IsResolved(stagedActions) ?? false); // We don't have any actions and no resolvable to skip, so false!
 
             StagedActionsState state = new(
-                canCancel: stagedActions.Count > 0,
+                canCancel: stagedActions.Count > 0 || _contexts.CurrentResolvable?.CancelAbortsPhase == true,
                 canCommit: canCommit,
                 canSkip: canSkip);
             GameEvents.RaiseStagedActionsStateChanged(state);

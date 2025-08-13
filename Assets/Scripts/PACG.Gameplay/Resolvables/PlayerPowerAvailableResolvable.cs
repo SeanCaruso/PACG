@@ -12,6 +12,8 @@ namespace PACG.Gameplay
         private readonly GameFlowManager _gameFlow;
         private readonly GameServices _gameServices;
 
+        public override bool CancelAbortsPhase => true;
+
         public PlayerPowerAvailableResolvable(CharacterPower power, IResolvable powerResolvable, GameServices gameServices)
         {
             _power = power;

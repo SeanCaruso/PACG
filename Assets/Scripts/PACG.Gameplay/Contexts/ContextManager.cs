@@ -59,7 +59,7 @@ namespace PACG.Gameplay
         }
 
         /// <summary>
-        /// THIS SHOULD ONLY BE CALLED BY ActionStagingManager.Commit!
+        /// THIS SHOULD ONLY BE CALLED BY ActionStagingManager!
         /// </summary>
         public void EndResolvable()
         {

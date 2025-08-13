@@ -8,5 +8,7 @@ namespace PACG.Gameplay
         public bool IsResolved(List<IStagedAction> actions);
         IProcessor CreateProcessor(GameServices gameServices);
         public void Resolve();
+
+        public bool CancelAbortsPhase { get; }
     }
 }

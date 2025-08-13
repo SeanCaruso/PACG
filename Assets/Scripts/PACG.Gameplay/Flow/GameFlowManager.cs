@@ -92,5 +92,11 @@ namespace PACG.Gameplay
                 processor.Execute();
             }
         }
+
+        public void AbortPhase()
+        {
+            if (_queueStack.Count > 0)
+                _queueStack.Pop();
+        }
     }
 }
