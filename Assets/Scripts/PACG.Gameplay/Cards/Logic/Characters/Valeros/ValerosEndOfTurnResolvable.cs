@@ -33,7 +33,7 @@ namespace PACG.Gameplay
             return actions;
         }
 
-        public override bool IsResolved(List<IStagedAction> actions)
+        public override bool CanCommit(List<IStagedAction> actions)
         {
             if (actions.Count == 1)
             {

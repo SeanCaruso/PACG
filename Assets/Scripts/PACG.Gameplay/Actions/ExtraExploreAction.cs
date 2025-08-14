@@ -1,3 +1,4 @@
+using PACG.SharedAPI;
 using UnityEngine;
 
 namespace PACG.Gameplay
@@ -29,8 +30,8 @@ namespace PACG.Gameplay
 
         public void Commit(CheckContext checkContext = null) { }
 
-        public void OnStage() { }
+        public void OnStage() => GameEvents.SetStatusText("Explore again?");
 
-        public void OnUndo() { }
+        public void OnUndo() => GameEvents.SetStatusText("");
     }
 }

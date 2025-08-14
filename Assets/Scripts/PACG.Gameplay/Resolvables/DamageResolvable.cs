@@ -28,7 +28,7 @@ namespace PACG.Gameplay
             return actions;
         }
 
-        public override bool IsResolved(List<IStagedAction> actions)
+        public override bool CanCommit(List<IStagedAction> actions)
         {
             // If the player's hand size is less than or equal to the damage amount, this can always be resolved by discarding the entire hand.
             //if (PlayerCharacter.hand.Count <= Amount) return true;

@@ -30,7 +30,7 @@ namespace PACG.Gameplay
                 if (_contexts.TurnContext.HourCard.Data.cardLevel == 0)
                     actions.Add(new PlayCardAction(card, PF.ActionType.Recharge));
             }
-            else if (_contexts.CanExploreAgain)
+            else if (_contexts.CanExploreAgain && _contexts.TurnContext.Character == card.Owner)
             {
                 actions.Add(new ExtraExploreAction(card, PF.ActionType.Discard));
             }

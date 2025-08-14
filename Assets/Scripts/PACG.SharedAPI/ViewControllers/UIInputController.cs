@@ -146,16 +146,8 @@ namespace PACG.SharedAPI
 
         protected void ExploreButton_OnClick()
         {
-            if (_asm.HasExploreStaged)
-            {
-                _gameFlowManager.QueueNextProcessor(new Turn_ExploreProcessor(_gameServices));
-                _asm.Commit();
-            }
-            else
-            {
-                _gameFlowManager.StartPhase(new Turn_ExploreProcessor(_gameServices), "Explore");
-            }
-
+            _asm.Commit();
+            _gameFlowManager.StartPhase(new Turn_ExploreProcessor(_gameServices), "Explore");
         }
 
         // --- Action Staging Flow -----------------------------------

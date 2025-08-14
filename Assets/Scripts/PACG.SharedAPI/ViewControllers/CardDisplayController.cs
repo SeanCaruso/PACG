@@ -148,7 +148,10 @@ namespace PACG.SharedAPI
             foreach (var card in cards) OnCardLocationChanged(card);
         }
 
-        private CardDisplay GetCardDisplay(CardInstance card)
+        public void HideCard(CardInstance card) => GetCardDisplay(card).transform.SetParent(hiddenContainer);
+        public void HideCard(CardDisplay card) => HideCard(GetInstanceFromDisplay(card));
+
+        public CardDisplay GetCardDisplay(CardInstance card)
         {
             // If it already exists, return it.
             if (instanceToDisplayMap.TryGetValue(card, out var display)) return display;

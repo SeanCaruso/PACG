@@ -107,8 +107,8 @@ namespace PACG.Gameplay
             var pc = _contexts.TurnContext.Character;
             var stagedActions = _pcsStagedActions.GetValueOrDefault(pc) ?? (_pcsStagedActions[pc] = new());
 
-            bool canCommit = stagedActions.Count > 0 && (_contexts.CurrentResolvable?.IsResolved(stagedActions) ?? true); // We have actions but no resolvable? We can commit!
-            bool canSkip = stagedActions.Count == 0 && (_contexts.CurrentResolvable?.IsResolved(stagedActions) ?? false); // We don't have any actions and no resolvable to skip, so false!
+            bool canCommit = stagedActions.Count > 0 && (_contexts.CurrentResolvable?.CanCommit(stagedActions) ?? true); // We have actions but no resolvable? We can commit!
+            bool canSkip = stagedActions.Count == 0 && (_contexts.CurrentResolvable?.CanCommit(stagedActions) ?? false); // We don't have any actions and no resolvable to skip, so false!
 
             StagedActionsState state = new(
                 canCancel: stagedActions.Count > 0 || _contexts.CurrentResolvable?.CancelAbortsPhase == true,
@@ -127,6 +127,7 @@ namespace PACG.Gameplay
             {
                 action.Commit(_contexts.CheckContext);
             }
+            _hasExploreStaged = false;
             _originalCardLocs.Clear();
             _pcsStagedActions.Clear();
             _cards.RestoreRevealedCardsToHand();

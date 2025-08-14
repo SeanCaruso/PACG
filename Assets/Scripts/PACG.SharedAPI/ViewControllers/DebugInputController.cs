@@ -4,59 +4,46 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace PACG.Presentation
+namespace PACG.SharedAPI
 {
     public class DebugInputController : MonoBehaviour
     {
-        private List<PlayCardAction> currentOptions;
-        private PlayCardAction selectedAction;
-        private bool waitingForInput;
+        private ContextManager _contexts;
 
-        public PlayCardAction SelectedAction => selectedAction;
+        public void Initialize(GameServices gameServices)
+        {
+            _contexts = gameServices.Contexts;
+        }
 
+#if UNITY_EDITOR
         void Update()
         {
-            if (!waitingForInput) return;
-
             var keyboard = Keyboard.current;
-            if (keyboard is null) return;
+            if (keyboard == null) return;
 
-            for (int i = 0; i < currentOptions.Count; i++)
+            bool ctrl = keyboard.leftCtrlKey.isPressed || keyboard.rightCtrlKey.isPressed;
+            bool shift = keyboard.leftShiftKey.isPressed || keyboard.rightShiftKey.isPressed;
+
+            if (ctrl && shift && keyboard.eKey.isPressed)
             {
-                Key key = Key.Digit1 + i;
-                if (keyboard[key].wasPressedThisFrame)
-                {
-                    selectedAction = currentOptions[i];
-                    break;
-                }
+                if (keyboard.digit1Key.wasPressedThisFrame)
+                    ExamineLocation(1);
+                if (keyboard.digit2Key.wasPressedThisFrame)
+                    ExamineLocation(2);
+                if (keyboard.digit3Key.wasPressedThisFrame)
+                    ExamineLocation(3);
             }
         }
+#endif
 
-        public IEnumerator PresentCardActionChoices(List<PlayCardAction> actionChoices)
+        private void ExamineLocation(int count)
         {
-            currentOptions = actionChoices;
-            selectedAction = null;
-            waitingForInput = true;
 
-            Debug.Log("--- Choose a card to play: ---");
-            for (int i = 0; i < actionChoices.Count; i++)
-            {
-                Debug.Log($"{i + 1}) {actionChoices[i].GetLabel()}");
-            }
+            var loc = _contexts.TurnContext.Character.Location;
+            Debug.Log($"[{GetType().Name}] Examining {count} from {loc}");
 
-            yield return new WaitUntil(() => selectedAction != null);
-
-            waitingForInput = false;
-        }
-
-        public void CommitActions()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void UndoAction()
-        {
-            throw new System.NotImplementedException();
+            var resolvable = new ExamineResolvable(loc, count, loc.Count, false);
+            _contexts.NewResolvable(resolvable);
         }
     }
 }

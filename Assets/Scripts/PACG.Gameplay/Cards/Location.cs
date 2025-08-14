@@ -5,13 +5,17 @@ using UnityEngine;
 
 namespace PACG.Gameplay
 {
-    public class Location
+    public class Location : IExaminable
     {
         public LocationData LocationData { get; }
         public LocationLogicBase LocationLogic { get; }
 
         private readonly Deck _deck;
+        public Deck Deck => _deck;
         public int Count => _deck.Count;
+
+        public string DisplayName => LocationData.LocationName;
+        public override string ToString() => LocationData.LocationName;
 
         private readonly Dictionary<PF.CardType, int> _knownComposition = new();
         private int _unknownCardCount = 0;

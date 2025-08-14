@@ -14,7 +14,7 @@ namespace PACG.Gameplay
             Difficulty = difficulty;
         }
 
-        public override bool IsResolved(List<IStagedAction> actions)
+        public override bool CanCommit(List<IStagedAction> actions)
         {
             foreach (var action in actions)
             {

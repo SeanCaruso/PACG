@@ -10,7 +10,11 @@ namespace PACG.Gameplay
         [Header("Shared API Controllers")]
         public CardDisplayController cardDisplayController;
         public CardPreviewController cardPreviewController;
+        public DeckExamineController deckExamineController;
         public UIInputController uIInputController;
+
+        [Header("Debug Controller")]
+        public DebugInputController debugController;
 
         // === TEMPORARY MEMBERS FOR DEVELOPMENT ==========================================
         // As we add features, these should be removed.
@@ -63,7 +67,10 @@ namespace PACG.Gameplay
             // =================================================================
 
             cardPreviewController.Initialize(_gameServices);
+            deckExamineController.Initialize(_gameServices);
             uIInputController.Initialize(_gameServices);
+
+            debugController.Initialize(_gameServices);
 
             // =================================================================
             // STEP 4: PRESS THE "ON" BUTTON

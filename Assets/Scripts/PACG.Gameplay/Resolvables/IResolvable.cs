@@ -4,8 +4,9 @@ namespace PACG.Gameplay
 {
     public interface IResolvable
     {
+        public void Initialize();
         public List<IStagedAction> GetAdditionalActionsForCard(CardInstance card);
-        public bool IsResolved(List<IStagedAction> actions);
+        public bool CanCommit(List<IStagedAction> actions);
         IProcessor CreateProcessor(GameServices gameServices);
         public void Resolve();
 

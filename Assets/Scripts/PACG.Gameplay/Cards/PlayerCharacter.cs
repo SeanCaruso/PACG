@@ -7,12 +7,15 @@ using UnityEngine;
 
 namespace PACG.Gameplay
 {
-    public class PlayerCharacter
+    public class PlayerCharacter : IExaminable
     {
 
         public CharacterData CharacterData { get; }
         public CharacterLogicBase Logic { get; }
         private readonly Deck _deck;
+        public Deck Deck => _deck;
+
+        public string DisplayName => CharacterData.characterName;
 
         // --- Dependency Injections
         private readonly CardManager _cardManager;
