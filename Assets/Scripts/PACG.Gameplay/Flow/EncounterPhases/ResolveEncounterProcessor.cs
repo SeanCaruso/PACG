@@ -31,7 +31,7 @@ namespace PACG.Gameplay
                 // Shuffle undefeated banes back into the location deck.
                 // TODO: Get ResolveEncounter resolvables (e.g. option to banish if undefeated, etc.)
                 // TODO: Handle summoned cards.
-                _contexts.EncounterPcLocation.ShuffleIn(encounteredCard);
+                _contexts.EncounterPcLocation.ShuffleIn(encounteredCard, true);
             }
             else
             {

@@ -1,0 +1,16 @@
+root = true
+
+[*]
+end_of_line = crlf
+insert_final_newline = true
+
+[*.cs]
+indent_style = space
+indent_size = 4
+
+[*.{json,yml,yaml}]
+indent_style = space
+indent_size = 2
+
+[*.{meta,asset}]
+end_of_line = crlf

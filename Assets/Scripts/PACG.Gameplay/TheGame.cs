@@ -81,7 +81,7 @@ namespace PACG.Gameplay
 
             foreach (var cardData in testLocationDeck)
             {
-                location.ShuffleIn(_gameServices.Cards.New(cardData));
+                location.ShuffleIn(_gameServices.Cards.New(cardData), true);
             }
 
             var pcLogic = _gameServices.Logic.GetLogic<CharacterLogicBase>(testCharacter.characterName);

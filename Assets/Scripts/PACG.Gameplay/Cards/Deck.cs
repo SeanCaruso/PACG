@@ -7,9 +7,11 @@ namespace PACG.Gameplay
     public class Deck
     {
         private readonly List<CardInstance> _cards = new(); // Current deck state
-        private readonly List<CardInstance> _examinedCards = new();
-
         public int Count => _cards.Count;
+
+        private readonly HashSet<CardInstance> _examinedCards = new(); // Cards whose position is known.
+        private readonly HashSet<CardInstance> _knownCards = new(); // Cards whose existence (but not position) is known.
+        public bool KnowCardExists(CardInstance card) => _examinedCards.Contains(card) || _knownCards.Contains(card);
 
         private readonly CardManager _cardManager;
 
@@ -25,6 +27,7 @@ namespace PACG.Gameplay
                 int randomIndex = Random.Range(0, i + 1);
                 (_cards[randomIndex], _cards[i]) = (_cards[i], _cards[randomIndex]);
             }
+            _knownCards.UnionWith(_examinedCards);
             _examinedCards.Clear();
         }
 
@@ -35,16 +38,32 @@ namespace PACG.Gameplay
             CardInstance drawnCard = _cards[0];
             _cards.RemoveAt(0);
             _examinedCards.Remove(drawnCard);
+            _knownCards.Remove(drawnCard);
             return drawnCard;
         }
 
-        public CardInstance Examine(int idx)
+        public List<CardInstance> ExamineTop(int count)
         {
-            if (idx >= _cards.Count) return null;
+            var cards = new List<CardInstance>();
+            for (int i = 0; i < count && i < _cards.Count; i++)
+            {
+                var card = _cards[i];
+                cards.Add(card);
+                _examinedCards.Add(card);
+            }
+            return cards;
+        }
 
-            var card = _cards[idx];
-            if (!_examinedCards.Contains(card)) _examinedCards.Add(card);
-            return card;
+        /// <summary>
+        /// This function dedicated to Bernard Sumner, Peter Hook, and Stephen Morris.
+        /// </summary>
+        /// <param name="newOrder">How... does it feel?</param>
+        public void ReorderExamined(List<CardInstance> newOrder)
+        {
+            for (int i = 0; i < newOrder.Count; i++)
+            {
+                _cards[i] = newOrder[i];
+            }
         }
 
         public void Recharge(CardInstance card)

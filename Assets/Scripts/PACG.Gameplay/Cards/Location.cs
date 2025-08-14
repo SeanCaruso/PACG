@@ -1,4 +1,5 @@
 using PACG.Data;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,6 +13,10 @@ namespace PACG.Gameplay
         private readonly Deck _deck;
         public int Count => _deck.Count;
 
+        private readonly Dictionary<PF.CardType, int> _knownComposition = new();
+        private int _unknownCardCount = 0;
+
+        // Dependency injection
         private readonly ContextManager _contexts;
 
         public Location(LocationData data, LocationLogicBase logic, GameServices gameServices)
@@ -21,12 +26,38 @@ namespace PACG.Gameplay
 
             _deck = new(gameServices.Cards);
 
+            // We know how many of each card type are in the location initially.
+            foreach (PF.CardType type in Enum.GetValues(typeof(PF.CardType)))
+                _knownComposition[type] = 0;
+
             _contexts = gameServices.Contexts;
         }
 
-        public CardInstance DrawCard() => _deck.DrawCard();
-        public CardInstance Examine(int index = 0) => _deck.Examine(index);
-        public void ShuffleIn(CardInstance card) => _deck.ShuffleIn(card);
+        public CardInstance DrawCard()
+        {
+            var card =_deck.DrawCard();
+
+            if (_knownComposition[card.Data.cardType] != 0)
+                _knownComposition[card.Data.cardType]--;
+            else if (_unknownCardCount > 0)
+                _unknownCardCount--;
+            else
+                Debug.LogError($"[{LocationData.LocationName}] Drew a card we both did and didn't know the type of: {card.Data.cardType}.");
+
+            return card;
+        }
+
+        public List<CardInstance> ExamineTop(int count) => _deck.ExamineTop(count);
+
+        public void ShuffleIn(CardInstance card, bool isTypeKnown)
+        { 
+            _deck.ShuffleIn(card);
+
+            if (isTypeKnown)
+                _knownComposition[card.Data.cardType]++;
+            else
+                _unknownCardCount++;
+        }
 
         public IReadOnlyCollection<PlayerCharacter> Characters => _contexts.GameContext.GetCharactersAt(this);
     }
