@@ -204,6 +204,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: b959d88ebc9971c4b894065c7086fb50, type: 2}
   - {fileID: 11400000, guid: 0dc4ee0f4aba5834a918c24011f297f6, type: 2}
   - {fileID: 11400000, guid: b8dfb967b7f2f1d4198cd3e6d76ed28e, type: 2}
+  - {fileID: 11400000, guid: 167e7fdcee9461445a22e8f47bc3ae42, type: 2}
+  - {fileID: 11400000, guid: d557604972e1e3848ae0663c3536bee0, type: 2}
   testLocation: {fileID: 11400000, guid: a54b3de4a8e7ec347a2947701d73c056, type: 2}
   testLocationDeck:
   - {fileID: 11400000, guid: d747111548c51b64583711ae21922f8d, type: 2}
@@ -3390,7 +3392,7 @@ Transform:
   m_GameObject: {fileID: 1914270868}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 785.61816, y: 426.14203, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

@@ -73,6 +73,12 @@ namespace PACG.SharedAPI
             cardRect.anchorMax = new(0.5f, 0.5f);
             cardRect.localScale = new Vector3(2f, 2f, 1.0f);
 
+            // Disable any drag handlers.
+            if (cardDisplay.TryGetComponent<CardDragHandler>(out var dragHandler))
+            {
+                dragHandler.enabled = false;
+            }
+
             // If there's a resolvable, grab any additional actions (damage, give, etc.).
             List<IStagedAction> playableActions = _contexts.CurrentResolvable?.GetAdditionalActionsForCard(cardInstance) ?? new();
             playableActions.AddRange(cardInstance.GetAvailableActions());
@@ -113,6 +119,12 @@ namespace PACG.SharedAPI
 
         private void EndPreview()
         {
+            // Re-enable any drag handlers.
+            if (currentlyEnlargedCard.TryGetComponent<CardDragHandler>(out var dragHandler))
+            {
+                dragHandler.enabled = true;
+            }
+
             // Hide the preview and clear the card.
             previewArea.SetActive(false);
             currentlyEnlargedCard = null;

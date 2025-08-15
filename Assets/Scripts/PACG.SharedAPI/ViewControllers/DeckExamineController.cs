@@ -1,5 +1,6 @@
 using PACG.Gameplay;
 using PACG.Presentation;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -25,6 +26,10 @@ namespace PACG.SharedAPI
         // Dependency injections
         private ActionStagingManager _asm;
 
+        // Other members
+        private ExamineResolvable _resolvable;
+        private readonly Dictionary<GameObject, CardInstance> cardDisplayObjectsToInstances = new();
+
         public void Awake()
         {
             DialogEvents.ExamineEvent += OnExamineEvent;
@@ -42,7 +47,10 @@ namespace PACG.SharedAPI
 
         private void OnExamineEvent(ExamineResolvable resolvable)
         {
-            ClearExamine();
+            _resolvable = resolvable;
+
+            // Clears any old states.
+            PrepareExamine();
 
             ExamineArea.SetActive(true);
 
@@ -56,6 +64,9 @@ namespace PACG.SharedAPI
             {
                 CardDisplay cardDisplay = CardDisplayController.GetCardDisplay(card);
                 cardDisplay.transform.SetParent(CardsContainer, worldPositionStays: false);
+                cardDisplay.gameObject.AddComponent<CardDragHandler>().Initialize(this);
+
+                cardDisplayObjectsToInstances.Add(cardDisplay.gameObject, card);
             }
 
             GameObject buttonObj = Instantiate(ButtonPrefab, ButtonContainer);
@@ -63,12 +74,13 @@ namespace PACG.SharedAPI
             buttonObj.GetComponentInChildren<TextMeshProUGUI>().text = "Continue";
             buttonObj.GetComponent<Button>().onClick.AddListener(() =>
             {
+                CleanUpExamine();
                 _asm.Commit();
                 ExamineArea.SetActive(false);
             });
         }
 
-        private void ClearExamine()
+        private void PrepareExamine()
         {
             for (int i = 0; i < CardBacksContainer.childCount; i++)
             {
@@ -82,6 +94,44 @@ namespace PACG.SharedAPI
 
             if (ButtonContainer.childCount == 1)
                 Destroy(ButtonContainer.GetChild(0).gameObject);
+        }
+
+        private void CleanUpExamine()
+        {
+            foreach (var cardDisplay in cardDisplayObjectsToInstances.Keys)
+            {
+                Destroy(cardDisplay.GetComponent<CardDragHandler>());
+            }
+            cardDisplayObjectsToInstances.Clear();
+        }
+
+        public void SwapCards(GameObject cardA, GameObject cardB)
+        {
+            if (_resolvable == null) return;
+
+            if (!_resolvable.CanReorder) return;
+
+            // Swap visual positions.
+            int indexA = cardA.transform.GetSiblingIndex();
+            int indexB = cardB.transform.GetSiblingIndex();
+
+            cardA.transform.SetSiblingIndex(indexB);
+            cardB.transform.SetSiblingIndex(indexA);
+
+            // Swap instances in the CurrentOrder list.
+            var instanceA = cardDisplayObjectsToInstances[cardA];
+            var instanceB = cardDisplayObjectsToInstances[cardB];
+
+            var currentOrder = _resolvable.CurrentOrder;
+            int listIndexA = currentOrder.IndexOf(instanceA);
+            int listIndexB = currentOrder.IndexOf(instanceB);
+
+            if (listIndexA < 0 || listIndexB < 0)
+                return;
+
+            Debug.Log($"[{GetType().Name}] Swapping {instanceA} with {instanceB}");
+
+            (currentOrder[listIndexA], currentOrder[listIndexB]) = (currentOrder[listIndexB], currentOrder[listIndexA]);
         }
     }
 }

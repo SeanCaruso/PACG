@@ -8,7 +8,7 @@ namespace PACG.Gameplay
     public class SkillResolvable : BaseResolvable, ICheckResolvable
     {
         public PlayerCharacter Character { get; }
-        public List<PF.Skill> Skills { get; }
+        public IReadOnlyList<PF.Skill> Skills { get; }
         public int Difficulty { get; }
 
         public SkillResolvable(PlayerCharacter character, int difficulty, params PF.Skill[] skills)

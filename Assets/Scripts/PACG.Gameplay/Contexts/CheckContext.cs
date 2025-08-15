@@ -26,6 +26,7 @@ namespace PACG.Gameplay
         public CheckContext(ICheckResolvable resolvable)
         {
             Resolvable = resolvable;
+            BaseValidSkills = resolvable.Skills;
         }
 
         // =====================================================================================
@@ -83,16 +84,7 @@ namespace PACG.Gameplay
             stagedSkillRestrictions.Remove(source);
         }
 
-        public bool CanPlayCardWithSkills(params PF.Skill[] skills)
-        {
-            var validSkills = skills.ToList();
-
-            // See if we have any skills left after getting the intersection of currently required skills.
-            foreach (var requiredSkills in stagedSkillRestrictions.Values)
-                validSkills = validSkills.Intersect(requiredSkills).ToList();
-
-            return validSkills.Count > 0;
-        }
+        public bool CanPlayCardWithSkills(params PF.Skill[] skills) => skills.Intersect(GetCurrentValidSkills()).Any();
 
         public List<PF.Skill> GetCurrentValidSkills()
         {

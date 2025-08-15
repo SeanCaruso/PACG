@@ -7,10 +7,9 @@ namespace PACG.Gameplay
     public class ExamineResolvable : BaseResolvable
     {
         private readonly IExaminable _examinable;
+        public int DeckSize => _examinable?.Deck?.Count ?? 0;
         private readonly int _count;
         public int Count => _count;
-        private readonly int _deckSize;
-        public int DeckSize => _deckSize;
         private readonly bool _canReorder;
         public bool CanReorder => _canReorder;
 
@@ -20,11 +19,10 @@ namespace PACG.Gameplay
         private readonly List<CardInstance> _currentOrder;
         public List<CardInstance> CurrentOrder => _currentOrder;
 
-        public ExamineResolvable(IExaminable examinable, int count, int deckSize, bool canReorder = false)
+        public ExamineResolvable(IExaminable examinable, int count, bool canReorder = false)
         {
             _examinable = examinable;
             _count = count;
-            _deckSize = deckSize;
             _canReorder = canReorder;
 
             // Immediately examine the cards.

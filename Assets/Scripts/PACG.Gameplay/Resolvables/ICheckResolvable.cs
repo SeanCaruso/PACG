@@ -8,6 +8,7 @@ namespace PACG.Gameplay
     public interface ICheckResolvable
     {
         public PlayerCharacter Character { get; }
+        public IReadOnlyList<PF.Skill> Skills { get; }
         public int Difficulty { get; }
     }
 }

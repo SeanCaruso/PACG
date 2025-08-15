@@ -33,16 +33,20 @@ namespace PACG.SharedAPI
                 if (keyboard.digit3Key.wasPressedThisFrame)
                     ExamineLocation(3);
             }
+
+            if (ctrl && shift && keyboard.dKey.wasPressedThisFrame)
+            {
+                _contexts.TurnContext.Character.DrawFromDeck();
+            }
         }
 #endif
 
         private void ExamineLocation(int count)
         {
-
             var loc = _contexts.TurnContext.Character.Location;
             Debug.Log($"[{GetType().Name}] Examining {count} from {loc}");
 
-            var resolvable = new ExamineResolvable(loc, count, loc.Count, false);
+            var resolvable = new ExamineResolvable(loc, count, Keyboard.current.leftAltKey.isPressed);
             _contexts.NewResolvable(resolvable);
         }
     }

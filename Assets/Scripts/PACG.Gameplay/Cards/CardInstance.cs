@@ -19,6 +19,8 @@ namespace PACG.Gameplay
         // Initialized to a default value, updated during gameplay
         public CardLocation CurrentLocation { get; set; }
 
+        public override string ToString() => Data.cardName;
+
         public CardInstance(CardData data, CardLogicBase logic, PlayerCharacter owner = null)
         {
             Data = data;
