@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -33,7 +32,7 @@ namespace PACG.Gameplay
             return actions;
         }
 
-        bool IsCardPlayabe(CardInstance card)
+        private bool IsCardPlayabe(CardInstance card)
         {
             if (Check == null)
                 return false; // Must be in a check...
@@ -47,7 +46,7 @@ namespace PACG.Gameplay
             if (Check.StagedCardTypes.Contains(card.Data.cardType))
                 return false; // ... with no Items played.
 
-            if (Check.CanPlayCardWithSkills(PF.Skill.Strength))
+            if (Check.CanUseSkill(PF.Skill.Strength))
                 return true; // We can play on Strength checks...
 
             if (IsLockObstacleBarrier())

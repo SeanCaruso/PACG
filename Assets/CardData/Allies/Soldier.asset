@@ -10,29 +10,29 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 72b1ad41f9c218045b980737984353fc, type: 3}
-  m_Name: Horse
+  m_Name: Soldier
   m_EditorClassIdentifier: 
-  cardID: Horse
-  cardName: Horse
+  cardID: Soldier
+  cardName: Soldier
   cardType: 0
   cardLevel: 0
   cardArt: {fileID: 0}
   checkRequirement:
     mode: 0
     checkSteps:
-    - baseDC: 3
+    - baseDC: 4
       adventureLevelMult: 0
       category: 1
-      allowedSkills: 040000000500000010000000
+      allowedSkills: 05000000080000000c000000
   rerollThreshold: 0
-  powers: 'Recharge to move. You may not use this power during an encounter.
+  powers: 'On a local Strength or Melee check, recharge to add 1d4.
 
 
     Discard
-    to explore. This exploration, on your first check, add 1d4.'
+    to explore. This exploration, on your Strength and Melee checks, add 1d4.'
   recovery: 
   immunities: []
   vulnerabilities: []
   traits:
-  - Animal
-  - Mount
+  - Human
+  - Soldier

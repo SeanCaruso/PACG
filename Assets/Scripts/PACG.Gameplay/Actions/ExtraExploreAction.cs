@@ -28,7 +28,7 @@ namespace PACG.Gameplay
             ActionType = actionType;
         }
 
-        public void Commit(CheckContext checkContext = null) { }
+        public void Commit(CheckContext checkContext = null) => Card.Logic?.Execute(Card, this);
 
         public void OnStage() => GameEvents.SetStatusText("Explore again?");
 

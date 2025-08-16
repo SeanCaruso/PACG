@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,11 +9,7 @@ namespace PACG.Gameplay
         private readonly ActionStagingManager _asm;
 
         private CheckContext Check => _contexts.CheckContext;
-
-        private PlayCardAction GetRevealAction(CardInstance card) => new(card, PF.ActionType.Reveal, ("IsCombat", true));
-        private PlayCardAction GetReloadAction(CardInstance card) => new(card, PF.ActionType.Reload, ("IsCombat", true), ("IsFreely", true));
-        private PlayCardAction GetRevealAndReloadAction(CardInstance card) => new(card, PF.ActionType.Reload, ("IsCombat", true));
-
+        
         public LongswordLogic(GameServices gameServices) : base(gameServices) 
         {
             _contexts = gameServices.Contexts;
@@ -24,33 +19,36 @@ namespace PACG.Gameplay
         protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)
         {
             List<IStagedAction> actions = new();
-            if (IsCardPlayable(card))
+            if (!IsCardPlayable(card)) return actions;
+            
+            // If a weapon hasn't been played yet, present one or both options.
+            if (!Check.StagedCardTypes.Contains(card.Data.cardType))
             {
-                // If a weapon hasn't been played yet, present one or both options.
-                if (!Check.StagedCardTypes.Contains(card.Data.cardType))
-                {
-                    actions.Add(GetRevealAction(card));
+                actions.Add(new PlayCardAction(card, PF.ActionType.Reveal, ("IsCombat", true)));
 
-                    if (_contexts.CurrentResolvable is CombatResolvable resolvable && resolvable.Character.IsProficient(PF.CardType.Weapon))
-                    {
-                        actions.Add(GetRevealAndReloadAction(card));
-                    }
-                }
-                // Otherwise, if this card has already been played, present the reload option if proficient.
-                else if (_asm.CardStaged(card) && _contexts.CurrentResolvable is CombatResolvable res && res.Character.IsProficient(PF.CardType.Weapon))
+                if (_contexts.CurrentResolvable is CombatResolvable resolvable && resolvable.Character.IsProficient(PF.CardType.Weapon))
                 {
-                    actions.Add(GetReloadAction(card));
+                    actions.Add(new PlayCardAction(card, PF.ActionType.Reload, ("IsCombat", true)));
                 }
+            }
+            // Otherwise, if this card has already been played, present the reload option if proficient.
+            else if (_asm.CardStaged(card) && _contexts.CurrentResolvable is CombatResolvable res && res.Character.IsProficient(PF.CardType.Weapon))
+            {
+                actions.Add(new PlayCardAction(
+                    card,
+                    PF.ActionType.Reload,
+                    ("IsCombat", true), ("IsFreely", true))
+                );
             }
             return actions;
         }
 
-        bool IsCardPlayable(CardInstance card) => (
+        private bool IsCardPlayable(CardInstance card) => (
             // All powers are specific to the card's owner while playing cards during a Strength or Melee combat check.
             Check != null
             && _contexts.CurrentResolvable is CombatResolvable resolvable
             && resolvable.Character == card.Owner
-            && Check.CanPlayCardWithSkills(PF.Skill.Strength, PF.Skill.Melee));
+            && Check.CanUseSkill(PF.Skill.Strength, PF.Skill.Melee));
 
         public override void OnStage(CardInstance card, IStagedAction action)
         {
@@ -66,7 +64,7 @@ namespace PACG.Gameplay
         {
             // Always Reveal to use Strength or Melee + 1d8.
             var resolvable = (CombatResolvable)_contexts.CurrentResolvable;
-            (PF.Skill skill, int die, int bonus) = resolvable.Character.GetBestSkill(PF.Skill.Strength, PF.Skill.Melee);
+            var (skill, die, bonus) = resolvable.Character.GetBestSkill(PF.Skill.Strength, PF.Skill.Melee);
             Check.UsedSkill = skill;
             Check.DicePool.AddDice(1, die, bonus);
             Check.DicePool.AddDice(1, 8);

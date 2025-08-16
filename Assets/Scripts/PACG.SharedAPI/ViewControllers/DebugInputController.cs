@@ -1,6 +1,4 @@
 using PACG.Gameplay;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -16,7 +14,7 @@ namespace PACG.SharedAPI
         }
 
 #if UNITY_EDITOR
-        void Update()
+        private void Update()
         {
             var keyboard = Keyboard.current;
             if (keyboard == null) return;
@@ -37,6 +35,14 @@ namespace PACG.SharedAPI
             if (ctrl && shift && keyboard.dKey.wasPressedThisFrame)
             {
                 _contexts.TurnContext.Character.DrawFromDeck();
+                Debug.Log($"NEW HAND: {string.Join(",", _contexts.TurnContext.Character.Hand)}");
+            }
+
+            if (ctrl && shift && keyboard.rKey.wasPressedThisFrame)
+            {
+                var hand = _contexts.TurnContext.Character.Hand;
+                _contexts.TurnContext.Character.Recharge(hand[^1]);
+                Debug.Log($"NEW HAND: {string.Join(",", _contexts.TurnContext.Character.Hand)}");
             }
         }
 #endif

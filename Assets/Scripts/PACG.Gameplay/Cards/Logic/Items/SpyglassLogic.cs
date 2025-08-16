@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -28,10 +27,10 @@ namespace PACG.Gameplay
         }
 
         // Can reveal on your Perception check.
-        bool CanReveal(CardInstance card) => (
+        private bool CanReveal(CardInstance card) => (
             Check != null &&
             Check.Character == card.Owner &&
-            Check.CanPlayCardWithSkills(PF.Skill.Perception) &&
+            Check.CanUseSkill(PF.Skill.Perception) &&
             !Check.StagedCardTypes.Contains(PF.CardType.Item)
             );
 
@@ -49,13 +48,17 @@ namespace PACG.Gameplay
 
         public override void Execute(CardInstance card, IStagedAction action)
         {
-            // Reveal to add 1d6 on your Perception check.
-            if (action.ActionType == PF.ActionType.Reveal)
-                Check.DicePool.AddDice(1, 8);
-
-            // Discard to examine the top 2 cards of your location and return them in any order.
-            if (action.ActionType == PF.ActionType.Discard)
-                _contexts.NewResolvable(new ExamineResolvable(card.Owner.Location, 2, true));
+            switch (action.ActionType)
+            {
+                // Reveal to add 1d6 on your Perception check.
+                case PF.ActionType.Reveal:
+                    Check.DicePool.AddDice(1, 8);
+                    break;
+                // Discard to examine the top 2 cards of your location and return them in any order.
+                case PF.ActionType.Discard:
+                    _contexts.NewResolvable(new ExamineResolvable(card.Owner.Location, 2, true));
+                    break;
+            }
         }
     }
 }

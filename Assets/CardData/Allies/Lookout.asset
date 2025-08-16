@@ -12,8 +12,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72b1ad41f9c218045b980737984353fc, type: 3}
   m_Name: Lookout
   m_EditorClassIdentifier: 
-  CardName: Lookout
-  Level: 0
-  CardArt: {fileID: 0}
-  CheckDC: 5
-  CardType: 0
+  cardID: Lookout
+  cardName: Lookout
+  cardType: 0
+  cardLevel: 0
+  cardArt: {fileID: 0}
+  checkRequirement:
+    mode: 0
+    checkSteps:
+    - baseDC: 5
+      adventureLevelMult: 0
+      category: 1
+      allowedSkills: 05000000080000000d000000
+  rerollThreshold: 0
+  powers: 'On a local Perception check, recharge to add 1d4.
+
+
+    Recharge to examine
+    the top card of your location.
+
+
+    Discard to explore. This exploration, you
+    may evade your encounters.'
+  recovery: 
+  immunities: []
+  vulnerabilities: []
+  traits:
+  - Elf
+  - Hireling

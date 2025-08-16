@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -9,9 +8,6 @@ namespace PACG.Gameplay
         private readonly ContextManager _contexts;
 
         private CheckContext Check => _contexts.CheckContext;
-
-        private PlayCardAction GetRevealAction(CardInstance card) => new(card, PF.ActionType.Reveal, ("IsCombat", true));
-        private PlayCardAction GetRerollAction(CardInstance card) => new(card, PF.ActionType.Discard, ("IsFreely", true));
 
         public LongspearLogic(GameServices gameServices) : base(gameServices) 
         {
@@ -26,14 +22,14 @@ namespace PACG.Gameplay
                 if (_contexts.CurrentResolvable is CombatResolvable
                     && !Check.StagedCardTypes.Contains(card.Data.cardType))
                 {
-                    actions.Add(GetRevealAction(card));
+                    actions.Add(new PlayCardAction(card, PF.ActionType.Reveal, ("IsCombat", true)));
                 }
 
                 // We can discard to reroll if we're processing a RerollResolvable and this card is one of the reroll options.
                 if (_contexts.CurrentResolvable is RerollResolvable
                     && ((List<CardLogicBase>)Check.ContextData.GetValueOrDefault("rerollCards", new List<CardLogicBase>())).Contains(this))
                 {
-                    actions.Add(GetRerollAction(card));
+                    actions.Add(new PlayCardAction(card, PF.ActionType.Discard, ("IsFreely", true)));
                 }
             }
             return actions;
@@ -44,7 +40,7 @@ namespace PACG.Gameplay
             Check != null
             && _contexts.CurrentResolvable is CombatResolvable resolvable
             && resolvable.Character == card.Owner
-            && Check.CanPlayCardWithSkills(PF.Skill.Strength, PF.Skill.Melee));
+            && Check.CanUseSkill(PF.Skill.Strength, PF.Skill.Melee));
 
         public override void OnStage(CardInstance card, IStagedAction action)
         {
@@ -62,25 +58,27 @@ namespace PACG.Gameplay
         {
             if (!Check.ContextData.ContainsKey("rerollCards"))
                 Check.ContextData["rerollCards"] = new List<CardLogicBase>();
-            List<CardLogicBase> rerollSources = (List<CardLogicBase>)Check.ContextData["rerollCards"];
+            var rerollSources = (List<CardLogicBase>)Check.ContextData["rerollCards"];
 
-            // Reveal to use Strength or Melee + 1d8.
-            if (action.ActionType == PF.ActionType.Reveal)
+            switch (action.ActionType)
             {
-                var resolvable = _contexts.CurrentResolvable as CombatResolvable;
-                (PF.Skill skill, int die, int bonus) = resolvable.Character.GetBestSkill(PF.Skill.Strength, PF.Skill.Melee);
-                Check.UsedSkill = skill;
-                Check.DicePool.AddDice(1, die, bonus);
-                Check.DicePool.AddDice(1, 8);
+                // Reveal to use Strength or Melee + 1d8.
+                case PF.ActionType.Reveal:
+                {
+                    if (_contexts.CurrentResolvable is not CombatResolvable resolvable) return;
+                    var (skill, die, bonus) = resolvable.Character.GetBestSkill(PF.Skill.Strength, PF.Skill.Melee);
+                    Check.UsedSkill = skill;
+                    Check.DicePool.AddDice(1, die, bonus);
+                    Check.DicePool.AddDice(1, 8);
 
-                rerollSources.Add(this);
-            }
-
-            // Discard to reroll.
-            if (action.ActionType == PF.ActionType.Discard)
-            {
-                rerollSources.Remove(this);
-                Check.ContextData["doReroll"] = true;
+                    rerollSources.Add(this);
+                    break;
+                }
+                // Discard to reroll.
+                case PF.ActionType.Discard:
+                    rerollSources.Remove(this);
+                    Check.ContextData["doReroll"] = true;
+                    break;
             }
         }
     }

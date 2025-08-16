@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using PACG.SharedAPI;
 using UnityEngine;
 
 namespace PACG.Gameplay
@@ -25,36 +26,38 @@ namespace PACG.Gameplay
                 return;
             }
 
-            PlayerCharacter pc = resolvable.Character;
-            int dc = resolvable.Difficulty;
-            CheckContext check = _contexts.CheckContext;
+            var pc = resolvable.Character;
+            var dc = resolvable.Difficulty;
+            var check = _contexts.CheckContext;
+
+            foreach (var effect in check.ExploreEffects)
+            {
+                effect.ApplyToCheck(check);
+            }
 
             // Add blessing dice.
             check.DicePool.AddDice(check.BlessingCount, pc.GetSkill(check.UsedSkill).die);
-            int rollTotal = check.DicePool.Roll();
-            check.CheckResult = new(rollTotal, dc, pc, check.UsedSkill, check.Traits);
+            var rollTotal = check.DicePool.Roll();
+            check.CheckResult = new CheckResult(rollTotal, dc, pc, check.UsedSkill, check.Traits);
 
-            bool needsReroll = check.CheckResult.MarginOfSuccess < _contexts.EncounterContext.CardData.rerollThreshold;
-            bool hasRerollOptions = false;
+            var needsReroll = check.CheckResult.MarginOfSuccess < _contexts.EncounterContext.CardData.rerollThreshold;
             var cardsToCheck = pc.Hand.Union(pc.DisplayedCards);
-            foreach (var card in cardsToCheck)
-            {
-                if (card.GetAvailableActions().Count > 0)
-                {
-                    hasRerollOptions = true;
-                    break;
-                }
-            }
+            var hasRerollOptions = cardsToCheck.Any(card => card.GetAvailableActions().Count > 0);
 
             // No playable cards allow rerolls... check if a played card set the context.
             hasRerollOptions |= ((List<CardLogicBase>)_contexts.CheckContext.ContextData.GetValueOrDefault("rerollCards", new List<CardLogicBase>())).Count > 0;
-
-            if (needsReroll && hasRerollOptions)
+            
+            // No reroll options. We're done!
+            if (!needsReroll || !hasRerollOptions)
             {
-                RerollResolvable rerollResolvable = new(pc, check);
-                _contexts.NewResolvable(rerollResolvable);
-                return; // We're done - GameFlowManager takes over.
+                GameEvents.SetStatusText($"Rolled {check.DicePool}: {rollTotal}");
+                return;
             }
+            
+            GameEvents.SetStatusText($"Rolled {check.DicePool}: {rollTotal}... Reroll?");
+            // ... otherwise, create a reroll resolvable.
+            RerollResolvable rerollResolvable = new(pc, check);
+            _contexts.NewResolvable(rerollResolvable);
         }
     }
 }

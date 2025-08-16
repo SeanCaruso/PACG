@@ -35,7 +35,14 @@ namespace PACG.Gameplay
         }
 
         // TODO: Think about how this will work in nested encounters - maybe use a stack?
-        public void NewEncounter(EncounterContext encounterContext) => EncounterContext = encounterContext;
+        public void NewEncounter(EncounterContext encounterContext)
+        {
+            EncounterContext = encounterContext;
+            
+            encounterContext.ExploreEffects.AddRange(TurnContext.ExploreEffects);
+            TurnContext.ExploreEffects.Clear();
+        }
+
         public void EndEncounter()
         {
             EncounterContext = null;
@@ -55,6 +62,10 @@ namespace PACG.Gameplay
             if (CurrentResolvable is ICheckResolvable checkResolvable)
             {
                 CheckContext = new CheckContext(checkResolvable);
+                CheckContext.ExploreEffects.AddRange(EncounterContext.ExploreEffects);
+
+                EncounterContext.ExploreEffects.RemoveAll(effect =>
+                    effect is SkillBonusExploreEffect { IsForOneCheck: true });
             }
 
             // Now that it's set as our current resolvable and we have a CheckContext if needed, do any post-construction setup.

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace PACG.Gameplay
 {
@@ -18,15 +17,15 @@ namespace PACG.Gameplay
     {
         // Basic information - set on construction
         public PlayerCharacter Character { get; }
-        public CardInstance Card { get; set; }
+        public CardInstance Card { get; }
 
         // Convenience properties
         public CardData CardData => Card.Data;
 
         // Maps CardData to the list of traits that card prohibits.
-        private readonly Dictionary<(PlayerCharacter, CardInstance), List<string>> prohibitedTraits = new();
-        public Dictionary<(PlayerCharacter, CardInstance), List<string>> ProhibitedTraits => prohibitedTraits;
+        public Dictionary<(PlayerCharacter, CardInstance), List<string>> ProhibitedTraits { get; } = new();
 
+        public List<IExploreEffect> ExploreEffects { get; set; } = new();
         public CheckResult CheckResult { get; set; }
 
         public EncounterContext(PlayerCharacter pc, CardInstance card)
@@ -37,10 +36,10 @@ namespace PACG.Gameplay
 
         public void AddProhibitedTraits(PlayerCharacter pc, CardInstance card, params string[] traits)
         {
-            if (!prohibitedTraits.ContainsKey((pc, card))) prohibitedTraits.Add((pc, card), new());
-            foreach (var trait in traits) prohibitedTraits[(pc, card)].Add(trait);
+            if (!ProhibitedTraits.ContainsKey((pc, card))) ProhibitedTraits.Add((pc, card), new List<string>());
+            foreach (var trait in traits) ProhibitedTraits[(pc, card)].Add(trait);
         }
-        public void UndoProhibitedTraits(PlayerCharacter pc, CardInstance card) => prohibitedTraits.Remove((pc, card));
+        public void UndoProhibitedTraits(PlayerCharacter pc, CardInstance card) => ProhibitedTraits.Remove((pc, card));
 
     }
 }

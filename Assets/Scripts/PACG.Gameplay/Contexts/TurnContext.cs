@@ -1,4 +1,4 @@
-
+using System.Collections.Generic;
 
 namespace PACG.Gameplay
 {
@@ -27,9 +27,13 @@ namespace PACG.Gameplay
         public bool CanCloseLocation { get; set; }
         public bool CanEndTurn { get; set; }
 
+        public List<IExploreEffect> ExploreEffects { get; } = new();
+
         public TurnContext(PlayerCharacter currentPC)
         {
             Character = currentPC;
         }
+        
+        public void AddExploreEffect(IExploreEffect effect) => ExploreEffects.Add(effect);
     }
 }

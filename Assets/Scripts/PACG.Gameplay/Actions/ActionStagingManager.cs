@@ -114,7 +114,7 @@ namespace PACG.Gameplay
         private StagedActionsState GetDefaultUiState(List<IStagedAction> actions)
         {
             return new StagedActionsState(
-                canCommit: actions.Any(),
+                canCommit: actions.Any() && !_hasExploreStaged,
                 canSkip: false,
                 canCancel: actions.Any(),
                 isExploreEnabled: _contexts.TurnContext.CanFreelyExplore || _hasExploreStaged
