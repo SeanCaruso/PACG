@@ -33,7 +33,7 @@ namespace PACG.SharedAPI
                 if (data.checkRequirement.checkSteps.Count > 0)
                     Debug.LogWarning($"{data.name} has CheckMode.None with check steps!");
 
-                viewModel.Check1_Skills = new string[] { "NONE" };
+                viewModel.Check1_Skills = new[] { "NONE" };
                 // We're done!
                 return viewModel;
             }
@@ -45,11 +45,10 @@ namespace PACG.SharedAPI
             }
 
             var checkStep1 = data.checkRequirement.checkSteps[0];
-            if (checkStep1.category == CheckCategory.Combat)
-                viewModel.Check1_Skills = new string[] { "COMBAT" };
-            else
-                viewModel.Check1_Skills = checkStep1.allowedSkills.Select(s => s.ToString().ToUpper());
-            viewModel.Check1_DC = CardUtils.GetDC(checkStep1.baseDC, checkStep1.adventureLevelMult).ToString();
+            viewModel.Check1_Skills = checkStep1.category == CheckCategory.Combat
+                ? new[] { "COMBAT" }
+                : checkStep1.allowedSkills.Select(s => s.ToString().ToUpper());
+            viewModel.Check1_DC = CardUtils.GetDc(checkStep1.baseDC, checkStep1.adventureLevelMult).ToString();
             
             if (data.checkRequirement.mode == CheckMode.Single)
             {
@@ -65,11 +64,10 @@ namespace PACG.SharedAPI
             }
 
             var checkStep2 = data.checkRequirement.checkSteps[1];
-            if (checkStep2.category == CheckCategory.Combat)
-                viewModel.Check2_Skills = new string[] { "COMBAT" };
-            else
-                viewModel.Check2_Skills = checkStep2.allowedSkills.Select(s => s.ToString().ToUpper());
-            viewModel.Check2_DC = CardUtils.GetDC(checkStep2.baseDC, checkStep2.adventureLevelMult).ToString();
+            viewModel.Check2_Skills = checkStep2.category == CheckCategory.Combat
+                ? new[] { "COMBAT" }
+                : checkStep2.allowedSkills.Select(s => s.ToString().ToUpper());
+            viewModel.Check2_DC = CardUtils.GetDc(checkStep2.baseDC, checkStep2.adventureLevelMult).ToString();
 
             return viewModel;
         }
@@ -80,28 +78,28 @@ namespace PACG.SharedAPI
             {
                 // Boons
                 case PF.CardType.Ally:
-                    return new(68, 98, 153, 255);
+                    return new Color32(68, 98, 153, 255);
                 case PF.CardType.Armor:
-                    return new(170, 178, 186, 255);
+                    return new Color32(170, 178, 186, 255);
                 case PF.CardType.Blessing:
-                    return new(0, 172, 235, 255);
+                    return new Color32(0, 172, 235, 255);
                 case PF.CardType.Item:
-                    return new(96, 133, 132, 255);
+                    return new Color32(96, 133, 132, 255);
                 case PF.CardType.Spell:
-                    return new(97, 46, 138, 255);
+                    return new Color32(97, 46, 138, 255);
                 case PF.CardType.Weapon:
-                    return new(93, 97, 96, 255);
+                    return new Color32(93, 97, 96, 255);
 
                 // Banes
                 case PF.CardType.Barrier:
-                    return new(255, 227, 57, 255);
+                    return new Color32(255, 227, 57, 255);
                 case PF.CardType.Monster:
-                    return new(213, 112, 41, 255);
+                    return new Color32(213, 112, 41, 255);
                 case PF.CardType.StoryBane:
-                    return new(130, 36, 38, 255);
+                    return new Color32(130, 36, 38, 255);
                 default:
                     Debug.LogError($"GetPanelColor --- Unknown card type: {cardType}");
-                    return new(255, 0, 255, 255);
+                    return new Color32(255, 0, 255, 255);
             }
         }
     }

@@ -50,7 +50,7 @@ namespace PACG.SharedAPI
             // Hook up button clicks.
             //giveCardButton.onClick.AddListener(() => GiveCardButton_OnClick());
             //moveButton.onClick.AddListener(() => MoveButton_OnClick());
-            exploreButton.onClick.AddListener(() => ExploreButton_OnClick());
+            exploreButton.onClick.AddListener(ExploreButton_OnClick);
             optionalDiscardButton.onClick.AddListener(() => _gameFlowManager.StartPhase(new EndTurnController(false, _gameServices), "Turn"));
             endTurnButton.onClick.AddListener(() => _gameFlowManager.StartPhase(new EndTurnController(true, _gameServices), "Turn"));
 
@@ -77,7 +77,7 @@ namespace PACG.SharedAPI
 
         // --- Turn Flow -----------------------------------------
 
-        protected void UpdatePlayerArea(PlayerCharacter pc)
+        private void UpdatePlayerArea(PlayerCharacter pc)
         {
             _powerButtonMap.Clear();
             foreach (var button in PowerButtons)
@@ -104,19 +104,18 @@ namespace PACG.SharedAPI
             }
         }
 
-        protected void PlayerPowerEnabled(CharacterPower power, bool enabled, IResolvable powerResolvable)
+        private void PlayerPowerEnabled(CharacterPower power, bool isEnabled, IResolvable powerResolvable)
         {
-            if (!_powerButtonMap.ContainsKey(power))
+            if (!_powerButtonMap.TryGetValue(power, out var buttonObj))
             {
                 Debug.LogError($"[{GetType().Name}] Couldn't find CharacterPower in the map!");
                 return;
             }
 
-            var buttonObj = _powerButtonMap[power];
-            buttonObj.GetComponent<Image>().sprite = enabled ? power.spriteEnabled : power.spriteDisabled;
+            buttonObj.GetComponent<Image>().sprite = isEnabled ? power.spriteEnabled : power.spriteDisabled;
 
             var button = buttonObj.GetComponent<Button>();
-            button.enabled = enabled;
+            button.enabled = isEnabled;
 
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() =>
@@ -127,24 +126,26 @@ namespace PACG.SharedAPI
             });
         }
 
-        protected void UpdateTurnButtons()
+        private void UpdateTurnButtons()
         {
             giveCardButton.enabled = false;
             moveButton.enabled = false;
             exploreButton.enabled = false;
             optionalDiscardButton.enabled = false;
+            endTurnButton.enabled = false;
 
             // If we're mid-resolvable, everything should be disabled.
             if (_contexts.CurrentResolvable != null) return;
 
-            TurnContext turn = _contexts.TurnContext;
+            var turn = _contexts.TurnContext;
             giveCardButton.enabled = turn.CanGive;
             moveButton.enabled = turn.CanMove;
-            exploreButton.enabled = turn.CanExplore;
+            exploreButton.enabled = turn.CanFreelyExplore;
             optionalDiscardButton.enabled = turn.Character.Hand.Count > 0;
+            endTurnButton.enabled = true;
         }
 
-        protected void ExploreButton_OnClick()
+        private void ExploreButton_OnClick()
         {
             _asm.Commit();
             _gameFlowManager.StartPhase(new Turn_ExploreProcessor(_gameServices), "Explore");
@@ -152,7 +153,7 @@ namespace PACG.SharedAPI
 
         // --- Action Staging Flow -----------------------------------
 
-        protected void UpdateStagedActionButtons(StagedActionsState state)
+        private void UpdateStagedActionButtons(StagedActionsState state)
         {
             cancelButton.gameObject.SetActive(state.IsCancelButtonVisible);
             commitButton.gameObject.SetActive(state.IsCommitButtonVisible);

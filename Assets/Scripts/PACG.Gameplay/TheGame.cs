@@ -2,19 +2,20 @@ using PACG.Data;
 using PACG.SharedAPI;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace PACG.Gameplay
 {
     public class TheGame : MonoBehaviour
     {
-        [Header("Shared API Controllers")]
-        public CardDisplayController cardDisplayController;
-        public CardPreviewController cardPreviewController;
-        public DeckExamineController deckExamineController;
-        public UIInputController uIInputController;
+        public CardDisplayController CardDisplayController;
+        public CardPreviewController CardPreviewController;
+        public DeckExamineController DeckExamineController;
+        public PlayerChoiceController PlayerChoiceController;
+        public UIInputController UiInputController;
 
         [Header("Debug Controller")]
-        public DebugInputController debugController;
+        public DebugInputController DebugController;
 
         // === TEMPORARY MEMBERS FOR DEVELOPMENT ==========================================
         // As we add features, these should be removed.
@@ -66,11 +67,12 @@ namespace PACG.Gameplay
             // We can create an Initialize method for them.
             // =================================================================
 
-            cardPreviewController.Initialize(_gameServices);
-            deckExamineController.Initialize(_gameServices);
-            uIInputController.Initialize(_gameServices);
+            CardPreviewController.Initialize(_gameServices);
+            DeckExamineController.Initialize(_gameServices);
+            PlayerChoiceController.Initialize(_gameServices);
+            UiInputController.Initialize(_gameServices);
 
-            debugController.Initialize(_gameServices);
+            DebugController.Initialize(_gameServices);
 
             // =================================================================
             // STEP 4: PRESS THE "ON" BUTTON
@@ -94,7 +96,7 @@ namespace PACG.Gameplay
             var pcLogic = _gameServices.Logic.GetLogic<CharacterLogicBase>(testCharacter.characterName);
             PlayerCharacter testPc = new(testCharacter, pcLogic, _gameServices);
             foreach (var card in characterDeck) testPc.ShuffleIntoDeck(_gameServices.Cards.New(card, testPc));
-            cardDisplayController.SetCurrentPC(testPc);
+            CardDisplayController.SetCurrentPC(testPc);
 
             _gameServices.Contexts.GameContext.SetPcLocation(testPc, location);
 

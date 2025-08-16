@@ -43,6 +43,10 @@ namespace PACG.SharedAPI
         public static event Action<int> PlayerDeckCountChanged;
         public static void RaisePlayerDeckCountChanged(int count) => PlayerDeckCountChanged?.Invoke(count);
 
+        // Special Resolvable events
+        public static event Action<PlayerChoiceResolvable> PlayerChoiceEvent;
+        public static void RaisePlayerChoiceEvent(PlayerChoiceResolvable resolvable) => PlayerChoiceEvent?.Invoke(resolvable);
+
         // General game status events
         public static event Action<string> SetStatusTextEvent;
         public static void SetStatusText(string text) => SetStatusTextEvent?.Invoke(text);

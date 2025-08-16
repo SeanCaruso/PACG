@@ -23,7 +23,7 @@ namespace PACG.Gameplay
 
         public bool CanGive { get; set; }
         public bool CanMove { get; set; }
-        public bool CanExplore { get; set; }
+        public bool CanFreelyExplore { get; set; }
         public bool CanCloseLocation { get; set; }
         public bool CanEndTurn { get; set; }
 

@@ -80,20 +80,20 @@ namespace PACG.SharedAPI
             }
 
             // If there's a resolvable, grab any additional actions (damage, give, etc.).
-            List<IStagedAction> playableActions = _contexts.CurrentResolvable?.GetAdditionalActionsForCard(cardInstance) ?? new();
+            var playableActions = _contexts.CurrentResolvable?.GetAdditionalActionsForCard(cardInstance) ?? new List<IStagedAction>();
             playableActions.AddRange(cardInstance.GetAvailableActions());
 
             GenerateActionButtons(playableActions);
         }
 
-        public void GenerateActionButtons(IReadOnlyCollection<IStagedAction> actions)
+        private void GenerateActionButtons(IReadOnlyCollection<IStagedAction> actions)
         {
             foreach (var action in actions)
             {
-                GameObject buttonObj = Instantiate(actionButtonPrefab, actionButtonContainer);
+                var buttonObj = Instantiate(actionButtonPrefab, actionButtonContainer);
 
                 buttonObj.GetComponentInChildren<TextMeshProUGUI>().text = action.ActionType.ToString();
-                Button button = buttonObj.GetComponent<Button>();
+                var button = buttonObj.GetComponent<Button>();
                 button.onClick.AddListener(() =>
                 {
                     _actionStagingManager.StageAction(action);

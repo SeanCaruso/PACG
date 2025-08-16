@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using PACG.SharedAPI;
 
 namespace PACG.Gameplay
 {
@@ -9,6 +10,7 @@ namespace PACG.Gameplay
         public bool CanCommit(List<IStagedAction> actions);
         IProcessor CreateProcessor(GameServices gameServices);
         public void Resolve();
+        public StagedActionsState GetUIState(List<IStagedAction> actions);
 
         public bool CancelAbortsPhase { get; }
     }

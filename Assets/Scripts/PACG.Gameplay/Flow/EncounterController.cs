@@ -1,5 +1,4 @@
 using PACG.SharedAPI;
-using UnityEngine;
 
 namespace PACG.Gameplay
 {
@@ -8,14 +7,16 @@ namespace PACG.Gameplay
         private readonly PlayerCharacter _pc;
         private readonly CardInstance _card;
 
+        // Dependency injections
+        private readonly GameFlowManager _gameFlow;
         private readonly GameServices _gameServices;
-        public GameFlowManager GFM => _gameServices.GameFlow;
 
         public EncounterController(PlayerCharacter pc, CardInstance card, GameServices gameServices)
         {
             _pc = pc;
             _card = card;
 
+            _gameFlow = gameServices.GameFlow;
             _gameServices = gameServices;
         }
 
@@ -28,11 +29,11 @@ namespace PACG.Gameplay
             // TODO: Add all encounter phases.
             //GFM.QueueNextPhase(new OnEncounterProcessor(_gameServices));
             //GFM.QueueNextPhase(new BeforeActingProcessor(_gameServices));
-            GFM.QueueNextProcessor(new AttemptChecksProcessor(_gameServices));
+            _gameFlow.QueueNextProcessor(new AttemptChecksProcessor(_gameServices));
             //GFM.QueueNextPhase(new AfterActingProcessor(_gameServices));
-            GFM.QueueNextProcessor(new ResolveEncounterProcessor(_gameServices));
+            _gameFlow.QueueNextProcessor(new ResolveEncounterProcessor(_gameServices));
 
-            GFM.CompleteCurrentPhase();
+            _gameFlow.CompleteCurrentPhase();
         }
     }
 }

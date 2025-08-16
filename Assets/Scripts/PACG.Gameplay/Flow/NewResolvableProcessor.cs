@@ -3,15 +3,15 @@ using UnityEngine;
 namespace PACG.Gameplay
 {
     /// <summary>
-    /// Processor used for when a resolvable needs to transition to another resolvable (e.g. activated player powers).
+    /// Processor that creates a new Resolvable when executed.
     /// </summary>
-    public class ResolvableSequenceProcessor : BaseProcessor
+    public class NewResolvableProcessor : BaseProcessor
     {
         private readonly IResolvable _nextResolvable;
 
         private readonly ContextManager _contexts;
 
-        public ResolvableSequenceProcessor(IResolvable nextResolvable, GameServices gameServices) : base(gameServices)
+        public NewResolvableProcessor(IResolvable nextResolvable, GameServices gameServices) : base(gameServices)
         {
             _nextResolvable = nextResolvable;
 
@@ -20,7 +20,7 @@ namespace PACG.Gameplay
 
         protected override void OnExecute() 
         {
-            Debug.Log($"[ResolvableSequenceProcessor] Creating next resolvable: {_nextResolvable}");
+            Debug.Log($"[NewResolvableProcessor] Creating next resolvable: {_nextResolvable}");
             _contexts.NewResolvable(_nextResolvable);
         }
     }

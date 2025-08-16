@@ -22,7 +22,7 @@ namespace PACG.Gameplay
 
             _contexts.TurnContext.CanGive = false;
             _contexts.TurnContext.CanMove = false;
-            _contexts.TurnContext.CanExplore = false;
+            _contexts.TurnContext.CanFreelyExplore = false;
             _contexts.TurnContext.CanCloseLocation = false;
 
             GameEvents.RaiseTurnStateChanged();

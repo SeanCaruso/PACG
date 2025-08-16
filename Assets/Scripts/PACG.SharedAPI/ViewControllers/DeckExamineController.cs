@@ -9,17 +9,14 @@ namespace PACG.SharedAPI
 {
     public class DeckExamineController : MonoBehaviour
     {
-        [Header("Other Controllers")]
-        public CardDisplayController CardDisplayController;
+        [Header("Other Controllers")] public CardDisplayController CardDisplayController;
 
-        [Header("UI Elements")]
-        public GameObject ExamineArea;
+        [Header("UI Elements")] public GameObject ExamineArea;
         public Transform CardBacksContainer;
         public Transform CardsContainer;
         public Transform ButtonContainer;
 
-        [Header("Prefabs")]
-        public GameObject ButtonPrefab;
+        [Header("Prefabs")] public GameObject ButtonPrefab;
         public CardDisplay CardPrefab;
         public GameObject CardBackPrefab;
 
@@ -28,7 +25,7 @@ namespace PACG.SharedAPI
 
         // Other members
         private ExamineResolvable _resolvable;
-        private readonly Dictionary<GameObject, CardInstance> cardDisplayObjectsToInstances = new();
+        private readonly Dictionary<GameObject, CardInstance> _cardDisplayObjectsToInstances = new();
 
         public void Awake()
         {
@@ -54,8 +51,8 @@ namespace PACG.SharedAPI
 
             ExamineArea.SetActive(true);
 
-            int numCardBacks = resolvable.DeckSize - resolvable.Count;
-            for (int i = 0; i  < numCardBacks; i++)
+            var numCardBacks = resolvable.DeckSize - resolvable.Count;
+            for (var i = 0; i < numCardBacks; i++)
             {
                 Instantiate(CardBackPrefab, CardBacksContainer);
             }
@@ -64,12 +61,14 @@ namespace PACG.SharedAPI
             {
                 CardDisplay cardDisplay = CardDisplayController.GetCardDisplay(card);
                 cardDisplay.transform.SetParent(CardsContainer, worldPositionStays: false);
-                cardDisplay.gameObject.AddComponent<CardDragHandler>().Initialize(this);
 
-                cardDisplayObjectsToInstances.Add(cardDisplay.gameObject, card);
+                if (resolvable.CanReorder)
+                    cardDisplay.gameObject.AddComponent<CardDragHandler>().Initialize(this);
+
+                _cardDisplayObjectsToInstances.Add(cardDisplay.gameObject, card);
             }
 
-            GameObject buttonObj = Instantiate(ButtonPrefab, ButtonContainer);
+            var buttonObj = Instantiate(ButtonPrefab, ButtonContainer);
             buttonObj.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
             buttonObj.GetComponentInChildren<TextMeshProUGUI>().text = "Continue";
             buttonObj.GetComponent<Button>().onClick.AddListener(() =>
@@ -98,11 +97,12 @@ namespace PACG.SharedAPI
 
         private void CleanUpExamine()
         {
-            foreach (var cardDisplay in cardDisplayObjectsToInstances.Keys)
+            foreach (var cardDisplay in _cardDisplayObjectsToInstances.Keys)
             {
                 Destroy(cardDisplay.GetComponent<CardDragHandler>());
             }
-            cardDisplayObjectsToInstances.Clear();
+
+            _cardDisplayObjectsToInstances.Clear();
         }
 
         public void SwapCards(GameObject cardA, GameObject cardB)
@@ -119,8 +119,8 @@ namespace PACG.SharedAPI
             cardB.transform.SetSiblingIndex(indexA);
 
             // Swap instances in the CurrentOrder list.
-            var instanceA = cardDisplayObjectsToInstances[cardA];
-            var instanceB = cardDisplayObjectsToInstances[cardB];
+            var instanceA = _cardDisplayObjectsToInstances[cardA];
+            var instanceB = _cardDisplayObjectsToInstances[cardB];
 
             var currentOrder = _resolvable.CurrentOrder;
             int listIndexA = currentOrder.IndexOf(instanceA);

@@ -1,17 +1,14 @@
 using PACG.SharedAPI;
-using UnityEngine;
 
 namespace PACG.Gameplay
 {
     public class Turn_StartTurnProcessor : BaseProcessor
     {
         private readonly ContextManager _contexts;
-        private readonly GameFlowManager _gameFlow;
 
         public Turn_StartTurnProcessor(GameServices gameServices) : base(gameServices)
         {
             _contexts = gameServices.Contexts;
-            _gameFlow = gameServices.GameFlow;
         }
 
         protected override void OnExecute()
@@ -27,7 +24,7 @@ namespace PACG.Gameplay
             // Set initial availability of turn actions
             _contexts.TurnContext.CanGive = _contexts.TurnContext.Character.LocalCharacters.Count > 0;
             _contexts.TurnContext.CanMove = _contexts.GameContext.Locations.Count > 1;
-            _contexts.TurnContext.CanExplore = _contexts.TurnPcLocation.Count > 0;
+            _contexts.TurnContext.CanFreelyExplore = _contexts.TurnPcLocation.Count > 0;
             _contexts.TurnContext.CanCloseLocation = _contexts.TurnPcLocation.Count == 0;
 
             GameEvents.RaiseTurnStateChanged(); // Update turn action button states.

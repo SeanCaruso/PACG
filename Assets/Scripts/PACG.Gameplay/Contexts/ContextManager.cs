@@ -13,11 +13,11 @@ namespace PACG.Gameplay
         // ======================================================================
         // THE CONTEXTS
         // ======================================================================
-        public GameContext GameContext { get; private set; } = null;
-        public TurnContext TurnContext { get; private set; } = null;
-        public EncounterContext EncounterContext { get; private set; } = null;
-        public CheckContext CheckContext { get; private set; } = null;
-        public IResolvable CurrentResolvable { get; private set; } = null;
+        public GameContext GameContext { get; private set; }
+        public TurnContext TurnContext { get; private set; }
+        public EncounterContext EncounterContext { get; private set; }
+        public CheckContext CheckContext { get; private set; }
+        public IResolvable CurrentResolvable { get; private set; }
 
         // ======================================================================
         // STARTING / ENDING CONTEXTS
@@ -42,7 +42,7 @@ namespace PACG.Gameplay
         }
 
         /// <summary>
-        /// Adds a new resolvable to pause the game for user input (and create a CheckContext if needed).
+        /// USE ONLY IF YOU KNOW WHAT YOU'RE DOING! NewResolvableProcessor IS PROBABLY BETTER!
         /// </summary>
         /// <param name="resolvable"></param>
         public void NewResolvable(IResolvable resolvable)
@@ -54,7 +54,7 @@ namespace PACG.Gameplay
             // Automatic context creation based on resolvable type.
             if (CurrentResolvable is ICheckResolvable checkResolvable)
             {
-                CheckContext = new(checkResolvable);
+                CheckContext = new CheckContext(checkResolvable);
             }
 
             // Now that it's set as our current resolvable and we have a CheckContext if needed, do any post-construction setup.
@@ -84,8 +84,7 @@ namespace PACG.Gameplay
         public Location EncounterPcLocation => GameContext.GetPcLocation(EncounterContext.Character);
 
         // Test for additional explorations
-        public bool CanExploreAgain => (    // We can explore again if...
-            !TurnContext.CanExplore &&      // ... we can't normally explore...
+        public bool CanExplore => (    // We can explore if...
             CurrentResolvable == null &&    // ... we don't have a resolvable...
             TurnPcLocation.Count > 0 &&     // ... we have more cards in the location...
             _asm.StagedCards.Count == 0     // ... and we don't have any currently staged cards.

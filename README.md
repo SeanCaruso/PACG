@@ -13,8 +13,9 @@ A Unity-based digital implementation of the Pathfinder Adventure Card Game.
 ## Digital Implementation Features
 
 - **Action Staging**: Player actions are staged before commitment, allowing undo/cancel
-- **Turn Phase Ordering**: Phases must be completed in sequence
-- **Pause/Resume System**: Game pauses for user input, resumes after decisions
+- **Resolvable System**: Complex interactions broken into user-resolvable steps
+- **Dynamic UI**: Character powers and choices adapt based on game state
+- **Event-Driven Updates**: Clean separation between game logic and presentation
 
 ## Architecture Overview
 
@@ -28,25 +29,28 @@ PACG.SharedAPI   → Cross-layer view controllers, events, view models
 
 ### Key Patterns
 - **Hierarchical Processor Pattern**: Game actions as `IProcessor` instances with `Stack<Queue<IProcessor>>` for proper phase nesting
+- **Resolvable Architecture**: `BaseResolvable` system for user interactions requiring input
 - **GameServices**: Dependency injection bundle for simplified parameter passing
 - **Action Staging**: Request-Validate-Commit-Notify pattern with undo support
 - **Card Logic Integration**: Logic stored on `CardInstance` with facade pattern
-- **Event-Driven UI**: CardLocationChanged events (Gameplay → Presentation)
 - **Convention-Based Discovery**: `{cardID}Logic` class names for card behavior
+- **Player Choice System**: Dynamic choice presentation with structured options
 
 ## Current Status
 
-### Recent Completions
-- ✅ **Character Power System** - Dynamic UI with power button enabling/disabling
-- ✅ **BaseResolvable Architecture** - Common functionality for all resolvables
-- ✅ **End-of-turn Flow** - Complete turn progression with power integration
-- ✅ **Resolvable Sequencing** - Proper transitions between complex user interactions
+### Core Systems Complete
+- ✅ **Game Flow Management** - Hierarchical processor execution with phase control
+- ✅ **Card Logic System** - Convention-based discovery with instance integration
+- ✅ **Character Power System** - Dynamic UI with availability states
+- ✅ **Player Choice Infrastructure** - Structured choice presentation and handling
+- ✅ **Action Staging** - Complete request-validate-commit cycle with undo
+- ✅ **Resolvable Sequencing** - Chaining complex interactions through processors
 
 ### Current Priorities
-1. **Complete processor implementations** - Many turn action processors are placeholders
-2. **Fix encounter initialization** - ExploreProcessor context setup issues
-3. **End-to-end testing** - Verify complete turn and encounter cycles
-4. **Character power expansion** - Implement remaining character abilities
+1. **Expand card implementations** - Add more card-specific logic
+2. **Enhanced encounter variety** - Implement location-specific behaviors
+3. **End-to-end testing** - Verify complete game scenarios
+4. **Advanced check types** - Beyond basic combat checks
 
 ### Technical Info
 - **Unity Version**: 6000.1.11f1
@@ -55,7 +59,7 @@ PACG.SharedAPI   → Cross-layer view controllers, events, view models
 
 ## Development Approach
 
-- **Philosophy**: Get it working, then make it clean
-- **Architecture**: Layer separation (Core never depends on Presentation)
+- **Architecture**: Clean layer separation with dependency injection
+- **Patterns**: Event-driven UI updates, resolvable-centric interactions
 - **Testing**: Manual testing through Unity play mode
-- **Focus**: Core game loop implementation
+- **Focus**: Robust core systems supporting complex card interactions

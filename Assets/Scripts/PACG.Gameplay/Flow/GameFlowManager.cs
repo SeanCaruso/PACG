@@ -5,8 +5,8 @@ namespace PACG.Gameplay
 {
     public class PhaseQueue
     {
-        public Queue<IProcessor> Processors { get; } = new();
-        public string Name { get; } = "";
+        private Queue<IProcessor> Processors { get; } = new();
+        public string Name { get; }
 
         public int Count => Processors.Count;
         public void Enqueue(IProcessor processor) => Processors.Enqueue(processor);
@@ -42,10 +42,7 @@ namespace PACG.Gameplay
         public void QueueNextProcessor(IProcessor processor)
         {
             if (_queueStack.Count == 0)
-            {
-                Debug.LogError($"[{GetType().Name}] Attempted to queue {processor} without a current phase!");
-                return;
-            }
+                _queueStack.Push(new PhaseQueue($"{processor.GetType().Name}"));
 
             Current.Enqueue(processor);
         }

@@ -1,7 +1,5 @@
 using PACG.Data;
 using PACG.SharedAPI;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace PACG.Gameplay
 {
@@ -33,7 +31,7 @@ namespace PACG.Gameplay
 
         public void DoNextResolvable() 
         {
-            _gameFlow.StartPhase(new ResolvableSequenceProcessor(_powerResolvable, _gameServices), "ResolvableSequence");
+            _gameFlow.StartPhase(new NewResolvableProcessor(_powerResolvable, _gameServices), "ResolvableSequence");
         }
     }
 }

@@ -1,13 +1,11 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 namespace PACG.Gameplay
 {
     public class OrisonLogic : CardLogicBase
     {
-        ContextManager _contexts;
+        private readonly ContextManager _contexts;
 
         public OrisonLogic(GameServices gameServices) : base(gameServices)
         {
@@ -30,19 +28,20 @@ namespace PACG.Gameplay
                 if (_contexts.TurnContext.HourCard.Data.cardLevel == 0)
                     actions.Add(new PlayCardAction(card, PF.ActionType.Recharge));
             }
-            else if (_contexts.CanExploreAgain && _contexts.TurnContext.Character == card.Owner)
+            else if (_contexts.CanExplore && _contexts.TurnContext.Character == card.Owner)
             {
                 actions.Add(new ExtraExploreAction(card, PF.ActionType.Discard));
             }
 
-                return actions;
+            return actions;
         }
 
         // We can bless on a local check.
         private bool CanBless(CardInstance card) => (
-            _contexts.CheckContext != null
-            && !_contexts.CheckContext.StagedCardTypes.Contains(PF.CardType.Blessing)
-            && _contexts.CheckContext.Character.Location.Characters.Contains(card.Owner)
+            _contexts.CheckContext != null &&
+            _contexts.CurrentResolvable is ICheckResolvable &&
+            !_contexts.CheckContext.StagedCardTypes.Contains(PF.CardType.Blessing) &&
+            _contexts.CheckContext.Character.Location.Characters.Contains(card.Owner)
         );
     }
 }

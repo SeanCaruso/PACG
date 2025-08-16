@@ -1,6 +1,5 @@
 using PACG.SharedAPI;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace PACG.Gameplay
 {
@@ -8,10 +7,9 @@ namespace PACG.Gameplay
     {
         private readonly IExaminable _examinable;
         public int DeckSize => _examinable?.Deck?.Count ?? 0;
-        private readonly int _count;
-        public int Count => _count;
-        private readonly bool _canReorder;
-        public bool CanReorder => _canReorder;
+        public int Count { get; }
+
+        public bool CanReorder { get; }
 
         private readonly List<CardInstance> _examinedCards;
         public IReadOnlyList<CardInstance> ExaminedCards => _examinedCards;
@@ -22,12 +20,12 @@ namespace PACG.Gameplay
         public ExamineResolvable(IExaminable examinable, int count, bool canReorder = false)
         {
             _examinable = examinable;
-            _count = count;
-            _canReorder = canReorder;
+            Count = count;
+            CanReorder = canReorder;
 
             // Immediately examine the cards.
             _examinedCards = examinable.Deck.ExamineTop(count);
-            _currentOrder = new(_examinedCards);
+            _currentOrder = new List<CardInstance>(_examinedCards);
         }
 
         public override void Initialize()
@@ -42,10 +40,16 @@ namespace PACG.Gameplay
 
         public override void Resolve()
         {
-            if (_canReorder)
+            if (CanReorder)
             {
                 _examinable.Deck.ReorderExamined(_currentOrder);
             }
+        }
+
+        public override StagedActionsState GetUIState(List<IStagedAction> actions)
+        {
+            // The Examine GUI handles its own button.
+            return new StagedActionsState(false, false, false, false);
         }
     }
 }

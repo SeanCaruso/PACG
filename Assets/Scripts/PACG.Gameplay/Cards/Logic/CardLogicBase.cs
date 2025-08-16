@@ -49,7 +49,7 @@ namespace PACG.Gameplay
             foreach (var check in card.Data.checkRequirement.checkSteps)
             {
                 if (check.category == CheckCategory.Combat)
-                    resolvables.Insert(0, new CombatResolvable(_contexts.TurnContext.Character, CardUtils.GetDC(check.baseDC, check.adventureLevelMult)));
+                    resolvables.Insert(0, new CombatResolvable(_contexts.TurnContext.Character, CardUtils.GetDc(check.baseDC, check.adventureLevelMult)));
                 else
                     Debug.LogWarning($"[CardLogicBase] {card.Data.cardName} has a skill check that isn't implemented yet!");
             }

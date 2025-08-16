@@ -72,7 +72,7 @@ namespace PACG.Gameplay
         public void Cancel()
         {
             // Always do the standard undo logic
-            PlayerCharacter pc = _contexts.TurnContext.Character;
+            var pc = _contexts.TurnContext.Character;
             foreach (var action in _pcsStagedActions[pc])
             {
                 action.OnUndo();
@@ -105,17 +105,20 @@ namespace PACG.Gameplay
         {
             // TODO: Update this for the displayed PC. Use Turn PC until then.
             var pc = _contexts.TurnContext.Character;
-            var stagedActions = _pcsStagedActions.GetValueOrDefault(pc) ?? (_pcsStagedActions[pc] = new());
+            var stagedActions = _pcsStagedActions.GetValueOrDefault(pc) ?? (_pcsStagedActions[pc] = new List<IStagedAction>());
 
-            bool canCommit = stagedActions.Count > 0 && (_contexts.CurrentResolvable?.CanCommit(stagedActions) ?? true); // We have actions but no resolvable? We can commit!
-            bool canSkip = stagedActions.Count == 0 && (_contexts.CurrentResolvable?.CanCommit(stagedActions) ?? false); // We don't have any actions and no resolvable to skip, so false!
-
-            StagedActionsState state = new(
-                canCancel: stagedActions.Count > 0 || _contexts.CurrentResolvable?.CancelAbortsPhase == true,
-                canCommit: canCommit && !_hasExploreStaged,
-                canSkip: canSkip && !_hasExploreStaged,
-                isExploreEnabled: _contexts.TurnContext.CanExplore || _hasExploreStaged);
+            var state = _contexts.CurrentResolvable?.GetUIState(stagedActions) ?? GetDefaultUiState(stagedActions);
             GameEvents.RaiseStagedActionsStateChanged(state);
+        }
+
+        private StagedActionsState GetDefaultUiState(List<IStagedAction> actions)
+        {
+            return new StagedActionsState(
+                canCommit: actions.Any(),
+                canSkip: false,
+                canCancel: actions.Any(),
+                isExploreEnabled: _contexts.TurnContext.CanFreelyExplore || _hasExploreStaged
+            );
         }
 
         public void Commit()
