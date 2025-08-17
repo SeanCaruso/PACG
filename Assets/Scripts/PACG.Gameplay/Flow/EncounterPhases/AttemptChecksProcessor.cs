@@ -1,4 +1,3 @@
-using UnityEngine;
 
 namespace PACG.Gameplay
 {
@@ -14,6 +13,8 @@ namespace PACG.Gameplay
 
         protected override void OnExecute()
         {
+            if (_contexts.EncounterContext == null) return;
+            
             var resolvables = _contexts.EncounterContext.Card.GetCheckResolvables();
             // TODO: Handle multiple resolvables
             if (resolvables.Count > 0) _contexts.NewResolvable(resolvables[0]);

@@ -27,7 +27,8 @@ namespace PACG.Gameplay
             GameEvents.RaiseEncounterStarted(_card);
 
             // TODO: Add all encounter phases.
-            //GFM.QueueNextPhase(new OnEncounterProcessor(_gameServices));
+            _gameFlow.QueueNextProcessor(new OnEncounterProcessor(_gameServices));
+            _gameFlow.QueueNextProcessor(new Encounter_EvasionProcessor(_gameServices));
             //GFM.QueueNextPhase(new BeforeActingProcessor(_gameServices));
             _gameFlow.QueueNextProcessor(new AttemptChecksProcessor(_gameServices));
             //GFM.QueueNextPhase(new AfterActingProcessor(_gameServices));

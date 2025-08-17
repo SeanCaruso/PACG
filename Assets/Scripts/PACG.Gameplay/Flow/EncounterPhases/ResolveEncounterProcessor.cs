@@ -1,5 +1,4 @@
 using PACG.SharedAPI;
-using UnityEngine;
 
 namespace PACG.Gameplay
 {
@@ -17,12 +16,14 @@ namespace PACG.Gameplay
 
         protected override void OnExecute()
         {
+            if (_contexts.EncounterContext == null) return;
+            
             var encounteredCard = _contexts.EncounterContext.Card;
-            bool wasSuccess = _contexts.EncounterContext.CheckResult.WasSuccess;
+            var wasSuccess = _contexts.EncounterContext.CheckResult.WasSuccess;
 
-            bool banish = (encounteredCard.IsBane && wasSuccess) || (encounteredCard.IsBoon && !wasSuccess);
+            var shouldBanish = (encounteredCard.IsBane && wasSuccess) || (encounteredCard.IsBoon && !wasSuccess);
 
-            if (banish)
+            if (shouldBanish)
             {
                 _cardManager.MoveCard(encounteredCard, CardLocation.Vault);
             }

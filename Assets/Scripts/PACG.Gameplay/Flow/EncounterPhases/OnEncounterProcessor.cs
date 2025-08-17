@@ -1,5 +1,3 @@
-
-using PACG.SharedAPI;
 using UnityEngine;
 
 namespace PACG.Gameplay
@@ -16,6 +14,12 @@ namespace PACG.Gameplay
 
         protected override void OnExecute()
         {
+            if (_contexts.EncounterContext == null)
+            {
+                Debug.LogError($"[{GetType().Name}] EncounterContext is null already!");
+                return;
+            }
+            
             var resolvables = _contexts.EncounterContext.Card.GetOnEncounterResolvables();
             // TODO: Handle multiple resolvables
             if (resolvables.Count > 0 ) _contexts.NewResolvable(resolvables[0]);

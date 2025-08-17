@@ -50,7 +50,7 @@ namespace PACG.Gameplay
             {
                 actions.Add(new PlayCardAction(card, PF.ActionType.Discard, ("Bless", true)));
             }
-            else if (_contexts.CanExplore && _contexts.TurnContext.Character == card.Owner)
+            else if (_contexts.IsExplorePossible && _contexts.TurnContext.Character == card.Owner)
             {
                 actions.Add(new PlayCardAction(card, PF.ActionType.Discard, ("Bless", false)));
             }

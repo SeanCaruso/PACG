@@ -16,6 +16,7 @@ namespace PACG.Gameplay
     public class TurnContext
     {
         public PlayerCharacter Character { get; }
+        public Location Location => Character.Location;
 
         public TurnPhase CurrentPhase { get; set; } = TurnPhase.TurnStart;
 

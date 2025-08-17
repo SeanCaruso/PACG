@@ -20,8 +20,8 @@ namespace PACG.Gameplay
             if (CanReveal(card))
                 actions.Add(new PlayCardAction(card, PF.ActionType.Reveal));
 
-            // Can discard to examine any time outside of resolvables.
-            if (_contexts.CurrentResolvable == null)
+            // Can discard to examine any time outside resolvables.
+            if (_contexts.CurrentResolvable == null && card.Owner.Location.Count > 0)
                 actions.Add(new PlayCardAction(card, PF.ActionType.Discard));
             return actions;
         }

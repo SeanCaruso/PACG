@@ -1,6 +1,4 @@
-
 using PACG.SharedAPI;
-
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -19,8 +17,7 @@ namespace PACG.Gameplay
         private readonly Dictionary<PlayerCharacter, List<IStagedAction>> _pcsStagedActions = new();
         private readonly Dictionary<CardInstance, CardLocation> _originalCardLocs = new();
 
-        private bool _hasExploreStaged;
-        public bool HasExploreStaged => _hasExploreStaged;
+        private bool HasExploreStaged { get; set; }
 
         public IReadOnlyList<CardInstance> StagedCards => _originalCardLocs.Keys.ToList();
         public bool CardStaged(CardInstance card) => _originalCardLocs.Keys.Contains(card);
@@ -35,7 +32,9 @@ namespace PACG.Gameplay
 
         public void StageAction(IStagedAction action)
         {
-            var pcActions = _pcsStagedActions.GetValueOrDefault(action.Card.Owner, new());
+            var pcActions = _pcsStagedActions.GetValueOrDefault(
+                action.Card.Owner, new List<IStagedAction>()
+            );
 
             if (pcActions.Contains(action))
             {
@@ -49,7 +48,7 @@ namespace PACG.Gameplay
                 return;
             }
 
-            _hasExploreStaged = action is ExtraExploreAction;
+            HasExploreStaged = action is ExploreAction;
 
             // If this is the first staged action for this card, store where it originally came from.
             _originalCardLocs.TryAdd(action.Card, action.Card.CurrentLocation);
@@ -78,13 +77,13 @@ namespace PACG.Gameplay
                 action.OnUndo();
             }
 
-            foreach ((var card, var location) in _originalCardLocs)
+            foreach (var (card, location) in _originalCardLocs)
             {
                 _cards.MoveCard(card, location);
             }
             GameEvents.RaiseCardLocationsChanged(_originalCardLocs.Keys.ToList());
 
-            _hasExploreStaged = false;
+            HasExploreStaged = false;
             _originalCardLocs.Clear();
             _pcsStagedActions[pc].Clear();
             _contexts.CheckContext?.ClearStagedTypes();
@@ -114,10 +113,10 @@ namespace PACG.Gameplay
         private StagedActionsState GetDefaultUiState(List<IStagedAction> actions)
         {
             return new StagedActionsState(
-                canCommit: actions.Any() && !_hasExploreStaged,
+                canCommit: actions.Any() && !HasExploreStaged,
                 canSkip: false,
                 canCancel: actions.Any(),
-                isExploreEnabled: _contexts.TurnContext.CanFreelyExplore || _hasExploreStaged
+                isExploreEnabled: _contexts.TurnContext.CanFreelyExplore || HasExploreStaged
             );
         }
 
@@ -130,7 +129,7 @@ namespace PACG.Gameplay
             {
                 action.Commit(_contexts.CheckContext);
             }
-            _hasExploreStaged = false;
+            HasExploreStaged = false;
             _originalCardLocs.Clear();
             _pcsStagedActions.Clear();
             _cards.RestoreRevealedCardsToHand();

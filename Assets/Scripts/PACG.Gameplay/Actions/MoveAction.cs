@@ -1,28 +1,27 @@
 using PACG.SharedAPI;
-using UnityEngine;
 
 namespace PACG.Gameplay
 {
-    public class ExtraExploreAction : IStagedAction
+    public class MoveAction : IStagedAction
     {
-        public CardInstance Card { get; } = null;
+        public CardInstance Card { get; }
         public PF.ActionType ActionType { get; }
 
-        public bool IsFreely => throw new System.NotImplementedException();
+        public bool IsFreely => false; // Doesn't apply to Move actions.
 
         /// <summary>
-        /// Extra explore actions triggered by something other than playing a card.
+        /// Move actions triggered by something other than playing a card.
         /// </summary>
-        public ExtraExploreAction()
+        public MoveAction()
         {
         }
 
         /// <summary>
-        /// Extra explore actions triggerd by playing a card.
+        /// Move actions triggered by playing a card.
         /// </summary>
         /// <param name="card"></param>
         /// <param name="actionType"></param>
-        public ExtraExploreAction(CardInstance card, PF.ActionType actionType)
+        public MoveAction(CardInstance card, PF.ActionType actionType)
         {
             Card = card;
             ActionType = actionType;
@@ -30,7 +29,7 @@ namespace PACG.Gameplay
 
         public void Commit(CheckContext checkContext = null) => Card.Logic?.Execute(Card, this);
 
-        public void OnStage() => GameEvents.SetStatusText("Explore again?");
+        public void OnStage() => GameEvents.SetStatusText("Move?");
 
         public void OnUndo() => GameEvents.SetStatusText("");
     }

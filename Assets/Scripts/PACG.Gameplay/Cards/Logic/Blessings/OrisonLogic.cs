@@ -14,7 +14,7 @@ namespace PACG.Gameplay
 
         public override void Execute(CardInstance card, IStagedAction action)
         {
-            if (action is not ExtraExploreAction)
+            if (action is not ExploreAction)
                 _contexts.CheckContext.BlessingCount++;
         }
 
@@ -28,9 +28,9 @@ namespace PACG.Gameplay
                 if (_contexts.TurnContext.HourCard.Data.cardLevel == 0)
                     actions.Add(new PlayCardAction(card, PF.ActionType.Recharge));
             }
-            else if (_contexts.CanExplore && _contexts.TurnContext.Character == card.Owner)
+            else if (_contexts.IsExplorePossible && _contexts.TurnContext.Character == card.Owner)
             {
-                actions.Add(new ExtraExploreAction(card, PF.ActionType.Discard));
+                actions.Add(new ExploreAction(card, PF.ActionType.Discard));
             }
 
             return actions;

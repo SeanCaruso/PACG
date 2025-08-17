@@ -1,3 +1,4 @@
+using PACG.SharedAPI;
 using UnityEngine;
 
 namespace PACG.Gameplay
@@ -28,8 +29,10 @@ namespace PACG.Gameplay
         public void NewTurn(TurnContext turnContext) => TurnContext = turnContext;
         public void EndTurn()
         {
-            if (CheckContext != null) Debug.LogWarning($"[{GetType().Name}] Ending turn with a CheckContext still active!");
-            if (EncounterContext != null) Debug.LogWarning($"[{GetType().Name}] Ending turn with an EncounterContext still active!");
+            if (CheckContext != null)
+                Debug.LogWarning($"[{GetType().Name}] Ending turn with a CheckContext still active!");
+            if (EncounterContext != null)
+                Debug.LogWarning($"[{GetType().Name}] Ending turn with an EncounterContext still active!");
 
             TurnContext = null;
         }
@@ -45,6 +48,7 @@ namespace PACG.Gameplay
 
         public void EndEncounter()
         {
+            GameEvents.RaiseEncounterEnded();
             EncounterContext = null;
         }
 
@@ -54,7 +58,8 @@ namespace PACG.Gameplay
         /// <param name="resolvable"></param>
         public void NewResolvable(IResolvable resolvable)
         {
-            if (CurrentResolvable != null) Debug.LogWarning($"[ContextManager] Created {resolvable} is overwriting {CurrentResolvable}!");
+            if (CurrentResolvable != null)
+                Debug.LogWarning($"[ContextManager] Created {resolvable} is overwriting {CurrentResolvable}!");
 
             CurrentResolvable = resolvable;
 
@@ -68,7 +73,8 @@ namespace PACG.Gameplay
                     effect is SkillBonusExploreEffect { IsForOneCheck: true });
             }
 
-            // Now that it's set as our current resolvable and we have a CheckContext if needed, do any post-construction setup.
+            // Now that it's set as our current resolvable and we have a CheckContext if needed,
+            // do any post-construction setup.
             resolvable.Initialize();
 
             // Update the ActionStagingManager in case we need to show a Skip button.
@@ -95,7 +101,7 @@ namespace PACG.Gameplay
         public Location EncounterPcLocation => GameContext.GetPcLocation(EncounterContext.Character);
 
         // Test for additional explorations
-        public bool CanExplore => (    // We can explore if...
+        public bool IsExplorePossible => (  // Exploration is possible if...
             CurrentResolvable == null &&    // ... we don't have a resolvable...
             TurnPcLocation.Count > 0 &&     // ... we have more cards in the location...
             _asm.StagedCards.Count == 0     // ... and we don't have any currently staged cards.

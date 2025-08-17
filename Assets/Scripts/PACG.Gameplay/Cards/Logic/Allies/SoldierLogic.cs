@@ -54,9 +54,9 @@ namespace PACG.Gameplay
             if (CanRecharge(card))
                 actions.Add(new PlayCardAction(card, PF.ActionType.Recharge));
 
-            if (_contexts.CanExplore && card.Owner == _contexts.TurnContext.Character)
+            if (_contexts.IsExplorePossible && card.Owner == _contexts.TurnContext.Character)
             {
-                actions.Add(new ExtraExploreAction(card, PF.ActionType.Discard));
+                actions.Add(new ExploreAction(card, PF.ActionType.Discard));
             }
 
             return actions;

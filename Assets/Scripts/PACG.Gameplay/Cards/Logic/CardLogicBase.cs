@@ -15,19 +15,21 @@ namespace PACG.Gameplay
         }
 
         // Playable card methods (default implementations for non-playable cards)
-        public virtual List<IStagedAction> GetAvailableActions(CardInstance card)
+        public List<IStagedAction> GetAvailableActions(CardInstance card)
         {
             // If we're in an encounter with a card with immunities...
             if (_contexts.EncounterContext?.CardData.immunities.Count > 0)
             {
-
+                // TODO: Handle immunities.
             }
 
-            // If the card has any prohibited traits, (e.g. 2-Handed vs. Offhand), just return.
-            foreach (((var character, _), var prohibitedTraits) in _contexts.EncounterContext?.ProhibitedTraits ?? new())
+            // If the card has any prohibited traits, (e.g., 2-Handed vs. Offhand), just return.
+            foreach (var ((character, _), prohibitedTraits) in
+                     _contexts.EncounterContext?.ProhibitedTraits ??
+                     new Dictionary<(PlayerCharacter, CardInstance), List<string>>())
             {
                 if (character == card.Owner && card.Data.traits.Intersect(prohibitedTraits).Any())
-                    return new();
+                    return new List<IStagedAction>();
             }
 
             return GetAvailableCardActions(card);
@@ -49,7 +51,12 @@ namespace PACG.Gameplay
             foreach (var check in card.Data.checkRequirement.checkSteps)
             {
                 if (check.category == CheckCategory.Combat)
-                    resolvables.Insert(0, new CombatResolvable(_contexts.TurnContext.Character, CardUtils.GetDc(check.baseDC, check.adventureLevelMult)));
+                {
+                    resolvables.Insert(0, new CombatResolvable(
+                        _contexts.TurnContext.Character,
+                        CardUtils.GetDc(check.baseDC, check.adventureLevelMult))
+                    );
+                }
                 else
                     Debug.LogWarning($"[CardLogicBase] {card.Data.cardName} has a skill check that isn't implemented yet!");
             }
