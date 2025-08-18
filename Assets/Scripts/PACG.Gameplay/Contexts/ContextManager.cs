@@ -6,6 +6,7 @@ namespace PACG.Gameplay
     public class ContextManager
     {
         private ActionStagingManager _asm;
+
         public void Initialize(GameServices gameServices)
         {
             _asm = gameServices.ASM;
@@ -27,6 +28,7 @@ namespace PACG.Gameplay
         public void NewGame(GameContext gameContext) => GameContext = gameContext;
 
         public void NewTurn(TurnContext turnContext) => TurnContext = turnContext;
+
         public void EndTurn()
         {
             if (CheckContext != null)
@@ -41,7 +43,7 @@ namespace PACG.Gameplay
         public void NewEncounter(EncounterContext encounterContext)
         {
             EncounterContext = encounterContext;
-            
+
             encounterContext.ExploreEffects.AddRange(TurnContext.ExploreEffects);
             TurnContext.ExploreEffects.Clear();
         }
@@ -101,10 +103,11 @@ namespace PACG.Gameplay
         public Location EncounterPcLocation => GameContext.GetPcLocation(EncounterContext.Character);
 
         // Test for additional explorations
-        public bool IsExplorePossible => (  // Exploration is possible if...
-            CurrentResolvable == null &&    // ... we don't have a resolvable...
-            TurnPcLocation.Count > 0 &&     // ... we have more cards in the location...
-            _asm.StagedCards.Count == 0     // ... and we don't have any currently staged cards.
+        public bool IsExplorePossible => (      // Exploration is possible if...
+                CurrentResolvable == null &&    // ... we don't have a resolvable...
+                EncounterContext == null &&     // ... or encounter, ...
+                TurnPcLocation.Count > 0 &&     // ... we have more cards in the location, ...
+                _asm.StagedCards.Count == 0     // ... and we don't have any currently staged cards.
             );
     }
 }

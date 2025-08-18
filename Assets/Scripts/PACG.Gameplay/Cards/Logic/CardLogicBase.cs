@@ -17,11 +17,10 @@ namespace PACG.Gameplay
         // Playable card methods (default implementations for non-playable cards)
         public List<IStagedAction> GetAvailableActions(CardInstance card)
         {
-            // If we're in an encounter with a card with immunities...
-            if (_contexts.EncounterContext?.CardData.immunities.Count > 0)
-            {
-                // TODO: Handle immunities.
-            }
+            // Only cards in hand (including reveals) and display are playable by default.
+            // Resolvables will add extra actions if necessary.
+            if (card.CurrentLocation is not (CardLocation.Displayed or CardLocation.Hand or CardLocation.Revealed))
+                return new List<IStagedAction>();
 
             // If the card has any prohibited traits, (e.g., 2-Handed vs. Offhand), just return.
             foreach (var ((character, _), prohibitedTraits) in
