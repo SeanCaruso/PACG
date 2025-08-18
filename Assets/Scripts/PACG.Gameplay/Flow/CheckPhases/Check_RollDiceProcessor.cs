@@ -42,7 +42,13 @@ namespace PACG.Gameplay
 
             var needsReroll = check.CheckResult.MarginOfSuccess < _contexts.EncounterContext.CardData.rerollThreshold;
             var cardsToCheck = pc.Hand.Union(pc.DisplayedCards);
-            var hasRerollOptions = cardsToCheck.Any(card => card.GetAvailableActions().Count > 0);
+            var cardInstances = cardsToCheck.ToList();
+            var hasRerollOptions = cardInstances.Any(card => card.GetAvailableActions().Count > 0);
+
+            foreach (var card in cardInstances.Where(card => card.GetAvailableActions().Count > 0))
+            {
+                Debug.Log($"{card} has a reroll action.");
+            }
 
             // No playable cards allow rerolls... check if a played card set the context.
             hasRerollOptions |= ((List<CardLogicBase>)_contexts.CheckContext.ContextData.GetValueOrDefault("rerollCards", new List<CardLogicBase>())).Count > 0;

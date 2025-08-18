@@ -9,9 +9,6 @@ namespace PACG.SharedAPI
 {
     public class CardPreviewController : MonoBehaviour
     {
-        [Header("Other Controllers")]
-        public CardDisplayController cardDisplayController;
-
         [Header("UI Elements")]
         public GameObject previewArea;
         public Button backgroundButton;
@@ -25,7 +22,7 @@ namespace PACG.SharedAPI
         private int originalSiblingIndex;
         private Vector3 originalScale;
 
-        private readonly List<GameObject> activeActionButtons = new();
+        private readonly List<GameObject> _activeActionButtons = new();
 
         // Dependencies set up via dependency injection in Initialize.
         private ActionStagingManager _actionStagingManager;
@@ -48,7 +45,7 @@ namespace PACG.SharedAPI
         {
             if (currentlyEnlargedCard != null) return;
 
-            var cardInstance = cardDisplayController.GetInstanceFromDisplay(cardDisplay);
+            var cardInstance = cardDisplay.ViewModel.CardInstance;
             if (cardInstance == null)
             {
                 Debug.LogError($"Tried to preview {cardDisplay.name}, but it has no CardInstance!");
@@ -100,7 +97,7 @@ namespace PACG.SharedAPI
                     EndPreview();
                 });
 
-                activeActionButtons.Add(buttonObj);
+                _activeActionButtons.Add(buttonObj);
             }
         }
 
@@ -134,11 +131,11 @@ namespace PACG.SharedAPI
             currentlyEnlargedCard = null;
 
             // Remove any action buttons.
-            foreach (var button in activeActionButtons)
+            foreach (var button in _activeActionButtons)
             {
                 Destroy(button);
             }
-            activeActionButtons.Clear();
+            _activeActionButtons.Clear();
         }
     }
 }

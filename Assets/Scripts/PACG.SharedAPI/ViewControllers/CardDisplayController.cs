@@ -12,19 +12,21 @@ namespace PACG.SharedAPI
     /// </summary>
     public class CardDisplayController : MonoBehaviour
     {
+        [Header("Dependencies")]
+        public CardDisplayFactory CardDisplayFactory;
+        
         [Header("Non-Player Card Container Transforms")]
         public RectTransform HoursContainer;
         public RectTransform EncounteredContainer;
 
         [Header("Player Card Container Transforms")]
-        public RectTransform HandContainer;
         public RectTransform DisplayedContainer;
         public RectTransform RevealedContainer;
         public RectTransform DiscardsContainer;
         public RectTransform RecoveryContainer;
         public RectTransform HiddenContainer;
 
-        [Header("Hand Layout")]
+        [Header("Default Layout")]
         // TODO: Implement hand fanning at large hand sizes
         //public float maxHandWidth = 1200f;
         //public float cardSpacing = 120f;
@@ -32,14 +34,8 @@ namespace PACG.SharedAPI
         //public float hoverHeight = 40f;
         //public AnimationCurve fanCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
-        [Header("Card Management")]
-        public CardDisplay CardPrefab;
-
         private PlayerCharacter PC { get; set; }
-
-        private readonly Dictionary<CardInstance, CardDisplay> _instanceToDisplayMap = new();
-        public CardInstance GetInstanceFromDisplay(CardDisplay display) => _instanceToDisplayMap.FirstOrDefault(kvp => kvp.Value == display).Key;
-
+        
         protected void Awake()
         {
             SetupDiscardClickHandler();
@@ -68,16 +64,19 @@ namespace PACG.SharedAPI
 
         private void OnHourChanged(CardInstance hourCard)
         {
-            var cardDisplay = GetCardDisplay(hourCard);
-            cardDisplay.transform.SetParent(HoursContainer, worldPositionStays: false);
-            cardDisplay.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+            CardDisplayFactory.CreateCardDisplay(
+                hourCard,
+                CardDisplayFactory.DisplayContext.Default,
+                HoursContainer
+            );
         }
 
         private void OnEncounterStarted(CardInstance encounteredCard)
         {
-            var cardDisplay = GetCardDisplay(encounteredCard);
-            cardDisplay.transform.SetParent(EncounteredContainer, worldPositionStays: false);
-            cardDisplay.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+            CardDisplayFactory.CreateCardDisplay(
+                encounteredCard,
+                CardDisplayFactory.DisplayContext.Default,
+                EncounteredContainer);
         }
 
         private void OnEncounterEnded()
@@ -103,7 +102,7 @@ namespace PACG.SharedAPI
 
         public void OnCardLocationChanged(CardInstance card)
         {
-            var cardDisplay = GetCardDisplay(card);
+            var cardDisplay = CardDisplayFactory.CreateCardDisplay(card, CardDisplayFactory.DisplayContext.Default);
             if (!cardDisplay)
             {
                 Debug.LogError($"StageAction --- Unable to find cardDisplay for {card.Data.cardName}. Action not staged!");
@@ -131,7 +130,7 @@ namespace PACG.SharedAPI
                     cardDisplay.transform.localScale = new Vector3(.6f, .6f);
                     break;
                 case CardLocation.Hand:
-                    cardDisplay.transform.SetParent(HandContainer);
+                    //cardDisplay.transform.SetParent(HandContainer);
                     break;
                 case CardLocation.Recovery:
                     cardDisplay.transform.SetParent(RecoveryContainer);
@@ -182,9 +181,6 @@ namespace PACG.SharedAPI
             if (cardDisplay.TryGetComponent<CardDragHandler>(out var dragHandler))
                 Destroy(dragHandler);
         }
-
-        private void HideCard(CardInstance card) => GetCardDisplay(card).transform.SetParent(HiddenContainer);
-        public void HideCard(CardDisplay card) => HideCard(GetInstanceFromDisplay(card));
         
         // ========================================================================================
         // DECK EXAMINATION
@@ -216,21 +212,6 @@ namespace PACG.SharedAPI
             };
             
             DialogEvents.RaiseExamineEvent(context);
-        }
-
-        // ========================================================================================
-        // CardDisplay INSTANTIATION
-        // ========================================================================================
-        public CardDisplay GetCardDisplay(CardInstance card)
-        {
-            // If it already exists, return it.
-            if (_instanceToDisplayMap.TryGetValue(card, out var display)) return display;
-
-            // Otherwise, create a new one.
-            var cardDisplay = Instantiate(CardPrefab, HiddenContainer);
-            cardDisplay.SetViewModel(CardViewModelFactory.CreateFrom(card));
-            _instanceToDisplayMap.Add(card, cardDisplay);
-            return cardDisplay;
         }
     }
 }

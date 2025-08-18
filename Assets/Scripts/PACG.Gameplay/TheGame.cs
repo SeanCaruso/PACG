@@ -94,6 +94,8 @@ namespace PACG.Gameplay
 
             var pcLogic = _gameServices.Logic.GetLogic<CharacterLogicBase>(testCharacter.characterName);
             PlayerCharacter testPc = new(testCharacter, pcLogic, _gameServices);
+            GameEvents.RaisePlayerCharacterChanged(testPc);
+            
             foreach (var card in characterDeck) testPc.ShuffleIntoDeck(_gameServices.Cards.New(card, testPc));
             CardDisplayController.SetCurrentPC(testPc);
 

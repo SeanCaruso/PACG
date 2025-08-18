@@ -38,9 +38,12 @@ namespace PACG.Presentation
         [Header("Traits")]
         public GameObject traitsSection;
 
+        public CardViewModel ViewModel { get; private set; }
         public void SetViewModel(CardViewModel view)
         {
             if (view == null) return;
+            
+            ViewModel = view;
 
             // Set the various panel colors to the card type's color.
             topPanel.GetComponent<Image>().color = view.PanelColor;
@@ -75,7 +78,7 @@ namespace PACG.Presentation
         private void UpdateChecksSection(CardViewModel view)
         {
             checksLabelText.text = view.ChecksLabel;
-            foreach (var skill in view.Check1_Skills) AddTextToPanel(skill, checksSection, 8f);
+            foreach (var skill in view.Check1Skills) AddTextToPanel(skill, checksSection, 8f);
 
             if (view.CheckMode == CheckMode.None)
             {
@@ -86,7 +89,7 @@ namespace PACG.Presentation
                 return;
             }
 
-            checkDC.text = view.Check1_DC;
+            checkDC.text = view.Check1Dc;
 
             // If we don't have Check2, return.
             if (!view.ShowCheck2) return;
@@ -105,8 +108,8 @@ namespace PACG.Presentation
                 Debug.LogError($"UpdateCardDisplay --- {view.Name} has multiple checks, but an invalid check mode!");
             }
 
-            foreach (var skill in view.Check2_Skills) AddTextToPanel(skill, checksSection2, 8f);
-            checkDC2.text = view.Check2_DC;
+            foreach (var skill in view.Check2Skills) AddTextToPanel(skill, checksSection2, 8f);
+            checkDC2.text = view.Check2Dc;
 
         }
 

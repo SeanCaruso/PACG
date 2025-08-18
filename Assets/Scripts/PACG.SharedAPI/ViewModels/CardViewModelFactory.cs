@@ -12,20 +12,9 @@ namespace PACG.SharedAPI
 
             var data = card.Data;
 
-            var viewModel = new CardViewModel
+            var viewModel = new CardViewModel(card)
             {
-                Name = data.cardName.ToUpper(),
-                Type = data.cardType.ToString().ToUpper(),
-                Level = data.cardLevel.ToString().ToUpper(),
-                // TODO: Replace # in power text with adventure level calculation.
-                PowersText = data.powers,
-                RecoveryText = data.recovery,
-
-                PanelColor = GetPanelColor(data.cardType),
-                Traits = data.traits.Select(t => t.ToUpper()),
-
-                ChecksLabel = data is BoonCardData ? "CHECK TO ACQUIRE" : "CHECK TO DEFEAT",
-                CheckMode = data.checkRequirement.mode
+                PanelColor = GetPanelColor(data.cardType)
             };
 
             if (data.checkRequirement.mode == CheckMode.None)
@@ -33,7 +22,7 @@ namespace PACG.SharedAPI
                 if (data.checkRequirement.checkSteps.Count > 0)
                     Debug.LogWarning($"{data.name} has CheckMode.None with check steps!");
 
-                viewModel.Check1_Skills = new[] { "NONE" };
+                viewModel.Check1Skills = new[] { "NONE" };
                 // We're done!
                 return viewModel;
             }
@@ -45,10 +34,10 @@ namespace PACG.SharedAPI
             }
 
             var checkStep1 = data.checkRequirement.checkSteps[0];
-            viewModel.Check1_Skills = checkStep1.category == CheckCategory.Combat
+            viewModel.Check1Skills = checkStep1.category == CheckCategory.Combat
                 ? new[] { "COMBAT" }
                 : checkStep1.allowedSkills.Select(s => s.ToString().ToUpper());
-            viewModel.Check1_DC = CardUtils.GetDc(checkStep1.baseDC, checkStep1.adventureLevelMult).ToString();
+            viewModel.Check1Dc = CardUtils.GetDc(checkStep1.baseDC, checkStep1.adventureLevelMult).ToString();
             
             if (data.checkRequirement.mode == CheckMode.Single)
             {
@@ -64,10 +53,10 @@ namespace PACG.SharedAPI
             }
 
             var checkStep2 = data.checkRequirement.checkSteps[1];
-            viewModel.Check2_Skills = checkStep2.category == CheckCategory.Combat
+            viewModel.Check2Skills = checkStep2.category == CheckCategory.Combat
                 ? new[] { "COMBAT" }
                 : checkStep2.allowedSkills.Select(s => s.ToString().ToUpper());
-            viewModel.Check2_DC = CardUtils.GetDc(checkStep2.baseDC, checkStep2.adventureLevelMult).ToString();
+            viewModel.Check2Dc = CardUtils.GetDc(checkStep2.baseDC, checkStep2.adventureLevelMult).ToString();
 
             return viewModel;
         }

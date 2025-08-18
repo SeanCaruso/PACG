@@ -1,7 +1,6 @@
 using PACG.SharedAPI;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 namespace PACG.Presentation
 {
@@ -10,7 +9,6 @@ namespace PACG.Presentation
     {
         private RectTransform _rectTransform;
         private CanvasGroup _canvasGroup;
-        private LayoutElement _layoutElement;
         private CardInputHandler _cardInputHandler;
         private Canvas _rootCanvas;
 
@@ -31,8 +29,6 @@ namespace PACG.Presentation
             _canvasGroup = GetComponent<CanvasGroup>();
             _cardInputHandler = GetComponent<CardInputHandler>();
             _rootCanvas = GetComponentInParent<Canvas>();
-
-            TryGetComponent<LayoutElement>(out _layoutElement);
         }
 
         public void Initialize(DeckExamineController examineController)
@@ -111,8 +107,14 @@ namespace PACG.Presentation
 
         public void OnDrop(PointerEventData eventData)
         {
+            if (!_examineController)
+            {
+                Debug.LogError($"[{GetType().Name}] Examine controller is null - CardDragHandler was not initialized!");
+                return;
+            }
+            
             var draggedObject = eventData.pointerDrag;
-            if (draggedObject != null && draggedObject != gameObject)
+            if (draggedObject && draggedObject != gameObject)
             {
                 _examineController.SwapCards(gameObject, draggedObject);
             }

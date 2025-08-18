@@ -22,18 +22,23 @@ namespace PACG.SharedAPI
         public bool CanReorder { get; set; }
         public System.Action OnClose { get; set; }
     }
-    
+
     public class DeckExamineController : MonoBehaviour
     {
-        [Header("Other Controllers")] public CardDisplayController CardDisplayController;
+        [Header("Other Dependencies")]
+        public CardDisplayController CardDisplayController;
+        public CardDisplayFactory CardDisplayFactory;
 
-        [Header("UI Elements")] public GameObject ExamineArea;
+        [Header("UI Elements")]
+        public GameObject ExamineArea;
         public Button BackgroundButton;
         public Transform CardBacksContainer;
         public Transform CardsContainer;
         public Transform ButtonContainer;
 
-        [Header("Prefabs")] public GameObject ButtonPrefab;
+        [Header("Prefabs")]
+        public GameObject ButtonPrefab;
+
         public GameObject CardBackPrefab;
 
         // Dependency injections
@@ -42,7 +47,7 @@ namespace PACG.SharedAPI
         // Other members
         private ExamineContext _context;
         private readonly Dictionary<GameObject, CardInstance> _cardDisplayObjectsToInstances = new();
-        private CardInstance _topDiscardCardInstance;        
+        private CardInstance _topDiscardCardInstance;
 
         protected void Awake()
         {
@@ -53,7 +58,7 @@ namespace PACG.SharedAPI
         {
             DialogEvents.ExamineEvent -= OnExamineEvent;
         }
-        
+
         protected void OnEnable()
         {
             BackgroundButton.onClick.AddListener(EndExamine);
@@ -72,12 +77,12 @@ namespace PACG.SharedAPI
         private void OnExamineEvent(ExamineContext context)
         {
             _context = context;
-            
+
             // Clears any old states.
             PrepareExamine();
 
             ExamineArea.SetActive(true);
-            
+
             switch (context.ExamineMode)
             {
                 case ExamineContext.Mode.Deck:
@@ -105,17 +110,21 @@ namespace PACG.SharedAPI
 
             foreach (var card in context.Cards)
             {
-                var cardDisplay = CardDisplayController.GetCardDisplay(card);
-                cardDisplay.transform.SetParent(CardsContainer, worldPositionStays: false);
-                
+                var cardDisplay = CardDisplayFactory.CreateCardDisplay(
+                    card,
+                    CardDisplayFactory.DisplayContext.Browser,
+                    CardsContainer
+                );
+
                 _cardDisplayObjectsToInstances.Add(cardDisplay.gameObject, card);
 
-                // Add a drag handler (and track the CardInstance) if we can reorder.
-                if (context.CanReorder)
-                    cardDisplay.gameObject.AddComponent<CardDragHandler>().Initialize(this);
+                // Enable/disable drag handler as needed.
+                if (!cardDisplay.TryGetComponent<CardDragHandler>(out var dragHandler)) continue;
+                dragHandler.Initialize(this);
+                dragHandler.enabled = context.CanReorder;
             }
         }
-        
+
         private void ExamineDiscards(ExamineContext context)
         {
             if (CardDisplayController.DiscardsContainer.childCount != 1)
@@ -123,19 +132,25 @@ namespace PACG.SharedAPI
                 Debug.LogError($"[{GetType().Name}] Discard pile child count is not 1!");
                 return;
             }
-            
+
             // Store the top discard card to show it as the top card in the deck when done.
             var topDiscardDisplay = CardDisplayController.DiscardsContainer.GetChild(0).GetComponent<CardDisplay>();
-            
+
             CardBacksContainer.gameObject.SetActive(false);
 
             var sortedCards = context.Cards.OrderBy(card => card.ToString());
             foreach (var card in sortedCards)
             {
-                var cardDisplay = CardDisplayController.GetCardDisplay(card);
-                cardDisplay.transform.SetParent(CardsContainer, worldPositionStays: false);
-                _cardDisplayObjectsToInstances.Add(cardDisplay.gameObject, card);
+                var cardDisplay = CardDisplayFactory.CreateCardDisplay(
+                    card,
+                    CardDisplayFactory.DisplayContext.Browser,
+                    CardsContainer
+                );
+                if (cardDisplay.TryGetComponent<CardDragHandler>(out var dragHandler))
+                    dragHandler.enabled = false;
                 
+                _cardDisplayObjectsToInstances.Add(cardDisplay.gameObject, card);
+
                 if (topDiscardDisplay == cardDisplay)
                     _topDiscardCardInstance = card;
             }
@@ -147,7 +162,7 @@ namespace PACG.SharedAPI
             {
                 Destroy(CardBacksContainer.GetChild(i).gameObject);
             }
-            
+
             for (var i = CardsContainer.childCount - 1; i >= 0; i--)
             {
                 CardsContainer.GetChild(i).SetParent(CardDisplayController.HiddenContainer);
@@ -168,10 +183,10 @@ namespace PACG.SharedAPI
                 CardDisplayController.OnCardLocationChanged(_topDiscardCardInstance);
 
             _cardDisplayObjectsToInstances.Clear();
-            
+
             _context?.OnClose?.Invoke();
             ExamineArea.SetActive(false);
-            
+
             if (_context?.ExamineMode == ExamineContext.Mode.Deck)
                 _asm.Commit();
         }
