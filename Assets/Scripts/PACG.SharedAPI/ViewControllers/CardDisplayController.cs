@@ -3,6 +3,7 @@ using PACG.Presentation;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace PACG.SharedAPI
 {
@@ -12,16 +13,16 @@ namespace PACG.SharedAPI
     public class CardDisplayController : MonoBehaviour
     {
         [Header("Non-Player Card Container Transforms")]
-        public RectTransform hoursContainer;
-        public RectTransform encounteredContainer;
+        public RectTransform HoursContainer;
+        public RectTransform EncounteredContainer;
 
         [Header("Player Card Container Transforms")]
-        public RectTransform handContainer;
-        public RectTransform displayedContainer;
-        public RectTransform revealedContainer;
-        public RectTransform discardsContainer;
-        public RectTransform recoveryContainer;
-        public RectTransform hiddenContainer;
+        public RectTransform HandContainer;
+        public RectTransform DisplayedContainer;
+        public RectTransform RevealedContainer;
+        public RectTransform DiscardsContainer;
+        public RectTransform RecoveryContainer;
+        public RectTransform HiddenContainer;
 
         [Header("Hand Layout")]
         // TODO: Implement hand fanning at large hand sizes
@@ -32,15 +33,17 @@ namespace PACG.SharedAPI
         //public AnimationCurve fanCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
         [Header("Card Management")]
-        public CardDisplay cardPrefab;
+        public CardDisplay CardPrefab;
 
-        private PlayerCharacter PC { get; set; } = null;
+        private PlayerCharacter PC { get; set; }
 
-        private readonly Dictionary<CardInstance, CardDisplay> instanceToDisplayMap = new();
-        public CardInstance GetInstanceFromDisplay(CardDisplay display) => instanceToDisplayMap.FirstOrDefault(kvp => kvp.Value == display).Key;
+        private readonly Dictionary<CardInstance, CardDisplay> _instanceToDisplayMap = new();
+        public CardInstance GetInstanceFromDisplay(CardDisplay display) => _instanceToDisplayMap.FirstOrDefault(kvp => kvp.Value == display).Key;
 
         protected void Awake()
         {
+            SetupDiscardClickHandler();
+            
             GameEvents.HourChanged += OnHourChanged;
             GameEvents.EncounterStarted += OnEncounterStarted;
             GameEvents.EncounterEnded += OnEncounterEnded;
@@ -63,25 +66,25 @@ namespace PACG.SharedAPI
         // TURN AND ENCOUNTER MANAGEMENT
         // ========================================================================================
 
-        public void OnHourChanged(CardInstance hourCard)
+        private void OnHourChanged(CardInstance hourCard)
         {
             var cardDisplay = GetCardDisplay(hourCard);
-            cardDisplay.transform.SetParent(hoursContainer, worldPositionStays: false);
+            cardDisplay.transform.SetParent(HoursContainer, worldPositionStays: false);
             cardDisplay.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
         }
 
-        public void OnEncounterStarted(CardInstance encounteredCard)
+        private void OnEncounterStarted(CardInstance encounteredCard)
         {
             var cardDisplay = GetCardDisplay(encounteredCard);
-            cardDisplay.transform.SetParent(encounteredContainer, worldPositionStays: false);
+            cardDisplay.transform.SetParent(EncounteredContainer, worldPositionStays: false);
             cardDisplay.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
         }
 
-        public void OnEncounterEnded()
+        private void OnEncounterEnded()
         {
-            for (int i = encounteredContainer.childCount - 1; i >= 0; i--)
+            for (var i = EncounteredContainer.childCount - 1; i >= 0; i--)
             {
-                encounteredContainer.GetChild(i).SetParent(hiddenContainer);
+                EncounteredContainer.GetChild(i).SetParent(HiddenContainer);
             }
         }
 
@@ -98,16 +101,18 @@ namespace PACG.SharedAPI
         // CARD MOVEMENT
         // ========================================================================================
 
-        private void OnCardLocationChanged(CardInstance card)
+        public void OnCardLocationChanged(CardInstance card)
         {
             var cardDisplay = GetCardDisplay(card);
-            if (cardDisplay == null)
+            if (!cardDisplay)
             {
                 Debug.LogError($"StageAction --- Unable to find cardDisplay for {card.Data.cardName}. Action not staged!");
                 return;
             }
 
             if (card.Owner != PC) return;
+            
+            ResetCardDisplay(cardDisplay);
 
             // Hide/move the card based on the action type.
             switch (card.CurrentLocation)
@@ -115,27 +120,26 @@ namespace PACG.SharedAPI
                 // Locations where the card is hidden
                 case CardLocation.Buried:
                 case CardLocation.Deck:
-                case CardLocation.Discard: // TODO: Display last discarded card in discard pile?
                 case CardLocation.Vault:
-                    cardDisplay.transform.SetParent(hiddenContainer);
+                    cardDisplay.transform.SetParent(HiddenContainer);
+                    break;
+                case CardLocation.Discard:
+                    ShowLastDiscardedCard(cardDisplay);
                     break;
                 case CardLocation.Displayed:
-                    // Move to display area.
-                    cardDisplay.transform.SetParent(displayedContainer);
-                    cardDisplay.transform.localScale = new(.6f, .6f);
+                    cardDisplay.transform.SetParent(DisplayedContainer);
+                    cardDisplay.transform.localScale = new Vector3(.6f, .6f);
                     break;
                 case CardLocation.Hand:
-                    cardDisplay.transform.SetParent(handContainer);
-                    cardDisplay.transform.localScale = new(1f, 1f);
+                    cardDisplay.transform.SetParent(HandContainer);
                     break;
                 case CardLocation.Recovery:
-                    cardDisplay.transform.SetParent(recoveryContainer);
-                    cardDisplay.transform.localScale = new(.6f, .6f);
+                    cardDisplay.transform.SetParent(RecoveryContainer);
+                    cardDisplay.transform.localScale = new Vector3(.6f, .6f);
                     break;
                 case CardLocation.Revealed:
-                    // Move to reveal area.
-                    cardDisplay.transform.SetParent(revealedContainer);
-                    cardDisplay.transform.localScale = new(.6f, .6f);
+                    cardDisplay.transform.SetParent(RevealedContainer);
+                    cardDisplay.transform.localScale = new Vector3(.6f, .6f);
                     break;
                 default:
                     Debug.LogError($"[CardDisplayController] Unknown card location: {card.CurrentLocation} for {card.Data.cardName}");
@@ -148,18 +152,84 @@ namespace PACG.SharedAPI
             foreach (var card in cards) OnCardLocationChanged(card);
         }
 
-        public void HideCard(CardInstance card) => GetCardDisplay(card).transform.SetParent(hiddenContainer);
-        public void HideCard(CardDisplay card) => HideCard(GetInstanceFromDisplay(card));
+        private void ShowLastDiscardedCard(CardDisplay cardDisplay)
+        {
+            if (DiscardsContainer.childCount == 1)
+            {
+                var previousDiscard = DiscardsContainer.GetChild(0);
+                previousDiscard.SetParent(HiddenContainer);
+                if (previousDiscard.TryGetComponent<CanvasGroup>(out var canvasGroup))
+                    canvasGroup.blocksRaycasts = true;
+            }
 
+            cardDisplay.transform.SetParent(DiscardsContainer);
+            if (!cardDisplay.TryGetComponent<CanvasGroup>(out var discardGroup))
+                discardGroup = cardDisplay.gameObject.AddComponent<CanvasGroup>();
+            discardGroup.blocksRaycasts = false;
+        }
+
+        /// <summary>
+        /// Resets the card display to its original scale, block raycasts, and without a drag handler.
+        /// </summary>
+        /// <param name="cardDisplay"></param>
+        private static void ResetCardDisplay(CardDisplay cardDisplay)
+        {
+            cardDisplay.transform.localScale = Vector3.one;
+            
+            if (cardDisplay.TryGetComponent<CanvasGroup>(out var canvasGroup))
+                canvasGroup.blocksRaycasts = true;
+            
+            if (cardDisplay.TryGetComponent<CardDragHandler>(out var dragHandler))
+                Destroy(dragHandler);
+        }
+
+        private void HideCard(CardInstance card) => GetCardDisplay(card).transform.SetParent(HiddenContainer);
+        public void HideCard(CardDisplay card) => HideCard(GetInstanceFromDisplay(card));
+        
+        // ========================================================================================
+        // DECK EXAMINATION
+        // ========================================================================================
+        private void SetupDiscardClickHandler()
+        {
+            if (!DiscardsContainer.TryGetComponent<Button>(out var discardPileButton))
+                discardPileButton = DiscardsContainer.gameObject.AddComponent<Button>();
+            discardPileButton.onClick.AddListener(OnDiscardClicked);
+        }
+
+        private void OnDiscardClicked()
+        {
+            if (PC == null || PC.Discards.Count == 0) return;
+            
+            if (DiscardsContainer.childCount != 1)
+            {
+                Debug.LogError($"[CardDisplayController] Discard pile child count is not 1!");
+                return;
+            }
+
+            var context = new ExamineContext
+            {
+                ExamineMode = ExamineContext.Mode.Discard,
+                Cards = PC.Discards.ToList(),
+                UnknownCount = 0,
+                CanReorder = false,
+                OnClose = () => { }
+            };
+            
+            DialogEvents.RaiseExamineEvent(context);
+        }
+
+        // ========================================================================================
+        // CardDisplay INSTANTIATION
+        // ========================================================================================
         public CardDisplay GetCardDisplay(CardInstance card)
         {
             // If it already exists, return it.
-            if (instanceToDisplayMap.TryGetValue(card, out var display)) return display;
+            if (_instanceToDisplayMap.TryGetValue(card, out var display)) return display;
 
             // Otherwise, create a new one.
-            CardDisplay cardDisplay = Instantiate(cardPrefab, hiddenContainer);
+            var cardDisplay = Instantiate(CardPrefab, HiddenContainer);
             cardDisplay.SetViewModel(CardViewModelFactory.CreateFrom(card));
-            instanceToDisplayMap.Add(card, cardDisplay);
+            _instanceToDisplayMap.Add(card, cardDisplay);
             return cardDisplay;
         }
     }

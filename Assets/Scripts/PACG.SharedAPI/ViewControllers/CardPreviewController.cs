@@ -119,6 +119,10 @@ namespace PACG.SharedAPI
 
         private void EndPreview()
         {
+            if (currentlyEnlargedCard == null) return;
+            
+            currentlyEnlargedCard.transform.localScale = Vector3.one;
+            
             // Re-enable any drag handlers.
             if (currentlyEnlargedCard.TryGetComponent<CardDragHandler>(out var dragHandler))
             {

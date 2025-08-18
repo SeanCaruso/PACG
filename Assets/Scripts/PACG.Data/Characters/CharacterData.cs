@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -27,13 +28,31 @@ namespace PACG.Data
     }
 
     [System.Serializable]
-    public struct CharacterPower
+    public struct CharacterPower : IEquatable<CharacterPower>
     {
         public bool isActivated;
         public Sprite spriteEnabled;
         public Sprite spriteDisabled;
         [TextArea(2, 3)]
         public string text;
+
+        public bool Equals(CharacterPower other)
+        {
+            return isActivated == other.isActivated &&
+                   Equals(spriteEnabled, other.spriteEnabled) &&
+                   Equals(spriteDisabled, other.spriteDisabled) &&
+                   text == other.text;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is CharacterPower other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(isActivated, spriteEnabled, spriteDisabled, text);
+        }
     }
 
     [CreateAssetMenu(fileName = "CharacterName", menuName = "Pathfinder/Character Card")]

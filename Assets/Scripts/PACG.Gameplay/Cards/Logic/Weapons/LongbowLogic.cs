@@ -38,16 +38,14 @@ namespace PACG.Gameplay
             && _contexts.CurrentResolvable is CombatResolvable resolvable
             && resolvable.Character == card.Owner
             && !Check.StagedCardTypes.Contains(card.Data.cardType)
-            && Check.CanUseSkill(PF.Skill.Dexterity, PF.Skill.Ranged)
-            );
+        );
 
         private bool CanDiscard(CardInstance card) => (
-            // Discard power can be freely used on an another character's combat check while playing cards if the owner is proficient.
-            Check != null
-            && Check.Resolvable is CombatResolvable resolvable
+            // Discard power can be freely used on another character's combat check while playing cards if the owner is proficient.
+            Check is { Resolvable: CombatResolvable resolvable }
             && resolvable.Character != card.Owner
             && card.Owner.IsProficient(card.Data.cardType)
-            );
+        );
 
         public override void OnStage(CardInstance card, IStagedAction action)
         {

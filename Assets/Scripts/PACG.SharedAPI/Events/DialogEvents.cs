@@ -6,7 +6,7 @@ namespace PACG.SharedAPI
 {
     public static class DialogEvents
     {
-        public static event Action<ExamineResolvable> ExamineEvent;
-        public static void RaiseExamineEvent(ExamineResolvable resolvable) => ExamineEvent?.Invoke(resolvable);
+        public static event Action<ExamineContext> ExamineEvent;
+        public static void RaiseExamineEvent(ExamineContext examineContext) => ExamineEvent?.Invoke(examineContext);
     }
 }

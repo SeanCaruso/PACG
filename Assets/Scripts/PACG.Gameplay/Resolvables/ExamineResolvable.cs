@@ -6,16 +6,15 @@ namespace PACG.Gameplay
     public class ExamineResolvable : BaseResolvable
     {
         private readonly IExaminable _examinable;
-        public int DeckSize => _examinable?.Deck?.Count ?? 0;
-        public int Count { get; }
+        private int DeckSize => _examinable?.Deck?.Count ?? 0;
+        private int Count { get; }
 
-        public bool CanReorder { get; }
+        private bool CanReorder { get; }
 
         private readonly List<CardInstance> _examinedCards;
-        public IReadOnlyList<CardInstance> ExaminedCards => _examinedCards;
+        private IReadOnlyList<CardInstance> ExaminedCards => _examinedCards;
 
-        private readonly List<CardInstance> _currentOrder;
-        public List<CardInstance> CurrentOrder => _currentOrder;
+        private List<CardInstance> CurrentOrder { get; }
 
         public ExamineResolvable(IExaminable examinable, int count, bool canReorder = false)
         {
@@ -25,12 +24,28 @@ namespace PACG.Gameplay
 
             // Immediately examine the cards.
             _examinedCards = examinable.Deck.ExamineTop(count);
-            _currentOrder = new List<CardInstance>(_examinedCards);
+            CurrentOrder = new List<CardInstance>(_examinedCards);
         }
 
         public override void Initialize()
         {
-            DialogEvents.RaiseExamineEvent(this);
+            var examineContext = new ExamineContext
+            {
+                ExamineMode = ExamineContext.Mode.Deck,
+                Cards = CurrentOrder,
+                UnknownCount = DeckSize - Count,
+                CanReorder = CanReorder,
+                OnClose = () =>
+                {
+                    // Handle reordering if needed.
+                    if (CanReorder)
+                    {
+                        _examinable.Deck.ReorderExamined(CurrentOrder);
+                    }
+                }
+            };
+            
+            DialogEvents.RaiseExamineEvent(examineContext);
         }
 
         /// <summary>
@@ -42,7 +57,7 @@ namespace PACG.Gameplay
         {
             if (CanReorder)
             {
-                _examinable.Deck.ReorderExamined(_currentOrder);
+                _examinable.Deck.ReorderExamined(CurrentOrder);
             }
         }
 

@@ -2,7 +2,6 @@ using PACG.Data;
 using PACG.SharedAPI;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace PACG.Gameplay
 {
@@ -27,7 +26,7 @@ namespace PACG.Gameplay
         public List<CardData> testLocationDeck;
         // ================================================================================
 
-        GameServices _gameServices;
+        private GameServices _gameServices;
 
         private void Awake()
         {
@@ -41,7 +40,7 @@ namespace PACG.Gameplay
             var gameFlowManager = new GameFlowManager();
             var logicRegistry = new LogicRegistry();
 
-            _gameServices = new(
+            _gameServices = new GameServices(
                 asm,
                 cardManager,
                 contextManager,
@@ -59,7 +58,7 @@ namespace PACG.Gameplay
         // Start is called after all Awake() methods are finished.
         private void Start()
         {
-            _gameServices.Contexts.NewGame(new(1, _gameServices.Cards));
+            _gameServices.Contexts.NewGame(new GameContext(1, _gameServices.Cards));
             CardUtils.Initialize(_gameServices.Contexts.GameContext.AdventureNumber);
             // =================================================================
             // STEP 3: WIRE UP THE PRESENTATION LAYER
