@@ -17,10 +17,15 @@ namespace PACG.SharedAPI
         public Transform actionButtonContainer;
         public GameObject actionButtonPrefab;
 
-        private CardDisplay currentlyEnlargedCard;
-        private Transform originalParent;
-        private int originalSiblingIndex;
-        private Vector3 originalScale;
+        private CardDisplay _currentlyEnlargedCard;
+
+        // Placeholder object with the same size to keep layouts behaving.
+        private GameObject _placeholder;
+        
+        // Original state.
+        private Transform _originalParent;
+        private int _originalSiblingIndex;
+        private Vector3 _originalScale;
 
         private readonly List<GameObject> _activeActionButtons = new();
 
@@ -43,7 +48,7 @@ namespace PACG.SharedAPI
 
         public void ShowPreviewForCard(CardDisplay cardDisplay)
         {
-            if (currentlyEnlargedCard != null) return;
+            if (_currentlyEnlargedCard != null) return;
 
             var cardInstance = cardDisplay.ViewModel.CardInstance;
             if (cardInstance == null)
@@ -52,12 +57,22 @@ namespace PACG.SharedAPI
                 return;
             }
 
-            currentlyEnlargedCard = cardDisplay;
+            _currentlyEnlargedCard = cardDisplay;
 
             // Store the card's original location and size.
-            originalParent = cardDisplay.transform.parent;
-            originalSiblingIndex = cardDisplay.transform.GetSiblingIndex();
-            originalScale = cardDisplay.transform.localScale;
+            _originalParent = cardDisplay.transform.parent;
+            _originalSiblingIndex = cardDisplay.transform.GetSiblingIndex();
+            _originalScale = cardDisplay.transform.localScale;
+            
+            // Create a placeholder object by cloning the card and making it invisible.
+            _placeholder = Instantiate(cardDisplay.gameObject, cardDisplay.transform.parent, false);
+            _placeholder.name = "Preview Clone";
+            
+            _placeholder.transform.SetSiblingIndex(cardDisplay.transform.GetSiblingIndex());
+            if (!_placeholder.TryGetComponent<CanvasGroup>(out var placeholderCanvasGroup))
+                placeholderCanvasGroup = _placeholder.AddComponent<CanvasGroup>();
+
+            placeholderCanvasGroup.alpha = 0f;
 
             // Show the preview area.
             previewArea.SetActive(true);
@@ -66,8 +81,8 @@ namespace PACG.SharedAPI
             var cardRect = cardDisplay.GetComponent<RectTransform>();
             cardRect.SetParent(previewArea.transform, false);
             cardRect.anchoredPosition = Vector3.zero;
-            cardRect.anchorMin = new(0.5f, 0.5f);
-            cardRect.anchorMax = new(0.5f, 0.5f);
+            cardRect.anchorMin = new Vector2(0.5f, 0.5f);
+            cardRect.anchorMax = new Vector2(0.5f, 0.5f);
             cardRect.localScale = new Vector3(2f, 2f, 1.0f);
 
             // Disable any drag handlers.
@@ -103,12 +118,12 @@ namespace PACG.SharedAPI
 
         private void ReturnCardToOrigin()
         {
-            if (currentlyEnlargedCard == null) return;
-
+            if (!_currentlyEnlargedCard || !_placeholder) return;
+            
             // Return the card to its original parent and Z-index.
-            currentlyEnlargedCard.transform.SetParent(originalParent, false);
-            currentlyEnlargedCard.transform.SetSiblingIndex(originalSiblingIndex);
-            currentlyEnlargedCard.transform.localScale = originalScale;
+            _currentlyEnlargedCard.transform.SetParent(_originalParent, false);
+            _currentlyEnlargedCard.transform.SetSiblingIndex(_originalSiblingIndex);
+            _currentlyEnlargedCard.transform.localScale = _originalScale;
 
             // Clear action buttons.
             EndPreview();
@@ -116,19 +131,21 @@ namespace PACG.SharedAPI
 
         private void EndPreview()
         {
-            if (currentlyEnlargedCard == null) return;
+            Destroy(_placeholder);
             
-            currentlyEnlargedCard.transform.localScale = Vector3.one;
+            if (!_currentlyEnlargedCard) return;
+            
+            _currentlyEnlargedCard.transform.localScale = Vector3.one;
             
             // Re-enable any drag handlers.
-            if (currentlyEnlargedCard.TryGetComponent<CardDragHandler>(out var dragHandler))
+            if (_currentlyEnlargedCard.TryGetComponent<CardDragHandler>(out var dragHandler))
             {
                 dragHandler.enabled = true;
             }
 
             // Hide the preview and clear the card.
             previewArea.SetActive(false);
-            currentlyEnlargedCard = null;
+            _currentlyEnlargedCard = null;
 
             // Remove any action buttons.
             foreach (var button in _activeActionButtons)
