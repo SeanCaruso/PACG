@@ -7,7 +7,6 @@ namespace PACG.Gameplay
 {
     public class TheGame : MonoBehaviour
     {
-        public CardDisplayController CardDisplayController;
         public CardPreviewController CardPreviewController;
         public DeckExamineController DeckExamineController;
         public PlayerChoiceController PlayerChoiceController;
@@ -97,7 +96,6 @@ namespace PACG.Gameplay
             GameEvents.RaisePlayerCharacterChanged(testPc);
             
             foreach (var card in characterDeck) testPc.ShuffleIntoDeck(_gameServices.Cards.New(card, testPc));
-            CardDisplayController.SetCurrentPC(testPc);
 
             _gameServices.Contexts.GameContext.SetPcLocation(testPc, location);
 

@@ -26,7 +26,6 @@ namespace PACG.SharedAPI
     public class DeckExamineController : MonoBehaviour
     {
         [Header("Other Dependencies")]
-        public CardDisplayController CardDisplayController;
         public CardDisplayFactory CardDisplayFactory;
 
         [Header("UI Elements")]
@@ -38,7 +37,6 @@ namespace PACG.SharedAPI
 
         [Header("Prefabs")]
         public GameObject ButtonPrefab;
-
         public GameObject CardBackPrefab;
 
         // Dependency injections
@@ -47,7 +45,6 @@ namespace PACG.SharedAPI
         // Other members
         private ExamineContext _context;
         private readonly Dictionary<GameObject, CardInstance> _cardDisplayObjectsToInstances = new();
-        private CardInstance _topDiscardCardInstance;
 
         protected void Awake()
         {
@@ -74,7 +71,7 @@ namespace PACG.SharedAPI
             _asm = gameServices.ASM;
         }
 
-        private void OnExamineEvent(ExamineContext context)
+        public void OnExamineEvent(ExamineContext context)
         {
             _context = context;
 
@@ -127,15 +124,6 @@ namespace PACG.SharedAPI
 
         private void ExamineDiscards(ExamineContext context)
         {
-            if (CardDisplayController.DiscardsContainer.childCount != 1)
-            {
-                Debug.LogError($"[{GetType().Name}] Discard pile child count is not 1!");
-                return;
-            }
-
-            // Store the top discard card to show it as the top card in the deck when done.
-            var topDiscardDisplay = CardDisplayController.DiscardsContainer.GetChild(0).GetComponent<CardDisplay>();
-
             CardBacksContainer.gameObject.SetActive(false);
 
             var sortedCards = context.Cards.OrderBy(card => card.ToString());
@@ -150,9 +138,6 @@ namespace PACG.SharedAPI
                     dragHandler.enabled = false;
                 
                 _cardDisplayObjectsToInstances.Add(cardDisplay.gameObject, card);
-
-                if (topDiscardDisplay == cardDisplay)
-                    _topDiscardCardInstance = card;
             }
         }
 
@@ -165,7 +150,7 @@ namespace PACG.SharedAPI
 
             for (var i = CardsContainer.childCount - 1; i >= 0; i--)
             {
-                CardsContainer.GetChild(i).SetParent(CardDisplayController.HiddenContainer);
+                Destroy(CardsContainer.GetChild(i).gameObject);
             }
 
             if (ButtonContainer.childCount == 1)
@@ -178,9 +163,6 @@ namespace PACG.SharedAPI
             {
                 Destroy(cardDisplay.GetComponent<CardDragHandler>());
             }
-
-            if (_context?.ExamineMode == ExamineContext.Mode.Discard && _topDiscardCardInstance != null)
-                CardDisplayController.OnCardLocationChanged(_topDiscardCardInstance);
 
             _cardDisplayObjectsToInstances.Clear();
 
