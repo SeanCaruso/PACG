@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace PACG.Data
 {
-    [System.Serializable]
+    [Serializable]
     public struct AttributeSkill
     {
         public PF.Skill attribute;
@@ -12,7 +12,7 @@ namespace PACG.Data
         public int bonus;
     }
 
-    [System.Serializable]
+    [Serializable]
     public struct Skill
     {
         public PF.Skill skill;
@@ -20,7 +20,14 @@ namespace PACG.Data
         public int bonus;
     }
 
-    [System.Serializable]
+    [Serializable]
+    public struct Proficiency
+    {
+        public PF.CardType CardType;
+        public string Trait;
+    }
+
+    [Serializable]
     public struct FavoredCard
     {
         public PF.CardType cardType;
@@ -66,7 +73,7 @@ namespace PACG.Data
 
         [Header("Other Basic Info")]
         public int handSize;
-        public List<PF.CardType> proficiencies;
+        public List<Proficiency> proficiencies;
         public List<string> traits;
 
         [Header("Powers")]

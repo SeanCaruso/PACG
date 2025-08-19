@@ -5,12 +5,21 @@ namespace PACG.Gameplay
 {
     public class PhaseQueue
     {
-        private Queue<IProcessor> Processors { get; } = new();
+        private List<IProcessor> Processors { get; } = new();
         public string Name { get; }
 
         public int Count => Processors.Count;
-        public void Enqueue(IProcessor processor) => Processors.Enqueue(processor);
-        public IProcessor Dequeue() => Processors.Dequeue();
+        public void Enqueue(IProcessor processor) => Processors.Add(processor);
+        public void Interrupt(IProcessor processor) => Processors.Insert(0, processor);
+
+        public IProcessor Dequeue()
+        {
+            if (Processors.Count == 0) return null;
+
+            var first = Processors[0];
+            Processors.Remove(first);
+            return first;
+        }
 
         public PhaseQueue(string name)
         {
@@ -45,6 +54,18 @@ namespace PACG.Gameplay
                 _queueStack.Push(new PhaseQueue($"{processor.GetType().Name}"));
 
             Current.Enqueue(processor);
+        }
+
+        /// <summary>
+        /// Adds a processor to the FRONT of the current phase queue to be processed next.
+        /// </summary>
+        /// <param name="processor"></param>
+        public void Interrupt(IProcessor processor)
+        {
+            if (_queueStack.Count == 0)
+                _queueStack.Push(new PhaseQueue($"{processor.GetType().Name}"));
+            
+            Current.Interrupt(processor);
         }
 
         /// <summary>
