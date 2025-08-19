@@ -178,6 +178,7 @@ namespace PACG.Gameplay
         // ==============================================================================
 
         // Pass-throughs to CardManager
+        public IReadOnlyList<CardInstance> AllCards => _cardManager.GetCardsOwnedBy(this);
         public IReadOnlyList<CardInstance> Hand => _cardManager.GetCardsInHand(this);
         public IReadOnlyList<CardInstance> Discards => _cardManager.GetCardsOwnedBy(this, CardLocation.Discard);
         public IReadOnlyList<CardInstance> BuriedCards => _cardManager.GetCardsOwnedBy(this, CardLocation.Buried);

@@ -38,19 +38,18 @@ PACG.SharedAPI   → Cross-layer view controllers, events, view models
 
 ## Current Status
 
-### Core Systems Complete
-- ✅ **Game Flow Management** - Hierarchical processor execution with phase control
-- ✅ **Card Logic System** - Convention-based discovery with instance integration
-- ✅ **Character Power System** - Dynamic UI with availability states
-- ✅ **Player Choice Infrastructure** - Structured choice presentation and handling
-- ✅ **Action Staging** - Complete request-validate-commit cycle with undo
-- ✅ **Resolvable Sequencing** - Chaining complex interactions through processors
-
 ### Current Priorities
 1. **Expand card implementations** - Add more card-specific logic
 2. **Enhanced encounter variety** - Implement location-specific behaviors
 3. **End-to-end testing** - Verify complete game scenarios
 4. **Advanced check types** - Beyond basic combat checks
+
+### Cards to Test
+**Spells**
+- Enchant Weapon - Spell effects and recovery.
+ 
+**Weapons**
+- Quarterstaff - Combat checks and Obstacle/Trap barrier evasion.
 
 ### Technical Info
 - **Unity Version**: 6000.1.11f1
