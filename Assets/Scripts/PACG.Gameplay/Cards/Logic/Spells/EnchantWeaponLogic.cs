@@ -41,7 +41,7 @@ namespace PACG.Gameplay
 
             return new List<IResolvable>
             {
-                new SkillResolvable(card.Owner, 6, PF.Skill.Arcane, PF.Skill.Divine)
+                new SkillResolvable(card, card.Owner, 6, PF.Skill.Arcane, PF.Skill.Divine)
             };
         }
     }

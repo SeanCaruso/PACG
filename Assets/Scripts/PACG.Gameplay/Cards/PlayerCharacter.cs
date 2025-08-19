@@ -6,13 +6,16 @@ using UnityEngine;
 
 namespace PACG.Gameplay
 {
-    public class PlayerCharacter : IExaminable
+    public class PlayerCharacter : ICard, IExaminable
     {
+        // ICard properties
+        public string Name => CharacterData.characterName;
+        public List<string> Traits => CharacterData.traits;
+        
         public CharacterData CharacterData { get; }
         private CharacterLogicBase Logic { get; }
         public Deck Deck { get; }
 
-        public string DisplayName => CharacterData.characterName;
 
         // --- Dependency Injections
         private readonly CardManager _cardManager;

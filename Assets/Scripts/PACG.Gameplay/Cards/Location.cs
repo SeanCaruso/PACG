@@ -5,20 +5,22 @@ using UnityEngine;
 
 namespace PACG.Gameplay
 {
-    public class Location : IExaminable
+    public class Location : ICard, IExaminable
     {
+        // ICard properties
+        public string Name => LocationData.LocationName;
+        public List<string> Traits => LocationData.Traits;
+        
         public LocationData LocationData { get; }
         public LocationLogicBase LocationLogic { get; }
 
-        private readonly Deck _deck;
-        public Deck Deck => _deck;
-        public int Count => _deck.Count;
+        public Deck Deck { get; }
+        public int Count => Deck.Count;
 
-        public string DisplayName => LocationData.LocationName;
         public override string ToString() => LocationData.LocationName;
 
         private readonly Dictionary<PF.CardType, int> _knownComposition = new();
-        private int _unknownCardCount = 0;
+        private int _unknownCardCount;
 
         // Dependency injection
         private readonly ContextManager _contexts;
@@ -28,7 +30,7 @@ namespace PACG.Gameplay
             LocationData = data;
             LocationLogic = logic;
 
-            _deck = new(gameServices.Cards);
+            Deck = new Deck(gameServices.Cards);
 
             // We know how many of each card type are in the location initially.
             foreach (PF.CardType type in Enum.GetValues(typeof(PF.CardType)))
@@ -39,7 +41,7 @@ namespace PACG.Gameplay
 
         public CardInstance DrawCard()
         {
-            var card =_deck.DrawCard();
+            var card =Deck.DrawCard();
 
             if (_knownComposition[card.Data.cardType] != 0)
                 _knownComposition[card.Data.cardType]--;
@@ -51,11 +53,11 @@ namespace PACG.Gameplay
             return card;
         }
 
-        public List<CardInstance> ExamineTop(int count) => _deck.ExamineTop(count);
+        public List<CardInstance> ExamineTop(int count) => Deck.ExamineTop(count);
 
         public void ShuffleIn(CardInstance card, bool isTypeKnown)
         { 
-            _deck.ShuffleIn(card);
+            Deck.ShuffleIn(card);
 
             if (isTypeKnown)
                 _knownComposition[card.Data.cardType]++;

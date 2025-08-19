@@ -1,17 +1,18 @@
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace PACG.Gameplay
 {
     public class CombatResolvable : BaseResolvable, ICheckResolvable
     {
+        public ICard Card { get; }
         public PlayerCharacter Character { get; }
         private readonly List<PF.Skill> _skills = new() { PF.Skill.Strength, PF.Skill.Melee };
         public IReadOnlyList<PF.Skill> Skills => _skills;
         public int Difficulty { get; }
 
-        public CombatResolvable(PlayerCharacter character, int difficulty)
+        public CombatResolvable(CardInstance card, PlayerCharacter character, int difficulty)
         {
+            Card = card;
             Character = character;
             Difficulty = difficulty;
         }

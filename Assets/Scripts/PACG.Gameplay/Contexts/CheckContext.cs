@@ -134,5 +134,16 @@ namespace PACG.Gameplay
         /// <param name="pc"></param>
         /// <returns>true if the given PC is local to the check</returns>
         public bool IsLocal(PlayerCharacter pc) => Character.Location == pc.Location;
+        
+        /// <summary>
+        /// Returns whether the check invokes any of the given traits.
+        /// A check invokes a trait if the card played to determine the skill has the trait, or if the card
+        /// that triggered the check has the trait.
+        /// </summary>
+        /// <param name="traits"></param>
+        /// <returns>true if the check invokes at least one of the given traits</returns>
+        public bool Invokes(params string[] traits) => 
+            traits.Intersect(Traits).Any() ||
+            traits.Intersect(Resolvable.Card.Traits).Any();
     }
 }

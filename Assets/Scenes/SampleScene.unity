@@ -243,7 +243,7 @@ MonoBehaviour:
   testLocation: {fileID: 11400000, guid: a54b3de4a8e7ec347a2947701d73c056, type: 2}
   testLocationDeck:
   - {fileID: 11400000, guid: e4de3c58c0c3fb749be5d9c6a8521d46, type: 2}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: 932bb3a78a3d9914c982fcf1b4e2e633, type: 2}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}

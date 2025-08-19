@@ -14,10 +14,18 @@ namespace PACG.Gameplay
 
         public override List<IResolvable> GetToCloseResolvables()
         {
-            int dc = 5 + _contexts.GameContext.AdventureNumber;
+            var dc = 5 + _contexts.GameContext.AdventureNumber;
 
             // TODO: Handle when a character who avenges can close.
-            return new() { new SkillResolvable(_contexts.TurnContext.Character, dc, PF.Skill.Wisdom, PF.Skill.Perception) };
+            return new List<IResolvable>
+            {
+                new SkillResolvable(
+                    _contexts.TurnPcLocation,
+                    _contexts.TurnContext.Character,
+                    dc,
+                    PF.Skill.Wisdom, PF.Skill.Perception
+                )
+            };
         }
 
         // TODO: Implement when we have multiple characters and locations.

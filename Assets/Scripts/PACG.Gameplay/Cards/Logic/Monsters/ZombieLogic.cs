@@ -12,14 +12,5 @@ namespace PACG.Gameplay
         {
             _contexts = gameServices.Contexts;
         }
-
-        public override List<IResolvable> GetCheckResolvables(CardInstance card)
-        {
-            return card.Data.checkRequirement.checkSteps.Select(check => 
-                new CombatResolvable(
-                    _contexts.TurnContext.Character,
-                    CardUtils.GetDc(check.baseDC, check.adventureLevelMult))
-            ).Cast<IResolvable>().ToList();
-        }
     }
 }

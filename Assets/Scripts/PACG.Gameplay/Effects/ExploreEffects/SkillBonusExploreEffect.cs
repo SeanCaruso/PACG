@@ -1,4 +1,5 @@
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -12,6 +13,7 @@ namespace PACG.Gameplay
         private readonly int _bonus;
         public bool IsForOneCheck { get; }
         private readonly List<PF.Skill> _skills;
+        private readonly List<string> _traits = new();
 
         public SkillBonusExploreEffect(int diceCount, int diceSides, int bonus, bool isForOneCheck, params PF.Skill[] skills)
         {
@@ -22,6 +24,8 @@ namespace PACG.Gameplay
             _skills = skills.ToList();
         }
         
+        public void SetTraits(params string[] traits) => _traits.AddRange(traits);
+        
         public void ApplyToCheck(CheckContext check)
         {
             if (!DoesApplyToCheck(check)) return;
@@ -31,9 +35,26 @@ namespace PACG.Gameplay
             Debug.Log($"[{GetType().Name}] Added {_diceCount}d{_diceSides}{bonus} to check.");
         }
 
-        public bool DoesApplyToCheck(CheckContext check)
+        private bool DoesApplyToCheck(CheckContext check)
         {
-            return check != null && (!_skills.Any() || _skills.Contains(check.UsedSkill));
+            if (check == null) return false;
+
+            switch (_skills.Count)
+            {
+                case > 0 when _traits.Count > 0:
+                    throw new NotImplementedException("Found an exploration bonus with both skills and traits!");
+                case > 0 when _skills.Contains(check.UsedSkill):
+                    return true;
+            }
+
+            switch (_traits.Count)
+            {
+                case > 0 when check.Invokes(_traits.ToArray()):
+                case 0 when _skills.Count == 0:
+                    return true;
+                default:
+                    return false;
+            }
         }
     }
 }

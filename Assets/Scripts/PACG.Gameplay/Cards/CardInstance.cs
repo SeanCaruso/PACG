@@ -1,12 +1,14 @@
-
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace PACG.Gameplay
 {
-    public class CardInstance
+    public class CardInstance : ICard
     {
+        // Interface properties
+        public string Name => Data.cardName;
+        public List<string> Traits => Data.traits;
+        
         // Passed in via constructor
         public CardData Data { get; }
         public CardLogicBase Logic { get; }
@@ -14,6 +16,7 @@ namespace PACG.Gameplay
         public PlayerCharacter Owner { get; set; }
 
         // GUID that never changes
+        // ReSharper disable once UnusedAutoPropertyAccessor.Global
         public Guid InstanceId { get; }
 
         // Initialized to a default value, updated during gameplay
@@ -42,11 +45,11 @@ namespace PACG.Gameplay
         // FACADE PATTERN - CONVENIENCE CALLS TO CARD LOGIC
         // ========================================================================================
 
-        public List<IStagedAction> GetAvailableActions() => Logic?.GetAvailableActions(this) ?? new();
+        public List<IStagedAction> GetAvailableActions() => Logic?.GetAvailableActions(this) ?? new List<IStagedAction>();
 
-        public virtual List<IResolvable> GetOnEncounterResolvables() => Logic?.GetOnEncounterResolvables(this) ?? new();
-        public virtual List<IResolvable> GetBeforeActingResolvables() => Logic?.GetBeforeActingResolvables(this) ?? new();
-        public virtual List<IResolvable> GetCheckResolvables() => Logic?.GetCheckResolvables(this) ?? new();
+        public List<IResolvable> GetOnEncounterResolvables() => Logic?.GetOnEncounterResolvables(this) ?? new List<IResolvable>();
+        public List<IResolvable> GetBeforeActingResolvables() => Logic?.GetBeforeActingResolvables(this) ?? new List<IResolvable>();
+        public List<IResolvable> GetCheckResolvables() => Logic?.GetCheckResolvables(this) ?? new List<IResolvable>();
     }
 
     public enum CardLocation { Buried, Deck, Discard, Displayed, Hand, Recovery, Revealed, Vault }
