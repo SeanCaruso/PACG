@@ -18,10 +18,7 @@ namespace PACG.Gameplay
             Difficulty = difficulty;
         }
 
-        public override bool CanCommit(List<IStagedAction> actions)
-        {
-            throw new NotImplementedException();
-        }
+        public override bool CanCommit(List<IStagedAction> actions) => true;
 
         public override IProcessor CreateProcessor(GameServices gameServices) => new CheckController(this, gameServices);
     }

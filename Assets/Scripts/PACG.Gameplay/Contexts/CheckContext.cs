@@ -128,6 +128,11 @@ namespace PACG.Gameplay
         // =====================================================================================
         // CONVENIENCE FUNCTIONS
         // =====================================================================================
+        /// <summary>
+        /// Returns whether the given PC is in the same location as the PC making the check.
+        /// </summary>
+        /// <param name="pc"></param>
+        /// <returns>true if the given PC is local to the check</returns>
         public bool IsLocal(PlayerCharacter pc) => Character.Location == pc.Location;
     }
 }

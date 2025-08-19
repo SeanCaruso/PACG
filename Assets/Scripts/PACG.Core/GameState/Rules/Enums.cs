@@ -9,7 +9,10 @@ public static class PF
         // Boons
         Ally, Armor, Blessing, Item, Spell, Weapon,
         // Banes
-        Barrier, Monster, StoryBane
+        Barrier, Monster, StoryBane,
+        
+        // Other
+        None // Used for trait proficiencies.
     }
     public static string S(CardType type)
     {

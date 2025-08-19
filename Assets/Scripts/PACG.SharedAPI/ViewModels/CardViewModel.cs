@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using PACG.Core;
 using PACG.Gameplay;
 using UnityEngine;
 
@@ -19,8 +20,8 @@ namespace PACG.SharedAPI
         public string Name => CardInstance.Data.cardName.ToUpper();
         public string Type => CardInstance.Data.cardType.ToString().ToUpper();
         public string Level => $"{CardInstance.Data.cardLevel}";
-        public string PowersText => CardInstance.Data.powers; // TODO: Replace # in power text with adventure level calculation.
-        public string RecoveryText => CardInstance.Data.recovery;
+        public string PowersText => StringUtils.ReplaceAdventureLevel(CardInstance.Data.powers, CardUtils.AdventureNumber);
+        public string RecoveryText => StringUtils.ReplaceAdventureLevel(CardInstance.Data.recovery, CardUtils.AdventureNumber);
 
         // Ready-to-use values
         public Color32 PanelColor { get; set; }

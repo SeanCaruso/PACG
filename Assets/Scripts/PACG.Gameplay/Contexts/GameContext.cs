@@ -1,4 +1,3 @@
-
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -13,16 +12,18 @@ namespace PACG.Gameplay
         private readonly Dictionary<Location, List<PlayerCharacter>> _locationPcs = new();
 
         public IReadOnlyList<Location> Locations => _locationPcs.Keys.ToList();
+        public IReadOnlyList<PlayerCharacter> Characters => _locationPcs.Values.SelectMany(x => x).ToList();
+        public IReadOnlyList<PlayerCharacter> GetCharactersAt(Location loc) => _locationPcs.GetValueOrDefault(loc, new List<PlayerCharacter>());
 
         public GameContext(int adventureNumber, CardManager cardManager)
         {
             AdventureNumber = adventureNumber;
-            HourDeck = new(cardManager);
+            HourDeck = new Deck(cardManager);
         }
 
         public Location GetPcLocation(PlayerCharacter pc)
         {
-            foreach ((var loc, var list) in _locationPcs)
+            foreach (var (loc, list) in _locationPcs)
             {
                 if (list.Contains(pc))
                     return loc;
@@ -31,8 +32,6 @@ namespace PACG.Gameplay
             Debug.LogError($"[{GetType().Name}] Unable to find location for {pc.CharacterData.characterName}!");
             return null;
         }
-
-        public IReadOnlyList<PlayerCharacter> GetCharactersAt(Location loc) => _locationPcs.GetValueOrDefault(loc, new());
 
         public void MoveCharacter(PlayerCharacter pc, Location newLoc)
         {
@@ -52,7 +51,7 @@ namespace PACG.Gameplay
         {
             Debug.Log($"[{GetType().Name}] Moving {pc.CharacterData.characterName} to {newLoc.LocationData.LocationName}.");
             if (!_locationPcs.ContainsKey(newLoc))
-                _locationPcs.Add(newLoc, new());
+                _locationPcs.Add(newLoc, new List<PlayerCharacter>());
             _locationPcs[newLoc].Add(pc);
         }
     }

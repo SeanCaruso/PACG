@@ -67,8 +67,7 @@ namespace PACG.Gameplay
             switch (action)
             {
                 case PF.ActionType.Banish:
-                    MoveCard(card, CardLocation.Vault);
-                    // Don't clear out the owner yet - we might undo this.
+                    MoveCard(card, card.OriginalOwner == null ? CardLocation.Vault : CardLocation.Recovery);
                     break;
                 case PF.ActionType.Bury:
                     MoveCard(card, CardLocation.Buried);

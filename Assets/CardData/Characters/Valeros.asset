@@ -46,7 +46,11 @@ MonoBehaviour:
     attribute: 5
     bonus: 2
   handSize: 4
-  proficiencies: 0100000005000000
+  proficiencies:
+  - CardType: 1
+    Trait: 
+  - CardType: 5
+    Trait: 
   traits:
   - Human
   - Fighter

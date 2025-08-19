@@ -5,11 +5,11 @@ namespace PACG.Gameplay
     public static class CardUtils
     {
         private static bool _isInitialized;
-        private static int _adventureNumber = 1;
+        public static int AdventureNumber { get; private set; } = 1;
         public static void Initialize(int adventureNumber)
         {
             _isInitialized = true;
-            _adventureNumber = adventureNumber;
+            AdventureNumber = adventureNumber;
         }
 
         /// <summary>
@@ -22,7 +22,7 @@ namespace PACG.Gameplay
         {
             if (!_isInitialized) Debug.LogError("CardUtils MUST be initialized!!!");
 
-            return baseDc + adventureLevelMult * _adventureNumber;
+            return baseDc + adventureLevelMult * AdventureNumber;
         }
     }
 }

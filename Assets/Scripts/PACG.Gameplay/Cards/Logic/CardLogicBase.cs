@@ -61,5 +61,8 @@ namespace PACG.Gameplay
             }
             return resolvables;
         }
+        
+        // Other card methods (recovery)
+        public virtual List<IResolvable> GetRecoveryResolvables(CardInstance card) => new();
     }
 }

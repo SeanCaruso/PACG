@@ -44,7 +44,7 @@ namespace PACG.Gameplay
             // Discard power can be freely used on another character's combat check while playing cards if the owner is proficient.
             Check is { Resolvable: CombatResolvable resolvable }
             && resolvable.Character != card.Owner
-            && card.Owner.IsProficient(card.Data.cardType)
+            && card.Owner.IsProficient(card.Data)
         );
 
         public override void OnStage(CardInstance card, IStagedAction action)
