@@ -10,33 +10,28 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 72b1ad41f9c218045b980737984353fc, type: 3}
-  m_Name: Light Shield
+  m_Name: Clockwork Servant
   m_EditorClassIdentifier: 
-  cardID: LightShield
-  cardName: Light Shield
-  cardType: 1
-  cardLevel: 0
+  cardID: ClockworkServant
+  cardName: Clockwork Servant
+  cardType: 0
+  cardLevel: 1
   cardArt: {fileID: 0}
   checkRequirement:
     mode: 0
     checkSteps:
-    - baseDC: 3
+    - baseDC: 6
       adventureLevelMult: 0
       category: 1
-      allowedSkills: 020000000b000000
+      allowedSkills: 0300000008000000
   rerollThreshold: 0
-  powers: 'When you suffer Combat damage, freely reveal to reduce it by 1.
+  powers: 'On a local Intelligence or Craft check, recharge to add 1d6.
 
 
-    On
-    your Melee combat check, freely recharge to reroll a d4, d6, or d8.
-
-
-    After
-    playing this armor, you may not play a 2-Handed boon this encounter.'
-  recovery: 
+    Bury
+    or banish to explore.'
+  recovery: You may succeed at a Craft 8 check to recharge this card.
   immunities: []
   vulnerabilities: []
   traits:
-  - Shield
-  - Offhand
+  - Construct

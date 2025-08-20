@@ -45,6 +45,7 @@ public static class PF
 
         Acrobatics,
         Arcane,
+        Craft,
         Diplomacy,
         Divine,
         Fortitude,

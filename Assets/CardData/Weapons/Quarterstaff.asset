@@ -23,7 +23,7 @@ MonoBehaviour:
     - baseDC: 4
       adventureLevelMult: 0
       category: 1
-      allowedSkills: 000000000c000000
+      allowedSkills: 000000000d000000
   rerollThreshold: 0
   powers: 'For your combat check, reveal to use Strength or Melee + 1d6; you may
     additionally discard to add another 1d6.

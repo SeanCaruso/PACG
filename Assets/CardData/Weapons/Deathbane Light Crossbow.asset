@@ -23,7 +23,8 @@ MonoBehaviour:
     - baseDC: 8
       adventureLevelMult: 0
       category: 1
-      allowedSkills: 010000000e000000
+      allowedSkills: 010000000f000000
+  rerollThreshold: 0
   powers: 'For your combat check, reveal to use Dexterity or Ranged + 1d8+1; against
     an Undead bane, add another 1d8.
 
@@ -31,6 +32,8 @@ MonoBehaviour:
     On a distant combat check, freely discard
     to add 1d8; against an Undead bane, you may freely reload instead.'
   recovery: 
+  immunities: []
+  vulnerabilities: []
   traits:
   - Bow
   - Ranged

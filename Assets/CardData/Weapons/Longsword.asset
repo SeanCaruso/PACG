@@ -23,10 +23,13 @@ MonoBehaviour:
     - baseDC: 6
       adventureLevelMult: 0
       category: 1
-      allowedSkills: 000000000c000000
+      allowedSkills: 000000000d000000
+  rerollThreshold: 0
   powers: For your combat check, reveal to use Strength or Melee + 1d8; if proficient,
     you may additionallly reload to add another 1d4.
   recovery: 
+  immunities: []
+  vulnerabilities: []
   traits:
   - Sword
   - Melee

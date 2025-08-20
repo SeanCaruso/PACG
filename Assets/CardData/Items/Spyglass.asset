@@ -23,7 +23,7 @@ MonoBehaviour:
     - baseDC: 6
       adventureLevelMult: 0
       category: 1
-      allowedSkills: 040000000d000000
+      allowedSkills: 040000000e000000
   rerollThreshold: 0
   powers: 'On your Perception check, reveal to add 1d6.
 

@@ -244,9 +244,9 @@ MonoBehaviour:
   testLocationDeck:
   - {fileID: 11400000, guid: e4de3c58c0c3fb749be5d9c6a8521d46, type: 2}
   - {fileID: 11400000, guid: 932bb3a78a3d9914c982fcf1b4e2e633, type: 2}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: 0f655b2e891367041b414fe7798bc9df, type: 2}
+  - {fileID: 11400000, guid: d3046759a8dc77e44b5c89fbcf868706, type: 2}
+  - {fileID: 11400000, guid: 4d4a6093fc1daf04392191a455858a06, type: 2}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}

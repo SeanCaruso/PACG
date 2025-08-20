@@ -23,7 +23,7 @@ MonoBehaviour:
     - baseDC: 3
       adventureLevelMult: 0
       category: 1
-      allowedSkills: 000000000c000000
+      allowedSkills: 000000000d000000
   rerollThreshold: 0
   powers: On your Strength non-combat check or your check to defeat a Lock or Obstacle
     barrier, reveal to add 1d8; you may additionally recharge to add another 1d8.

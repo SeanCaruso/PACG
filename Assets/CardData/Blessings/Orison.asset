@@ -23,7 +23,7 @@ MonoBehaviour:
     - baseDC: 2
       adventureLevelMult: 0
       category: 1
-      allowedSkills: 0400000009000000
+      allowedSkills: 040000000a000000
   rerollThreshold: 0
   powers: 'On a local check, discard to bless. If the hour''s level is 0, you may
     recharge instead.
