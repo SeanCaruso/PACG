@@ -63,4 +63,43 @@ public class LongswordTests
         Assert.AreEqual(1, actions.Count);
         Assert.AreEqual(PF.ActionType.Reload, actions[0].ActionType);
     }
+
+    [Test]
+    public void Longsword_Reveal_Then_Reload()
+    {
+        TestUtils.SetupCombatCheck(_gameServices, _valeros);
+        var actions = _longswordInstance.GetAvailableActions();
+        _gameServices.ASM.StageAction(actions[0]);
+
+        var stagedPool = _gameServices.ASM.GetStagedDicePool();
+        Assert.AreEqual(0, stagedPool.NumDice(12));
+        Assert.AreEqual(1, stagedPool.NumDice(10));
+        Assert.AreEqual(1, stagedPool.NumDice(8));
+        Assert.AreEqual(0, stagedPool.NumDice(6));
+        Assert.AreEqual(0, stagedPool.NumDice(4));
+        
+        actions = _longswordInstance.GetAvailableActions();
+        _gameServices.ASM.StageAction(actions[0]);
+        stagedPool = _gameServices.ASM.GetStagedDicePool();
+        Assert.AreEqual(0, stagedPool.NumDice(12));
+        Assert.AreEqual(1, stagedPool.NumDice(10));
+        Assert.AreEqual(1, stagedPool.NumDice(8));
+        Assert.AreEqual(0, stagedPool.NumDice(6));
+        Assert.AreEqual(1, stagedPool.NumDice(4));
+    }
+
+    [Test]
+    public void Longsword_Reload()
+    {
+        TestUtils.SetupCombatCheck(_gameServices, _valeros);
+        var actions = _longswordInstance.GetAvailableActions();
+        _gameServices.ASM.StageAction(actions[1]);
+        
+        var stagedPool = _gameServices.ASM.GetStagedDicePool();
+        Assert.AreEqual(0, stagedPool.NumDice(12));
+        Assert.AreEqual(1, stagedPool.NumDice(10));
+        Assert.AreEqual(1, stagedPool.NumDice(8));
+        Assert.AreEqual(0, stagedPool.NumDice(6));
+        Assert.AreEqual(1, stagedPool.NumDice(4));
+    }
 }

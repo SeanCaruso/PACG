@@ -9,8 +9,8 @@ namespace PACG.Gameplay
         private readonly ActionStagingManager _asm;
 
         private CheckContext Check => _contexts.CheckContext;
-        
-        public LongswordLogic(GameServices gameServices) : base(gameServices) 
+
+        public LongswordLogic(GameServices gameServices) : base(gameServices)
         {
             _contexts = gameServices.Contexts;
             _asm = gameServices.ASM;
@@ -20,19 +20,21 @@ namespace PACG.Gameplay
         {
             List<IStagedAction> actions = new();
             if (!IsCardPlayable(card)) return actions;
-            
+
             // If a weapon hasn't been played yet, present one or both options.
             if (!Check.StagedCardTypes.Contains(card.Data.cardType))
             {
                 actions.Add(new PlayCardAction(card, PF.ActionType.Reveal, ("IsCombat", true)));
 
-                if (_contexts.CurrentResolvable is CombatResolvable resolvable && resolvable.Character.IsProficient(card.Data))
+                if (_contexts.CurrentResolvable is CombatResolvable resolvable &&
+                    resolvable.Character.IsProficient(card.Data))
                 {
                     actions.Add(new PlayCardAction(card, PF.ActionType.Reload, ("IsCombat", true)));
                 }
             }
             // Otherwise, if this card has already been played, present the reload option if proficient.
-            else if (_asm.CardStaged(card) && _contexts.CurrentResolvable is CombatResolvable res && res.Character.IsProficient(card.Data))
+            else if (_asm.CardStaged(card) && _contexts.CurrentResolvable is CombatResolvable res &&
+                     res.Character.IsProficient(card.Data))
             {
                 actions.Add(new PlayCardAction(
                     card,
@@ -40,10 +42,11 @@ namespace PACG.Gameplay
                     ("IsCombat", true), ("IsFreely", true))
                 );
             }
+
             return actions;
         }
 
-        private bool IsCardPlayable(CardInstance card) => 
+        private bool IsCardPlayable(CardInstance card) =>
             // All powers are specific to the card's owner while playing cards during a Strength or Melee combat check.
             Check != null
             && _contexts.CurrentResolvable is CombatResolvable resolvable
@@ -60,16 +63,20 @@ namespace PACG.Gameplay
             Check.UndoSkillModification(card);
         }
 
-        public override void Execute(CardInstance card, IStagedAction action)
+        public override void Execute(CardInstance card, IStagedAction action, DicePool dicePool)
         {
-            // Always Reveal to use Strength or Melee + 1d8.
-            Check.DicePool.AddDice(1, 8);
+            if (action is not PlayCardAction playAction) return;
+
+            var isFreely = playAction.ActionData.TryGetValue("IsFreely", out var isFreelyObj) &&
+                           isFreelyObj is true;
+
+            // If not freely, Reveal to use Strength or Melee + 1d8.
+            if (!isFreely)
+                dicePool.AddDice(1, 8);
 
             // Reload to add another 1d4.
             if (action.ActionType == PF.ActionType.Reload)
-            {
-                Check.DicePool.AddDice(1, 4);
-            }
+                dicePool.AddDice(1, 4);
         }
     }
 }

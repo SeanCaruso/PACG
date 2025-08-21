@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 namespace PACG.Gameplay
 {
@@ -8,15 +7,29 @@ namespace PACG.Gameplay
     {
         // Dependency injection
         private readonly ContextManager _contexts;
-        
+
         public GemOfMentalAcuityLogic(GameServices gameServices) : base(gameServices)
         {
             _contexts = gameServices.Contexts;
         }
 
-        public override void Execute(CardInstance card, IStagedAction action)
+        public override void OnStage(CardInstance card, IStagedAction action)
         {
-            if (_contexts.CheckContext == null) return;
+            if (_contexts.CheckContext == null ||
+                _contexts.CurrentResolvable is not ICheckResolvable resolvable)
+            {
+                return;
+            }
+
+            _contexts.CheckContext.SetDieOverride(
+                card,
+                resolvable.Character.GetBestSkill(PF.Skill.Intelligence, PF.Skill.Wisdom, PF.Skill.Charisma).die
+            );
+        }
+
+        public override void OnUndo(CardInstance card, IStagedAction action)
+        {
+            _contexts.CheckContext?.UndoDieOverride(card);
         }
 
         protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)
@@ -26,9 +39,9 @@ namespace PACG.Gameplay
                 !_contexts.CheckContext.StagedCardTypes.Contains(PF.CardType.Item) &&
                 _contexts.CheckContext.Character == card.Owner)
             {
-                return new List<IStagedAction>{ new PlayCardAction(card, PF.ActionType.Recharge) };
+                return new List<IStagedAction> { new PlayCardAction(card, PF.ActionType.Recharge) };
             }
-            
+
             return new List<IStagedAction>();
         }
     }

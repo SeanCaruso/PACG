@@ -57,8 +57,6 @@ namespace PACG.Gameplay
             if (!action.IsFreely) _stagedCardTypes.Add(action.Card.Data.cardType);
         }
 
-        public void ClearStagedTypes() => _stagedCardTypes.Clear();
-
         // =====================================================================================
         // CHECK SKILL DETERMINATION
         // =====================================================================================
@@ -117,17 +115,33 @@ namespace PACG.Gameplay
         // CHECK RESULTS ENCAPSULATION
         // =====================================================================================
         private readonly List<string> _traits = new();
+        public IReadOnlyList<string> Traits => _traits;
+
+        private CardInstance _dieOverrideSource;
+        public int? DieOverride { get; private set; }
+
+        public void SetDieOverride(CardInstance source, int sides)
+        {
+            _dieOverrideSource = source;
+            DieOverride = sides;
+        }
+
+        public void UndoDieOverride(CardInstance source)
+        {
+            if (_dieOverrideSource != source) return;
+            
+            _dieOverrideSource = null;
+            DieOverride = null;
+        }
 
         public PF.Skill UsedSkill { get; set; }
-        public IReadOnlyList<string> Traits => _traits;
-        public DicePool DicePool { get; } = new();
 
         public int BlessingCount { get; set; }
         public CheckResult CheckResult { get; set; }
 
         // Public methods to control state changes
         public void AddTraits(params string[] traits) => _traits.AddRange(traits);
-        public void AddToDicePool(int count, int sides, int bonus = 0) => DicePool.AddDice(count, sides, bonus);
+        //public void AddToDicePool(int count, int sides, int bonus = 0) => DicePool.AddDice(count, sides, bonus);
 
         // --- Custom Data ---
         public Dictionary<string, object> ContextData { get; } = new();
@@ -152,5 +166,15 @@ namespace PACG.Gameplay
         public bool Invokes(params string[] traits) => 
             traits.Intersect(Traits).Any() ||
             traits.Intersect(Resolvable.Card.Traits).Any();
+
+        public void Reset()
+        {
+            BlessingCount = 0;
+            _stagedCardTypes.Clear();
+            _stagedSkillAdditions.Clear();
+            _stagedSkillRestrictions.Clear();
+            _traits.Clear();
+            ContextData.Clear();
+        }
     }
 }

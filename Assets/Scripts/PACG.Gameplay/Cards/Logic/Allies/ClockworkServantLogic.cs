@@ -26,13 +26,13 @@ namespace PACG.Gameplay
                 _contexts.CheckContext.UndoSkillModification(card);
         }
 
-        public override void Execute(CardInstance card, IStagedAction action)
+        public override void Execute(CardInstance card, IStagedAction action, DicePool dicePool)
         {
             switch (action.ActionType)
             {
-                case PF.ActionType.Recharge:
+                case PF.ActionType.Recharge when dicePool != null:
                     // Recharge for +1d6 on a local Intelligence or Craft check.
-                    _contexts.CheckContext.AddToDicePool(1, 6);
+                    dicePool.AddDice(1, 6);
                     break;
                 case PF.ActionType.Bury:
                 case PF.ActionType.Banish:

@@ -27,7 +27,7 @@ namespace PACG.Gameplay
             ActionType = actionType;
         }
 
-        public void Commit(CheckContext checkContext = null) => Card.Logic?.Execute(Card, this);
+        public void Commit(CheckContext checkContext, DicePool dicePool) => Card.Logic?.Execute(Card, this, dicePool);
 
         public void OnStage() => GameEvents.SetStatusText("Move?");
 

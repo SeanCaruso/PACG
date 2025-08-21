@@ -26,10 +26,10 @@ namespace PACG.Gameplay
         
         public void SetTraits(params string[] traits) => _traits.AddRange(traits);
         
-        public void ApplyToCheck(CheckContext check)
+        public void ApplyTo(CheckContext check, DicePool dicePool)
         {
             if (!DoesApplyToCheck(check)) return;
-            check.AddToDicePool(_diceCount, _diceSides, _bonus);
+            dicePool.AddDice(_diceCount, _diceSides, _bonus);
 
             var bonus = _bonus > 0 ? $"+{_bonus}" : "";
             Debug.Log($"[{GetType().Name}] Added {_diceCount}d{_diceSides}{bonus} to check.");

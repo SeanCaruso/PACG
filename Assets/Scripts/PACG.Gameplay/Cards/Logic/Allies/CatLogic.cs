@@ -13,13 +13,13 @@ namespace PACG.Gameplay
             _contexts = gameServices.Contexts;
         }
 
-        public override void Execute(CardInstance card, IStagedAction action)
+        public override void Execute(CardInstance card, IStagedAction action, DicePool dicePool)
         {
             switch (action.ActionType)
             {
                 // Recharge for +1d4 on a check.
                 case PF.ActionType.Recharge:
-                    _contexts.CheckContext.AddToDicePool(1, 4);
+                    dicePool.AddDice(1, 4);
                     break;
                 // Discard to explore
                 case PF.ActionType.Discard:

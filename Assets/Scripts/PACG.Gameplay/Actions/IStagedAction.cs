@@ -9,6 +9,6 @@ namespace PACG.Gameplay
 
         public void OnStage();
         public void OnUndo();
-        public void Commit(CheckContext checkContext = null); // CheckContext is required for traits
+        public void Commit(CheckContext checkContext, DicePool dicePool); // CheckContext is required for traits
     }
 }

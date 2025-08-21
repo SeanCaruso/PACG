@@ -242,15 +242,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ae8c8da9fa58bd8418ecc8ca5855c4a9, type: 2}
   testLocation: {fileID: 11400000, guid: a54b3de4a8e7ec347a2947701d73c056, type: 2}
   testLocationDeck:
-  - {fileID: 11400000, guid: e4de3c58c0c3fb749be5d9c6a8521d46, type: 2}
-  - {fileID: 11400000, guid: 932bb3a78a3d9914c982fcf1b4e2e633, type: 2}
-  - {fileID: 11400000, guid: 0f655b2e891367041b414fe7798bc9df, type: 2}
-  - {fileID: 11400000, guid: d3046759a8dc77e44b5c89fbcf868706, type: 2}
-  - {fileID: 11400000, guid: 4d4a6093fc1daf04392191a455858a06, type: 2}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: d747111548c51b64583711ae21922f8d, type: 2}
+  - {fileID: 11400000, guid: d747111548c51b64583711ae21922f8d, type: 2}
+  - {fileID: 11400000, guid: d747111548c51b64583711ae21922f8d, type: 2}
 --- !u!4 &182072643
 Transform:
   m_ObjectHideFlags: 0
@@ -501,8 +495,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fa48f9d85d37d84da82ee3eccdfc8a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  statusText: {fileID: 1821694485}
-  deckCountPanel: {fileID: 993305534}
+  StatusText: {fileID: 1821694485}
+  DeckCountPanel: {fileID: 993305534}
+  DicePreviewPrefab: {fileID: 824173452240632979, guid: 26ba595cbd8c75e42930a01a969aab95, type: 3}
 --- !u!1 &416585361
 GameObject:
   m_ObjectHideFlags: 0

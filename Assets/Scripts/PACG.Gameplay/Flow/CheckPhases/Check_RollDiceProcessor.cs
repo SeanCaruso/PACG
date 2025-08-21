@@ -10,10 +10,12 @@ namespace PACG.Gameplay
     /// </summary>
     public class Check_RollDiceProcessor : BaseProcessor
     {
+        private readonly ActionStagingManager _asm;
         private readonly ContextManager _contexts;
 
         public Check_RollDiceProcessor(GameServices gameServices) : base(gameServices)
         {
+            _asm = gameServices.ASM;
             _contexts = gameServices.Contexts;
         }
 
@@ -30,18 +32,25 @@ namespace PACG.Gameplay
             var dc = resolvable.Difficulty;
             var check = _contexts.CheckContext;
 
-            foreach (var effect in check.ExploreEffects)
-            {
-                effect.ApplyToCheck(check);
-            }
-            
-            // Add the skill set by the skill selection dialog.
-            var usedSkill = pc.GetSkill(check.UsedSkill);
-            check.DicePool.AddDice(1, usedSkill.die, usedSkill.bonus);
+            // foreach (var effect in check.ExploreEffects)
+            // {
+            //     effect.ApplyTo(check);
+            // }
+            //
+            // // Add the skill set by the skill selection dialog.
+            // var usedSkill = pc.GetSkill(check.UsedSkill);
+            //
+            // if (check.DieOverride != null)
+            //     usedSkill.die = check.DieOverride.Value;
+            //
+            // check.DicePool.AddDice(1, usedSkill.die, usedSkill.bonus);
+            //
+            // // Add blessing dice.
+            // check.DicePool.AddDice(check.BlessingCount, usedSkill.die);
 
-            // Add blessing dice.
-            check.DicePool.AddDice(check.BlessingCount, usedSkill.die);
-            var rollTotal = check.DicePool.Roll();
+            var dicePool = _asm.GetStagedDicePool();
+
+            var rollTotal = dicePool.Roll();
             check.CheckResult = new CheckResult(rollTotal, dc, pc, check.UsedSkill, check.Traits);
 
             var needsReroll = check.CheckResult.MarginOfSuccess < _contexts.EncounterContext.CardData.rerollThreshold;
@@ -55,18 +64,20 @@ namespace PACG.Gameplay
             }
 
             // No playable cards allow rerolls... check if a played card set the context.
-            hasRerollOptions |= ((List<CardLogicBase>)_contexts.CheckContext.ContextData.GetValueOrDefault("rerollCards", new List<CardLogicBase>())).Count > 0;
-            
+            hasRerollOptions |=
+                ((List<CardLogicBase>)_contexts.CheckContext.ContextData.GetValueOrDefault("rerollCards",
+                    new List<CardLogicBase>())).Count > 0;
+
             // No reroll options. We're done!
             if (!needsReroll || !hasRerollOptions)
             {
-                GameEvents.SetStatusText($"Rolled {check.DicePool}: {rollTotal}");
+                GameEvents.SetStatusText($"Rolled {dicePool}: {rollTotal}");
                 return;
             }
-            
-            GameEvents.SetStatusText($"Rolled {check.DicePool}: {rollTotal}... Reroll?");
+
+            GameEvents.SetStatusText($"Rolled {dicePool}: {rollTotal}... Reroll?");
             // ... otherwise, create a reroll resolvable.
-            RerollResolvable rerollResolvable = new(pc, check);
+            RerollResolvable rerollResolvable = new(pc, dicePool, check);
             _contexts.NewResolvable(rerollResolvable);
         }
     }

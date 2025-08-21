@@ -25,13 +25,13 @@ namespace PACG.Gameplay
             _contexts.EncounterContext?.UndoProhibitedTraits(card.Owner, card);
         }
 
-        public override void Execute(CardInstance card, IStagedAction action)
+        public override void Execute(CardInstance card, IStagedAction action, DicePool dicePool)
         {
             // Only handle combat powers. Evasion is handled by the Evasion Processor.
             if (_contexts.CurrentResolvable is not CombatResolvable || _contexts.CheckContext == null) return;
             
             // Reveal to add 1d6; additionally discard to add another 1d6.
-            _contexts.CheckContext.DicePool.AddDice(action.ActionType == PF.ActionType.Reveal ? 1 : 2, 6);
+            dicePool.AddDice(action.ActionType == PF.ActionType.Reveal ? 1 : 2, 6);
 
         }
 

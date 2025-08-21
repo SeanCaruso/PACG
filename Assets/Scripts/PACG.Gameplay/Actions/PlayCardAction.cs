@@ -35,10 +35,10 @@ namespace PACG.Gameplay
 
         public void OnUndo() => Card.Logic?.OnUndo(Card, this);
 
-        public void Commit(CheckContext checkContext = null)
+        public void Commit(CheckContext checkContext, DicePool dicePool)
         {
             checkContext?.AddTraits(Card.Data.traits.ToArray());
-            Card.Logic?.Execute(Card, this);
+            Card.Logic?.Execute(Card, this, dicePool);
             // The card instance on the PlayerCharacter was moved during staging, so don't do it here.
         }
     }

@@ -13,10 +13,12 @@ namespace PACG.Gameplay
             _contexts = gameServices.Contexts;
         }
 
-        public override void Execute(CardInstance card, IStagedAction action)
+        public override void Execute(CardInstance card, IStagedAction action, DicePool dicePool)
         {
+            if (dicePool == null) return;
+            
             // Add 1d4+# and the Magic trait.
-            _contexts.CheckContext?.AddToDicePool(1, 4, _contexts.GameContext.AdventureNumber);
+            dicePool.AddDice(1, 4, _contexts.GameContext.AdventureNumber);
             _contexts.CheckContext?.AddTraits("Magic");
         }
 

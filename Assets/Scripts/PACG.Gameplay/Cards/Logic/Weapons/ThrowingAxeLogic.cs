@@ -44,6 +44,7 @@ namespace PACG.Gameplay
 
         public override void OnStage(CardInstance card, IStagedAction action)
         {
+            Check.AddValidSkills(card, _validSkills);
             Check.RestrictValidSkills(card, _validSkills);
         }
 
@@ -52,17 +53,17 @@ namespace PACG.Gameplay
             Check.UndoSkillModification(card);
         }
 
-        public override void Execute(CardInstance card, IStagedAction action)
+        public override void Execute(CardInstance card, IStagedAction action, DicePool dicePool)
         {
             switch (action.ActionType)
             {
                 // Reveal to use Strength, Dexterity, Melee, or Ranged + 1d8.       
                 case PF.ActionType.Reveal:
-                    Check.DicePool.AddDice(1, 8);
+                    dicePool.AddDice(1, 8);
                     break;
                 // Discard to add 1d6.
                 case PF.ActionType.Discard:
-                    Check.DicePool.AddDice(1, 6);
+                    dicePool.AddDice(1, 6);
                     break;
             }
         }

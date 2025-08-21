@@ -50,7 +50,10 @@ namespace PACG.Gameplay
         public override void OnStage(CardInstance card, IStagedAction action)
         {
             if (action.ActionType == PF.ActionType.Reveal)
+            {
+                Check.AddValidSkills(card, PF.Skill.Dexterity, PF.Skill.Ranged);
                 Check.RestrictValidSkills(card, PF.Skill.Dexterity, PF.Skill.Ranged);
+            }
 
             _contexts.EncounterContext.AddProhibitedTraits(card.Owner, card, "Offhand");
         }
@@ -61,17 +64,17 @@ namespace PACG.Gameplay
             _contexts.EncounterContext.UndoProhibitedTraits(card.Owner, card);
         }
 
-        public override void Execute(CardInstance card, IStagedAction action)
+        public override void Execute(CardInstance card, IStagedAction action, DicePool dicePool)
         {
             switch (action.ActionType)
             {
                 // Reveal to use Dexterity or Ranged + 1d8.        
                 case PF.ActionType.Reveal:
-                    Check.DicePool.AddDice(1, 8);
+                    dicePool.AddDice(1, 8);
                     break;
                 // Discard to add 1d6.
                 case PF.ActionType.Discard:
-                    Check.DicePool.AddDice(1, 6);
+                    dicePool.AddDice(1, 6);
                     break;
             }
         }

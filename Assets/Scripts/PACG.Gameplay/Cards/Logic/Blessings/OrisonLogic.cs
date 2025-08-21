@@ -12,7 +12,7 @@ namespace PACG.Gameplay
             _contexts = gameServices.Contexts;
         }
 
-        public override void Execute(CardInstance card, IStagedAction action)
+        public override void Execute(CardInstance card, IStagedAction action, DicePool dicePool)
         {
             if (action is not ExploreAction)
                 _contexts.CheckContext.BlessingCount++;

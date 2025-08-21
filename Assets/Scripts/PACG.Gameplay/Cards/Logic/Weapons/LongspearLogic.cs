@@ -54,7 +54,7 @@ namespace PACG.Gameplay
             Check.UndoSkillModification(card);
         }
 
-        public override void Execute(CardInstance card, IStagedAction action)
+        public override void Execute(CardInstance card, IStagedAction action, DicePool dicePool)
         {
             if (!Check.ContextData.ContainsKey("rerollCards"))
                 Check.ContextData["rerollCards"] = new List<CardLogicBase>();
@@ -64,14 +64,9 @@ namespace PACG.Gameplay
             {
                 // Reveal to use Strength or Melee + 1d8.
                 case PF.ActionType.Reveal:
-                {
-                    if (_contexts.CurrentResolvable is not CombatResolvable) return;
-                    
-                    Check.DicePool.AddDice(1, 8);
-
+                    dicePool.AddDice(1, 8);
                     rerollSources.Add(this);
                     break;
-                }
                 // Discard to reroll.
                 case PF.ActionType.Discard:
                     rerollSources.Remove(this);

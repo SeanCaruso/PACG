@@ -65,7 +65,7 @@ namespace PACG.Gameplay
             _contexts.CheckContext?.StageCardTypeIfNeeded(action);
 
             // Send the UI event to update Cancel/Commit buttons.
-            UpdateActionButtonState();
+            SendStagedActionUpdates();
         }
 
         public void Cancel()
@@ -86,7 +86,8 @@ namespace PACG.Gameplay
             HasExploreStaged = false;
             _originalCardLocs.Clear();
             _pcsStagedActions[pc].Clear();
-            _contexts.CheckContext?.ClearStagedTypes();
+            
+            _contexts.CheckContext?.Reset();
 
             // Additional step for phase-level cancels
             if (_contexts.CurrentResolvable?.CancelAbortsPhase == true)
@@ -97,17 +98,21 @@ namespace PACG.Gameplay
                 _pcsStagedActions.Clear(); // Clear ALL PCs' actions when aborting phase
             }
 
-            UpdateActionButtonState();
+            SendStagedActionUpdates();
         }
 
-        public void UpdateActionButtonState()
+        public void SendStagedActionUpdates()
         {
+            // Send an event to update the state of the action buttons (Cancel, Commit, Skip).
             // TODO: Update this for the displayed PC. Use Turn PC until then.
             var pc = _contexts.TurnContext.Character;
             var stagedActions = _pcsStagedActions.GetValueOrDefault(pc) ?? (_pcsStagedActions[pc] = new List<IStagedAction>());
 
             var state = _contexts.CurrentResolvable?.GetUIState(stagedActions) ?? GetDefaultUiState(stagedActions);
             GameEvents.RaiseStagedActionsStateChanged(state);
+            
+            // Update the dice pool.
+            GameEvents.RaiseDicePoolChanged(GetStagedDicePool());
         }
 
         private StagedActionsState GetDefaultUiState(List<IStagedAction> actions)
@@ -120,14 +125,39 @@ namespace PACG.Gameplay
             );
         }
 
+        public DicePool GetStagedDicePool()
+        {
+            var dicePool = new DicePool();
+            if (_contexts.CheckContext == null) return dicePool;
+            
+            foreach (var effect in _contexts.CheckContext.ExploreEffects)
+            {
+                effect.ApplyTo(_contexts.CheckContext, dicePool);
+            }
+            
+            // Execute card logic first for blessing calculation.
+            foreach (var action in _pcsStagedActions.Values.SelectMany(list => list))
+                action.Card.Logic?.Execute(action.Card, action, dicePool);
+
+            // Add base skill die and blessing dice.
+            var skillDie = _contexts.CheckContext.DieOverride ??
+                           _contexts.CheckContext.Character.GetSkill(_contexts.CheckContext.UsedSkill).die;
+            var skillBonus = _contexts.CheckContext.Character.GetSkill(_contexts.CheckContext.UsedSkill).bonus;
+            dicePool.AddDice(1 + _contexts.CheckContext.BlessingCount, skillDie, skillBonus);
+            
+            
+            return dicePool;
+        }
+
         public void Commit()
         {
             // Clear status text first.
             GameEvents.SetStatusText("");
 
+            var dicePool = new DicePool();
             foreach (var action in _pcsStagedActions.Values.SelectMany(list => list))
             {
-                action.Commit(_contexts.CheckContext);
+                action.Commit(_contexts.CheckContext, dicePool);
             }
             HasExploreStaged = false;
             _originalCardLocs.Clear();
@@ -151,7 +181,7 @@ namespace PACG.Gameplay
                 _contexts.EndResolvable();
             }
 
-            UpdateActionButtonState();
+            SendStagedActionUpdates();
 
             // We're done committing actions. Tell the GameFlowManager to continue.
             _gameFlow.Process();

@@ -82,7 +82,7 @@ namespace PACG.Gameplay
             resolvable.Initialize();
 
             // Update the ActionStagingManager in case we need to show a Skip button.
-            _asm.UpdateActionButtonState();
+            _asm.SendStagedActionUpdates();
         }
 
         /// <summary>

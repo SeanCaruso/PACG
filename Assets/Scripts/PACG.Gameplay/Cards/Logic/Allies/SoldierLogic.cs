@@ -26,13 +26,13 @@ namespace PACG.Gameplay
                 _contexts.CheckContext.UndoSkillModification(card);
         }
 
-        public override void Execute(CardInstance card, IStagedAction action)
+        public override void Execute(CardInstance card, IStagedAction action, DicePool dicePool)
         {
             switch (action.ActionType)
             {
-                case PF.ActionType.Recharge:
+                case PF.ActionType.Recharge when dicePool != null:
                     // Recharge for +1d4 on a local Strength or Melee check.
-                    _contexts.CheckContext.AddToDicePool(1, 4);
+                    dicePool.AddDice(1, 4);
                     break;
                 case PF.ActionType.Discard:
                     // Discard to explore - +1d4 on Strength and Melee checks.
@@ -65,6 +65,7 @@ namespace PACG.Gameplay
         // Can recharge on a local Strength or Melee check.
         private bool CanRecharge(CardInstance card) => (
             _contexts.CheckContext != null &&
+            _contexts.CurrentResolvable is ICheckResolvable &&
             _contexts.CheckContext.IsLocal(card.Owner) &&
             !_contexts.CheckContext.StagedCardTypes.Contains(PF.CardType.Ally) &&
             _contexts.CheckContext.CanUseSkill(PF.Skill.Strength, PF.Skill.Melee)

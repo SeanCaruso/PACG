@@ -17,7 +17,7 @@ namespace PACG.Gameplay
             _targetPc = targetPc;
         }
 
-        public void Commit(CheckContext _ = null)
+        public void Commit(CheckContext checkContext, DicePool dicePool)
         {
             var targetName = _targetPc?.CharacterData.CharacterName ?? "nonexistent PC";
             Debug.Log($"{Card.Data.cardName} given to {targetName}.");

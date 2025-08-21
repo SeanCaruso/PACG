@@ -3,6 +3,6 @@ namespace PACG.Gameplay
 {
     public class BasicExploreEffect : IExploreEffect
     {
-        public void ApplyToCheck(CheckContext context) { }
+        public void ApplyTo(CheckContext context, DicePool dicePool) { }
     }
 }

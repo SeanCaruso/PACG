@@ -9,9 +9,6 @@ namespace PACG.Gameplay
 
         private CheckContext Check => _contexts.CheckContext;
 
-        private PlayCardAction RevealAction(CardInstance card) => new(card, PF.ActionType.Reveal);
-        private PlayCardAction RechargeAction(CardInstance card) => new(card, PF.ActionType.Recharge);
-
         public CrowbarLogic(GameServices gameServices) : base(gameServices) 
         {
             _contexts = gameServices.Contexts;
@@ -19,20 +16,23 @@ namespace PACG.Gameplay
 
         protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)
         {
-            List<IStagedAction> actions = new();
-            if (IsCardPlayabe(card))
+            if (!IsCardPlayable(card)) return new List<IStagedAction>();
+            
+            // We can reveal or reveal and recharge if not revealed already.
+            if (card.CurrentLocation != CardLocation.Revealed)
             {
-                // We can reveal if not revealed already.
-                if (card.CurrentLocation != CardLocation.Revealed)
-                    actions.Add(RevealAction(card));
-
-                // We can always recharge if playable.
-                actions.Add(RechargeAction(card));
+                return new List<IStagedAction>
+                {
+                    new PlayCardAction(card, PF.ActionType.Reveal),
+                    new PlayCardAction(card, PF.ActionType.Recharge)
+                };
             }
-            return actions;
+            
+            // Otherwise, if we're playable that means we've revealed. We can freely recharge.
+            return new List<IStagedAction> { new PlayCardAction(card, PF.ActionType.Recharge, ("IsFreely", true)) };
         }
 
-        private bool IsCardPlayabe(CardInstance card)
+        private bool IsCardPlayable(CardInstance card)
         {
             if (Check == null)
                 return false; // Must be in a check...
@@ -76,14 +76,20 @@ namespace PACG.Gameplay
             Check.UndoSkillModification(card);
         }
 
-        public override void Execute(CardInstance card, IStagedAction action)
+        public override void Execute(CardInstance card, IStagedAction action, DicePool dicePool)
         {
-            // Reveal to add 1d8.
-            Check.DicePool.AddDice(1, 8);
+            if (action is not PlayCardAction playAction) return;
+
+            var isFreely = playAction.ActionData.TryGetValue("IsFreely", out var isFreelyObj) &&
+                           isFreelyObj is true;
+
+            // If not freely, Reveal to add 1d8.
+            if (!isFreely)
+                dicePool.AddDice(1, 8);
 
             // Recharge to add another 1d8.
             if (action.ActionType == PF.ActionType.Recharge)
-                Check.DicePool.AddDice(1, 8);
+                dicePool.AddDice(1, 8);
         }
     }
 }

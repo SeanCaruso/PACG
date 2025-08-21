@@ -16,7 +16,7 @@ namespace PACG.Gameplay
             _gameServices = gameServices;
         }
 
-        public override void Execute(CardInstance card, IStagedAction action)
+        public override void Execute(CardInstance card, IStagedAction action, DicePool dicePool)
         {
             if (action is not PlayCardAction playAction) return;
             if (!playAction.ActionData.TryGetValue("Bless", out var isBless)) return;

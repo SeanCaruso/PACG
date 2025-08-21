@@ -70,8 +70,9 @@ public class ClockworkServantTests
         Assert.AreEqual(PF.ActionType.Recharge, actions[0].ActionType);
         
         // Check for +1d6.
-        _cardInstance.Logic.Execute(_cardInstance, actions[0]);
-        Assert.AreEqual(1, _gameServices.Contexts.CheckContext.DicePool.NumDice(6));
+        var dicePool = new DicePool();
+        _cardInstance.Logic.Execute(_cardInstance, actions[0], dicePool);
+        Assert.AreEqual(1, dicePool.NumDice(6));
     }
 
     [Test]
@@ -107,8 +108,9 @@ public class ClockworkServantTests
         Assert.AreEqual(PF.ActionType.Recharge, actions[0].ActionType);
         
         // Check for +1d6.
-        _cardInstance.Logic.Execute(_cardInstance, actions[0]);
-        Assert.AreEqual(1, _gameServices.Contexts.CheckContext.DicePool.NumDice(6));
+        var dicePool = new DicePool();
+        _cardInstance.Logic.Execute(_cardInstance, actions[0], dicePool);
+        Assert.AreEqual(1, dicePool.NumDice(6));
     }
 
     [Test]

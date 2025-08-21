@@ -69,9 +69,10 @@ public class CatTests
         var actions = _catInstance.GetAvailableActions();
         Assert.AreEqual(1, actions.Count);
         Assert.AreEqual(PF.ActionType.Recharge, actions[0].ActionType);
-        
-        _catInstance.Logic.Execute(_catInstance, actions[0]);
-        Assert.AreEqual(1, _gameServices.Contexts.CheckContext.DicePool.NumDice(4));
+
+        var dicePool = new DicePool();
+        _catInstance.Logic.Execute(_catInstance, actions[0], dicePool);
+        Assert.AreEqual(1, dicePool.NumDice(4));
     }
 
     [Test]
@@ -131,8 +132,9 @@ public class CatTests
 
         var resolvable = new SkillResolvable(zombieInstance, _valeros, 10);
         var check = new CheckContext(resolvable);
-        effects[0].ApplyToCheck(check);
-        Assert.AreEqual(0, check.DicePool.NumDice(4));
+        var dicePool = new DicePool();
+        effects[0].ApplyTo(check, dicePool);
+        Assert.AreEqual(0, dicePool.NumDice(4));
     }
 
     [Test]
@@ -159,7 +161,8 @@ public class CatTests
         
         var resolvable = new SkillResolvable(spellInstance, _valeros, 10);
         var check = new CheckContext(resolvable);
-        effects[0].ApplyToCheck(check);
-        Assert.AreEqual(1, check.DicePool.NumDice(4));
+        var dicePool = new DicePool();
+        effects[0].ApplyTo(check, dicePool);
+        Assert.AreEqual(1, dicePool.NumDice(4));
     }
 }

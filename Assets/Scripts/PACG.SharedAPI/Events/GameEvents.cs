@@ -50,7 +50,8 @@ namespace PACG.SharedAPI
         // General game status events
         public static event Action<string> SetStatusTextEvent;
         public static void SetStatusText(string text) => SetStatusTextEvent?.Invoke(text);
-
-
+        
+        public static event Action<DicePool> DicePoolChanged;
+        public static void RaiseDicePoolChanged(DicePool dicePool) => DicePoolChanged?.Invoke(dicePool);
     }
 }

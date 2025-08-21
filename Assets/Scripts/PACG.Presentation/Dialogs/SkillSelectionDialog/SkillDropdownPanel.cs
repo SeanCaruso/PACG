@@ -47,9 +47,6 @@ namespace PACG.Presentation.SkillSelectionDialog
             
             OnValidSkillsChanged(context.GetCurrentValidSkills());
 
-            var rect = GetComponent<RectTransform>();
-            rect.anchoredPosition = new Vector2(rect.anchoredPosition.x, _skillRowsHeight);
-
             LeftArrow.transform.localRotation = Quaternion.Euler(0f, 0f, 180f);
             RightArrow.transform.localRotation = Quaternion.Euler(0f, 0f, -180f);
         }
@@ -89,6 +86,9 @@ namespace PACG.Presentation.SkillSelectionDialog
             }
 
             SkillNameText.text = bestSkill.skill.ToString().ToUpper();
+
+            var rect = GetComponent<RectTransform>();
+            rect.anchoredPosition = new Vector2(rect.anchoredPosition.x, _isCollapsed ? _skillRowsHeight : 0f);
         }
 
         private void OnShowHide()

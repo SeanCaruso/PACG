@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 namespace PACG.Gameplay
 {
@@ -42,13 +41,13 @@ namespace PACG.Gameplay
         {
         }
 
-        public virtual void Execute(CardInstance card, IStagedAction action)
+        public virtual void Execute(CardInstance card, IStagedAction action, DicePool dicePool)
         {
         }
 
         protected virtual List<IStagedAction> GetAvailableCardActions(CardInstance card)
         {
-            return new();
+            return new List<IStagedAction>();
         }
 
         // Encounter card methods (default implementations for playable cards)

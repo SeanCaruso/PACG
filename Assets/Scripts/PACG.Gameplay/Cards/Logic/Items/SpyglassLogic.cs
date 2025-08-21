@@ -51,13 +51,13 @@ namespace PACG.Gameplay
                 Check.UndoSkillModification(card);
         }
 
-        public override void Execute(CardInstance card, IStagedAction action)
+        public override void Execute(CardInstance card, IStagedAction action, DicePool dicePool)
         {
             switch (action.ActionType)
             {
                 // Reveal to add 1d6 on your Perception check.
                 case PF.ActionType.Reveal:
-                    Check.DicePool.AddDice(1, 8);
+                    dicePool.AddDice(1, 8);
                     break;
                 // Discard to examine the top 2 cards of your location and return them in any order.
                 case PF.ActionType.Discard:

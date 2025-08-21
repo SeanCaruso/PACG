@@ -28,13 +28,13 @@ namespace PACG.Gameplay
             _contexts.CheckContext?.UndoSkillModification(card);
         }
 
-        public override void Execute(CardInstance card, IStagedAction action)
+        public override void Execute(CardInstance card, IStagedAction action, DicePool dicePool)
         {
             switch (action.ActionType)
             {
                 // Recharge for +1d4 on a local Perception check.
-                case PF.ActionType.Recharge when _contexts.CheckContext != null:
-                    _contexts.CheckContext?.AddToDicePool(1, 4);
+                case PF.ActionType.Recharge when dicePool != null:
+                    dicePool.AddDice(1, 4);
                     break;
                 // Recharge to examine the top card of your location.
                 case PF.ActionType.Recharge:
