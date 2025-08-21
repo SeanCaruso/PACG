@@ -56,7 +56,9 @@ namespace PACG.Gameplay
         public List<CardInstance> ExamineTop(int count) => Deck.ExamineTop(count);
 
         public void ShuffleIn(CardInstance card, bool isTypeKnown)
-        { 
+        {
+            if (card == null) return;
+            
             Deck.ShuffleIn(card);
 
             if (isTypeKnown)

@@ -22,7 +22,7 @@ public class QuarterstaffTests
 
         _valerosData = TestUtils.LoadCharacterData("Valeros");
         _valeros = new PlayerCharacter(_valerosData,
-            _gameServices.Logic.GetLogic<CharacterLogicBase>(_valerosData.characterName), _gameServices);
+            _gameServices.Logic.GetLogic<CharacterLogicBase>(_valerosData.CharacterName), _gameServices);
 
         _quarterstaffData = TestUtils.LoadCardData("Quarterstaff");
         _quarterstaffInstance = _gameServices.Cards.New(_quarterstaffData, _valeros);
@@ -46,7 +46,7 @@ public class QuarterstaffTests
         Assert.AreEqual(PF.CardType.Weapon, _quarterstaffInstance.Data.cardType);
 
         Assert.IsNotNull(_valerosData);
-        Assert.AreEqual("Valeros", _valeros.CharacterData.characterName);
+        Assert.AreEqual("Valeros", _valeros.CharacterData.CharacterName);
         Assert.IsTrue(_valeros.IsProficient(_quarterstaffInstance.Data));
     }
 

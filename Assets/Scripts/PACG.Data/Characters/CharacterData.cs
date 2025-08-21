@@ -7,17 +7,17 @@ namespace PACG.Data
     [Serializable]
     public struct AttributeSkill
     {
-        public PF.Skill attribute;
-        public int die;
-        public int bonus;
+        public PF.Skill Attribute;
+        public int Die;
+        public int Bonus;
     }
 
     [Serializable]
-    public struct Skill
+    public struct PcSkill
     {
-        public PF.Skill skill;
-        public PF.Skill attribute;
-        public int bonus;
+        public PF.Skill Skill;
+        public PF.Skill Attribute;
+        public int Bonus;
     }
 
     [Serializable]
@@ -30,25 +30,25 @@ namespace PACG.Data
     [Serializable]
     public struct FavoredCard
     {
-        public PF.CardType cardType;
-        public string trait;
+        public PF.CardType CardType;
+        public string Trait;
     }
 
-    [System.Serializable]
+    [Serializable]
     public struct CharacterPower : IEquatable<CharacterPower>
     {
-        public bool isActivated;
-        public Sprite spriteEnabled;
-        public Sprite spriteDisabled;
+        public bool IsActivated;
+        public Sprite SpriteEnabled;
+        public Sprite SpriteDisabled;
         [TextArea(2, 3)]
-        public string text;
+        public string Text;
 
         public bool Equals(CharacterPower other)
         {
-            return isActivated == other.isActivated &&
-                   Equals(spriteEnabled, other.spriteEnabled) &&
-                   Equals(spriteDisabled, other.spriteDisabled) &&
-                   text == other.text;
+            return IsActivated == other.IsActivated &&
+                   Equals(SpriteEnabled, other.SpriteEnabled) &&
+                   Equals(SpriteDisabled, other.SpriteDisabled) &&
+                   Text == other.Text;
         }
 
         public override bool Equals(object obj)
@@ -58,34 +58,34 @@ namespace PACG.Data
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(isActivated, spriteEnabled, spriteDisabled, text);
+            return HashCode.Combine(IsActivated, SpriteEnabled, SpriteDisabled, Text);
         }
     }
 
     [CreateAssetMenu(fileName = "CharacterName", menuName = "Pathfinder/Character Card")]
     public class CharacterData : ScriptableObject
     {
-        public string characterName;
+        public string CharacterName;
 
         [Header("Skills")]
-        public List<AttributeSkill> attributes;
-        public List<Skill> skills;
+        public List<AttributeSkill> Attributes;
+        public List<PcSkill> Skills;
 
         [Header("Other Basic Info")]
-        public int handSize;
-        public List<Proficiency> proficiencies;
-        public List<string> traits;
+        public int HandSize;
+        public List<Proficiency> Proficiencies;
+        public List<string> Traits;
 
         [Header("Powers")]
-        public List<CharacterPower> powers;
+        public List<CharacterPower> Powers;
 
         [Header("Deck List")]
-        public int weapons;
-        public int spells;
-        public int armors;
-        public int items;
-        public int allies;
-        public int blessings;
-        public List<FavoredCard> favoredCards;
+        public int Weapons;
+        public int Spells;
+        public int Armors;
+        public int Items;
+        public int Allies;
+        public int Blessings;
+        public List<FavoredCard> FavoredCards;
     }
 }

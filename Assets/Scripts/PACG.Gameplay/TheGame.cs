@@ -76,6 +76,7 @@ namespace PACG.Gameplay
             // STEP 4: PRESS THE "ON" BUTTON
             // Everything is built and wired. Now we tell the engine to start.
             // =================================================================
+            LeanTween.reset();
 
             // Set up test data
             for (var i = 0; i < 30;  i++)
@@ -91,7 +92,7 @@ namespace PACG.Gameplay
                 location.ShuffleIn(_gameServices.Cards.New(cardData), true);
             }
 
-            var pcLogic = _gameServices.Logic.GetLogic<CharacterLogicBase>(testCharacter.characterName);
+            var pcLogic = _gameServices.Logic.GetLogic<CharacterLogicBase>(testCharacter.CharacterName);
             PlayerCharacter testPc = new(testCharacter, pcLogic, _gameServices);
             GameEvents.RaisePlayerCharacterChanged(testPc);
             

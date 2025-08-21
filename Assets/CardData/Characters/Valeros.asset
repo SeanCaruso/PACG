@@ -12,69 +12,69 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b9caa4de1a44a24690a5d7218d08e5f, type: 3}
   m_Name: Valeros
   m_EditorClassIdentifier: 
-  characterName: Valeros
-  attributes:
-  - attribute: 0
-    die: 10
-    bonus: 0
-  - attribute: 1
-    die: 8
-    bonus: 0
-  - attribute: 2
-    die: 8
-    bonus: 0
-  - attribute: 3
-    die: 4
-    bonus: 0
-  - attribute: 4
-    die: 6
-    bonus: 0
-  - attribute: 5
-    die: 6
-    bonus: 0
-  skills:
-  - skill: 13
-    attribute: 0
-    bonus: 2
-  - skill: 15
-    attribute: 1
-    bonus: 1
-  - skill: 11
-    attribute: 2
-    bonus: 2
-  - skill: 9
-    attribute: 5
-    bonus: 2
-  handSize: 4
-  proficiencies:
+  CharacterName: Valeros
+  Attributes:
+  - Attribute: 0
+    Die: 10
+    Bonus: 0
+  - Attribute: 1
+    Die: 8
+    Bonus: 0
+  - Attribute: 2
+    Die: 8
+    Bonus: 0
+  - Attribute: 3
+    Die: 4
+    Bonus: 0
+  - Attribute: 4
+    Die: 6
+    Bonus: 0
+  - Attribute: 5
+    Die: 6
+    Bonus: 0
+  Skills:
+  - Skill: 13
+    Attribute: 0
+    Bonus: 2
+  - Skill: 15
+    Attribute: 1
+    Bonus: 1
+  - Skill: 11
+    Attribute: 2
+    Bonus: 2
+  - Skill: 9
+    Attribute: 5
+    Bonus: 2
+  HandSize: 4
+  Proficiencies:
   - CardType: 1
     Trait: 
   - CardType: 5
     Trait: 
-  traits:
+  Traits:
   - Human
   - Fighter
-  powers:
-  - isActivated: 1
-    spriteEnabled: {fileID: 1194653686463983156, guid: 6df9fa9086b1c024cafa12c323f66f03, type: 3}
-    spriteDisabled: {fileID: 1194653686463983156, guid: 6df9fa9086b1c024cafa12c323f66f03, type: 3}
-    text: On a local combat check, you may reload or recharge a weapon or an armor
+  Powers:
+  - IsActivated: 1
+    SpriteEnabled: {fileID: 1194653686463983156, guid: 6df9fa9086b1c024cafa12c323f66f03, type: 3}
+    SpriteDisabled: {fileID: 1194653686463983156, guid: 6df9fa9086b1c024cafa12c323f66f03, type: 3}
+    Text: On a local combat check, you may reload or recharge a weapon or an armor
       to add 1d4.
-  - isActivated: 1
-    spriteEnabled: {fileID: -4954916378388845608, guid: 26a00c91664c4fd4e9f8460f010f676d, type: 3}
-    spriteDisabled: {fileID: -7868651897635250705, guid: 9a1a4f781dc4c964ebf5d1e5a2aeb1ef, type: 3}
-    text: At the end of your turn, you may recharge a weapon or an armor from your
+  - IsActivated: 1
+    SpriteEnabled: {fileID: -4954916378388845608, guid: 26a00c91664c4fd4e9f8460f010f676d, type: 3}
+    SpriteDisabled: {fileID: -7868651897635250705, guid: 9a1a4f781dc4c964ebf5d1e5a2aeb1ef, type: 3}
+    Text: At the end of your turn, you may recharge a weapon or an armor from your
       hand or discards.
-  - isActivated: 1
-    spriteEnabled: {fileID: 8483075871000149727, guid: 8ea1af156c8d10747a92d608e1964128, type: 3}
-    spriteDisabled: {fileID: 8483075871000149727, guid: 8ea1af156c8d10747a92d608e1964128, type: 3}
-    text: You may avenge by discarding a card.
-  weapons: 4
-  spells: 0
-  armors: 3
-  items: 2
-  allies: 3
-  blessings: 3
-  favoredCards:
-  - cardType: 5
-    trait: Sword
+  - IsActivated: 1
+    SpriteEnabled: {fileID: 8483075871000149727, guid: 8ea1af156c8d10747a92d608e1964128, type: 3}
+    SpriteDisabled: {fileID: 8483075871000149727, guid: 8ea1af156c8d10747a92d608e1964128, type: 3}
+    Text: You may avenge by discarding a card.
+  Weapons: 4
+  Spells: 0
+  Armors: 3
+  Items: 2
+  Allies: 3
+  Blessings: 3
+  FavoredCards:
+  - CardType: 5
+    Trait: Sword

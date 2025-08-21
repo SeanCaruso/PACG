@@ -29,7 +29,7 @@ namespace PACG.Gameplay
                     return loc;
             }
 
-            Debug.LogError($"[{GetType().Name}] Unable to find location for {pc.CharacterData.characterName}!");
+            Debug.LogError($"[{GetType().Name}] Unable to find location for {pc.CharacterData.CharacterName}!");
             return null;
         }
 
@@ -49,7 +49,7 @@ namespace PACG.Gameplay
         /// <param name="newLoc"></param>
         public void SetPcLocation(PlayerCharacter pc, Location newLoc)
         {
-            Debug.Log($"[{GetType().Name}] Moving {pc.CharacterData.characterName} to {newLoc.LocationData.LocationName}.");
+            Debug.Log($"[{GetType().Name}] Moving {pc.CharacterData.CharacterName} to {newLoc.LocationData.LocationName}.");
             if (!_locationPcs.ContainsKey(newLoc))
                 _locationPcs.Add(newLoc, new List<PlayerCharacter>());
             _locationPcs[newLoc].Add(pc);

@@ -28,7 +28,7 @@ namespace PACG.Gameplay
                 _gameFlow.QueueNextProcessor(new Turn_RecoveryProcessor(_gameServices));
 
             var pc = _contexts.TurnContext.Character;
-            if (!_skipOptionalDiscards || _cardManager.GetCardsInHand(pc).Count > pc.CharacterData.handSize)
+            if (!_skipOptionalDiscards || _cardManager.GetCardsInHand(pc).Count > pc.CharacterData.HandSize)
                 _gameFlow.QueueNextProcessor(new Turn_DiscardDuringResetProcessor(_gameServices));
 
             _gameFlow.QueueNextProcessor(new Turn_NextTurnProcessor(_gameServices));

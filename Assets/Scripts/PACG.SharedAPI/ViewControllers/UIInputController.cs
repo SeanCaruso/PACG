@@ -86,14 +86,14 @@ namespace PACG.SharedAPI
                 button.GetComponent<Button>().enabled = false;
             }
 
-            var activatedPowers = pc.CharacterData.powers.Where(power => power.isActivated);
+            var activatedPowers = pc.CharacterData.Powers.Where(power => power.IsActivated);
             int idx = 0;
             foreach (var power in activatedPowers)
             {
                 if (idx > 2) break;
 
                 var image = PowerButtons[idx].GetComponent<Image>();
-                image.sprite = power.spriteDisabled;
+                image.sprite = power.SpriteDisabled;
                 image.enabled = true;
 
                 PowerButtons[idx].GetComponent<Button>().enabled = false;
@@ -112,7 +112,7 @@ namespace PACG.SharedAPI
                 return;
             }
 
-            buttonObj.GetComponent<Image>().sprite = isEnabled ? power.spriteEnabled : power.spriteDisabled;
+            buttonObj.GetComponent<Image>().sprite = isEnabled ? power.SpriteEnabled : power.SpriteDisabled;
 
             var button = buttonObj.GetComponent<Button>();
             button.enabled = isEnabled;

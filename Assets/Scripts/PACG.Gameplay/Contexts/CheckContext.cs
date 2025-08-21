@@ -92,7 +92,7 @@ namespace PACG.Gameplay
         /// <returns>true if the current valid skills contains one or more of the given skills</returns>
         public bool CanUseSkill(params PF.Skill[] skills) => skills.Intersect(GetCurrentValidSkills()).Any();
 
-        private List<PF.Skill> GetCurrentValidSkills()
+        public List<PF.Skill> GetCurrentValidSkills()
         {
             List<PF.Skill> skills = new(_baseValidSkills);
 

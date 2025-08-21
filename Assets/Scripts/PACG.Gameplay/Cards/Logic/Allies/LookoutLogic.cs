@@ -55,9 +55,13 @@ namespace PACG.Gameplay
             if (CanRechargeForCheck(card))
                 actions.Add(new PlayCardAction(card, PF.ActionType.Recharge));
             
-            // Can recharge to examine outside resolvables.
-            if (_contexts.CurrentResolvable == null && card.Owner.Location.Count > 0)
+            // Can recharge to examine outside of resolvables or encounters.
+            if (_contexts.CurrentResolvable == null &&
+                _contexts.EncounterContext == null &&
+                card.Owner.Location.Count > 0)
+            {
                 actions.Add(new PlayCardAction(card, PF.ActionType.Recharge));
+            }
 
             // Can discard to explore.
             if (_contexts.IsExplorePossible && card.Owner == _contexts.TurnContext.Character)

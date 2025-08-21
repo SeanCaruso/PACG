@@ -17,7 +17,7 @@ public class LongswordTests
         _gameServices = TestUtils.CreateGameServices();
         
         _valerosData = TestUtils.LoadCharacterData("Valeros");
-        _valeros = new PlayerCharacter(_valerosData, _gameServices.Logic.GetLogic<CharacterLogicBase>(_valerosData.characterName), _gameServices);
+        _valeros = new PlayerCharacter(_valerosData, _gameServices.Logic.GetLogic<CharacterLogicBase>(_valerosData.CharacterName), _gameServices);
         
         _longswordData = TestUtils.LoadCardData("Longsword");
         _longswordInstance = _gameServices.Cards.New(_longswordData, _valeros);
@@ -42,7 +42,7 @@ public class LongswordTests
         Assert.AreEqual(PF.CardType.Weapon, _longswordInstance.Data.cardType);
         
         Assert.IsNotNull(_valerosData);
-        Assert.AreEqual("Valeros", _valeros.CharacterData.characterName);
+        Assert.AreEqual("Valeros", _valeros.CharacterData.CharacterName);
         Assert.IsTrue(_valeros.IsProficient(_longswordInstance.Data));
     }
 

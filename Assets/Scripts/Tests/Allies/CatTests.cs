@@ -20,7 +20,7 @@ public class CatTests
         _gameServices.Contexts.NewGame(new GameContext(1, _gameServices.Cards));
         
         _valerosData = TestUtils.LoadCharacterData("Valeros");
-        _valeros = new PlayerCharacter(_valerosData, _gameServices.Logic.GetLogic<CharacterLogicBase>(_valerosData.characterName), _gameServices);
+        _valeros = new PlayerCharacter(_valerosData, _gameServices.Logic.GetLogic<CharacterLogicBase>(_valerosData.CharacterName), _gameServices);
         _gameServices.Contexts.GameContext.SetPcLocation(_valeros, new Location(ScriptableObject.CreateInstance<LocationData>(), null, _gameServices));
         
         _catData = TestUtils.LoadCardData("Cat");

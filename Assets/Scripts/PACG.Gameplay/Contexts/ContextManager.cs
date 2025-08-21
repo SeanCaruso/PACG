@@ -69,6 +69,8 @@ namespace PACG.Gameplay
             if (CurrentResolvable is ICheckResolvable checkResolvable)
             {
                 CheckContext = new CheckContext(checkResolvable);
+                DialogEvents.RaiseCheckStartEvent(CheckContext);
+                
                 CheckContext.ExploreEffects.AddRange(EncounterContext.ExploreEffects);
 
                 EncounterContext.ExploreEffects.RemoveAll(effect =>
@@ -92,7 +94,11 @@ namespace PACG.Gameplay
             CurrentResolvable = null;
         }
 
-        public void EndCheck() => CheckContext = null;
+        public void EndCheck()
+        {
+            DialogEvents.RaiseCheckEndEvent();
+            CheckContext = null;
+        }
 
         // ======================================================================
         // CONVENIENCE FUNCTIONS

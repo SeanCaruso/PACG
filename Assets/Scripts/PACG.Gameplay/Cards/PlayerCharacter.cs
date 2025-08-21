@@ -9,13 +9,15 @@ namespace PACG.Gameplay
     public class PlayerCharacter : ICard, IExaminable
     {
         // ICard properties
-        public string Name => CharacterData.characterName;
-        public List<string> Traits => CharacterData.traits;
+        public string Name => CharacterData.CharacterName;
+        public List<string> Traits => CharacterData.Traits;
         
         public CharacterData CharacterData { get; }
         private CharacterLogicBase Logic { get; }
         public Deck Deck { get; }
 
+        public Dictionary<PF.Skill, (int die, int bonus)> Skills { get; } = new();
+        public (int die, int bonus) GetSkill(PF.Skill skill) => Skills.GetValueOrDefault(skill, (4, 0));
 
         // --- Dependency Injections
         private readonly CardManager _cardManager;
@@ -29,6 +31,16 @@ namespace PACG.Gameplay
 
             _cardManager = gameServices.Cards;
             _contexts = gameServices.Contexts;
+
+            foreach (var attr in CharacterData.Attributes)
+            {
+                Skills[attr.Attribute] = (attr.Die, attr.Bonus);
+            }
+
+            foreach (var skill in CharacterData.Skills)
+            {
+                Skills[skill.Skill] = (Skills[skill.Attribute].die, skill.Bonus);
+            }
         }
 
         // ==============================================================================
@@ -37,7 +49,7 @@ namespace PACG.Gameplay
         public bool IsProficient(CardData card)
         {
             // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
-            foreach (var proficiency in CharacterData.proficiencies)
+            foreach (var proficiency in CharacterData.Proficiencies)
             {
                 // Check if card type matches (or doesn't matter)
                 var typeMatches = proficiency.CardType == card.cardType ||
@@ -54,28 +66,7 @@ namespace PACG.Gameplay
             return false;
         }
 
-        private (int die, int bonus) GetAttr(PF.Skill attr)
-        {
-            foreach (var charAttr in CharacterData.attributes.Where(charAttr => charAttr.attribute == attr))
-            {
-                return (charAttr.die, charAttr.bonus);
-            }
-
-            return (4, 0); // Default of 1d4.
-        }
-
-        public (int die, int bonus) GetSkill(PF.Skill skill)
-        {
-            foreach (var charSkill in CharacterData.skills.Where(charSkill => charSkill.skill == skill))
-            {
-                var (attrDie, attrBonus) = GetAttr(charSkill.attribute);
-                return (attrDie, attrBonus + charSkill.bonus);
-            }
-
-            return (4, 0); // Default of 1d4.
-        }
-
-        public (PF.Skill, int die, int bonus) GetBestSkill(params PF.Skill[] skills)
+        public (PF.Skill skill, int die, int bonus) GetBestSkill(params PF.Skill[] skills)
         {
             var bestSkill = skills[0];
             int bestDie = 4, bestBonus = 0;
@@ -83,17 +74,14 @@ namespace PACG.Gameplay
 
             foreach (var skill in skills)
             {
-                var (die, bonus) = GetSkill(skill);
-                if (die == 4 && bonus == 0)
-                {
-                    (die, bonus) = GetAttr(skill);
-                }
+                if (!Skills.TryGetValue(skill, out var value))
+                    value = (4, 0);
 
-                var avg = (die / 2.0) + 0.5 + bonus;
+                var avg = (value.die / 2.0) + 0.5 + value.bonus;
                 if (!(avg > bestAvg)) continue;
                 bestSkill = skill;
-                bestDie = die;
-                bestBonus = bonus;
+                bestDie = value.die;
+                bestBonus = value.bonus;
                 bestAvg = avg;
             }
 
@@ -129,7 +117,7 @@ namespace PACG.Gameplay
             {
                 // TODO: Handle character death.
                 Debug.Log(
-                    $"{CharacterData.characterName} must draw but has no more cards left. {CharacterData.characterName} dies!");
+                    $"{CharacterData.CharacterName} must draw but has no more cards left. {CharacterData.CharacterName} dies!");
                 return;
             }
 
@@ -142,9 +130,9 @@ namespace PACG.Gameplay
         public void DrawInitialHand()
         {
             // TODO: Handle multiple favored card types.
-            var fav = CharacterData.favoredCards[0];
+            var fav = CharacterData.FavoredCards[0];
 
-            var card = Deck.DrawFirstCardWith(fav.cardType, fav.trait);
+            var card = Deck.DrawFirstCardWith(fav.CardType, fav.Trait);
             if (card != null)
                 AddToHand(card);
 
@@ -153,15 +141,15 @@ namespace PACG.Gameplay
 
         public void DrawToHandSize()
         {
-            var cardsToDraw = CharacterData.handSize - Hand.Count;
-            Debug.Log($"{CharacterData.characterName} drawing {cardsToDraw} up to {CharacterData.handSize}");
+            var cardsToDraw = CharacterData.HandSize - Hand.Count;
+            Debug.Log($"{CharacterData.CharacterName} drawing {cardsToDraw} up to {CharacterData.HandSize}");
             if (cardsToDraw < 0) return;
 
             if (cardsToDraw > Deck.Count)
             {
                 // TODO: Handle character death.
                 Debug.Log(
-                    $"{CharacterData.characterName} must draw {cardsToDraw} but only has {Deck.Count} left. {CharacterData.characterName} dies!");
+                    $"{CharacterData.CharacterName} must draw {cardsToDraw} but only has {Deck.Count} left. {CharacterData.CharacterName} dies!");
                 return;
             }
 
