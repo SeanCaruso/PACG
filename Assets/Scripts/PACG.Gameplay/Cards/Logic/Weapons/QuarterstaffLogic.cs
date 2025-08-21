@@ -28,15 +28,7 @@ namespace PACG.Gameplay
         public override void Execute(CardInstance card, IStagedAction action)
         {
             // Only handle combat powers. Evasion is handled by the Evasion Processor.
-            if (_contexts.CurrentResolvable is not CombatResolvable resolvable ||
-                _contexts.CheckContext == null)
-            {
-                return;
-            }
-
-            var (skill, die, bonus) = resolvable.Character.GetBestSkill(PF.Skill.Strength, PF.Skill.Melee);
-            _contexts.CheckContext.UsedSkill = skill;
-            _contexts.CheckContext.DicePool.AddDice(1, die, bonus);
+            if (_contexts.CurrentResolvable is not CombatResolvable || _contexts.CheckContext == null) return;
             
             // Reveal to add 1d6; additionally discard to add another 1d6.
             _contexts.CheckContext.DicePool.AddDice(action.ActionType == PF.ActionType.Reveal ? 1 : 2, 6);

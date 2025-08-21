@@ -34,9 +34,13 @@ namespace PACG.Gameplay
             {
                 effect.ApplyToCheck(check);
             }
+            
+            // Add the skill set by the skill selection dialog.
+            var usedSkill = pc.GetSkill(check.UsedSkill);
+            check.DicePool.AddDice(1, usedSkill.die, usedSkill.bonus);
 
             // Add blessing dice.
-            check.DicePool.AddDice(check.BlessingCount, pc.GetSkill(check.UsedSkill).die);
+            check.DicePool.AddDice(check.BlessingCount, usedSkill.die);
             var rollTotal = check.DicePool.Roll();
             check.CheckResult = new CheckResult(rollTotal, dc, pc, check.UsedSkill, check.Traits);
 

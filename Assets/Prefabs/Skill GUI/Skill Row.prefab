@@ -118,17 +118,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82c81049e58e05b498b50820a541d573, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  BackgroundPanel: {fileID: 6302866472369703804}
   DieImage: {fileID: 4204599230037877301}
   DieText: {fileID: 8363923478121647074}
   SkillBonusText: {fileID: 3613462023848057500}
   SkillNameText: {fileID: 7064447385670248974}
   DcText: {fileID: 3117890704669714793}
+  OverlayButton: {fileID: 4509435367996478643}
   D4Sprite: {fileID: 5685415954165986859, guid: 5497fb0da5e995843a59d1b6f95734da, type: 3}
   D6Sprite: {fileID: 2839789567196417053, guid: be502241df5f504458b1f9ff099c1f46, type: 3}
   D8Sprite: {fileID: 5868393947941989545, guid: c18bb09c7450b9143a0d19fe78e33dd9, type: 3}
   D10Sprite: {fileID: -390693640854421214, guid: 6696a8b9946225b47840dbf45303d0de, type: 3}
   D12Sprite: {fileID: 3021919702532664750, guid: ba2f114a5bb9ae7418d79be915dfb806, type: 3}
   D20Sprite: {fileID: 7154676323135551050, guid: c7d497d4da687a64b9162b184971dedf, type: 3}
+  Skill: 0
 --- !u!222 &5375458206714589840
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -233,8 +236,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 7261178827251065652, guid: 90e12a8c770daec4799ab82f9b8da9b1, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4

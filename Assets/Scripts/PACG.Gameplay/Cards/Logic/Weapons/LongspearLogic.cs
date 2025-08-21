@@ -65,10 +65,8 @@ namespace PACG.Gameplay
                 // Reveal to use Strength or Melee + 1d8.
                 case PF.ActionType.Reveal:
                 {
-                    if (_contexts.CurrentResolvable is not CombatResolvable resolvable) return;
-                    var (skill, die, bonus) = resolvable.Character.GetBestSkill(PF.Skill.Strength, PF.Skill.Melee);
-                    Check.UsedSkill = skill;
-                    Check.DicePool.AddDice(1, die, bonus);
+                    if (_contexts.CurrentResolvable is not CombatResolvable) return;
+                    
                     Check.DicePool.AddDice(1, 8);
 
                     rerollSources.Add(this);

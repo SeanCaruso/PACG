@@ -63,10 +63,6 @@ namespace PACG.Gameplay
         public override void Execute(CardInstance card, IStagedAction action)
         {
             // Always Reveal to use Strength or Melee + 1d8.
-            var resolvable = (CombatResolvable)_contexts.CurrentResolvable;
-            var (skill, die, bonus) = resolvable.Character.GetBestSkill(PF.Skill.Strength, PF.Skill.Melee);
-            Check.UsedSkill = skill;
-            Check.DicePool.AddDice(1, die, bonus);
             Check.DicePool.AddDice(1, 8);
 
             // Reload to add another 1d4.

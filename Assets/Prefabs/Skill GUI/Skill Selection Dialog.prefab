@@ -409,6 +409,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   LabelText: {fileID: 1719204551844382263}
+  CardNamePanel: {fileID: 3510556495602063060}
   CardNameText: {fileID: 7308102002241908717}
   DropdownContainer: {fileID: 7558909085391440603}
   SkillDropdownPanel: {fileID: 1482713735218097770, guid: ef0d55570849e05468309138222e884a, type: 3}

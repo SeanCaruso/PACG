@@ -58,16 +58,8 @@ namespace PACG.Gameplay
             {
                 // Reveal to use Strength, Dexterity, Melee, or Ranged + 1d8.       
                 case PF.ActionType.Reveal:
-                {
-                    if (_contexts.CurrentResolvable is not CombatResolvable resolvable) return;
-                    var (skill, die, bonus) = resolvable.Character.GetBestSkill(
-                        PF.Skill.Strength, PF.Skill.Dexterity, PF.Skill.Melee, PF.Skill.Ranged
-                    );
-                    Check.UsedSkill = skill;
-                    Check.DicePool.AddDice(1, die, bonus);
                     Check.DicePool.AddDice(1, 8);
                     break;
-                }
                 // Discard to add 1d6.
                 case PF.ActionType.Discard:
                     Check.DicePool.AddDice(1, 6);

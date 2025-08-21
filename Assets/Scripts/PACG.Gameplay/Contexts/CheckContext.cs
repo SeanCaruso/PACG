@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using PACG.SharedAPI;
 using UnityEngine;
 
 
@@ -70,6 +71,8 @@ namespace PACG.Gameplay
                 addition.AddRange(skills);
             else
                 _stagedSkillAdditions.Add(card, new List<PF.Skill>(skills));
+            
+            DialogEvents.RaiseValidSkillsChanged(GetCurrentValidSkills());
         }
         public void RestrictValidSkills(CardInstance card, params PF.Skill[] skills)
         {
@@ -77,11 +80,15 @@ namespace PACG.Gameplay
                 restriction.AddRange(skills);
             else
                 _stagedSkillRestrictions.Add(card, new List<PF.Skill>(skills));
+            
+            DialogEvents.RaiseValidSkillsChanged(GetCurrentValidSkills());
         }
         public void UndoSkillModification(CardInstance source)
         {
             _stagedSkillAdditions.Remove(source);
             _stagedSkillRestrictions.Remove(source);
+            
+            DialogEvents.RaiseValidSkillsChanged(GetCurrentValidSkills());
         }
 
         /// <summary>

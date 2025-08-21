@@ -7,11 +7,13 @@ namespace PACG.Presentation.SkillSelectionDialog
     public class SkillRow : MonoBehaviour
     {
         [Header("UI Elements")]
+        public Image BackgroundPanel;
         public Image DieImage;
         public TextMeshProUGUI DieText;
         public TextMeshProUGUI SkillBonusText;
         public TextMeshProUGUI SkillNameText;
         public TextMeshProUGUI DcText;
+        public Button OverlayButton;
 
         [Header("Dice Sprites")]
         public Sprite D4Sprite;
