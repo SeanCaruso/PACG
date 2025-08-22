@@ -68,6 +68,8 @@ namespace PACG.Gameplay
 
         public (PF.Skill skill, int die, int bonus) GetBestSkill(params PF.Skill[] skills)
         {
+            if (skills.Length == 0) return (PF.Skill.Strength, 4, 0);
+            
             var bestSkill = skills[0];
             int bestDie = 4, bestBonus = 0;
             var bestAvg = 2.5;

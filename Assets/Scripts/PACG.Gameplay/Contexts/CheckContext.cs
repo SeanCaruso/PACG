@@ -30,6 +30,9 @@ namespace PACG.Gameplay
         {
             Resolvable = resolvable;
             _baseValidSkills = resolvable.Skills.ToList();
+            
+            // Initialize UsedSkill to the PC's best valid skill.
+            UsedSkill = Character.GetBestSkill(_baseValidSkills.ToArray()).skill;
         }
 
         // =====================================================================================

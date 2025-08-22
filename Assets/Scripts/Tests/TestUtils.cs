@@ -96,4 +96,16 @@ public static class TestUtils
         gameServices.Contexts.NewEncounter(new EncounterContext(pc, encounterInstance));
         gameServices.Contexts.NewResolvable(new CombatResolvable(encounterInstance, pc, dc));
     }
+
+    public static void SetupEncounter(GameServices gameServices, string character, string card)
+    {
+        var characterData = LoadCharacterData(character);
+        var cardData = LoadCardData(card);
+        
+        var pc = new PlayerCharacter(characterData, null, gameServices);
+        var encounterCard = gameServices.Cards.New(cardData);
+        
+        gameServices.Contexts.NewTurn(new TurnContext(pc));
+        gameServices.GameFlow.StartPhase(new EncounterController(pc, encounterCard, gameServices), "Encounter");
+    }
 }
