@@ -3,19 +3,19 @@ using System.Linq;
 
 namespace PACG.Gameplay
 {
-    public class SkillResolvable : BaseResolvable, ICheckResolvable
+    public class CheckResolvable : BaseResolvable
     {
         public ICard Card { get; }
         public PlayerCharacter Character { get; }
-        public IReadOnlyList<PF.Skill> Skills { get; }
-        public int Difficulty { get; }
+        public List<CheckStep> CheckSteps { get; }
+        public bool HasCombat => CheckSteps.Any(step => step.category == CheckCategory.Combat);
+        public bool HasSkill => CheckSteps.Any(step => step.category == CheckCategory.Skill);
 
-        public SkillResolvable(ICard card, PlayerCharacter character, int difficulty, params PF.Skill[] skills)
+        public CheckResolvable(ICard card, PlayerCharacter character, CheckRequirement checkRequirement)
         {
             Card = card;
             Character = character;
-            Skills = skills.ToList();
-            Difficulty = difficulty;
+            CheckSteps = checkRequirement.checkSteps;
         }
 
         public override bool CanCommit(List<IStagedAction> actions) => true;

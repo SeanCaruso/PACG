@@ -94,7 +94,7 @@ public static class TestUtils
         var encounterInstance = new CardInstance(encounterData, new ZombieLogic(gameServices));
         
         gameServices.Contexts.NewEncounter(new EncounterContext(pc, encounterInstance));
-        gameServices.Contexts.NewResolvable(new CombatResolvable(encounterInstance, pc, dc));
+        gameServices.Contexts.NewResolvable(new CheckResolvable(encounterInstance, pc, encounterData.checkRequirement));
     }
 
     public static void SetupEncounter(GameServices gameServices, string character, string card)

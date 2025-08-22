@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using PACG.SharedAPI;
 using UnityEngine;
 
@@ -19,17 +20,28 @@ namespace PACG.Gameplay
     {
         // --- Immutable Initial State ---
         // These are set once and should never change.
-        public ICheckResolvable Resolvable { get; }
-        private readonly List<PF.Skill> _baseValidSkills;
+        public CheckResolvable Resolvable { get; }
+        private readonly List<PF.Skill> _baseValidSkills = new();
 
         public PlayerCharacter Character => Resolvable.Character;
 
         public List<IExploreEffect> ExploreEffects { get; set; } = new();
 
-        public CheckContext(ICheckResolvable resolvable)
+        public CheckContext(CheckResolvable resolvable)
         {
             Resolvable = resolvable;
-            _baseValidSkills = resolvable.Skills.ToList();
+            foreach (var checkStep in Resolvable.CheckSteps)
+            {
+                if (checkStep.category == CheckCategory.Combat)
+                {
+                    _baseValidSkills.Add(PF.Skill.Strength);
+                    _baseValidSkills.Add(PF.Skill.Melee);
+                }
+                else
+                {
+                    _baseValidSkills.AddRange(checkStep.allowedSkills);
+                }
+            }
             
             // Initialize UsedSkill to the PC's best valid skill.
             UsedSkill = Character.GetBestSkill(_baseValidSkills.ToArray()).skill;
@@ -59,6 +71,72 @@ namespace PACG.Gameplay
         {
             if (!action.IsFreely) _stagedCardTypes.Add(action.Card.Data.cardType);
         }
+        // =====================================================================================
+        // CHECK TYPE (COMBAT/SKILL) DETERMINATION
+        // =====================================================================================
+        private CheckCategory? _checkRestriction;
+        private readonly List<CardInstance> _categoryRestrictionCards = new();
+
+        public bool IsCombatValid => Resolvable.HasCombat && _checkRestriction is not CheckCategory.Skill;
+        public bool IsSkillValid => Resolvable.HasSkill && _checkRestriction is not CheckCategory.Combat;
+
+        public void RestrictCheckCategory(CardInstance card, CheckCategory category)
+        {
+            if (_checkRestriction != null && _checkRestriction != category)
+            {
+                Debug.LogError($"[{GetType().Name}] {card.Name} attempted to restrict invalid check category.");
+                return;
+            }
+            
+            _checkRestriction = category;
+            _categoryRestrictionCards.Add(card);
+            
+            DialogEvents.RaiseValidSkillsChanged(GetCurrentValidSkills());
+        }
+
+        public void UndoCheckRestriction(CardInstance source)
+        {
+            _categoryRestrictionCards.Remove(source);
+            if (_categoryRestrictionCards.Count == 0) _checkRestriction = null;
+            
+            DialogEvents.RaiseValidSkillsChanged(GetCurrentValidSkills());
+        }
+
+        [CanBeNull]
+        private CheckStep GetForcedCheckStep()
+        {
+            if (_checkRestriction == null) return null;
+            return Resolvable.CheckSteps.FirstOrDefault(step => step.category == _checkRestriction);
+        }
+
+        public int GetDcForSkill(PF.Skill skill)
+        {
+            var forcedStep = GetForcedCheckStep();
+            if (forcedStep != null)
+                return CardUtils.GetDc(forcedStep.baseDC, forcedStep.adventureLevelMult);
+            
+            var stepWithSkill = Resolvable.CheckSteps.FirstOrDefault(step => step.allowedSkills.Contains(skill));
+            if (stepWithSkill != null)
+                return CardUtils.GetDc(stepWithSkill.baseDC, stepWithSkill.adventureLevelMult);
+            
+            Debug.LogError($"[{GetType().Name}] No check step found for skill {skill}");
+            return 0;
+        }
+
+        public CheckStep GetActiveCheckStep()
+        {
+            var forcedStep = GetForcedCheckStep();
+            if (forcedStep != null) return forcedStep;
+            
+            var stepWithSkill = Resolvable.CheckSteps.FirstOrDefault(step => step.allowedSkills.Contains(UsedSkill));
+            if (stepWithSkill != null) return stepWithSkill;
+
+            return Resolvable.CheckSteps.First();
+        }
+
+        public int GetDc() => CardUtils.GetDc(GetActiveCheckStep().baseDC, GetActiveCheckStep().adventureLevelMult);
+        
+        public bool IsCombatCheck => GetActiveCheckStep().category == CheckCategory.Combat;
 
         // =====================================================================================
         // CHECK SKILL DETERMINATION

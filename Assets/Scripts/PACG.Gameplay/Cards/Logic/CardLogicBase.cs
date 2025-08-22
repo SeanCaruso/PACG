@@ -51,38 +51,22 @@ namespace PACG.Gameplay
         }
 
         // Encounter card methods (default implementations for playable cards)
-        public virtual List<IResolvable> GetOnEncounterResolvables(CardInstance card) => new();
-        public virtual List<IResolvable> GetBeforeActingResolvables(CardInstance card) => new();
+        public virtual IResolvable GetOnEncounterResolvable(CardInstance card) => null;
+        public virtual IResolvable GetBeforeActingResolvable(CardInstance card) => null;
+        public virtual IResolvable GetResolveEncounterResolvable(CardInstance card) => null;
 
-        public virtual List<IResolvable> GetCheckResolvables(CardInstance card)
+        public virtual IResolvable GetCheckResolvable(CardInstance card)
         {
-            // Build up the list in reverse order due to LIFO processing of resolvables.
-            var resolvables = new List<IResolvable>();
-            foreach (var check in card.Data.checkRequirement.checkSteps)
+            if (card.Data.checkRequirement.mode is CheckMode.Choice or CheckMode.Single)
             {
-                if (check.category == CheckCategory.Combat)
-                {
-                    resolvables.Insert(0, new CombatResolvable(
-                        card,
-                        _contexts.TurnContext.Character,
-                        CardUtils.GetDc(check.baseDC, check.adventureLevelMult))
-                    );
-                }
-                else
-                {
-                    resolvables.Insert(0, new SkillResolvable(
-                        card,
-                        _contexts.TurnContext.Character,
-                        CardUtils.GetDc(check.baseDC, check.adventureLevelMult),
-                        check.allowedSkills.ToArray())
-                    );
-                }
+                return new CheckResolvable(card, _contexts.EncounterContext.Character, card.Data.checkRequirement);
             }
 
-            return resolvables;
+            // TODO: Handle sequential and "None" modes.
+            return null;
         }
 
         // Other card methods (recovery)
-        public virtual List<IResolvable> GetRecoveryResolvables(CardInstance card) => new();
+        public virtual IResolvable GetRecoveryResolvable(CardInstance card) => null;
     }
 }

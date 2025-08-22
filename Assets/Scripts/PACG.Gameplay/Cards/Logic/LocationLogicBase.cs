@@ -15,12 +15,12 @@ namespace PACG.Gameplay
         // ========================================================================================
         // AT THIS LOCATION
         // ========================================================================================
-        public virtual List<IResolvable> GetStartOfTurnResolvables() => new();
+        public virtual IResolvable GetStartOfTurnResolvables() => null;
 
         // ========================================================================================
         // CLOSING / WHEN CLOSED
         // ========================================================================================
-        public abstract List<IResolvable> GetToCloseResolvables();
-        public abstract List<IResolvable> GetWhenClosedResolvables();
+        public abstract IResolvable GetToCloseResolvables();
+        public abstract IResolvable GetWhenClosedResolvable();
     }
 }

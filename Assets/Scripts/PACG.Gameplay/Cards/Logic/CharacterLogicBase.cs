@@ -13,8 +13,9 @@ namespace PACG.Gameplay
         }
 
         // Override these as needed
-        public virtual List<IResolvable> GetStartOfTurnResolvables(PlayerCharacter pc) => new();
-        public virtual List<IResolvable> GetEndOfTurnResolvables(PlayerCharacter pc) => new();
+        public virtual IResolvable GetStartOfTurnResolvable(PlayerCharacter pc) => null;
+
+        public virtual IResolvable GetEndOfTurnResolvable(PlayerCharacter pc) => null;
         // etc.
     }
 }

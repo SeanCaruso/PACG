@@ -29,7 +29,7 @@ namespace PACG.Gameplay
             }
 
             var pc = resolvable.Character;
-            var dc = resolvable.Difficulty;
+            var dc = _contexts.CheckContext.GetDc();
             var check = _contexts.CheckContext;
 
             // foreach (var effect in check.ExploreEffects)

@@ -26,15 +26,13 @@ namespace PACG.Gameplay
             {
                 actions.Add(new PlayCardAction(card, PF.ActionType.Reveal, ("IsCombat", true)));
 
-                if (_contexts.CurrentResolvable is CombatResolvable resolvable &&
-                    resolvable.Character.IsProficient(card.Data))
+                if (Check.Character.IsProficient(card.Data))
                 {
                     actions.Add(new PlayCardAction(card, PF.ActionType.Reload, ("IsCombat", true)));
                 }
             }
             // Otherwise, if this card has already been played, present the reload option if proficient.
-            else if (_asm.CardStaged(card) && _contexts.CurrentResolvable is CombatResolvable res &&
-                     res.Character.IsProficient(card.Data))
+            else if (_asm.CardStaged(card) && Check.Character.IsProficient(card.Data))
             {
                 actions.Add(new PlayCardAction(
                     card,
@@ -48,18 +46,19 @@ namespace PACG.Gameplay
 
         private bool IsCardPlayable(CardInstance card) =>
             // All powers are specific to the card's owner while playing cards during a Strength or Melee combat check.
-            Check != null
-            && _contexts.CurrentResolvable is CombatResolvable resolvable
-            && resolvable.Character == card.Owner
+            Check is { IsCombatValid: true }
+            && Check.Character == card.Owner
             && Check.CanUseSkill(PF.Skill.Strength, PF.Skill.Melee);
 
         public override void OnStage(CardInstance card, IStagedAction action)
         {
+            Check.RestrictCheckCategory(card, CheckCategory.Combat);
             Check.RestrictValidSkills(card, PF.Skill.Strength, PF.Skill.Melee);
         }
 
         public override void OnUndo(CardInstance card, IStagedAction action)
         {
+            Check.UndoCheckRestriction(card);
             Check.UndoSkillModification(card);
         }
 

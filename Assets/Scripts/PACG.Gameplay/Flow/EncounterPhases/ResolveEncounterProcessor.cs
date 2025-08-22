@@ -19,6 +19,14 @@ namespace PACG.Gameplay
             if (_contexts.EncounterContext == null) return;
             
             var encounteredCard = _contexts.EncounterContext.Card;
+            
+            var resolvable = encounteredCard.Logic.GetResolveEncounterResolvable(encounteredCard);
+            if (resolvable != null)
+            {
+                _contexts.NewResolvable(resolvable);
+                return;
+            }
+
             var wasSuccess = _contexts.EncounterContext.CheckResult.WasSuccess;
 
             var shouldBanish = (encounteredCard.IsBane && wasSuccess) || (encounteredCard.IsBoon && !wasSuccess);

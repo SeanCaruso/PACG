@@ -17,22 +17,25 @@ namespace PACG.Gameplay
 
         public override void OnStage(CardInstance card, IStagedAction action)
         {
+            _contexts.CheckContext?.RestrictCheckCategory(card, CheckCategory.Combat);
+            _contexts.CheckContext?.RestrictValidSkills(card, PF.Skill.Strength, PF.Skill.Melee);
             _contexts.EncounterContext?.AddProhibitedTraits(card.Owner, card, "Offhand");
         }
 
         public override void OnUndo(CardInstance card, IStagedAction action)
         {
+            _contexts.CheckContext?.UndoCheckRestriction(card);
+            _contexts.CheckContext?.UndoSkillModification(card);
             _contexts.EncounterContext?.UndoProhibitedTraits(card.Owner, card);
         }
 
         public override void Execute(CardInstance card, IStagedAction action, DicePool dicePool)
         {
             // Only handle combat powers. Evasion is handled by the Evasion Processor.
-            if (_contexts.CurrentResolvable is not CombatResolvable || _contexts.CheckContext == null) return;
+            if (_contexts.CurrentResolvable is not CheckResolvable || _contexts.CheckContext == null) return;
             
             // Reveal to add 1d6; additionally discard to add another 1d6.
             dicePool.AddDice(action.ActionType == PF.ActionType.Reveal ? 1 : 2, 6);
-
         }
 
         protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)
@@ -66,9 +69,8 @@ namespace PACG.Gameplay
 
         // Can be played on Strength or Melee combat checks.
         private bool IsPlayableForCombat(CardInstance card) =>
-            _contexts.CheckContext != null
-            && _contexts.CurrentResolvable is CombatResolvable resolvable
-            && resolvable.Character == card.Owner
+            _contexts.CheckContext is { IsCombatValid: true }
+            && _contexts.CheckContext.Character == card.Owner
             && _contexts.CheckContext.CanUseSkill(PF.Skill.Strength, PF.Skill.Melee);
 
         // Can be played by the owner to evade an Obstacle or Trap barrier.

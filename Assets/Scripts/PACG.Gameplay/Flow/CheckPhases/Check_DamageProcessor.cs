@@ -17,7 +17,7 @@ namespace PACG.Gameplay
 
             if (check.CheckResult.WasSuccess)
             {
-                Debug.Log($"Rolled {check.CheckResult.FinalRollTotal} vs. {check.Resolvable.Difficulty} - Success!");
+                Debug.Log($"Rolled {check.CheckResult.FinalRollTotal} vs. {check.CheckResult.DC} - Success!");
             }
             else if (false /* avenge? */)
             { }
@@ -25,8 +25,7 @@ namespace PACG.Gameplay
             {
                 DamageResolvable damageResolvable = new(check.Resolvable.Character, -check.CheckResult.MarginOfSuccess);
                 _contexts.NewResolvable(damageResolvable);
-                Debug.Log($"Rolled {check.CheckResult.FinalRollTotal} vs. {check.Resolvable.Difficulty} - Take {damageResolvable.Amount} damage!");
-                return; // We're done - GameFlowManager takes over.
+                Debug.Log($"Rolled {check.CheckResult.FinalRollTotal} vs. {check.CheckResult.DC} - Take {damageResolvable.Amount} damage!");
             }
         }
     }

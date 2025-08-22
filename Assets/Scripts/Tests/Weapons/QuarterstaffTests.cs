@@ -167,7 +167,7 @@ public class QuarterstaffTests
         // Check that the game pauses when reaching the required check resolvable, and that the quarterstaff
         // doesn't prompt to evade an invalid barrier.
         Assert.IsNotNull(_gameServices.Contexts.CurrentResolvable);
-        Assert.IsTrue(_gameServices.Contexts.CurrentResolvable is SkillResolvable);
+        Assert.IsTrue(_gameServices.Contexts.CurrentResolvable is CheckResolvable);
 
         // Check that the quarterstaff has one evade action.
         var actions = _quarterstaffInstance.GetAvailableActions();

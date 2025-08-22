@@ -25,9 +25,9 @@ namespace PACG.Gameplay
             var card = recoveryCards[0];
             recoveryCards.Remove(card);
 
-            var resolvables = card.Logic.GetRecoveryResolvables(card);
-            if (resolvables.Count > 0)
-                _contexts.NewResolvable(resolvables[0]);
+            var resolvable = card.Logic.GetRecoveryResolvable(card);
+            if (resolvable != null)
+                _contexts.NewResolvable(resolvable);
         }
     }
 }

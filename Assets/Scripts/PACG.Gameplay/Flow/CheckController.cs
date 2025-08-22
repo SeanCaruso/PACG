@@ -3,12 +3,12 @@ namespace PACG.Gameplay
 {
     public class CheckController : IProcessor, IPhaseController
     {
-        private readonly ICheckResolvable _resolvable;
+        private readonly CheckResolvable _resolvable;
 
         private readonly GameFlowManager _gameFlow;
         private readonly GameServices _gameServices;
 
-        public CheckController(ICheckResolvable resolvable, GameServices gameServices)
+        public CheckController(CheckResolvable resolvable, GameServices gameServices)
         {
             _resolvable = resolvable;
 
@@ -22,7 +22,7 @@ namespace PACG.Gameplay
 
             _gameFlow.QueueNextProcessor(new Check_RollDiceProcessor(_gameServices));
 
-            if (_resolvable is CombatResolvable)
+            if (_resolvable.Card is CardInstance card && card.Data.cardType == PF.CardType.Monster)
             {
                 _gameFlow.QueueNextProcessor(new Check_DamageProcessor(_gameServices));
             }

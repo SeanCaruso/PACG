@@ -17,9 +17,9 @@ namespace PACG.Gameplay
             
             _contexts.EncounterContext.CurrentPhase = EncounterPhase.BeforeActing;
             
-            var resolvables = _contexts.EncounterContext.Card.GetBeforeActingResolvables();
+            var resolvable = _contexts.EncounterContext.Card.GetBeforeActingResolvable();
             // TODO: Handle multiple resolvables
-            if (resolvables.Count > 0) _contexts.NewResolvable(resolvables[0]);
+            if (resolvable != null) _contexts.NewResolvable(resolvable);
         }
     }
 }

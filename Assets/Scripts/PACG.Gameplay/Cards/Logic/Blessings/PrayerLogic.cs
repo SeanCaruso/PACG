@@ -61,7 +61,7 @@ namespace PACG.Gameplay
         // We can bless on any check.
         private bool CanBless(CardInstance _) => 
             _contexts.CheckContext != null &&
-            _contexts.CurrentResolvable is ICheckResolvable &&
+            _contexts.CurrentResolvable is CheckResolvable &&
             !_contexts.CheckContext.StagedCardTypes.Contains(PF.CardType.Blessing);
     }
 }

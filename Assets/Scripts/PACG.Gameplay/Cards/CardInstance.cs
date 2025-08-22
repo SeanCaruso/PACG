@@ -47,9 +47,9 @@ namespace PACG.Gameplay
 
         public List<IStagedAction> GetAvailableActions() => Logic?.GetAvailableActions(this) ?? new List<IStagedAction>();
 
-        public List<IResolvable> GetOnEncounterResolvables() => Logic?.GetOnEncounterResolvables(this) ?? new List<IResolvable>();
-        public List<IResolvable> GetBeforeActingResolvables() => Logic?.GetBeforeActingResolvables(this) ?? new List<IResolvable>();
-        public List<IResolvable> GetCheckResolvables() => Logic?.GetCheckResolvables(this) ?? new List<IResolvable>();
+        public IResolvable GetOnEncounterResolvable() => Logic?.GetOnEncounterResolvable(this);
+        public IResolvable GetBeforeActingResolvable() => Logic?.GetBeforeActingResolvable(this);
+        public IResolvable GetCheckResolvable() => Logic?.GetCheckResolvable(this);
     }
 
     public enum CardLocation { Buried, Deck, Discard, Displayed, Hand, Recovery, Revealed, Vault }

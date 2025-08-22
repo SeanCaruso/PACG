@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace PACG.Gameplay
@@ -10,6 +12,26 @@ namespace PACG.Gameplay
         {
             _isInitialized = true;
             AdventureNumber = adventureNumber;
+        }
+
+        /// <summary>
+        /// Convenience function for a simple skill check.
+        /// </summary>
+        /// <param name="baseDc"></param>
+        /// <param name="skills"></param>
+        /// <returns></returns>
+        public static CheckRequirement SkillCheck(int baseDc, params PF.Skill[] skills)
+        {
+            return new CheckRequirement
+            {
+                mode = CheckMode.Single,
+                checkSteps = new List<CheckStep>{ new ()
+                {
+                    category = CheckCategory.Skill,
+                    baseDC = baseDc,
+                    allowedSkills = skills.ToList()
+                } }
+            };
         }
 
         /// <summary>

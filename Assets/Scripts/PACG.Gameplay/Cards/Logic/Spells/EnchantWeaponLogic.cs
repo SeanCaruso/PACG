@@ -16,7 +16,7 @@ namespace PACG.Gameplay
         public override void Execute(CardInstance card, IStagedAction action, DicePool dicePool)
         {
             if (dicePool == null) return;
-            
+
             // Add 1d4+# and the Magic trait.
             dicePool.AddDice(1, 4, _contexts.GameContext.AdventureNumber);
             _contexts.CheckContext?.AddTraits("Magic");
@@ -25,7 +25,7 @@ namespace PACG.Gameplay
         protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)
         {
             // Can freely banish if a weapon has been played on a combat check.
-            if (_contexts.CurrentResolvable is CombatResolvable &&
+            if (_contexts.CurrentResolvable is CheckResolvable { HasCombat: true } &&
                 _contexts.CheckContext?.StagedCardTypes.Contains(PF.CardType.Weapon) == true)
             {
                 return new List<IStagedAction>(new[]
@@ -37,14 +37,15 @@ namespace PACG.Gameplay
             return new List<IStagedAction>();
         }
 
-        public override List<IResolvable> GetRecoveryResolvables(CardInstance card)
+        public override IResolvable GetRecoveryResolvable(CardInstance card)
         {
-            if (!card.Owner.IsProficient(card.Data)) return new List<IResolvable>();
+            if (!card.Owner.IsProficient(card.Data)) return null;
 
-            return new List<IResolvable>
-            {
-                new SkillResolvable(card, card.Owner, 6, PF.Skill.Arcane, PF.Skill.Divine)
-            };
+            return new CheckResolvable(
+                card,
+                card.Owner,
+                CardUtils.SkillCheck(6, PF.Skill.Arcane, PF.Skill.Divine)
+            );
         }
     }
 }

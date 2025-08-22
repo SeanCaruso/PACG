@@ -58,17 +58,10 @@ namespace PACG.Gameplay
             return actions;
         }
 
-        public override List<IResolvable> GetRecoveryResolvables(CardInstance card)
+        public override IResolvable GetRecoveryResolvable(CardInstance card)
         {
             // Craft 8 to recharge.
-            return new List<IResolvable>
-            {
-                new SkillResolvable(
-                    card,
-                    card.Owner,
-                    8,
-                    PF.Skill.Craft)
-            };
+            return new CheckResolvable(card, card.Owner, CardUtils.SkillCheck(8, PF.Skill.Craft));
         }
 
         // Can recharge on a local Intelligence or Craft check.

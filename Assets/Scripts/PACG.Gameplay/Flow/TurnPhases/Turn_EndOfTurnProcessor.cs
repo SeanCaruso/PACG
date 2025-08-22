@@ -13,9 +13,9 @@ namespace PACG.Gameplay
 
         protected override void OnExecute()
         {
-            var resolvables = _contexts.TurnContext.Character.GetEndOfTurnResolvables();
-            if (resolvables.Count > 0)
-                _contexts.NewResolvable(resolvables[0]);
+            var resolvable = _contexts.TurnContext.Character.GetEndOfTurnResolvable();
+            if (resolvable != null)
+                _contexts.NewResolvable(resolvable);
         }
     }
 }

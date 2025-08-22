@@ -1,5 +1,4 @@
 using PACG.SharedAPI;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace PACG.Gameplay
@@ -13,23 +12,19 @@ namespace PACG.Gameplay
             _gameServices = gameServices;
         }
 
-        public override List<IResolvable> GetEndOfTurnResolvables(PlayerCharacter pc)
+        public override IResolvable GetEndOfTurnResolvable(PlayerCharacter pc)
         {
             var validCards = pc.Hand.Concat(pc.Discards)
                 .Where(card => card.Data.cardType is PF.CardType.Armor or PF.CardType.Weapon)
                 .ToList();
 
-            if (validCards.Count <= 0) return new List<IResolvable>();
+            if (validCards.Count <= 0) return null;
             
             GameEvents.SetStatusText("End of Turn Actions.");
-            return new List<IResolvable>
-            {
-                new PlayerPowerAvailableResolvable(
-                    pc.CharacterData.Powers[1],
-                    new ValerosEndOfTurnResolvable(validCards, _gameServices),
-                    _gameServices)
-            };
-
+            return new PlayerPowerAvailableResolvable(
+                pc.CharacterData.Powers[1],
+                new ValerosEndOfTurnResolvable(validCards, _gameServices),
+                _gameServices);
         }
     }
 }

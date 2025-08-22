@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace PACG.Gameplay
 {
@@ -12,23 +10,19 @@ namespace PACG.Gameplay
             _contexts = gameServices.Contexts;
         }
 
-        public override List<IResolvable> GetToCloseResolvables()
+        public override IResolvable GetToCloseResolvables()
         {
             var dc = 5 + _contexts.GameContext.AdventureNumber;
 
             // TODO: Handle when a character who avenges can close.
-            return new List<IResolvable>
-            {
-                new SkillResolvable(
-                    _contexts.TurnPcLocation,
-                    _contexts.TurnContext.Character,
-                    dc,
-                    PF.Skill.Wisdom, PF.Skill.Perception
-                )
-            };
+            return new CheckResolvable(
+                _contexts.TurnPcLocation,
+                _contexts.TurnContext.Character,
+                CardUtils.SkillCheck(dc,PF.Skill.Wisdom, PF.Skill.Perception)
+            );
         }
 
         // TODO: Implement when we have multiple characters and locations.
-        public override List<IResolvable> GetWhenClosedResolvables() => new();
+        public override IResolvable GetWhenClosedResolvable() => null;
     }
 }

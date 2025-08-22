@@ -15,9 +15,9 @@ namespace PACG.Gameplay
         {
             if (_contexts.EncounterContext == null) return;
             
-            var resolvables = _contexts.EncounterContext.Card.GetCheckResolvables();
+            var resolvable = _contexts.EncounterContext.Card.GetCheckResolvable();
             // TODO: Handle multiple resolvables
-            if (resolvables.Count > 0) _contexts.NewResolvable(resolvables[0]);
+            if (resolvable != null) _contexts.NewResolvable(resolvable);
         }
     }
 }

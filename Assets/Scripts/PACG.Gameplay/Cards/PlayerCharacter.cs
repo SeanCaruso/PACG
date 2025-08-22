@@ -186,7 +186,7 @@ namespace PACG.Gameplay
         public void Move(Location newLoc) => _contexts.GameContext.MoveCharacter(this, newLoc);
 
         // Facade pattern for CharacterLogic
-        public List<IResolvable> GetStartOfTurnResolvables() => Logic.GetStartOfTurnResolvables(this);
-        public List<IResolvable> GetEndOfTurnResolvables() => Logic.GetEndOfTurnResolvables(this);
+        public IResolvable GetStartOfTurnResolvable() => Logic.GetStartOfTurnResolvable(this);
+        public IResolvable GetEndOfTurnResolvable() => Logic.GetEndOfTurnResolvable(this);
     }
 }

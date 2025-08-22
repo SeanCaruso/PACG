@@ -66,7 +66,7 @@ namespace PACG.Gameplay
             CurrentResolvable = resolvable;
 
             // Automatic context creation based on resolvable type.
-            if (CurrentResolvable is ICheckResolvable checkResolvable)
+            if (CurrentResolvable is CheckResolvable checkResolvable)
             {
                 CheckContext = new CheckContext(checkResolvable);
                 DialogEvents.RaiseCheckStartEvent(CheckContext);

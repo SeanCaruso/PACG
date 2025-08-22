@@ -63,7 +63,7 @@ public class CatTests
 
         // Check that the game pauses when reaching the required check resolvable.
         Assert.IsNotNull(_gameServices.Contexts.CurrentResolvable);
-        Assert.IsTrue(_gameServices.Contexts.CurrentResolvable is SkillResolvable);
+        Assert.IsTrue(_gameServices.Contexts.CurrentResolvable is CheckResolvable);
 
         // Check that the Cat has one recharge action.
         var actions = _catInstance.GetAvailableActions();
@@ -101,7 +101,7 @@ public class CatTests
 
         // Check that the game pauses when reaching the required check resolvable.
         Assert.IsNotNull(_gameServices.Contexts.CurrentResolvable);
-        Assert.IsTrue(_gameServices.Contexts.CurrentResolvable is SkillResolvable);
+        Assert.IsTrue(_gameServices.Contexts.CurrentResolvable is CheckResolvable);
 
         // Check that the Cat doesn't have a recharge action.
         var actions = _catInstance.GetAvailableActions();
@@ -130,7 +130,7 @@ public class CatTests
         var effects = _gameServices.Contexts.TurnContext.ExploreEffects;
         Assert.AreEqual(1, effects.Count);
 
-        var resolvable = new SkillResolvable(zombieInstance, _valeros, 10);
+        var resolvable = new CheckResolvable(zombieInstance, _valeros, CardUtils.SkillCheck(10, PF.Skill.Arcane));
         var check = new CheckContext(resolvable);
         var dicePool = new DicePool();
         effects[0].ApplyTo(check, dicePool);
@@ -159,7 +159,7 @@ public class CatTests
         var effects = _gameServices.Contexts.TurnContext.ExploreEffects;
         Assert.AreEqual(1, effects.Count);
         
-        var resolvable = new SkillResolvable(spellInstance, _valeros, 10);
+        var resolvable = new CheckResolvable(spellInstance, _valeros, CardUtils.SkillCheck(10, PF.Skill.Arcane));
         var check = new CheckContext(resolvable);
         var dicePool = new DicePool();
         effects[0].ApplyTo(check, dicePool);

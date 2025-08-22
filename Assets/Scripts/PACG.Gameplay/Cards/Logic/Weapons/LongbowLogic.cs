@@ -32,18 +32,17 @@ namespace PACG.Gameplay
             return actions;
         }
 
-        private bool CanReveal(CardInstance card) => (
+        private bool CanReveal(CardInstance card) => 
             // Reveal power can be used by the current owner while playing cards for a Dexterity or Ranged combat check.
-            Check != null
-            && _contexts.CurrentResolvable is CombatResolvable resolvable
-            && resolvable.Character == card.Owner
+            Check is { IsCombatValid: true }
+            && Check.Character == card.Owner
             && !Check.StagedCardTypes.Contains(card.Data.cardType)
-        );
+            && Check.CanUseSkill(PF.Skill.Dexterity, PF.Skill.Ranged);
 
         private bool CanDiscard(CardInstance card) => (
             // Discard power can be freely used on another character's combat check while playing cards if the owner is proficient.
-            Check is { Resolvable: CombatResolvable resolvable }
-            && resolvable.Character != card.Owner
+            Check is { IsCombatValid: true }
+            && Check.Character != card.Owner
             && card.Owner.IsProficient(card.Data)
         );
 
@@ -51,6 +50,7 @@ namespace PACG.Gameplay
         {
             if (action.ActionType == PF.ActionType.Reveal)
             {
+                Check.RestrictCheckCategory(card, CheckCategory.Combat);
                 Check.AddValidSkills(card, PF.Skill.Dexterity, PF.Skill.Ranged);
                 Check.RestrictValidSkills(card, PF.Skill.Dexterity, PF.Skill.Ranged);
             }
@@ -60,6 +60,7 @@ namespace PACG.Gameplay
 
         public override void OnUndo(CardInstance card, IStagedAction action)
         {
+            Check.UndoCheckRestriction(card);
             Check.UndoSkillModification(card);
             _contexts.EncounterContext.UndoProhibitedTraits(card.Owner, card);
         }

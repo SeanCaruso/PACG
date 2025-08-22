@@ -62,7 +62,7 @@ public class ClockworkServantTests
 
         // Check that the game pauses when reaching the required check resolvable.
         Assert.IsNotNull(_gameServices.Contexts.CurrentResolvable);
-        Assert.IsTrue(_gameServices.Contexts.CurrentResolvable is SkillResolvable);
+        Assert.IsTrue(_gameServices.Contexts.CurrentResolvable is CheckResolvable);
 
         // Check that the card has one recharge action.
         var actions = _cardInstance.GetAvailableActions();
@@ -100,7 +100,7 @@ public class ClockworkServantTests
 
         // Check that the game pauses when reaching the required check resolvable.
         Assert.IsNotNull(_gameServices.Contexts.CurrentResolvable);
-        Assert.IsTrue(_gameServices.Contexts.CurrentResolvable is SkillResolvable);
+        Assert.IsTrue(_gameServices.Contexts.CurrentResolvable is CheckResolvable);
 
         // Check that the card has one recharge action.
         var actions = _cardInstance.GetAvailableActions();
@@ -138,7 +138,7 @@ public class ClockworkServantTests
 
         // Check that the game pauses when reaching the required check resolvable.
         Assert.IsNotNull(_gameServices.Contexts.CurrentResolvable);
-        Assert.IsTrue(_gameServices.Contexts.CurrentResolvable is SkillResolvable);
+        Assert.IsTrue(_gameServices.Contexts.CurrentResolvable is CheckResolvable);
 
         // Check that the card doesn't have a recharge action.
         var actions = _cardInstance.GetAvailableActions();

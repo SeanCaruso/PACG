@@ -65,7 +65,7 @@ namespace PACG.Gameplay
         // Can recharge on a local Strength or Melee check.
         private bool CanRecharge(CardInstance card) => (
             _contexts.CheckContext != null &&
-            _contexts.CurrentResolvable is ICheckResolvable &&
+            _contexts.CurrentResolvable is CheckResolvable &&
             _contexts.CheckContext.IsLocal(card.Owner) &&
             !_contexts.CheckContext.StagedCardTypes.Contains(PF.CardType.Ally) &&
             _contexts.CheckContext.CanUseSkill(PF.Skill.Strength, PF.Skill.Melee)

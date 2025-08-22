@@ -71,7 +71,7 @@ namespace PACG.Presentation.SkillSelectionDialog
                 skillRow.DieText.text = $"d{die}";
                 skillRow.SkillBonusText.text = $"+ {bonus}";
                 skillRow.SkillNameText.text = skill.ToString();
-                skillRow.DcText.text = _checkContext.Resolvable.Difficulty.ToString();
+                skillRow.DcText.text = _checkContext.GetDcForSkill(skill).ToString();
 
                 skillRow.BackgroundPanel.color = Color.Lerp(
                     _cardTypeColor,
