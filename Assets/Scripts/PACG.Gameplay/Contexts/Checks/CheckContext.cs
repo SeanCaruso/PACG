@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
 using PACG.SharedAPI;
 using UnityEngine;
 
@@ -18,12 +17,13 @@ namespace PACG.Gameplay
 
     public class CheckContext
     {
+        private CheckSkillAccumulator _skills;
+        private CheckTypeDeterminator _typeDeterminator;
         private TraitAccumulator _traits;
         
         // --- Immutable Initial State ---
         // These are set once and should never change.
         public CheckResolvable Resolvable { get; }
-        private readonly List<PF.Skill> _baseValidSkills = new();
 
         public PlayerCharacter Character => Resolvable.Character;
 
@@ -32,23 +32,13 @@ namespace PACG.Gameplay
         public CheckContext(CheckResolvable resolvable)
         {
             Resolvable = resolvable;
-            foreach (var checkStep in Resolvable.CheckSteps)
-            {
-                if (checkStep.category == CheckCategory.Combat)
-                {
-                    _baseValidSkills.Add(PF.Skill.Strength);
-                    _baseValidSkills.Add(PF.Skill.Melee);
-                }
-                else
-                {
-                    _baseValidSkills.AddRange(checkStep.allowedSkills);
-                }
-            }
             
-            _traits = new TraitAccumulator(Resolvable);
+            _skills = new CheckSkillAccumulator(resolvable);
+            _typeDeterminator = new CheckTypeDeterminator(resolvable);
+            _traits = new TraitAccumulator(resolvable);
             
             // Initialize UsedSkill to the PC's best valid skill.
-            UsedSkill = Character.GetBestSkill(_baseValidSkills.ToArray()).skill;
+            UsedSkill = Character.GetBestSkill(GetCurrentValidSkills().ToArray()).skill;
         }
         
         // =====================================================================================
@@ -107,61 +97,28 @@ namespace PACG.Gameplay
         {
             if (!action.IsFreely) _stagedCardTypes.Add(action.Card.Data.cardType);
         }
+        
         // =====================================================================================
-        // CHECK TYPE (COMBAT/SKILL) DETERMINATION
+        // TYPE DETERMINATION PASSTHROUGHS TO CheckTypeDeterminator
         // =====================================================================================
-        private CheckCategory? _checkRestriction;
-        private readonly List<CardInstance> _categoryRestrictionCards = new();
-
-        public bool IsCombatValid => Resolvable.HasCombat && _checkRestriction is not CheckCategory.Skill;
-        public bool IsSkillValid => Resolvable.HasSkill && _checkRestriction is not CheckCategory.Combat;
+        public bool IsCombatValid => _typeDeterminator.IsCombatValid;
+        public bool IsSkillValid => _typeDeterminator.IsSkillValid;
 
         public void RestrictCheckCategory(CardInstance card, CheckCategory category)
         {
-            if (_checkRestriction != null && _checkRestriction != category)
-            {
-                Debug.LogError($"[{GetType().Name}] {card.Name} attempted to restrict invalid check category.");
-                return;
-            }
-            
-            _checkRestriction = category;
-            _categoryRestrictionCards.Add(card);
-            
-            DialogEvents.RaiseValidSkillsChanged(GetCurrentValidSkills());
+            _typeDeterminator.RestrictCheckCategory(card, category);
         }
 
         public void UndoCheckRestriction(CardInstance source)
         {
-            _categoryRestrictionCards.Remove(source);
-            if (_categoryRestrictionCards.Count == 0) _checkRestriction = null;
-            
-            DialogEvents.RaiseValidSkillsChanged(GetCurrentValidSkills());
+            _typeDeterminator.UndoCheckRestriction(source);
         }
 
-        [CanBeNull]
-        private CheckStep GetForcedCheckStep()
-        {
-            if (_checkRestriction == null) return null;
-            return Resolvable.CheckSteps.FirstOrDefault(step => step.category == _checkRestriction);
-        }
+        public int GetDcForSkill(PF.Skill skill) => _typeDeterminator.GetDcForSkill(skill);
 
-        public int GetDcForSkill(PF.Skill skill)
+        private CheckStep GetActiveCheckStep()
         {
-            var forcedStep = GetForcedCheckStep();
-            if (forcedStep != null)
-                return CardUtils.GetDc(forcedStep.baseDC, forcedStep.adventureLevelMult);
-            
-            var stepWithSkill = Resolvable.CheckSteps.FirstOrDefault(step => step.allowedSkills.Contains(skill));
-            if (stepWithSkill != null)
-                return CardUtils.GetDc(stepWithSkill.baseDC, stepWithSkill.adventureLevelMult);
-            
-            Debug.LogError($"[{GetType().Name}] No check step found for skill {skill}");
-            return 0;
-        }
-
-        public CheckStep GetActiveCheckStep()
-        {
-            var forcedStep = GetForcedCheckStep();
+            var forcedStep = _typeDeterminator.GetForcedCheckStep();
             if (forcedStep != null) return forcedStep;
             
             var stepWithSkill = Resolvable.CheckSteps.FirstOrDefault(step => step.allowedSkills.Contains(UsedSkill));
@@ -175,26 +132,13 @@ namespace PACG.Gameplay
         public bool IsCombatCheck => GetActiveCheckStep().category == CheckCategory.Combat;
 
         // =====================================================================================
-        // CHECK SKILL DETERMINATION
+        // SKILL PASSTHROUGHS TO CheckSkillAccumulator
         // =====================================================================================
-        private readonly Dictionary<CardInstance, List<PF.Skill>> _stagedSkillAdditions = new();
-        private readonly Dictionary<CardInstance, List<PF.Skill>> _stagedSkillRestrictions = new();
 
-        public void AddValidSkills(CardInstance card, params PF.Skill[] skills)
-        {
-            if (_stagedSkillAdditions.TryGetValue(card, out var addition))
-                addition.AddRange(skills);
-            else
-                _stagedSkillAdditions.Add(card, new List<PF.Skill>(skills));
-            
-            DialogEvents.RaiseValidSkillsChanged(GetCurrentValidSkills());
-        }
+        public void AddValidSkills(CardInstance card, params PF.Skill[] skills) => _skills.AddValidSkills(card, skills);
         public void RestrictValidSkills(CardInstance card, params PF.Skill[] skills)
         {
-            if (_stagedSkillRestrictions.TryGetValue(card, out var restriction))
-                restriction.AddRange(skills);
-            else
-                _stagedSkillRestrictions.Add(card, new List<PF.Skill>(skills));
+            _skills.RestrictValidSkills(card, skills);
             
             var newValidSkills = GetCurrentValidSkills();
             if (!newValidSkills.Contains(UsedSkill))
@@ -202,13 +146,7 @@ namespace PACG.Gameplay
             
             DialogEvents.RaiseValidSkillsChanged(newValidSkills);
         }
-        public void UndoSkillModification(CardInstance source)
-        {
-            _stagedSkillAdditions.Remove(source);
-            _stagedSkillRestrictions.Remove(source);
-            
-            DialogEvents.RaiseValidSkillsChanged(GetCurrentValidSkills());
-        }
+        public void UndoSkillModification(CardInstance source) => _skills.UndoSkillModification(source);
 
         /// <summary>
         /// Convenience function to determine if a card with the given skills can be played on the current set of valid
@@ -216,21 +154,9 @@ namespace PACG.Gameplay
         /// </summary>
         /// <param name="skills">card skills</param>
         /// <returns>true if the current valid skills contains one or more of the given skills</returns>
-        public bool CanUseSkill(params PF.Skill[] skills) => skills.Intersect(GetCurrentValidSkills()).Any();
+        public bool CanUseSkill(params PF.Skill[] skills) => _skills.CanUseSkill(skills);
 
-        public List<PF.Skill> GetCurrentValidSkills()
-        {
-            List<PF.Skill> skills = new(_baseValidSkills);
-
-            // Apply all additions.
-            foreach (var addedSkills in _stagedSkillAdditions.Values)
-                skills.AddRange(addedSkills.Except(skills));
-
-            // Apply all restrictions.
-            return _stagedSkillRestrictions.Values.Aggregate(
-                skills,
-                (current, restrictedSkills) => current.Intersect(restrictedSkills).ToList());
-        }
+        public List<PF.Skill> GetCurrentValidSkills() => _skills.GetCurrentValidSkills();
 
         // =====================================================================================
         // CHECK RESULTS ENCAPSULATION
@@ -258,9 +184,6 @@ namespace PACG.Gameplay
             DieOverride = null;
         }
 
-        // Public methods to control state changes
-        //public void AddToDicePool(int count, int sides, int bonus = 0) => DicePool.AddDice(count, sides, bonus);
-
         // --- Custom Data ---
         public Dictionary<string, object> ContextData { get; } = new();
 
@@ -278,8 +201,8 @@ namespace PACG.Gameplay
         {
             BlessingCount = 0;
             _stagedCardTypes.Clear();
-            _stagedSkillAdditions.Clear();
-            _stagedSkillRestrictions.Clear();
+            _skills = new CheckSkillAccumulator(Resolvable);
+            _typeDeterminator = new CheckTypeDeterminator(Resolvable);
             _traits = new TraitAccumulator(Resolvable);
             ContextData.Clear();
         }
