@@ -42,7 +42,7 @@ namespace Tests.Items
         [Test]
         public void GemMentalAcuity_Combat_NoActions()
         {
-            TestUtils.SetupCombatCheck(_gameServices, _valeros);
+            TestUtils.SetupEncounter(_gameServices, "Valeros", "Zombie");
             var actions = _cardInstance.GetAvailableActions();
             Assert.AreEqual(0, actions.Count);
         }

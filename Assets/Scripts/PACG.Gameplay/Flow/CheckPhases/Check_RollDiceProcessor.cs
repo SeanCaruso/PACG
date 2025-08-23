@@ -32,26 +32,10 @@ namespace PACG.Gameplay
             var dc = _contexts.CheckContext.GetDc();
             var check = _contexts.CheckContext;
 
-            // foreach (var effect in check.ExploreEffects)
-            // {
-            //     effect.ApplyTo(check);
-            // }
-            //
-            // // Add the skill set by the skill selection dialog.
-            // var usedSkill = pc.GetSkill(check.UsedSkill);
-            //
-            // if (check.DieOverride != null)
-            //     usedSkill.die = check.DieOverride.Value;
-            //
-            // check.DicePool.AddDice(1, usedSkill.die, usedSkill.bonus);
-            //
-            // // Add blessing dice.
-            // check.DicePool.AddDice(check.BlessingCount, usedSkill.die);
-
             var dicePool = _asm.GetStagedDicePool();
 
             var rollTotal = dicePool.Roll();
-            check.CheckResult = new CheckResult(rollTotal, dc, pc, check.UsedSkill, check.Traits);
+            check.CheckResult = new CheckResult(rollTotal, dc, pc, check.IsCombatCheck, check.UsedSkill, check.Traits);
 
             var needsReroll = check.CheckResult.MarginOfSuccess < _contexts.EncounterContext.CardData.rerollThreshold;
             var cardsToCheck = pc.Hand.Union(pc.DisplayedCards);

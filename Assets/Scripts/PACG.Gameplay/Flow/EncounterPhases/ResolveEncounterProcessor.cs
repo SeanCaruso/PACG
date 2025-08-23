@@ -1,16 +1,17 @@
-using PACG.SharedAPI;
-
 namespace PACG.Gameplay
 {
+    /// <summary>
+    /// Processor that gets any Resolvables when resolving an encounter.
+    /// Note that Encounter_EndEncounterProcessor handles the actual cleanup, including banishing/acquiring/shuffling
+    /// cards to the appropriate locations.
+    /// </summary>
     public class ResolveEncounterProcessor : BaseProcessor
     {
-        private readonly CardManager _cardManager;
         private readonly ContextManager _contexts;
 
         public ResolveEncounterProcessor(GameServices gameServices)
             : base(gameServices)
         {
-            _cardManager = gameServices.Cards;
             _contexts = gameServices.Contexts;
         }
 
@@ -19,38 +20,11 @@ namespace PACG.Gameplay
             if (_contexts.EncounterContext == null) return;
             
             var encounteredCard = _contexts.EncounterContext.Card;
-            
             var resolvable = encounteredCard.Logic.GetResolveEncounterResolvable(encounteredCard);
             if (resolvable != null)
             {
                 _contexts.NewResolvable(resolvable);
-                return;
             }
-
-            var wasSuccess = _contexts.EncounterContext.CheckResult.WasSuccess;
-
-            var shouldBanish = (encounteredCard.IsBane && wasSuccess) || (encounteredCard.IsBoon && !wasSuccess);
-
-            if (shouldBanish)
-            {
-                _cardManager.MoveCard(encounteredCard, CardLocation.Vault);
-            }
-            else if (encounteredCard.IsBane)
-            {
-                // Shuffle undefeated banes back into the location deck.
-                // TODO: Get ResolveEncounter resolvables (e.g. option to banish if undefeated, etc.)
-                // TODO: Handle summoned cards.
-                _contexts.EncounterPcLocation.ShuffleIn(encounteredCard, true);
-            }
-            else
-            {
-                // Player acquires defeated boon.
-                _contexts.EncounterContext.Character.AddToHand(encounteredCard);
-            }
-
-            GameEvents.RaiseEncounterEnded();
-
-            _contexts.EndEncounter();
         }
     }
 }

@@ -19,6 +19,7 @@ namespace PACG.Gameplay
         {
             _contexts.CheckContext?.RestrictCheckCategory(card, CheckCategory.Combat);
             _contexts.CheckContext?.RestrictValidSkills(card, PF.Skill.Strength, PF.Skill.Melee);
+            _contexts.CheckContext?.AddTraits(card);
             _contexts.EncounterContext?.AddProhibitedTraits(card.Owner, card, "Offhand");
         }
 
@@ -26,6 +27,7 @@ namespace PACG.Gameplay
         {
             _contexts.CheckContext?.UndoCheckRestriction(card);
             _contexts.CheckContext?.UndoSkillModification(card);
+            _contexts.CheckContext?.RemoveTraits(card);
             _contexts.EncounterContext?.UndoProhibitedTraits(card.Owner, card);
         }
 

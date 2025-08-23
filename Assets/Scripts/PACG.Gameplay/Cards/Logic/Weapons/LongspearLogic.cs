@@ -44,6 +44,7 @@ namespace PACG.Gameplay
             
             Check?.RestrictCheckCategory(card, CheckCategory.Combat);
             Check?.RestrictValidSkills(card, PF.Skill.Strength, PF.Skill.Melee);
+            Check?.AddTraits(card);
         }
 
         public override void OnUndo(CardInstance card, IStagedAction action)
@@ -52,6 +53,7 @@ namespace PACG.Gameplay
             
             Check?.UndoCheckRestriction(card);
             Check?.UndoSkillModification(card);
+            Check?.RemoveTraits(card);
         }
 
         public override void Execute(CardInstance card, IStagedAction action, DicePool dicePool)

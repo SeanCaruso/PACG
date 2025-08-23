@@ -33,6 +33,7 @@ namespace PACG.Gameplay
             _gameFlow.QueueNextProcessor(new AttemptChecksProcessor(_gameServices));
             //GFM.QueueNextPhase(new AfterActingProcessor(_gameServices));
             _gameFlow.QueueNextProcessor(new ResolveEncounterProcessor(_gameServices));
+            _gameFlow.QueueNextProcessor(new Encounter_EndEncounterProcessor(_gameServices));
 
             _gameFlow.CompleteCurrentPhase();
         }

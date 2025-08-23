@@ -9,10 +9,12 @@ namespace PACG.Gameplay
     {
         // Dependency injection
         private readonly ContextManager _contexts;
+        private readonly GameFlowManager _gameFlow;
         
         public Encounter_EvasionProcessor(GameServices gameServices) : base(gameServices)
         {
             _contexts = gameServices.Contexts;
+            _gameFlow = gameServices.GameFlow;
         }
 
         protected override void OnExecute()
@@ -57,6 +59,8 @@ namespace PACG.Gameplay
                 _contexts.TurnContext.Location.ShuffleIn(_contexts.EncounterContext.Card, true);
             
             _contexts.EndEncounter();
+            
+            _gameFlow.AbortPhase();
         }
     }
 }

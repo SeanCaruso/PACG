@@ -45,12 +45,19 @@ namespace PACG.Gameplay
             Check.RestrictCheckCategory(card, CheckCategory.Combat);
             Check.AddValidSkills(card, _validSkills);
             Check.RestrictValidSkills(card, _validSkills);
+            
+            // Add traits if revealed to use for the combat check.
+            if (action.ActionType == PF.ActionType.Reveal)
+                Check.AddTraits(card);
         }
 
         public override void OnUndo(CardInstance card, IStagedAction action)
         {
             Check.UndoCheckRestriction(card);
             Check.UndoSkillModification(card);
+            
+            if (action.ActionType == PF.ActionType.Reveal)
+                Check.RemoveTraits(card);
         }
 
         public override void Execute(CardInstance card, IStagedAction action, DicePool dicePool)

@@ -57,7 +57,7 @@ namespace PACG.Gameplay
             {
                 // Reveal to add 1d6 on your Perception check.
                 case PF.ActionType.Reveal:
-                    dicePool.AddDice(1, 8);
+                    dicePool.AddDice(1, 6);
                     break;
                 // Discard to examine the top 2 cards of your location and return them in any order.
                 case PF.ActionType.Discard:

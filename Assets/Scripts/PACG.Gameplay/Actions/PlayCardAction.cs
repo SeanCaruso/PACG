@@ -11,14 +11,14 @@ namespace PACG.Gameplay
         // Dictionary to hold any custom data.
         public Dictionary<string, object> ActionData { get; } = new();
 
-        private readonly string label = null;
+        private readonly string _label = null;
 
         public PlayCardAction(CardInstance card, PF.ActionType actionType, params (string, object)[] actionData)
         {
             Card = card;
             ActionType = actionType;
 
-            foreach ((string key, object value) in actionData)
+            foreach (var (key, value) in actionData)
                 ActionData.Add(key, value);
         }
 
@@ -28,7 +28,7 @@ namespace PACG.Gameplay
 
         public string GetLabel()
         {
-            return $"{(label is null ? ActionType.ToString() : label)} {Card.Data.cardName}";
+            return $"{_label ?? ActionType.ToString()} {Card.Data.cardName}";
         }
 
         public void OnStage() => Card.Logic?.OnStage(Card, this);
@@ -37,7 +37,6 @@ namespace PACG.Gameplay
 
         public void Commit(CheckContext checkContext, DicePool dicePool)
         {
-            checkContext?.AddTraits(Card.Data.traits.ToArray());
             Card.Logic?.Execute(Card, this, dicePool);
             // The card instance on the PlayerCharacter was moved during staging, so don't do it here.
         }

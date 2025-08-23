@@ -23,7 +23,8 @@ MonoBehaviour:
     - baseDC: 9
       adventureLevelMult: 2
       category: 0
-      allowedSkills: 
+      allowedSkills: 000000000d000000
+  rerollThreshold: 0
   powers: 'Immune to Mental and Poison.
 
 

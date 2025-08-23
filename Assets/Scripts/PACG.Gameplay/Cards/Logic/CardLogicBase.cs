@@ -6,10 +6,12 @@ namespace PACG.Gameplay
     public abstract class CardLogicBase : ILogicBase
     {
         // Dependency injection of services
+        private readonly CardManager _cards;
         private readonly ContextManager _contexts;
 
         protected CardLogicBase(GameServices gameServices)
         {
+            _cards = gameServices.Cards;
             _contexts = gameServices.Contexts;
         }
 
@@ -64,6 +66,29 @@ namespace PACG.Gameplay
 
             // TODO: Handle sequential and "None" modes.
             return null;
+        }
+
+        public virtual void OnDefeated(CardInstance card)
+        {
+            if (card.IsBane)
+            {
+                _cards.MoveCard(card, CardLocation.Vault);
+            }
+            else
+            {
+                _contexts.EncounterContext.Character.AddToHand(card);
+            }
+        }
+        public virtual void OnUndefeated(CardInstance card)
+        {
+            if (card.IsBane)
+            {
+                _contexts.EncounterPcLocation.ShuffleIn(card, true);
+            }
+            else
+            {
+                _cards.MoveCard(card, CardLocation.Vault);
+            }
         }
 
         // Other card methods (recovery)

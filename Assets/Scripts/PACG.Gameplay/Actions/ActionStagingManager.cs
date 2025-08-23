@@ -154,10 +154,9 @@ namespace PACG.Gameplay
             // Clear status text first.
             GameEvents.SetStatusText("");
 
-            var dicePool = new DicePool();
             foreach (var action in _pcsStagedActions.Values.SelectMany(list => list))
             {
-                action.Commit(_contexts.CheckContext, dicePool);
+                action.Commit(_contexts.CheckContext, _contexts.CheckContext?.DicePool);
             }
             HasExploreStaged = false;
             _originalCardLocs.Clear();

@@ -23,11 +23,12 @@ MonoBehaviour:
     - baseDC: 10
       adventureLevelMult: 0
       category: 0
-      allowedSkills: 
+      allowedSkills: 000000000d000000
     - baseDC: 7
       adventureLevelMult: 0
       category: 1
       allowedSkills: 06000000
+  rerollThreshold: 0
   powers: 'All damage is Poison damage.
 
 

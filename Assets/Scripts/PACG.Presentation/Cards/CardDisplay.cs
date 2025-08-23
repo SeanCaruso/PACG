@@ -93,19 +93,21 @@ namespace PACG.Presentation
 
             // If we don't have Check2, return.
             if (!view.ShowCheck2) return;
+            
+            checksSection2Area.SetActive(true);
 
-            // Set the THEN or OR panel active based on the check mode.
-            if (view.CheckMode == CheckMode.Sequential)
+            switch (view.CheckMode)
             {
-                thenPanel.SetActive(true);
-            }
-            else if (view.CheckMode == CheckMode.Choice)
-            {
-                orPanel.SetActive(true);
-            }
-            else
-            {
-                Debug.LogError($"UpdateCardDisplay --- {view.Name} has multiple checks, but an invalid check mode!");
+                // Set the THEN or OR panel active based on the check mode.
+                case CheckMode.Sequential:
+                    thenPanel.SetActive(true);
+                    break;
+                case CheckMode.Choice:
+                    orPanel.SetActive(true);
+                    break;
+                default:
+                    Debug.LogError($"UpdateCardDisplay --- {view.Name} has multiple checks, but an invalid check mode!");
+                    break;
             }
 
             foreach (var skill in view.Check2Skills) AddTextToPanel(skill, checksSection2, 8f);
@@ -118,7 +120,7 @@ namespace PACG.Presentation
             GameObject textObject = new($"{text}_Object");
             textObject.transform.SetParent(panel.transform, false);
 
-            TextMeshProUGUI tmp = textObject.AddComponent<TextMeshProUGUI>();
+            var tmp = textObject.AddComponent<TextMeshProUGUI>();
             tmp.text = text;
             tmp.font = cardFont;
             tmp.fontSize = fontSize;

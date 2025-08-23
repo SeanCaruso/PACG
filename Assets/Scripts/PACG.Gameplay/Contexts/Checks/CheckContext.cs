@@ -18,6 +18,8 @@ namespace PACG.Gameplay
 
     public class CheckContext
     {
+        private TraitAccumulator _traits;
+        
         // --- Immutable Initial State ---
         // These are set once and should never change.
         public CheckResolvable Resolvable { get; }
@@ -43,9 +45,43 @@ namespace PACG.Gameplay
                 }
             }
             
+            _traits = new TraitAccumulator(Resolvable);
+            
             // Initialize UsedSkill to the PC's best valid skill.
             UsedSkill = Character.GetBestSkill(_baseValidSkills.ToArray()).skill;
         }
+        
+        // =====================================================================================
+        // TRAITS
+        // =====================================================================================
+        /// <summary>
+        /// Adds traits for the given card.
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="traits">Traits to add. If empty, card's traits are added.</param>
+        public void AddTraits(ICard card, params string[] traits) =>
+            _traits?.Add(card, traits.Length > 0 ? traits : card.Traits.ToArray());
+        public void RemoveTraits(ICard card) => _traits.Remove(card);
+        public IReadOnlyList<string> Traits
+        {
+            get
+            {
+                var playedTraits = _traits.Traits.ToList();
+                playedTraits.Add(UsedSkill.ToString());
+                if (Character.GetAttributeForSkill(UsedSkill) != UsedSkill)
+                    playedTraits.Add(Character.GetAttributeForSkill(UsedSkill).ToString());
+                return playedTraits;
+            }
+        }
+        
+        /// <summary>
+        /// Returns whether the check invokes any of the given traits.
+        /// A check invokes a trait if the card played to determine the skill has the trait, or if the card
+        /// that triggered the check has the trait.
+        /// </summary>
+        /// <param name="traits"></param>
+        /// <returns>true if the check invokes at least one of the given traits</returns>
+        public bool Invokes(params string[] traits) =>  Traits.Intersect(traits).Any();
 
         // =====================================================================================
         // CONTEXT-SPECIFIC ACTION STAGING
@@ -160,7 +196,11 @@ namespace PACG.Gameplay
             else
                 _stagedSkillRestrictions.Add(card, new List<PF.Skill>(skills));
             
-            DialogEvents.RaiseValidSkillsChanged(GetCurrentValidSkills());
+            var newValidSkills = GetCurrentValidSkills();
+            if (!newValidSkills.Contains(UsedSkill))
+                UsedSkill = Character.GetBestSkill(newValidSkills.ToArray()).skill;
+            
+            DialogEvents.RaiseValidSkillsChanged(newValidSkills);
         }
         public void UndoSkillModification(CardInstance source)
         {
@@ -195,8 +235,11 @@ namespace PACG.Gameplay
         // =====================================================================================
         // CHECK RESULTS ENCAPSULATION
         // =====================================================================================
-        private readonly List<string> _traits = new();
-        public IReadOnlyList<string> Traits => _traits;
+
+        public PF.Skill UsedSkill { get; set; }
+        public int BlessingCount { get; set; }
+        public DicePool DicePool { get; set; } = new();
+        public CheckResult CheckResult { get; set; }
 
         private CardInstance _dieOverrideSource;
         public int? DieOverride { get; private set; }
@@ -215,13 +258,7 @@ namespace PACG.Gameplay
             DieOverride = null;
         }
 
-        public PF.Skill UsedSkill { get; set; }
-
-        public int BlessingCount { get; set; }
-        public CheckResult CheckResult { get; set; }
-
         // Public methods to control state changes
-        public void AddTraits(params string[] traits) => _traits.AddRange(traits);
         //public void AddToDicePool(int count, int sides, int bonus = 0) => DicePool.AddDice(count, sides, bonus);
 
         // --- Custom Data ---
@@ -236,17 +273,6 @@ namespace PACG.Gameplay
         /// <param name="pc"></param>
         /// <returns>true if the given PC is local to the check</returns>
         public bool IsLocal(PlayerCharacter pc) => Character.Location == pc.Location;
-        
-        /// <summary>
-        /// Returns whether the check invokes any of the given traits.
-        /// A check invokes a trait if the card played to determine the skill has the trait, or if the card
-        /// that triggered the check has the trait.
-        /// </summary>
-        /// <param name="traits"></param>
-        /// <returns>true if the check invokes at least one of the given traits</returns>
-        public bool Invokes(params string[] traits) => 
-            traits.Intersect(Traits).Any() ||
-            traits.Intersect(Resolvable.Card.Traits).Any();
 
         public void Reset()
         {
@@ -254,7 +280,7 @@ namespace PACG.Gameplay
             _stagedCardTypes.Clear();
             _stagedSkillAdditions.Clear();
             _stagedSkillRestrictions.Clear();
-            _traits.Clear();
+            _traits = new TraitAccumulator(Resolvable);
             ContextData.Clear();
         }
     }

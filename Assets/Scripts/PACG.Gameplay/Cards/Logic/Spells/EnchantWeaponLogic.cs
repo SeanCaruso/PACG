@@ -19,7 +19,7 @@ namespace PACG.Gameplay
 
             // Add 1d4+# and the Magic trait.
             dicePool.AddDice(1, 4, _contexts.GameContext.AdventureNumber);
-            _contexts.CheckContext?.AddTraits("Magic");
+            _contexts.CheckContext?.AddTraits(card, "Magic");
         }
 
         protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)

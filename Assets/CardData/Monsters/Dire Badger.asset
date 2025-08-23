@@ -10,26 +10,32 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 14e04d260c85ee943a8769100d7c8d80, type: 3}
-  m_Name: Ogre
+  m_Name: Dire Badger
   m_EditorClassIdentifier: 
-  cardID: Ogre
-  cardName: Ogre
+  cardID: DireBadger
+  cardName: Dire Badger
   cardType: 7
-  cardLevel: 0
+  cardLevel: 1
   cardArt: {fileID: 0}
   checkRequirement:
-    mode: 0
+    mode: 1
     checkSteps:
-    - baseDC: 12
-      adventureLevelMult: 2
+    - baseDC: 11
+      adventureLevelMult: 0
       category: 0
       allowedSkills: 000000000d000000
+    - baseDC: 6
+      adventureLevelMult: 0
+      category: 1
+      allowedSkills: 0e00000011000000
   rerollThreshold: 0
-  powers: Before acting, each local character suffers 1 Combat damage.
+  powers: 'If undefeated, shuffle this monster into a random location.
+
+
+    If defeated
+    by a combat check, suffer 1d4 Combat damage.'
   recovery: 
   immunities: []
   vulnerabilities: []
   traits:
-  - Giant
-  - Ogre
-  - Veteran
+  - Animal

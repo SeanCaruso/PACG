@@ -72,29 +72,16 @@ public static class TestUtils
     }
 #endif
 
-    public static void SetupCombatCheck(GameServices gameServices, PlayerCharacter pc, int dc = 10)
+    public static CardInstance GetCard(GameServices gameServices, string cardName)
     {
-        gameServices.Contexts.NewTurn(new TurnContext(pc));
-
-        var encounterData = ScriptableObject.CreateInstance<BaneCardData>();
-        encounterData.checkRequirement = new CheckRequirement
-        {
-            mode = CheckMode.Single
-        };
-        var checkSteps = new List<CheckStep>
-        {
-            new()
-            {
-                category = CheckCategory.Combat,
-                baseDC = dc
-            }
-        };
-        encounterData.checkRequirement.checkSteps = checkSteps;
-        
-        var encounterInstance = new CardInstance(encounterData, new ZombieLogic(gameServices));
-        
-        gameServices.Contexts.NewEncounter(new EncounterContext(pc, encounterInstance));
-        gameServices.Contexts.NewResolvable(new CheckResolvable(encounterInstance, pc, encounterData.checkRequirement));
+        var cardData = LoadCardData(cardName);
+        return gameServices.Cards.New(cardData);
+    }
+    
+    public static PlayerCharacter GetCharacter(GameServices gameServices, string characterName)
+    {
+        var characterData = LoadCharacterData(characterName);
+        return new PlayerCharacter(characterData, null, gameServices);
     }
 
     public static void SetupEncounter(GameServices gameServices, string character, string card)

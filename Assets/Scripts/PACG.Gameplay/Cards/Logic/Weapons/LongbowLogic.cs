@@ -53,6 +53,8 @@ namespace PACG.Gameplay
                 Check.RestrictCheckCategory(card, CheckCategory.Combat);
                 Check.AddValidSkills(card, PF.Skill.Dexterity, PF.Skill.Ranged);
                 Check.RestrictValidSkills(card, PF.Skill.Dexterity, PF.Skill.Ranged);
+                
+                Check.AddTraits(card);
             }
 
             _contexts.EncounterContext.AddProhibitedTraits(card.Owner, card, "Offhand");
@@ -60,8 +62,14 @@ namespace PACG.Gameplay
 
         public override void OnUndo(CardInstance card, IStagedAction action)
         {
-            Check.UndoCheckRestriction(card);
-            Check.UndoSkillModification(card);
+            if (action.ActionType == PF.ActionType.Reveal)
+            {
+                Check.UndoCheckRestriction(card);
+                Check.UndoSkillModification(card);
+                
+                Check.RemoveTraits(card);
+            }
+
             _contexts.EncounterContext.UndoProhibitedTraits(card.Owner, card);
         }
 

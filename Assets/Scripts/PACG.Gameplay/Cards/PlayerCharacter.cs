@@ -16,8 +16,10 @@ namespace PACG.Gameplay
         private CharacterLogicBase Logic { get; }
         public Deck Deck { get; }
 
-        public Dictionary<PF.Skill, (int die, int bonus)> Skills { get; } = new();
-        public (int die, int bonus) GetSkill(PF.Skill skill) => Skills.GetValueOrDefault(skill, (4, 0));
+        private readonly Dictionary<PF.Skill, (int die, int bonus)> _skills = new();
+        public (int die, int bonus) GetSkill(PF.Skill skill) => _skills.GetValueOrDefault(skill, (4, 0));
+        private readonly Dictionary<PF.Skill, PF.Skill> _skillAttrs = new();
+        public PF.Skill GetAttributeForSkill(PF.Skill skill) => _skillAttrs.GetValueOrDefault(skill, skill);
 
         // --- Dependency Injections
         private readonly CardManager _cardManager;
@@ -34,12 +36,13 @@ namespace PACG.Gameplay
 
             foreach (var attr in CharacterData.Attributes)
             {
-                Skills[attr.Attribute] = (attr.Die, attr.Bonus);
+                _skills[attr.Attribute] = (attr.Die, attr.Bonus);
             }
 
             foreach (var skill in CharacterData.Skills)
             {
-                Skills[skill.Skill] = (Skills[skill.Attribute].die, skill.Bonus);
+                _skills[skill.Skill] = (_skills[skill.Attribute].die, skill.Bonus);
+                _skillAttrs[skill.Skill] = skill.Attribute;
             }
         }
 
@@ -76,7 +79,7 @@ namespace PACG.Gameplay
 
             foreach (var skill in skills)
             {
-                if (!Skills.TryGetValue(skill, out var value))
+                if (!_skills.TryGetValue(skill, out var value))
                     value = (4, 0);
 
                 var avg = (value.die / 2.0) + 0.5 + value.bonus;
