@@ -18,10 +18,10 @@ namespace Tests.Weapons
         {
             _gameServices = TestUtils.CreateGameServices();
         
-            _valerosData = TestUtils.LoadCharacterData("Valeros");
+            _valerosData = TestUtils.LoadCardData<CharacterData>("Valeros");
             _valeros = new PlayerCharacter(_valerosData, _gameServices.Logic.GetLogic<CharacterLogicBase>(_valerosData.CharacterName), _gameServices);
         
-            _longswordData = TestUtils.LoadCardData("Longsword");
+            _longswordData = TestUtils.LoadCardData<CardData>("Longsword");
             _longswordInstance = _gameServices.Cards.New(_longswordData, _valeros);
             _longswordInstance.CurrentLocation = CardLocation.Hand;
         

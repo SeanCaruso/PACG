@@ -2,6 +2,7 @@ using PACG.Data;
 using PACG.Gameplay;
 using System;
 using System.Collections.Generic;
+using PACG.Core;
 
 namespace PACG.SharedAPI
 {

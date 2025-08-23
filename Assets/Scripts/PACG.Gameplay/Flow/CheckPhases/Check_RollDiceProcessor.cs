@@ -10,12 +10,10 @@ namespace PACG.Gameplay
     /// </summary>
     public class Check_RollDiceProcessor : BaseProcessor
     {
-        private readonly ActionStagingManager _asm;
         private readonly ContextManager _contexts;
 
         public Check_RollDiceProcessor(GameServices gameServices) : base(gameServices)
         {
-            _asm = gameServices.ASM;
             _contexts = gameServices.Contexts;
         }
 
@@ -32,7 +30,7 @@ namespace PACG.Gameplay
             var dc = _contexts.CheckContext.GetDc();
             var check = _contexts.CheckContext;
 
-            var dicePool = _asm.GetStagedDicePool();
+            var dicePool = check.DicePool(check.CommittedActions);
 
             var rollTotal = dicePool.Roll();
             check.CheckResult = new CheckResult(rollTotal, dc, pc, check.IsCombatCheck, check.UsedSkill, check.Traits);

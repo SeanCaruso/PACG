@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using NUnit.Framework;
+using PACG.Core;
 using PACG.Data;
 using PACG.Gameplay;
+using Tests;
 using UnityEngine;
 
 public class CatTests
@@ -19,11 +21,11 @@ public class CatTests
         _gameServices = TestUtils.CreateGameServices();
         _gameServices.Contexts.NewGame(new GameContext(1, _gameServices.Cards));
         
-        _valerosData = TestUtils.LoadCharacterData("Valeros");
+        _valerosData = TestUtils.LoadCardData<CharacterData>("Valeros");
         _valeros = new PlayerCharacter(_valerosData, _gameServices.Logic.GetLogic<CharacterLogicBase>(_valerosData.CharacterName), _gameServices);
         _gameServices.Contexts.GameContext.SetPcLocation(_valeros, new Location(ScriptableObject.CreateInstance<LocationData>(), null, _gameServices));
         
-        _catData = TestUtils.LoadCardData("Cat");
+        _catData = TestUtils.LoadCardData<CardData>("Cat");
         _catInstance = _gameServices.Cards.New(_catData, _valeros);
         _catInstance.CurrentLocation = CardLocation.Hand;
     }
@@ -114,7 +116,7 @@ public class CatTests
         _gameServices.Contexts.NewTurn(new TurnContext(_valeros));
         
         // Set up the location with a zombie card.
-        var zombieData = TestUtils.LoadCardData("Zombie");
+        var zombieData = TestUtils.LoadCardData<CardData>("Zombie");
         var zombieInstance = _gameServices.Cards.New(zombieData);
         _valeros.Location.ShuffleIn(zombieInstance, false);
         
@@ -143,7 +145,7 @@ public class CatTests
         _gameServices.Contexts.NewTurn(new TurnContext(_valeros));
         
         // Set up the location with a zombie card.
-        var spellData = TestUtils.LoadCardData("Enchant Weapon");
+        var spellData = TestUtils.LoadCardData<CardData>("Enchant Weapon");
         var spellInstance = _gameServices.Cards.New(spellData);
         _valeros.Location.ShuffleIn(spellInstance, false);
         

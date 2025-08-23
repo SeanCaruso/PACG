@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using PACG.Core;
 using PACG.SharedAPI;
 using UnityEngine;
 
@@ -20,6 +21,7 @@ namespace PACG.Gameplay
         private CheckSkillAccumulator _skills;
         private CheckTypeDeterminator _typeDeterminator;
         private TraitAccumulator _traits;
+        private readonly HashSet<PF.CardType> _stagedCardTypes = new();
         
         // --- Immutable Initial State ---
         // These are set once and should never change.
@@ -32,13 +34,49 @@ namespace PACG.Gameplay
         public CheckContext(CheckResolvable resolvable)
         {
             Resolvable = resolvable;
-            
-            _skills = new CheckSkillAccumulator(resolvable);
-            _typeDeterminator = new CheckTypeDeterminator(resolvable);
-            _traits = new TraitAccumulator(resolvable);
+            _skills = new CheckSkillAccumulator(Resolvable);
+            _typeDeterminator = new CheckTypeDeterminator(Resolvable);
+            _traits = new TraitAccumulator(Resolvable);
             
             // Initialize UsedSkill to the PC's best valid skill.
             UsedSkill = Character.GetBestSkill(GetCurrentValidSkills().ToArray()).skill;
+        }
+
+        public void UpdatePreviewState(IReadOnlyList<IStagedAction> stagedActions)
+        {
+            // Start from a fresh state.
+            _skills = new CheckSkillAccumulator(Resolvable);
+            _typeDeterminator = new CheckTypeDeterminator(Resolvable);
+            _traits = new TraitAccumulator(Resolvable);
+            _stagedCardTypes.Clear();
+
+            // Gather and apply modifiers.
+            foreach (var action in stagedActions)
+            {
+                var modifier = action.Card.Logic?.GetCheckModifier(action);
+                if (modifier != null)
+                {
+                    _skills.RestrictValidSkills(modifier.SourceCard, modifier.RestrictedSkills.ToArray());
+                    _skills.AddValidSkills(modifier.SourceCard, modifier.AddedValidSkills.ToArray());
+                    _traits.Add(modifier.SourceCard, modifier.AddedTraits.ToArray());
+                    if (modifier.RestrictedCategory != null)
+                        _typeDeterminator.RestrictCheckCategory(modifier.SourceCard, modifier.RestrictedCategory.Value);
+                }
+
+                if (!action.IsFreely)
+                {
+                    _stagedCardTypes.Add(action.Card.Data.cardType);
+                }
+            }
+            
+            GameEvents.RaiseDicePoolChanged(DicePoolBuilder.Build(this, stagedActions));
+            
+            // Update the context.
+            var newValidSkills = _skills.GetCurrentValidSkills();
+            if (!newValidSkills.Contains(UsedSkill))
+                UsedSkill = Character.GetBestSkill(newValidSkills.ToArray()).skill;
+            
+            DialogEvents.RaiseValidSkillsChanged(newValidSkills);
         }
         
         // =====================================================================================
@@ -80,7 +118,6 @@ namespace PACG.Gameplay
         //       been staged, but is rule-agnostic. CheckContext contains the rule-specific
         //       logic about which actions *can* be staged during a Check.
         // =====================================================================================
-        private readonly HashSet<PF.CardType> _stagedCardTypes = new();
         public IReadOnlyCollection<PF.CardType> StagedCardTypes => _stagedCardTypes;
 
         public bool CanStageAction(IStagedAction action)
@@ -134,7 +171,6 @@ namespace PACG.Gameplay
         // =====================================================================================
         // SKILL PASSTHROUGHS TO CheckSkillAccumulator
         // =====================================================================================
-
         public void AddValidSkills(CardInstance card, params PF.Skill[] skills) => _skills.AddValidSkills(card, skills);
         public void RestrictValidSkills(CardInstance card, params PF.Skill[] skills)
         {
@@ -161,10 +197,9 @@ namespace PACG.Gameplay
         // =====================================================================================
         // CHECK RESULTS ENCAPSULATION
         // =====================================================================================
-
+        public List<IStagedAction> CommittedActions { get; set; }
         public PF.Skill UsedSkill { get; set; }
         public int BlessingCount { get; set; }
-        public DicePool DicePool { get; set; } = new();
         public CheckResult CheckResult { get; set; }
 
         private CardInstance _dieOverrideSource;
@@ -183,6 +218,8 @@ namespace PACG.Gameplay
             _dieOverrideSource = null;
             DieOverride = null;
         }
+        
+        public DicePool DicePool(IReadOnlyList<IStagedAction> actions) => DicePoolBuilder.Build(this, actions);
 
         // --- Custom Data ---
         public Dictionary<string, object> ContextData { get; } = new();
@@ -196,15 +233,5 @@ namespace PACG.Gameplay
         /// <param name="pc"></param>
         /// <returns>true if the given PC is local to the check</returns>
         public bool IsLocal(PlayerCharacter pc) => Character.Location == pc.Location;
-
-        public void Reset()
-        {
-            BlessingCount = 0;
-            _stagedCardTypes.Clear();
-            _skills = new CheckSkillAccumulator(Resolvable);
-            _typeDeterminator = new CheckTypeDeterminator(Resolvable);
-            _traits = new TraitAccumulator(Resolvable);
-            ContextData.Clear();
-        }
     }
 }

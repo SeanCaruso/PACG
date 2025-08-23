@@ -1,4 +1,6 @@
 
+using PACG.Core;
+
 namespace PACG.Gameplay
 {
     public class EvadeExploreEffect : IExploreEffect

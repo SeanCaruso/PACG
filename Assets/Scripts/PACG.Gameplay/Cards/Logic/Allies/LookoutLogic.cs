@@ -1,4 +1,3 @@
-
 using System.Collections.Generic;
 using System.Linq;
 
@@ -18,28 +17,26 @@ namespace PACG.Gameplay
             _gameServices = gameServices;
         }
 
-        public override void OnStage(CardInstance card, IStagedAction action)
+        public override CheckModifier GetCheckModifier(IStagedAction action)
         {
-            _contexts.CheckContext?.RestrictValidSkills(card, PF.Skill.Perception);
+            // Recharge for +1d4 on a local Perception check.
+            if (_contexts.CheckContext == null) return null;
+
+            var modifier = new CheckModifier(action.Card);
+            modifier.RestrictedSkills.Add(PF.Skill.Perception);
+            modifier.AddedDice.Add(4);
+            return modifier;
         }
 
-        public override void OnUndo(CardInstance card, IStagedAction action)
+        public override void OnCommit(IStagedAction action)
         {
-            _contexts.CheckContext?.UndoSkillModification(card);
-        }
-
-        public override void Execute(CardInstance card, IStagedAction action, DicePool dicePool)
-        {
+            if (_contexts.CheckContext != null) return;
             switch (action.ActionType)
             {
-                // Recharge for +1d4 on a local Perception check.
-                case PF.ActionType.Recharge when dicePool != null:
-                    dicePool.AddDice(1, 4);
-                    break;
                 // Recharge to examine the top card of your location.
                 case PF.ActionType.Recharge:
                     _gameFlow.QueueNextProcessor(new NewResolvableProcessor(
-                        new ExamineResolvable(card.Owner.Location, 1), _gameServices));
+                        new ExamineResolvable(action.Card.Owner.Location, 1), _gameServices));
                     break;
                 // Discard to explore. You may evade.
                 case PF.ActionType.Discard:

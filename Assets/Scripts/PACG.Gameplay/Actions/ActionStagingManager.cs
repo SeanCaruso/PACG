@@ -1,6 +1,7 @@
 using PACG.SharedAPI;
 using System.Collections.Generic;
 using System.Linq;
+using PACG.Core;
 using UnityEngine;
 
 namespace PACG.Gameplay
@@ -10,8 +11,8 @@ namespace PACG.Gameplay
         // Dependency Injections
         private CardManager _cards;
         private ContextManager _contexts;
-        private GameFlowManager _gameFlow;     // Commit -> Continue processing
-        private GameServices _gameServices;    // Passed in to IResolvable.CreateProcessor
+        private GameFlowManager _gameFlow; // Commit -> Continue processing
+        private GameServices _gameServices; // Passed in to IResolvable.CreateProcessor
 
         // Other members
         private readonly Dictionary<PlayerCharacter, List<IStagedAction>> _pcsStagedActions = new();
@@ -19,6 +20,7 @@ namespace PACG.Gameplay
 
         private bool HasExploreStaged { get; set; }
 
+        public IReadOnlyList<IStagedAction> StagedActions => _pcsStagedActions.Values.SelectMany(list => list).ToList();
         public IReadOnlyList<CardInstance> StagedCards => _originalCardLocs.Keys.ToList();
         public bool CardStaged(CardInstance card) => _originalCardLocs.Keys.Contains(card);
 
@@ -81,13 +83,12 @@ namespace PACG.Gameplay
             {
                 _cards.MoveCard(card, location);
             }
+
             GameEvents.RaiseCardLocationsChanged(_originalCardLocs.Keys.ToList());
 
             HasExploreStaged = false;
             _originalCardLocs.Clear();
             _pcsStagedActions[pc].Clear();
-            
-            _contexts.CheckContext?.Reset();
 
             // Additional step for phase-level cancels
             if (_contexts.CurrentResolvable?.CancelAbortsPhase == true)
@@ -103,16 +104,16 @@ namespace PACG.Gameplay
 
         public void SendStagedActionUpdates()
         {
+            _contexts.CheckContext?.UpdatePreviewState(StagedActions);
+            
             // Send an event to update the state of the action buttons (Cancel, Commit, Skip).
             // TODO: Update this for the displayed PC. Use Turn PC until then.
             var pc = _contexts.TurnContext.Character;
-            var stagedActions = _pcsStagedActions.GetValueOrDefault(pc) ?? (_pcsStagedActions[pc] = new List<IStagedAction>());
+            var stagedActions = _pcsStagedActions.GetValueOrDefault(pc)
+                                ?? (_pcsStagedActions[pc] = new List<IStagedAction>());
 
             var state = _contexts.CurrentResolvable?.GetUIState(stagedActions) ?? GetDefaultUiState(stagedActions);
             GameEvents.RaiseStagedActionsStateChanged(state);
-            
-            // Update the dice pool.
-            GameEvents.RaiseDicePoolChanged(GetStagedDicePool());
         }
 
         private StagedActionsState GetDefaultUiState(List<IStagedAction> actions)
@@ -125,39 +126,23 @@ namespace PACG.Gameplay
             );
         }
 
-        public DicePool GetStagedDicePool()
-        {
-            var dicePool = new DicePool();
-            if (_contexts.CheckContext == null) return dicePool;
-            
-            foreach (var effect in _contexts.CheckContext.ExploreEffects)
-            {
-                effect.ApplyTo(_contexts.CheckContext, dicePool);
-            }
-            
-            // Execute card logic first for blessing calculation.
-            foreach (var action in _pcsStagedActions.Values.SelectMany(list => list))
-                action.Card.Logic?.Execute(action.Card, action, dicePool);
-
-            // Add base skill die and blessing dice.
-            var skillDie = _contexts.CheckContext.DieOverride ??
-                           _contexts.CheckContext.Character.GetSkill(_contexts.CheckContext.UsedSkill).die;
-            var skillBonus = _contexts.CheckContext.Character.GetSkill(_contexts.CheckContext.UsedSkill).bonus;
-            dicePool.AddDice(1 + _contexts.CheckContext.BlessingCount, skillDie, skillBonus);
-            
-            
-            return dicePool;
-        }
+        public DicePool GetStagedDicePool() => _contexts.CheckContext?.DicePool(
+            _pcsStagedActions.Values.SelectMany(list => list).ToList()
+        ) ?? new DicePool();
 
         public void Commit()
         {
             // Clear status text first.
             GameEvents.SetStatusText("");
+            
+            if (_contexts.CheckContext != null)
+                _contexts.CheckContext.CommittedActions = StagedActions.ToList();
 
-            foreach (var action in _pcsStagedActions.Values.SelectMany(list => list))
+            foreach (var action in StagedActions)
             {
-                action.Commit(_contexts.CheckContext, _contexts.CheckContext?.DicePool);
+                action.Card.Logic?.OnCommit(action);
             }
+
             HasExploreStaged = false;
             _originalCardLocs.Clear();
             _pcsStagedActions.Clear();
@@ -177,6 +162,7 @@ namespace PACG.Gameplay
                 {
                     Debug.Log($"[{GetType().Name}] {_contexts.CurrentResolvable} didn't queue a processor.");
                 }
+
                 _contexts.EndResolvable();
             }
 

@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using PACG.Core;
 
 namespace PACG.Gameplay
 {
@@ -35,14 +37,31 @@ namespace PACG.Gameplay
             return GetAvailableCardActions(card);
         }
 
+        /// <summary>
+        /// Returns a description of how this card's action modifies a check for preview and staging purposes.
+        /// This is a pure, read-only query and should have no side effects.
+        /// </summary>
+        public virtual CheckModifier GetCheckModifier(IStagedAction action) => null;
+
+        /// <summary>
+        /// Applies the permanent, one-time effects of an action when it is committed.
+        /// This should NOT modify the dice pool.
+        /// </summary>
+        public virtual void OnCommit(IStagedAction action)
+        {
+        }
+
+        [Obsolete]
         public virtual void OnStage(CardInstance card, IStagedAction action)
         {
         }
 
+        [Obsolete]
         public virtual void OnUndo(CardInstance card, IStagedAction action)
         {
         }
 
+        [Obsolete]
         public virtual void Execute(CardInstance card, IStagedAction action, DicePool dicePool)
         {
         }

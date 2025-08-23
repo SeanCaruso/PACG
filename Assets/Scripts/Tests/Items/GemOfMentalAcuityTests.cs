@@ -18,14 +18,14 @@ namespace Tests.Items
         {
             _gameServices = TestUtils.CreateGameServices();
 
-            _valerosData = TestUtils.LoadCharacterData("Valeros");
+            _valerosData = TestUtils.LoadCardData<CharacterData>("Valeros");
             _valeros = new PlayerCharacter(
                 _valerosData,
                 _gameServices.Logic.GetLogic<CharacterLogicBase>(_valerosData.CharacterName),
                 _gameServices
             );
 
-            _cardData = TestUtils.LoadCardData("Gem of Mental Acuity");
+            _cardData = TestUtils.LoadCardData<CardData>("Gem of Mental Acuity");
             _cardInstance = _gameServices.Cards.New(_cardData, _valeros);
             _cardInstance.CurrentLocation = CardLocation.Hand;
         }

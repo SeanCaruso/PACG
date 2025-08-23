@@ -1,3 +1,4 @@
+using PACG.Core;
 using PACG.Presentation;
 using TMPro;
 using UnityEngine;

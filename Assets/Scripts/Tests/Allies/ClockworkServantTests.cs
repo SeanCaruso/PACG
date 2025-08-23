@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using NUnit.Framework;
+using PACG.Core;
 using PACG.Data;
 using PACG.Gameplay;
 using UnityEngine;
@@ -21,11 +22,11 @@ namespace Tests.Allies
             _gameServices = TestUtils.CreateGameServices();
             _gameServices.Contexts.NewGame(new GameContext(1, _gameServices.Cards));
         
-            _valerosData = TestUtils.LoadCharacterData("Valeros");
+            _valerosData = TestUtils.LoadCardData<CharacterData>("Valeros");
             _valeros = new PlayerCharacter(_valerosData, _gameServices.Logic.GetLogic<CharacterLogicBase>(_valerosData.CharacterName), _gameServices);
             _gameServices.Contexts.GameContext.SetPcLocation(_valeros, new Location(ScriptableObject.CreateInstance<LocationData>(), null, _gameServices));
         
-            _cardData = TestUtils.LoadCardData("Clockwork Servant");
+            _cardData = TestUtils.LoadCardData<CardData>("Clockwork Servant");
             _cardInstance = _gameServices.Cards.New(_cardData, _valeros);
             _cardInstance.CurrentLocation = CardLocation.Hand;
         }
@@ -156,7 +157,7 @@ namespace Tests.Allies
             _gameServices.Contexts.NewTurn(new TurnContext(_valeros));
         
             // Set up the location with a zombie card.
-            var zombieData = TestUtils.LoadCardData("Zombie");
+            var zombieData = TestUtils.LoadCardData<CardData>("Zombie");
             var zombieInstance = _gameServices.Cards.New(zombieData);
             _valeros.Location.ShuffleIn(zombieInstance, false);
         

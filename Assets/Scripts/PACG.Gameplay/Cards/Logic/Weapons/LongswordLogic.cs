@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using PACG.Core;
 
 namespace PACG.Gameplay
 {
@@ -50,11 +51,36 @@ namespace PACG.Gameplay
             && Check.Character == card.Owner
             && Check.CanUseSkill(PF.Skill.Strength, PF.Skill.Melee);
 
+        public override CheckModifier GetCheckModifier(IStagedAction action)
+        {
+            if (action is not PlayCardAction playAction) return null;
+
+            // All powers are specific to using this card for a Strength or Melee combat check.
+            var modifier = new CheckModifier(action.Card)
+            {
+                RestrictedCategory = CheckCategory.Combat
+            };
+            modifier.RestrictedSkills.AddRange(new[] { PF.Skill.Strength, PF.Skill.Melee });
+            modifier.AddedTraits.AddRange(action.Card.Traits);
+
+            var isFreely = playAction.ActionData.TryGetValue("IsFreely", out var isFreelyObj) && isFreelyObj is true;
+
+            // If not freely, Reveal to use Strength or Melee + 1d8.
+            if (!isFreely)
+                modifier.AddedDice.Add(8);
+
+            // Reload to add another 1d4.
+            if (action.ActionType == PF.ActionType.Reload)
+                modifier.AddedDice.Add(4);
+
+            return modifier;
+        }
+
         public override void OnStage(CardInstance card, IStagedAction action)
         {
             Check.RestrictCheckCategory(card, CheckCategory.Combat);
             Check.RestrictValidSkills(card, PF.Skill.Strength, PF.Skill.Melee);
-            
+
             Check.AddTraits(card);
         }
 
@@ -62,7 +88,7 @@ namespace PACG.Gameplay
         {
             Check.UndoCheckRestriction(card);
             Check.UndoSkillModification(card);
-            
+
             Check.RemoveTraits(card);
         }
 
