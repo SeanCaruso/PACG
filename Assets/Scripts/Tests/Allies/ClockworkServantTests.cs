@@ -1,6 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
-using PACG.Core;
 using PACG.Data;
 using PACG.Gameplay;
 using UnityEngine;
@@ -74,9 +74,9 @@ namespace Tests.Allies
             Assert.AreEqual(PF.ActionType.Recharge, actions[0].ActionType);
         
             // Check for +1d6.
-            var dicePool = new DicePool();
-            _cardInstance.Logic.Execute(_cardInstance, actions[0], dicePool);
-            Assert.AreEqual(1, dicePool.NumDice(6));
+            var modifier = _cardInstance.Logic.GetCheckModifier(actions[0]);
+            var numD6 = modifier?.AddedDice.Count(d => d == 6);
+            Assert.AreEqual(1, numD6);
         }
 
         [Test]
@@ -113,9 +113,9 @@ namespace Tests.Allies
             Assert.AreEqual(PF.ActionType.Recharge, actions[0].ActionType);
         
             // Check for +1d6.
-            var dicePool = new DicePool();
-            _cardInstance.Logic.Execute(_cardInstance, actions[0], dicePool);
-            Assert.AreEqual(1, dicePool.NumDice(6));
+            var modifier = _cardInstance.Logic.GetCheckModifier(actions[0]);
+            var numD6 = modifier?.AddedDice.Count(d => d == 6);
+            Assert.AreEqual(1, numD6);
         }
 
         [Test]

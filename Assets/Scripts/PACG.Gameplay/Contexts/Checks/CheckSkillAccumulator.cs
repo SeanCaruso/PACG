@@ -6,7 +6,7 @@ namespace PACG.Gameplay
 {
     public class CheckSkillAccumulator
     {
-        private List<PF.Skill> _baseValidSkills = new();
+        private readonly List<PF.Skill> _baseValidSkills = new();
         private readonly Dictionary<CardInstance, List<PF.Skill>> _stagedSkillAdditions = new();
         private readonly Dictionary<CardInstance, List<PF.Skill>> _stagedSkillRestrictions = new();
         
@@ -28,6 +28,8 @@ namespace PACG.Gameplay
 
         public void AddValidSkills(CardInstance card, params PF.Skill[] skills)
         {
+            if (skills.Length == 0) return;
+            
             if (_stagedSkillAdditions.TryGetValue(card, out var addition))
                 addition.AddRange(skills);
             else
@@ -37,17 +39,12 @@ namespace PACG.Gameplay
         }
         public void RestrictValidSkills(CardInstance card, params PF.Skill[] skills)
         {
+            if (skills.Length == 0) return;
+            
             if (_stagedSkillRestrictions.TryGetValue(card, out var restriction))
                 restriction.AddRange(skills);
             else
                 _stagedSkillRestrictions.Add(card, new List<PF.Skill>(skills));
-            
-            DialogEvents.RaiseValidSkillsChanged(GetCurrentValidSkills());
-        }
-        public void UndoSkillModification(CardInstance source)
-        {
-            _stagedSkillAdditions.Remove(source);
-            _stagedSkillRestrictions.Remove(source);
             
             DialogEvents.RaiseValidSkillsChanged(GetCurrentValidSkills());
         }

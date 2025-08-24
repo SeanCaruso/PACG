@@ -1,5 +1,5 @@
 
-using PACG.Core;
+using System.Collections.Generic;
 
 namespace PACG.Gameplay
 {
@@ -11,6 +11,7 @@ namespace PACG.Gameplay
         public CardInstance Card { get; protected set; }
         public PF.ActionType ActionType { get; }
         public bool IsFreely => true;
+        public Dictionary<string, object> ActionData { get; } = new();
 
         public DefaultAction(CardInstance card, PF.ActionType actionType)
         {
@@ -18,10 +19,6 @@ namespace PACG.Gameplay
             ActionType = actionType;
         }
 
-        public void OnStage() { }
-
-        public void OnUndo() { }
-
-        public void Commit(CheckContext checkContext, DicePool dicePool) { }
+        public void Commit() { }
     }
 }

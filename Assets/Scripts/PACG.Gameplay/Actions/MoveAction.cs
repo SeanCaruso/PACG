@@ -1,5 +1,4 @@
-using PACG.Core;
-using PACG.SharedAPI;
+using System.Collections.Generic;
 
 namespace PACG.Gameplay
 {
@@ -9,6 +8,7 @@ namespace PACG.Gameplay
         public PF.ActionType ActionType { get; }
 
         public bool IsFreely => false; // Doesn't apply to Move actions.
+        public Dictionary<string, object> ActionData { get; } = new();
 
         /// <summary>
         /// Move actions triggered by something other than playing a card.
@@ -28,10 +28,6 @@ namespace PACG.Gameplay
             ActionType = actionType;
         }
 
-        public void Commit(CheckContext checkContext, DicePool dicePool) => Card.Logic?.Execute(Card, this, dicePool);
-
-        public void OnStage() => GameEvents.SetStatusText("Move?");
-
-        public void OnUndo() => GameEvents.SetStatusText("");
+        public void Commit() => Card.Logic?.OnCommit(this);
     }
 }

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using PACG.Core;
+using UnityEngine;
 
 namespace PACG.Gameplay
 {
@@ -17,31 +17,33 @@ namespace PACG.Gameplay
             _gameServices = gameServices;
         }
 
-        public override void Execute(CardInstance card, IStagedAction action, DicePool dicePool)
+        public override CheckModifier GetCheckModifier(IStagedAction action)
         {
-            if (action is not PlayCardAction playAction) return;
-            if (!playAction.ActionData.TryGetValue("Bless", out var isBless)) return;
+            if (!action.ActionData.TryGetValue("Bless", out var isBless)) return null;
+            if (!(bool)isBless) return null;
+            
+            var modifier = new CheckModifier(action.Card);
+            modifier.SkillDiceToAdd++;
+            return modifier;
+        }
 
-            // Discard to bless.
-            if ((bool)isBless)
-            {
-                _contexts.CheckContext.BlessingCount++;
-            }
-            // This one's complex...
-            else
-            {
-                // Examine the top card of your location...
-                var examineResolvable = new ExamineResolvable(card.Owner.Location, 1);
+        public override void OnCommit(IStagedAction action)
+        {
+            if (!action.ActionData.TryGetValue("Bless", out var isBless)) return;
+            if ((bool)isBless) return;
+            
+            
+            // Examine the top card of your location...
+            var examineResolvable = new ExamineResolvable(action.Card.Owner.Location, 1);
 
-                // Then you may explore.
-                var exploreOptionResolvable = CardEffects.CreateExploreChoice(_gameServices);
+            // Then you may explore.
+            var exploreOptionResolvable = CardEffects.CreateExploreChoice(_gameServices);
                 
-                examineResolvable.OverrideNextProcessor(
-                    new NewResolvableProcessor(exploreOptionResolvable, _gameServices)
-                );
+            examineResolvable.OverrideNextProcessor(
+                new NewResolvableProcessor(exploreOptionResolvable, _gameServices)
+            );
                 
-                _gameFlow.QueueNextProcessor(new NewResolvableProcessor(examineResolvable, _gameServices));
-            }
+            _gameFlow.QueueNextProcessor(new NewResolvableProcessor(examineResolvable, _gameServices));
         }
 
         protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)
@@ -61,8 +63,8 @@ namespace PACG.Gameplay
 
         // We can bless on any check.
         private bool CanBless(CardInstance _) => 
-            _contexts.CheckContext != null &&
-            _contexts.CurrentResolvable is CheckResolvable &&
-            !_contexts.CheckContext.StagedCardTypes.Contains(PF.CardType.Blessing);
+            _contexts.CheckContext != null
+            && _contexts.CurrentResolvable is CheckResolvable
+            && !_contexts.CheckContext.StagedCardTypes.Contains(PF.CardType.Blessing);
     }
 }

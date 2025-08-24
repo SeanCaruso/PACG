@@ -2,6 +2,7 @@ using PACG.Data;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace PACG.Gameplay
 {
@@ -27,7 +28,7 @@ namespace PACG.Gameplay
 
         public Location(LocationData data, LocationLogicBase logic, GameServices gameServices)
         {
-            LocationData = data;
+            LocationData = Object.Instantiate(data);
             LocationLogic = logic;
 
             Deck = new Deck(gameServices.Cards);

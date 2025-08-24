@@ -1,7 +1,5 @@
-
 using System.Collections.Generic;
 using System.Linq;
-using PACG.Core;
 
 namespace PACG.Gameplay
 {
@@ -15,32 +13,22 @@ namespace PACG.Gameplay
             _contexts = gameServices.Contexts;
         }
 
-        public override void OnStage(CardInstance card, IStagedAction action)
+        public override CheckModifier GetCheckModifier(IStagedAction action)
         {
-            if (action.ActionType == PF.ActionType.Recharge)
-                _contexts.CheckContext.RestrictValidSkills(card, PF.Skill.Intelligence, PF.Skill.Craft);
+            // Recharge for +1d6 on a local Intelligence or Craft check.
+            if (action.ActionType != PF.ActionType.Recharge) return null;
+            
+            var modifier = new CheckModifier(action.Card);
+            modifier.RequiredTraits.AddRange(new[] { "Intelligence", "Craft" });
+            modifier.AddedDice.Add(6);
+            return modifier;
         }
 
-        public override void OnUndo(CardInstance card, IStagedAction action)
+        public override void OnCommit(IStagedAction action)
         {
-            if (action.ActionType == PF.ActionType.Recharge)
-                _contexts.CheckContext.UndoSkillModification(card);
-        }
-
-        public override void Execute(CardInstance card, IStagedAction action, DicePool dicePool)
-        {
-            switch (action.ActionType)
-            {
-                case PF.ActionType.Recharge when dicePool != null:
-                    // Recharge for +1d6 on a local Intelligence or Craft check.
-                    dicePool.AddDice(1, 6);
-                    break;
-                case PF.ActionType.Bury:
-                case PF.ActionType.Banish:
-                    // Bury or Banish to explore
-                    _contexts.TurnContext.AddExploreEffect(new BasicExploreEffect());
-                    break;
-            }
+            // Bury or Banish to explore
+            if (action.ActionType is not (PF.ActionType.Bury or PF.ActionType.Banish)) return;
+            _contexts.TurnContext.AddExploreEffect(new BasicExploreEffect());
         }
 
         protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)
@@ -70,6 +58,6 @@ namespace PACG.Gameplay
             _contexts.CheckContext != null &&
             _contexts.CheckContext.IsLocal(card.Owner) &&
             !_contexts.CheckContext.StagedCardTypes.Contains(card.Data.cardType) &&
-            _contexts.CheckContext.CanUseSkill(PF.Skill.Intelligence, PF.Skill.Craft);
+            _contexts.CheckContext.Invokes("Intelligence", "Craft");
     }
 }

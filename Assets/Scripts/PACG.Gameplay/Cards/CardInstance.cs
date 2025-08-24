@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Object = UnityEngine.Object;
 
 namespace PACG.Gameplay
 {
@@ -26,7 +27,7 @@ namespace PACG.Gameplay
 
         public CardInstance(CardData data, CardLogicBase logic, PlayerCharacter owner = null)
         {
-            Data = data;
+            Data = Object.Instantiate(data);
             Logic = logic;
             InstanceId = Guid.NewGuid();
             CurrentLocation = CardLocation.Vault;

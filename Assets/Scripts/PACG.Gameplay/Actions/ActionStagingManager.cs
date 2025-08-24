@@ -59,25 +59,21 @@ namespace PACG.Gameplay
             _cards.MoveCard(action.Card, action.ActionType);
 
             // Perform all required staging logic.
-            action.OnStage();
             pcActions.Add(action);
             _pcsStagedActions[action.Card.Owner] = pcActions;
 
             // If we're attempting a check, add the action's card type if needed.
             _contexts.CheckContext?.StageCardTypeIfNeeded(action);
 
+            UpdateGameStatePreview();
             // Send the UI event to update Cancel/Commit buttons.
-            SendStagedActionUpdates();
+            UpdateActionButtons();
         }
 
         public void Cancel()
         {
             // Always do the standard undo logic
             var pc = _contexts.TurnContext.Character;
-            foreach (var action in _pcsStagedActions[pc])
-            {
-                action.OnUndo();
-            }
 
             foreach (var (card, location) in _originalCardLocs)
             {
@@ -99,13 +95,17 @@ namespace PACG.Gameplay
                 _pcsStagedActions.Clear(); // Clear ALL PCs' actions when aborting phase
             }
 
-            SendStagedActionUpdates();
+            UpdateGameStatePreview();
+            UpdateActionButtons();
         }
 
-        public void SendStagedActionUpdates()
+        public void UpdateGameStatePreview()
         {
             _contexts.CheckContext?.UpdatePreviewState(StagedActions);
-            
+        }
+
+        public void UpdateActionButtons()
+        {
             // Send an event to update the state of the action buttons (Cancel, Commit, Skip).
             // TODO: Update this for the displayed PC. Use Turn PC until then.
             var pc = _contexts.TurnContext.Character;
@@ -140,7 +140,7 @@ namespace PACG.Gameplay
 
             foreach (var action in StagedActions)
             {
-                action.Card.Logic?.OnCommit(action);
+                action.Commit();
             }
 
             HasExploreStaged = false;
@@ -166,7 +166,7 @@ namespace PACG.Gameplay
                 _contexts.EndResolvable();
             }
 
-            SendStagedActionUpdates();
+            UpdateActionButtons();
 
             // We're done committing actions. Tell the GameFlowManager to continue.
             _gameFlow.Process();

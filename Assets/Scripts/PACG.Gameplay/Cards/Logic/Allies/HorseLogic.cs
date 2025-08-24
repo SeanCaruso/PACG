@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using PACG.Core;
 
 namespace PACG.Gameplay
 {
@@ -13,20 +12,17 @@ namespace PACG.Gameplay
             _contexts = gameServices.Contexts;
         }
 
-        public override void Execute(CardInstance card, IStagedAction action, DicePool dicePool)
+        public override void OnCommit(IStagedAction action)
         {
-            switch (action.ActionType)
-            {
-                // Discard to explore with +1d4 on the first check.
-                case PF.ActionType.Discard:
-                    _contexts.TurnContext.AddExploreEffect(new SkillBonusExploreEffect(
-                        1,
-                        4,
-                        0,
-                        true)
-                    );
-                    break;
-            }
+            // Discard to explore with +1d4 on the first check.
+            if (action.ActionType != PF.ActionType.Discard) return;
+            
+            _contexts.TurnContext.AddExploreEffect(new SkillBonusExploreEffect(
+                1,
+                4,
+                0,
+                true)
+            );
         }
 
         protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using PACG.Core;
 
 namespace PACG.Gameplay
 {
@@ -16,29 +15,29 @@ namespace PACG.Gameplay
             _contexts = gameServices.Contexts;
         }
 
-        public override void OnStage(CardInstance card, IStagedAction action)
+        public override CheckModifier GetCheckModifier(IStagedAction action)
         {
-            _contexts.CheckContext?.RestrictCheckCategory(card, CheckCategory.Combat);
-            _contexts.CheckContext?.RestrictValidSkills(card, PF.Skill.Strength, PF.Skill.Melee);
-            _contexts.CheckContext?.AddTraits(card);
-            _contexts.EncounterContext?.AddProhibitedTraits(card.Owner, card, "Offhand");
-        }
-
-        public override void OnUndo(CardInstance card, IStagedAction action)
-        {
-            _contexts.CheckContext?.UndoCheckRestriction(card);
-            _contexts.CheckContext?.UndoSkillModification(card);
-            _contexts.CheckContext?.RemoveTraits(card);
-            _contexts.EncounterContext?.UndoProhibitedTraits(card.Owner, card);
-        }
-
-        public override void Execute(CardInstance card, IStagedAction action, DicePool dicePool)
-        {
-            // Only handle combat powers. Evasion is handled by the Evasion Processor.
-            if (_contexts.CurrentResolvable is not CheckResolvable || _contexts.CheckContext == null) return;
-            
             // Reveal to add 1d6; additionally discard to add another 1d6.
-            dicePool.AddDice(action.ActionType == PF.ActionType.Reveal ? 1 : 2, 6);
+            if (action is not PlayCardAction { IsCombat: true }) return null;
+
+            var modifier = new CheckModifier(action.Card)
+            {
+                RestrictedCategory = CheckCategory.Combat,
+                AddedTraits = action.Card.Traits,
+                RestrictedSkills = new[] {PF.Skill.Strength, PF.Skill.Melee}.ToList(),
+                ProhibitedTraits = new[] { "Offhand" }.ToHashSet(), // After playing, you can't play an Offhand boon this encounter.
+                AddedDice = new[] { 6 }.ToList()
+            };
+            
+            if (action.ActionType == PF.ActionType.Discard)
+                modifier.AddedDice.Add(6);
+            
+            return modifier;
+        }
+
+        public override void OnCommit(IStagedAction action)
+        {
+            _contexts.EncounterContext?.AddProhibitedTraits(action.Card.Owner, "Offhand");
         }
 
         protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)

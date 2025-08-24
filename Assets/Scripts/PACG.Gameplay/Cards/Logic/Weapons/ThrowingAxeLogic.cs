@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using PACG.Core;
 
 namespace PACG.Gameplay
 {
@@ -13,6 +12,30 @@ namespace PACG.Gameplay
         public ThrowingAxeLogic(GameServices gameServices) : base(gameServices)
         {
             _contexts = gameServices.Contexts;
+        }
+
+        public override CheckModifier GetCheckModifier(IStagedAction action)
+        {
+            var modifier = new CheckModifier(action.Card)
+            {
+                RestrictedCategory = CheckCategory.Combat
+            };
+
+            switch (action.ActionType)
+            {
+                // Reveal to use Strength, Dexterity, Melee, or Ranged + 1d6.
+                case PF.ActionType.Reveal:
+                    modifier.AddedTraits.AddRange(action.Card.Traits);
+                    modifier.RestrictedSkills.AddRange(_validSkills);
+                    modifier.AddedDice.Add(6);
+                    break;
+                // Discard to add 1d6.
+                case PF.ActionType.Discard:
+                    modifier.AddedDice.Add(6);
+                    break;
+            }
+            
+            return modifier;
         }
 
         protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)
@@ -40,40 +63,5 @@ namespace PACG.Gameplay
             Check is { IsCombatValid: true }
             && card.Owner.IsProficient(card.Data)
             && Check.IsLocal(card.Owner);
-
-        public override void OnStage(CardInstance card, IStagedAction action)
-        {
-            Check.RestrictCheckCategory(card, CheckCategory.Combat);
-            Check.AddValidSkills(card, _validSkills);
-            Check.RestrictValidSkills(card, _validSkills);
-            
-            // Add traits if revealed to use for the combat check.
-            if (action.ActionType == PF.ActionType.Reveal)
-                Check.AddTraits(card);
-        }
-
-        public override void OnUndo(CardInstance card, IStagedAction action)
-        {
-            Check.UndoCheckRestriction(card);
-            Check.UndoSkillModification(card);
-            
-            if (action.ActionType == PF.ActionType.Reveal)
-                Check.RemoveTraits(card);
-        }
-
-        public override void Execute(CardInstance card, IStagedAction action, DicePool dicePool)
-        {
-            switch (action.ActionType)
-            {
-                // Reveal to use Strength, Dexterity, Melee, or Ranged + 1d8.       
-                case PF.ActionType.Reveal:
-                    dicePool.AddDice(1, 8);
-                    break;
-                // Discard to add 1d6.
-                case PF.ActionType.Discard:
-                    dicePool.AddDice(1, 6);
-                    break;
-            }
-        }
     }
 }

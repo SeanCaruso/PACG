@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using PACG.Core;
 
 namespace PACG.Gameplay
 {
@@ -32,13 +31,9 @@ namespace PACG.Gameplay
             return $"{_label ?? ActionType.ToString()} {Card.Data.cardName}";
         }
 
-        public void OnStage() => Card.Logic?.OnStage(Card, this);
-
-        public void OnUndo() => Card.Logic?.OnUndo(Card, this);
-
-        public void Commit(CheckContext checkContext, DicePool dicePool)
+        public void Commit()
         {
-            Card.Logic?.Execute(Card, this, dicePool);
+            Card.Logic?.OnCommit(this);
             // The card instance on the PlayerCharacter was moved during staging, so don't do it here.
         }
     }

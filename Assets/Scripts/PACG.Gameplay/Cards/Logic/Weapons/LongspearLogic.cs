@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using PACG.Core;
 
 namespace PACG.Gameplay
 {
@@ -15,10 +14,46 @@ namespace PACG.Gameplay
             _contexts = gameServices.Contexts;
         }
 
+        public override CheckModifier GetCheckModifier(IStagedAction action)
+        {
+            // Reveal to use Strength or Melee + 1d8.
+            if (action.ActionType != PF.ActionType.Reveal) return null;
+
+            return new CheckModifier(action.Card)
+            {
+                RestrictedCategory = CheckCategory.Combat,
+                AddedTraits = action.Card.Traits,
+                RestrictedSkills = new List<PF.Skill> { PF.Skill.Strength, PF.Skill.Melee },
+                ProhibitedTraits = new HashSet<string> { "Offhand" },
+                AddedDice = new List<int> { 8 }
+                
+            };
+        }
+
+        public override void OnCommit(IStagedAction action)
+        {
+            _contexts.EncounterContext?.AddProhibitedTraits(action.Card.Owner, "Offhand");
+
+            if (!Check.ContextData.ContainsKey("rerollCards"))
+                Check.ContextData["rerollCards"] = new List<CardLogicBase>();
+            var rerollSources = (List<CardLogicBase>)Check.ContextData["rerollCards"];
+
+            switch (action.ActionType)
+            {
+                case PF.ActionType.Reveal:
+                    rerollSources.Add(this);
+                    break;
+                case PF.ActionType.Discard:
+                    rerollSources.Remove(this);
+                    Check.ContextData["doReroll"] = true;
+                    break;
+            }
+        }
+
         protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)
         {
             List<IStagedAction> actions = new();
-            
+
             // Can reveal if the owner has a combat check and can use Strength or Melee.
             if (Check is { IsCombatValid: true } &&
                 Check.Character == card.Owner &&
@@ -37,45 +72,6 @@ namespace PACG.Gameplay
             }
 
             return actions;
-        }
-
-        public override void OnStage(CardInstance card, IStagedAction action)
-        {
-            _contexts.EncounterContext.AddProhibitedTraits(card.Owner, card, "Offhand");
-            
-            Check?.RestrictCheckCategory(card, CheckCategory.Combat);
-            Check?.RestrictValidSkills(card, PF.Skill.Strength, PF.Skill.Melee);
-            Check?.AddTraits(card);
-        }
-
-        public override void OnUndo(CardInstance card, IStagedAction action)
-        {
-            _contexts.EncounterContext.UndoProhibitedTraits(card.Owner, card);
-            
-            Check?.UndoCheckRestriction(card);
-            Check?.UndoSkillModification(card);
-            Check?.RemoveTraits(card);
-        }
-
-        public override void Execute(CardInstance card, IStagedAction action, DicePool dicePool)
-        {
-            if (!Check.ContextData.ContainsKey("rerollCards"))
-                Check.ContextData["rerollCards"] = new List<CardLogicBase>();
-            var rerollSources = (List<CardLogicBase>)Check.ContextData["rerollCards"];
-
-            switch (action.ActionType)
-            {
-                // Reveal to use Strength or Melee + 1d8.
-                case PF.ActionType.Reveal:
-                    dicePool.AddDice(1, 8);
-                    rerollSources.Add(this);
-                    break;
-                // Discard to reroll.
-                case PF.ActionType.Discard:
-                    rerollSources.Remove(this);
-                    Check.ContextData["doReroll"] = true;
-                    break;
-            }
         }
     }
 }

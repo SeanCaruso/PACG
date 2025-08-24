@@ -52,10 +52,10 @@ namespace PACG.Core
         public override string ToString()
         {
             var retval = "";
-            foreach (var(sides, count) in _dice)
+            foreach (var sides in _dice.Keys.OrderByDescending(d => d))
             {
                 retval += retval != "" ? " + " : "";
-                retval += $"{count}d{sides}";
+                retval += $"{_dice[sides]}d{sides}";
             }
             retval += _bonus == 0 ? "" : $" + {_bonus}";
             return retval;

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace PACG.Gameplay
 {
@@ -13,6 +14,23 @@ namespace PACG.Gameplay
         {
             _asm = gameServices.ASM;
             _contexts = gameServices.Contexts;
+        }
+
+        public override CheckModifier GetCheckModifier(IStagedAction action)
+        {
+            var modifier = new CheckModifier(action.Card);
+            modifier.ProhibitedTraits.Add("2-Handed");
+            return modifier;
+        }
+
+        public override void OnCommit(IStagedAction action)
+        {
+            _contexts.EncounterContext?.AddProhibitedTraits(action.Card.Owner, "2-Handed");
+
+            if (action.ActionType != PF.ActionType.Recharge) return;
+            
+            // TODO: Implement reroll logic.
+            Debug.LogWarning($"[{GetType().Name}] Reroll logic not implemented.");
         }
 
         protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)
@@ -44,15 +62,5 @@ namespace PACG.Gameplay
             && card.Owner == resolvable.Character
             && Check.UsedSkill == PF.Skill.Melee
             && resolvable.DicePool.NumDice(4, 6, 8) > 0;
-
-        public override void OnStage(CardInstance card, IStagedAction action)
-        {
-            _contexts.EncounterContext.AddProhibitedTraits(card.Owner, card, "2-Handed");
-        }
-
-        public override void OnUndo(CardInstance card, IStagedAction action)
-        {
-            _contexts.EncounterContext.UndoProhibitedTraits(card.Owner, card);
-        }
     }
 }

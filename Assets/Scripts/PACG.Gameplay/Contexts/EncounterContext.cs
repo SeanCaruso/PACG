@@ -31,7 +31,7 @@ namespace PACG.Gameplay
         public bool HasTrait(params string[] traits) => traits.Any(trait => CardData.traits.Contains(trait));
 
         // Maps CardData to the list of traits that card prohibits.
-        public Dictionary<(PlayerCharacter, CardInstance), List<string>> ProhibitedTraits { get; } = new();
+        public Dictionary<PlayerCharacter, HashSet<string>> ProhibitedTraits { get; } = new();
 
         public EncounterPhase CurrentPhase { get; set; } = EncounterPhase.OnEncounter;
         public List<IExploreEffect> ExploreEffects { get; set; } = new();
@@ -43,12 +43,14 @@ namespace PACG.Gameplay
             Card = card;
         }
 
-        public void AddProhibitedTraits(PlayerCharacter pc, CardInstance card, params string[] traits)
+        public void AddProhibitedTraits(PlayerCharacter pc, params string[] traits)
         {
-            if (!ProhibitedTraits.ContainsKey((pc, card))) ProhibitedTraits.Add((pc, card), new List<string>());
-            foreach (var trait in traits) ProhibitedTraits[(pc, card)].Add(trait);
+            if (!ProhibitedTraits.ContainsKey(pc))
+                ProhibitedTraits.Add(pc, new HashSet<string>());
+            
+            foreach (var trait in traits)
+                ProhibitedTraits[pc].Add(trait);
         }
-        public void UndoProhibitedTraits(PlayerCharacter pc, CardInstance card) => ProhibitedTraits.Remove((pc, card));
 
     }
 }

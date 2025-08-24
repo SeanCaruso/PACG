@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using PACG.Core;
 
 namespace PACG.Gameplay
 {
@@ -14,21 +13,23 @@ namespace PACG.Gameplay
             _contexts = gameServices.Contexts;
         }
 
-        public override void Execute(CardInstance card, IStagedAction action, DicePool dicePool)
+        public override CheckModifier GetCheckModifier(IStagedAction action)
         {
-            switch (action.ActionType)
-            {
-                // Recharge for +1d4 on a check.
-                case PF.ActionType.Recharge:
-                    dicePool.AddDice(1, 4);
-                    break;
-                // Discard to explore
-                case PF.ActionType.Discard:
-                    var exploreEffect = new SkillBonusExploreEffect(1, 4, 0, false);
-                    exploreEffect.SetTraits("Magic");
-                    _contexts.TurnContext.AddExploreEffect(exploreEffect);
-                    break;
-            }
+            if (action.ActionType != PF.ActionType.Recharge) return null;
+            
+            var modifier = new CheckModifier(action.Card);
+            modifier.AddedDice.Add(4);
+            return modifier;
+        }
+
+        public override void OnCommit(IStagedAction action)
+        {
+            if (action.ActionType != PF.ActionType.Discard) return;
+            
+            // Discard to explore. +1d4 on checks that invoke the Magic trait.
+            var exploreEffect = new SkillBonusExploreEffect(1, 4, 0, false);
+            exploreEffect.SetTraits("Magic");
+            _contexts.TurnContext.AddExploreEffect(exploreEffect);
         }
 
         protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using PACG.Core;
 
 namespace PACG.Gameplay
 {
@@ -14,13 +13,13 @@ namespace PACG.Gameplay
             _contexts = gameServices.Contexts;
         }
 
-        public override void Execute(CardInstance card, IStagedAction action, DicePool dicePool)
+        public override CheckModifier GetCheckModifier(IStagedAction action)
         {
-            if (dicePool == null) return;
-
-            // Add 1d4+# and the Magic trait.
-            dicePool.AddDice(1, 4, _contexts.GameContext.AdventureNumber);
-            _contexts.CheckContext?.AddTraits(card, "Magic");
+            var modifier = new CheckModifier(action.Card);
+            modifier.AddedDice.Add(4);
+            modifier.AddedBonus += _contexts.GameContext.AdventureNumber;
+            modifier.AddedTraits.Add("Magic");
+            return modifier;
         }
 
         protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)

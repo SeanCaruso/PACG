@@ -1,5 +1,4 @@
-
-using PACG.Core;
+using System.Collections.Generic;
 
 namespace PACG.Gameplay
 {
@@ -8,9 +7,9 @@ namespace PACG.Gameplay
         public CardInstance Card { get; }
         public PF.ActionType ActionType { get; }
         public bool IsFreely { get; }
-
-        public void OnStage();
-        public void OnUndo();
-        public void Commit(CheckContext checkContext, DicePool dicePool); // CheckContext is required for traits
+        // Dictionary to hold any custom data.
+        public Dictionary<string, object> ActionData { get; }
+        
+        public void Commit();
     }
 }

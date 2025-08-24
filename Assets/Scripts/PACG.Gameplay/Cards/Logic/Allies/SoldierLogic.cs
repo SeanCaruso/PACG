@@ -1,7 +1,5 @@
-
 using System.Collections.Generic;
 using System.Linq;
-using PACG.Core;
 
 namespace PACG.Gameplay
 {
@@ -15,37 +13,29 @@ namespace PACG.Gameplay
             _contexts = gameServices.Contexts;
         }
 
-        public override void OnStage(CardInstance card, IStagedAction action)
+        public override CheckModifier GetCheckModifier(IStagedAction action)
         {
-            if (action.ActionType == PF.ActionType.Recharge)
-                _contexts.CheckContext.RestrictValidSkills(card, PF.Skill.Strength, PF.Skill.Melee);
+            // Recharge for +1d4 on a local Strength or Melee check.
+            if (action.ActionType != PF.ActionType.Recharge) return null;
+            
+            var modifier = new CheckModifier(action.Card);
+            modifier.RequiredTraits.AddRange(new[] { "Strength", "Melee" });
+            modifier.AddedDice.Add(4);
+            return modifier;
         }
 
-        public override void OnUndo(CardInstance card, IStagedAction action)
+        public override void OnCommit(IStagedAction action)
         {
-            if (action.ActionType == PF.ActionType.Recharge)
-                _contexts.CheckContext.UndoSkillModification(card);
-        }
-
-        public override void Execute(CardInstance card, IStagedAction action, DicePool dicePool)
-        {
-            switch (action.ActionType)
-            {
-                case PF.ActionType.Recharge when dicePool != null:
-                    // Recharge for +1d4 on a local Strength or Melee check.
-                    dicePool.AddDice(1, 4);
-                    break;
-                case PF.ActionType.Discard:
-                    // Discard to explore - +1d4 on Strength and Melee checks.
-                    _contexts.TurnContext.AddExploreEffect(new SkillBonusExploreEffect(
-                        1,
-                        4,
-                        0,
-                        false,
-                        PF.Skill.Strength, PF.Skill.Melee)
-                    );
-                    break;
-            }
+            // Discard to explore - +1d4 on Strength and Melee checks.
+            if (action.ActionType != PF.ActionType.Discard) return;
+            
+            _contexts.TurnContext.AddExploreEffect(new SkillBonusExploreEffect(
+                1,
+                4,
+                0,
+                false,
+                PF.Skill.Strength, PF.Skill.Melee)
+            );
         }
 
         protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)
@@ -64,12 +54,11 @@ namespace PACG.Gameplay
         }
 
         // Can recharge on a local Strength or Melee check.
-        private bool CanRecharge(CardInstance card) => (
+        private bool CanRecharge(CardInstance card) => 
             _contexts.CheckContext != null &&
             _contexts.CurrentResolvable is CheckResolvable &&
             _contexts.CheckContext.IsLocal(card.Owner) &&
             !_contexts.CheckContext.StagedCardTypes.Contains(PF.CardType.Ally) &&
-            _contexts.CheckContext.CanUseSkill(PF.Skill.Strength, PF.Skill.Melee)
-        );
+            _contexts.CheckContext.Invokes("Strength", "Melee");
     }
 }

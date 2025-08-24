@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using PACG.Core;
 
 namespace PACG.Gameplay
 {
@@ -13,6 +12,27 @@ namespace PACG.Gameplay
         public CrowbarLogic(GameServices gameServices) : base(gameServices) 
         {
             _contexts = gameServices.Contexts;
+        }
+
+        public override CheckModifier GetCheckModifier(IStagedAction action)
+        {
+            if (action is not PlayCardAction playAction) return null;
+            
+            var modifier = new CheckModifier(action.Card);
+            
+            // Only restrict to Strength skill on non-Lock or Obstacle Barriers.
+            if (!IsLockObstacleBarrier())
+                modifier.RequiredTraits.Add("Strength");
+
+            // If not freely, Reveal to add 1d8.
+            if (!playAction.IsFreely)
+                modifier.AddedDice.Add(8);
+
+            // Recharge to add another 1d8.
+            if (action.ActionType == PF.ActionType.Recharge)
+                modifier.AddedDice.Add(8);
+
+            return modifier;
         }
 
         protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)
@@ -47,7 +67,7 @@ namespace PACG.Gameplay
             if (Check.StagedCardTypes.Contains(card.Data.cardType))
                 return false; // ... with no Items played.
 
-            if (Check.CanUseSkill(PF.Skill.Strength))
+            if (Check.Invokes("Strength"))
                 return true; // We can play on Strength checks...
 
             if (IsLockObstacleBarrier())
@@ -63,34 +83,6 @@ namespace PACG.Gameplay
 
             var traits = _contexts.EncounterContext.CardData.traits;
             return (traits.Contains("Lock") || traits.Contains("Obstacle"));
-        }
-
-        public override void OnStage(CardInstance card, IStagedAction action)
-        {
-            // Only restrict to Strength skill on non-Lock or Obstacle Barriers.
-            if (!IsLockObstacleBarrier())
-                Check.RestrictValidSkills(card, PF.Skill.Strength);
-        }
-
-        public override void OnUndo(CardInstance card, IStagedAction action)
-        {
-            Check.UndoSkillModification(card);
-        }
-
-        public override void Execute(CardInstance card, IStagedAction action, DicePool dicePool)
-        {
-            if (action is not PlayCardAction playAction) return;
-
-            var isFreely = playAction.ActionData.TryGetValue("IsFreely", out var isFreelyObj) &&
-                           isFreelyObj is true;
-
-            // If not freely, Reveal to add 1d8.
-            if (!isFreely)
-                dicePool.AddDice(1, 8);
-
-            // Recharge to add another 1d8.
-            if (action.ActionType == PF.ActionType.Recharge)
-                dicePool.AddDice(1, 8);
         }
     }
 }

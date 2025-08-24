@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using PACG.Core;
 
 namespace PACG.Gameplay
 {
@@ -13,10 +12,13 @@ namespace PACG.Gameplay
             _contexts = gameServices.Contexts;
         }
 
-        public override void Execute(CardInstance card, IStagedAction action, DicePool dicePool)
+        public override CheckModifier GetCheckModifier(IStagedAction action)
         {
-            if (action is not ExploreAction)
-                _contexts.CheckContext.BlessingCount++;
+            if (action is ExploreAction) return null;
+            
+            var modifier = new CheckModifier(action.Card);
+            modifier.SkillDiceToAdd++;
+            return modifier;
         }
 
         protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)

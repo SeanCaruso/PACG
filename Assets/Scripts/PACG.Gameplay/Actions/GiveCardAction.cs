@@ -1,4 +1,4 @@
-using PACG.Core;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace PACG.Gameplay
@@ -9,6 +9,7 @@ namespace PACG.Gameplay
         public CardInstance Card { get; }
         public PF.ActionType ActionType => PF.ActionType.Discard;
         public bool IsFreely => false;
+        public Dictionary<string, object> ActionData { get; } = new();
 
         private readonly PlayerCharacter _targetPc;
 
@@ -18,14 +19,10 @@ namespace PACG.Gameplay
             _targetPc = targetPc;
         }
 
-        public void Commit(CheckContext checkContext, DicePool dicePool)
+        public void Commit()
         {
             var targetName = _targetPc?.CharacterData.CharacterName ?? "nonexistent PC";
             Debug.Log($"{Card.Data.cardName} given to {targetName}.");
         }
-
-        public void OnStage() { }
-
-        public void OnUndo() { }
     }
 }

@@ -43,7 +43,7 @@ namespace Tests.Monsters
             TestUtils.SetupEncounter(_gameServices, "Valeros", "Dire Badger");
 
             var check = _gameServices.Contexts.CheckContext;
-            check.BlessingCount = 10;
+            check.Resolvable.CheckSteps[0].baseDC = 1;
             
             _gameServices.ASM.Commit();
             
@@ -61,8 +61,8 @@ namespace Tests.Monsters
             TestUtils.SetupEncounter(_gameServices, "Valeros", "Dire Badger");
 
             var check = _gameServices.Contexts.CheckContext;
+            check.Resolvable.CheckSteps[1].baseDC = 1;
             check.UsedSkill = PF.Skill.Perception;
-            check.BlessingCount = 10;
             
             _gameServices.ASM.Commit();
             

@@ -15,7 +15,7 @@ namespace PACG.Gameplay
         {
             Card = card;
             Character = character;
-            CheckSteps = checkRequirement.checkSteps;
+            CheckSteps = checkRequirement.checkSteps.ToList();
         }
 
         public override bool CanCommit(List<IStagedAction> actions) => true;

@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using PACG.Core;
 
 namespace PACG.Gameplay
 {
@@ -26,13 +24,12 @@ namespace PACG.Gameplay
                 return new List<IStagedAction>();
 
             // If the card has any prohibited traits, (e.g., 2-Handed vs. Offhand), just return.
-            foreach (var ((character, _), prohibitedTraits) in
-                     _contexts.EncounterContext?.ProhibitedTraits ??
-                     new Dictionary<(PlayerCharacter, CardInstance), List<string>>())
-            {
-                if (character == card.Owner && card.Data.traits.Intersect(prohibitedTraits).Any())
-                    return new List<IStagedAction>();
-            }
+            var prohibitedTraits = _contexts.EncounterContext?.ProhibitedTraits
+                .GetValueOrDefault(card.Owner, new HashSet<string>()).ToList() ?? new List<string>();
+            
+            prohibitedTraits.AddRange(_contexts.CheckContext?.ProhibitedTraits(card.Owner) ?? new List<string>());
+            if (prohibitedTraits.Intersect(card.Traits).Any())
+                return new List<IStagedAction>();
 
             return GetAvailableCardActions(card);
         }
@@ -48,21 +45,6 @@ namespace PACG.Gameplay
         /// This should NOT modify the dice pool.
         /// </summary>
         public virtual void OnCommit(IStagedAction action)
-        {
-        }
-
-        [Obsolete]
-        public virtual void OnStage(CardInstance card, IStagedAction action)
-        {
-        }
-
-        [Obsolete]
-        public virtual void OnUndo(CardInstance card, IStagedAction action)
-        {
-        }
-
-        [Obsolete]
-        public virtual void Execute(CardInstance card, IStagedAction action, DicePool dicePool)
         {
         }
 

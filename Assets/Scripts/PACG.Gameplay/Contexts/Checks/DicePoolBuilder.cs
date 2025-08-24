@@ -27,7 +27,10 @@ namespace PACG.Gameplay
             }
 
             // 2. Find and apply the used skill die and blessings.
-            var skillDie = checkContext.DieOverride ??
+            // Look for a die override.
+            var dieOverride = modifiers.FirstOrDefault(m => m.DieOverride != null)?.DieOverride;
+            // Use it if we found one, otherwise get the skill die for the used skill.
+            var skillDie = dieOverride ??
                            checkContext.Character.GetSkill(checkContext.UsedSkill).die;
             var skillBonus = checkContext.Character.GetSkill(checkContext.UsedSkill).bonus;
 

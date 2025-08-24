@@ -80,9 +80,10 @@ namespace PACG.Gameplay
             // Now that it's set as our current resolvable and we have a CheckContext if needed,
             // do any post-construction setup.
             resolvable.Initialize();
-
-            // Update the ActionStagingManager in case we need to show a Skip button.
-            _asm.SendStagedActionUpdates();
+            
+            // Update the UI.
+            _asm.UpdateGameStatePreview();
+            _asm.UpdateActionButtons();
         }
 
         /// <summary>

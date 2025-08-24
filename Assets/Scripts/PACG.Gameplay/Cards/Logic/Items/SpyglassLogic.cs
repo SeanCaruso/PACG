@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using PACG.Core;
 
 namespace PACG.Gameplay
 {
@@ -15,6 +14,23 @@ namespace PACG.Gameplay
             _contexts = gameServices.Contexts;
         }
 
+        public override CheckModifier GetCheckModifier(IStagedAction action)
+        {
+            if (action.ActionType != PF.ActionType.Reveal) return null;
+
+            return new CheckModifier(action.Card)
+            {
+                RestrictedSkills = new[] { PF.Skill.Perception }.ToList(),
+                AddedDice = new[] { 6 }.ToList()
+            };
+        }
+
+        public override void OnCommit(IStagedAction action)
+        {
+            if (action.ActionType != PF.ActionType.Discard) return;
+            _contexts.NewResolvable(new ExamineResolvable(action.Card.Owner.Location, 2, true));
+        }
+
         protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)
         {
             List<IStagedAction> actions = new();
@@ -22,9 +38,9 @@ namespace PACG.Gameplay
                 actions.Add(new PlayCardAction(card, PF.ActionType.Reveal));
 
             // Can discard to examine any time outside resolvables or encounters.
-            if (_contexts.CurrentResolvable == null &&
-                _contexts.EncounterContext == null &&
-                card.Owner.Location.Count > 0)
+            if (_contexts.CurrentResolvable == null
+                && _contexts.EncounterContext == null
+                && card.Owner.Location.Count > 0)
             {
                 actions.Add(new PlayCardAction(card, PF.ActionType.Discard));
             }
@@ -33,38 +49,10 @@ namespace PACG.Gameplay
         }
 
         // Can reveal on your Perception check.
-        private bool CanReveal(CardInstance card) => (
-            Check != null &&
-            Check.Character == card.Owner &&
-            Check.CanUseSkill(PF.Skill.Perception) &&
-            !Check.StagedCardTypes.Contains(PF.CardType.Item)
-            );
-
-        public override void OnStage(CardInstance card, IStagedAction action)
-        {
-            if (action.ActionType == PF.ActionType.Reveal)
-                Check.RestrictValidSkills(card, PF.Skill.Perception);
-        }
-
-        public override void OnUndo(CardInstance card, IStagedAction action)
-        {
-            if (action.ActionType == PF.ActionType.Reveal)
-                Check.UndoSkillModification(card);
-        }
-
-        public override void Execute(CardInstance card, IStagedAction action, DicePool dicePool)
-        {
-            switch (action.ActionType)
-            {
-                // Reveal to add 1d6 on your Perception check.
-                case PF.ActionType.Reveal:
-                    dicePool.AddDice(1, 6);
-                    break;
-                // Discard to examine the top 2 cards of your location and return them in any order.
-                case PF.ActionType.Discard:
-                    _contexts.NewResolvable(new ExamineResolvable(card.Owner.Location, 2, true));
-                    break;
-            }
-        }
+        private bool CanReveal(CardInstance card) =>
+            Check != null
+            && Check.Character == card.Owner
+            && Check.CanUseSkill(PF.Skill.Perception)
+            && !Check.StagedCardTypes.Contains(PF.CardType.Item);
     }
 }

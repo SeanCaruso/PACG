@@ -27,7 +27,7 @@ namespace PACG.Gameplay
 
         public PlayerCharacter(CharacterData characterData, CharacterLogicBase logic, GameServices gameServices)
         {
-            CharacterData = characterData;
+            CharacterData = Object.Instantiate(characterData);
             Logic = logic;
             Deck = new Deck(gameServices.Cards);
 

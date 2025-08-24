@@ -58,7 +58,9 @@ namespace PACG.Gameplay
                 {
                     _skills.RestrictValidSkills(modifier.SourceCard, modifier.RestrictedSkills.ToArray());
                     _skills.AddValidSkills(modifier.SourceCard, modifier.AddedValidSkills.ToArray());
-                    _traits.Add(modifier.SourceCard, modifier.AddedTraits.ToArray());
+                    _traits.AddTraits(modifier.SourceCard, modifier.AddedTraits.ToArray());
+                    _traits.AddRequiredTraits(modifier.SourceCard, modifier.RequiredTraits.ToArray());
+                    _traits.AddProhibitedTraits(modifier.SourceCard, modifier.ProhibitedTraits.ToArray());
                     if (modifier.RestrictedCategory != null)
                         _typeDeterminator.RestrictCheckCategory(modifier.SourceCard, modifier.RestrictedCategory.Value);
                 }
@@ -72,33 +74,47 @@ namespace PACG.Gameplay
             GameEvents.RaiseDicePoolChanged(DicePoolBuilder.Build(this, stagedActions));
             
             // Update the context.
-            var newValidSkills = _skills.GetCurrentValidSkills();
+            var newValidSkills = GetCurrentValidSkills();
             if (!newValidSkills.Contains(UsedSkill))
                 UsedSkill = Character.GetBestSkill(newValidSkills.ToArray()).skill;
             
             DialogEvents.RaiseValidSkillsChanged(newValidSkills);
         }
-        
+
+        public List<PF.Skill> GetCurrentValidSkills()
+        {
+            var validSkills = _skills.GetCurrentValidSkills();
+            if (_traits.RequiredTraits.Count == 0) return validSkills;
+
+            for (var i = validSkills.Count - 1; i >= 0; i--)
+            {
+                var skill = validSkills[i];
+                var attr = Character.GetAttributeForSkill(skill);
+                if (!_traits.RequiredTraits.Intersect(new[] { skill.ToString(), attr.ToString()}).Any())
+                    validSkills.RemoveAt(i);
+            }
+            return validSkills;
+        }
+
         // =====================================================================================
         // TRAITS
         // =====================================================================================
+        // public void AddTraits(ICard card, params string[] traits) =>
+        //     _traits?.Add(card, traits.Length > 0 ? traits : card.Traits.ToArray());
+        // public void RemoveTraits(ICard card) => _traits.Remove(card);
+        
         /// <summary>
-        /// Adds traits for the given card.
+        /// All traits currently invoked by the check.
         /// </summary>
-        /// <param name="card"></param>
-        /// <param name="traits">Traits to add. If empty, card's traits are added.</param>
-        public void AddTraits(ICard card, params string[] traits) =>
-            _traits?.Add(card, traits.Length > 0 ? traits : card.Traits.ToArray());
-        public void RemoveTraits(ICard card) => _traits.Remove(card);
         public IReadOnlyList<string> Traits
         {
             get
             {
-                var playedTraits = _traits.Traits.ToList();
-                playedTraits.Add(UsedSkill.ToString());
+                var traits = _traits.Traits.ToList();
+                traits.Add(UsedSkill.ToString());
                 if (Character.GetAttributeForSkill(UsedSkill) != UsedSkill)
-                    playedTraits.Add(Character.GetAttributeForSkill(UsedSkill).ToString());
-                return playedTraits;
+                    traits.Add(Character.GetAttributeForSkill(UsedSkill).ToString());
+                return traits;
             }
         }
         
@@ -110,6 +126,8 @@ namespace PACG.Gameplay
         /// <param name="traits"></param>
         /// <returns>true if the check invokes at least one of the given traits</returns>
         public bool Invokes(params string[] traits) =>  Traits.Intersect(traits).Any();
+        
+        public IReadOnlyList<string> ProhibitedTraits(PlayerCharacter pc) => _traits.ProhibitedTraits(pc);
 
         // =====================================================================================
         // CONTEXT-SPECIFIC ACTION STAGING
@@ -141,15 +159,15 @@ namespace PACG.Gameplay
         public bool IsCombatValid => _typeDeterminator.IsCombatValid;
         public bool IsSkillValid => _typeDeterminator.IsSkillValid;
 
-        public void RestrictCheckCategory(CardInstance card, CheckCategory category)
-        {
-            _typeDeterminator.RestrictCheckCategory(card, category);
-        }
-
-        public void UndoCheckRestriction(CardInstance source)
-        {
-            _typeDeterminator.UndoCheckRestriction(source);
-        }
+        // public void RestrictCheckCategory(CardInstance card, CheckCategory category)
+        // {
+        //     _typeDeterminator.RestrictCheckCategory(card, category);
+        // }
+        //
+        // public void UndoCheckRestriction(CardInstance source)
+        // {
+        //     _typeDeterminator.UndoCheckRestriction(source);
+        // }
 
         public int GetDcForSkill(PF.Skill skill) => _typeDeterminator.GetDcForSkill(skill);
 
@@ -171,18 +189,6 @@ namespace PACG.Gameplay
         // =====================================================================================
         // SKILL PASSTHROUGHS TO CheckSkillAccumulator
         // =====================================================================================
-        public void AddValidSkills(CardInstance card, params PF.Skill[] skills) => _skills.AddValidSkills(card, skills);
-        public void RestrictValidSkills(CardInstance card, params PF.Skill[] skills)
-        {
-            _skills.RestrictValidSkills(card, skills);
-            
-            var newValidSkills = GetCurrentValidSkills();
-            if (!newValidSkills.Contains(UsedSkill))
-                UsedSkill = Character.GetBestSkill(newValidSkills.ToArray()).skill;
-            
-            DialogEvents.RaiseValidSkillsChanged(newValidSkills);
-        }
-        public void UndoSkillModification(CardInstance source) => _skills.UndoSkillModification(source);
 
         /// <summary>
         /// Convenience function to determine if a card with the given skills can be played on the current set of valid
@@ -192,32 +198,12 @@ namespace PACG.Gameplay
         /// <returns>true if the current valid skills contains one or more of the given skills</returns>
         public bool CanUseSkill(params PF.Skill[] skills) => _skills.CanUseSkill(skills);
 
-        public List<PF.Skill> GetCurrentValidSkills() => _skills.GetCurrentValidSkills();
-
         // =====================================================================================
         // CHECK RESULTS ENCAPSULATION
         // =====================================================================================
         public List<IStagedAction> CommittedActions { get; set; }
         public PF.Skill UsedSkill { get; set; }
-        public int BlessingCount { get; set; }
         public CheckResult CheckResult { get; set; }
-
-        private CardInstance _dieOverrideSource;
-        public int? DieOverride { get; private set; }
-
-        public void SetDieOverride(CardInstance source, int sides)
-        {
-            _dieOverrideSource = source;
-            DieOverride = sides;
-        }
-
-        public void UndoDieOverride(CardInstance source)
-        {
-            if (_dieOverrideSource != source) return;
-            
-            _dieOverrideSource = null;
-            DieOverride = null;
-        }
         
         public DicePool DicePool(IReadOnlyList<IStagedAction> actions) => DicePoolBuilder.Build(this, actions);
 
