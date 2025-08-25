@@ -106,24 +106,26 @@ namespace PACG.Gameplay
         // ==============================================================================
         public void AddToHand(CardInstance card)
         {
+            if (card == null) return;
             card.Owner = this;
             _cardManager.MoveCard(card, CardLocation.Hand);
         }
 
-        public void DrawFromDeck()
+        public CardInstance DrawFromDeck()
         {
             if (Deck.Count == 0)
             {
                 // TODO: Handle character death.
                 Debug.Log(
                     $"{CharacterData.CharacterName} must draw but has no more cards left. {CharacterData.CharacterName} dies!");
-                return;
+                return null;
             }
 
             var card = Deck.DrawCard();
-            AddToHand(card);
 
             GameEvents.RaisePlayerDeckCountChanged(Deck.Count);
+
+            return card;
         }
 
         public void DrawInitialHand()
@@ -153,7 +155,7 @@ namespace PACG.Gameplay
             }
 
             for (var i = 0; i < cardsToDraw; i++)
-                DrawFromDeck();
+                AddToHand(DrawFromDeck());
         }
 
         public void Heal(int amount, CardInstance source = null)
@@ -213,8 +215,8 @@ namespace PACG.Gameplay
             Location != null
                 ? _contexts.GameContext.GetCharactersAt(Location).Except(new[] { this }).ToList()
                 : new List<PlayerCharacter>();
-        public Location Location => _contexts.GameContext.GetPcLocation(this);
-        public void Move(Location newLoc) => _contexts.GameContext.MoveCharacter(this, newLoc);
+        public Location Location => _contexts.GameContext?.GetPcLocation(this);
+        public void Move(Location newLoc) => _contexts.GameContext?.MoveCharacter(this, newLoc);
 
         // Facade pattern for CharacterLogic
         public IResolvable GetStartOfTurnResolvable() => Logic.GetStartOfTurnResolvable(this);

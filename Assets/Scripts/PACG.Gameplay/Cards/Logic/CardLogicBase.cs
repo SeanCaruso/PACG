@@ -6,11 +6,13 @@ namespace PACG.Gameplay
     public abstract class CardLogicBase : ILogicBase
     {
         // Dependency injection of services
+        private readonly ActionStagingManager _asm;
         private readonly CardManager _cards;
         private readonly ContextManager _contexts;
 
         protected CardLogicBase(GameServices gameServices)
         {
+            _asm = gameServices.ASM;
             _cards = gameServices.Cards;
             _contexts = gameServices.Contexts;
         }
@@ -18,6 +20,13 @@ namespace PACG.Gameplay
         // Playable card methods (default implementations for non-playable cards)
         public List<IStagedAction> GetAvailableActions(CardInstance card)
         {
+            // If the owner is exhausted and already played a boon, no actions are available on another boon.
+            if (card.Owner.ActiveScourges.Contains(ScourgeType.Exhausted)
+                && _asm.StagedActionsFor(card.Owner).Any(a => a.Card != card))
+            {
+                return new List<IStagedAction>();
+            }
+            
             // Only cards in hand (including reveals) and display are playable by default.
             // Resolvables will add extra actions if necessary.
             if (card.CurrentLocation is not (CardLocation.Displayed or CardLocation.Hand or CardLocation.Revealed))

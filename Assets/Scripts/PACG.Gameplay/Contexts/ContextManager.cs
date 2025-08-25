@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using PACG.SharedAPI;
 using UnityEngine;
 
@@ -44,8 +45,8 @@ namespace PACG.Gameplay
         {
             EncounterContext = encounterContext;
 
-            encounterContext.ExploreEffects.AddRange(TurnContext.ExploreEffects);
-            TurnContext.ExploreEffects.Clear();
+            encounterContext.ExploreEffects.AddRange(TurnContext?.ExploreEffects ?? new List<IExploreEffect>());
+            TurnContext?.ExploreEffects.Clear();
         }
 
         public void EndEncounter()
@@ -71,9 +72,9 @@ namespace PACG.Gameplay
                 CheckContext = new CheckContext(checkResolvable);
                 DialogEvents.RaiseCheckStartEvent(CheckContext);
                 
-                CheckContext.ExploreEffects.AddRange(EncounterContext.ExploreEffects);
+                CheckContext.ExploreEffects.AddRange(EncounterContext?.ExploreEffects ?? new List<IExploreEffect>());
 
-                EncounterContext.ExploreEffects.RemoveAll(effect =>
+                EncounterContext?.ExploreEffects.RemoveAll(effect =>
                     effect is SkillBonusExploreEffect { IsForOneCheck: true });
             }
 

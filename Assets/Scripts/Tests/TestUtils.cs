@@ -92,11 +92,22 @@ namespace Tests
     public class BaseTest
     {
         protected GameServices GameServices;
+        
+        // Common cards.
+        protected PlayerCharacter Valeros;
+        
+        protected CardInstance Longsword;
+        protected CardInstance Zombie;
 
         [SetUp]
         public virtual void Setup()
         {
             GameServices = TestUtils.CreateGameServices();
+            
+            Valeros = TestUtils.GetCharacter(GameServices, "Valeros");
+            
+            Longsword = TestUtils.GetCard(GameServices, "Longsword");
+            Zombie = TestUtils.GetCard(GameServices, "Zombie");
         }
 
         [TearDown]

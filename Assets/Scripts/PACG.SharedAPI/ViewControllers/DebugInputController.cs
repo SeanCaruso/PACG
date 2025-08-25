@@ -34,7 +34,8 @@ namespace PACG.SharedAPI
 
             if (ctrl && shift && keyboard.dKey.wasPressedThisFrame)
             {
-                _contexts.TurnContext.Character.DrawFromDeck();
+                var pc = _contexts.TurnContext.Character;
+                pc.AddToHand(pc.DrawFromDeck());
                 Debug.Log($"NEW HAND: {string.Join(",", _contexts.TurnContext.Character.Hand)}");
             }
 

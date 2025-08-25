@@ -20,6 +20,9 @@ namespace PACG.Gameplay
 
         private bool HasExploreStaged { get; set; }
 
+        public IReadOnlyList<IStagedAction> StagedActionsFor(PlayerCharacter pc) =>
+            _pcsStagedActions.GetValueOrDefault(pc, new List<IStagedAction>());
+
         public IReadOnlyList<IStagedAction> StagedActions => _pcsStagedActions.Values.SelectMany(list => list).ToList();
         public IReadOnlyList<CardInstance> StagedCards => _originalCardLocs.Keys.ToList();
         public bool CardStaged(CardInstance card) => _originalCardLocs.Keys.Contains(card);
@@ -108,9 +111,10 @@ namespace PACG.Gameplay
         {
             // Send an event to update the state of the action buttons (Cancel, Commit, Skip).
             // TODO: Update this for the displayed PC. Use Turn PC until then.
-            var pc = _contexts.TurnContext.Character;
-            var stagedActions = _pcsStagedActions.GetValueOrDefault(pc)
-                                ?? (_pcsStagedActions[pc] = new List<IStagedAction>());
+            var pc = _contexts.TurnContext?.Character;
+            var stagedActions = pc != null
+                ? _pcsStagedActions.GetValueOrDefault(pc, new List<IStagedAction>())
+                : new List<IStagedAction>();
 
             var state = _contexts.CurrentResolvable?.GetUIState(stagedActions) ?? GetDefaultUiState(stagedActions);
             GameEvents.RaiseStagedActionsStateChanged(state);
@@ -134,7 +138,7 @@ namespace PACG.Gameplay
         {
             // Clear status text first.
             GameEvents.SetStatusText("");
-            
+
             if (_contexts.CheckContext != null)
                 _contexts.CheckContext.CommittedActions = StagedActions.ToList();
 
