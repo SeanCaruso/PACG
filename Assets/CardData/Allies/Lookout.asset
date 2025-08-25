@@ -23,7 +23,7 @@ MonoBehaviour:
     - baseDC: 5
       adventureLevelMult: 0
       category: 1
-      allowedSkills: 05000000090000000e000000
+      allowedSkills: 05000000090000000f000000
   rerollThreshold: 0
   powers: 'On a local Perception check, recharge to add 1d4.
 

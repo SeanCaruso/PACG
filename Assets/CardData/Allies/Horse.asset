@@ -23,7 +23,7 @@ MonoBehaviour:
     - baseDC: 3
       adventureLevelMult: 0
       category: 1
-      allowedSkills: 040000000500000011000000
+      allowedSkills: 040000000500000012000000
   rerollThreshold: 0
   powers: 'Recharge to move. You may not use this power during an encounter.
 

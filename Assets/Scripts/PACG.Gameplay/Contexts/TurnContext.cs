@@ -28,6 +28,8 @@ namespace PACG.Gameplay
         public bool CanCloseLocation { get; set; }
         public bool CanEndTurn { get; set; }
 
+        public bool ForceEndTurn { get; set; } = false;
+
         public List<IExploreEffect> ExploreEffects { get; } = new();
 
         public TurnContext(PlayerCharacter currentPC)

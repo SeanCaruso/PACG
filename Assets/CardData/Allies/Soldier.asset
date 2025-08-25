@@ -23,7 +23,7 @@ MonoBehaviour:
     - baseDC: 4
       adventureLevelMult: 0
       category: 1
-      allowedSkills: 05000000090000000d000000
+      allowedSkills: 05000000090000000e000000
   rerollThreshold: 0
   powers: 'On a local Strength or Melee check, recharge to add 1d4.
 

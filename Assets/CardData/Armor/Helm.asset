@@ -23,7 +23,7 @@ MonoBehaviour:
     - baseDC: 4
       adventureLevelMult: 0
       category: 1
-      allowedSkills: 020000000b000000
+      allowedSkills: 020000000c000000
   rerollThreshold: 0
   powers: 'When you suffer Combat damage, freely reveal to reduce it by 1; if proficient,
     do this for any damage.

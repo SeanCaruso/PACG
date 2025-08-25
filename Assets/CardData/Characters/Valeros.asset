@@ -33,13 +33,13 @@ MonoBehaviour:
     Die: 6
     Bonus: 0
   Skills:
-  - Skill: 13
+  - Skill: 14
     Attribute: 0
     Bonus: 2
-  - Skill: 15
+  - Skill: 16
     Attribute: 1
     Bonus: 1
-  - Skill: 11
+  - Skill: 12
     Attribute: 2
     Bonus: 2
   - Skill: 9

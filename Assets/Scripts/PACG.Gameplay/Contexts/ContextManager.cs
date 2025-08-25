@@ -106,8 +106,8 @@ namespace PACG.Gameplay
         // ======================================================================
 
         // Get relevant locations
-        public Location TurnPcLocation => GameContext.GetPcLocation(TurnContext.Character);
-        public Location EncounterPcLocation => GameContext.GetPcLocation(EncounterContext.Character);
+        public Location TurnPcLocation => GameContext?.GetPcLocation(TurnContext?.Character);
+        public Location EncounterPcLocation => GameContext?.GetPcLocation(EncounterContext?.Character);
 
         // Test for additional explorations
         public bool IsExplorePossible => (      // Exploration is possible if...

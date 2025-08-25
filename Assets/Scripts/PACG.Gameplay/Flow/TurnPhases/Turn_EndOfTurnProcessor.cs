@@ -13,6 +13,8 @@ namespace PACG.Gameplay
 
         protected override void OnExecute()
         {
+            if (_contexts.TurnContext.ForceEndTurn) return;
+            
             var resolvable = _contexts.TurnContext.Character.GetEndOfTurnResolvable();
             if (resolvable != null)
                 _contexts.NewResolvable(resolvable);

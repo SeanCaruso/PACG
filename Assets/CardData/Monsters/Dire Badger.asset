@@ -23,11 +23,11 @@ MonoBehaviour:
     - baseDC: 11
       adventureLevelMult: 0
       category: 0
-      allowedSkills: 000000000d000000
+      allowedSkills: 000000000e000000
     - baseDC: 6
       adventureLevelMult: 0
       category: 1
-      allowedSkills: 0e00000011000000
+      allowedSkills: 0f00000012000000
   rerollThreshold: 0
   powers: 'If undefeated, shuffle this monster into a random location.
 

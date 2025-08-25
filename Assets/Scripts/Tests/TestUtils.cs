@@ -1,3 +1,4 @@
+using NUnit.Framework;
 using PACG.Data;
 using PACG.Gameplay;
 using UnityEditor;
@@ -85,6 +86,26 @@ namespace Tests
         
             gameServices.Contexts.NewTurn(new TurnContext(pc));
             gameServices.GameFlow.StartPhase(new EncounterController(pc, encounterCard, gameServices), "Encounter");
+        }
+    }
+
+    public class BaseTest
+    {
+        protected GameServices GameServices;
+
+        [SetUp]
+        public virtual void Setup()
+        {
+            GameServices = TestUtils.CreateGameServices();
+        }
+
+        [TearDown]
+        public virtual void TearDown()
+        {
+            GameServices.Contexts.EndCheck();
+            GameServices.Contexts.EndResolvable();
+            GameServices.Contexts.EndEncounter();
+            GameServices.Contexts.EndTurn();
         }
     }
 }

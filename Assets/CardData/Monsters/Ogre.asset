@@ -23,7 +23,7 @@ MonoBehaviour:
     - baseDC: 12
       adventureLevelMult: 2
       category: 0
-      allowedSkills: 000000000d000000
+      allowedSkills: 000000000e000000
   rerollThreshold: 0
   powers: Before acting, each local character suffers 1 Combat damage.
   recovery: 

@@ -2,6 +2,7 @@ using PACG.Data;
 using PACG.SharedAPI;
 using System.Collections.Generic;
 using System.Linq;
+using PACG.Core;
 using UnityEngine;
 
 namespace PACG.Gameplay
@@ -11,7 +12,7 @@ namespace PACG.Gameplay
         // ICard properties
         public string Name => CharacterData.CharacterName;
         public List<string> Traits => CharacterData.Traits;
-        
+
         public CharacterData CharacterData { get; }
         private CharacterLogicBase Logic { get; }
         public Deck Deck { get; }
@@ -21,9 +22,15 @@ namespace PACG.Gameplay
         private readonly Dictionary<PF.Skill, PF.Skill> _skillAttrs = new();
         public PF.Skill GetAttributeForSkill(PF.Skill skill) => _skillAttrs.GetValueOrDefault(skill, skill);
 
+        private readonly HashSet<ScourgeType> _activeScourges = new();
+        public IReadOnlyCollection<ScourgeType> ActiveScourges => _activeScourges;
+        public void AddScourge(ScourgeType scourge) => _activeScourges.Add(scourge);
+        public void RemoveScourge(ScourgeType scourge) => _activeScourges.Remove(scourge);
+
         // --- Dependency Injections
         private readonly CardManager _cardManager;
         private readonly ContextManager _contexts;
+        private readonly GameServices _gameServices;
 
         public PlayerCharacter(CharacterData characterData, CharacterLogicBase logic, GameServices gameServices)
         {
@@ -33,6 +40,7 @@ namespace PACG.Gameplay
 
             _cardManager = gameServices.Cards;
             _contexts = gameServices.Contexts;
+            _gameServices = gameServices;
 
             foreach (var attr in CharacterData.Attributes)
             {
@@ -57,11 +65,11 @@ namespace PACG.Gameplay
                 // Check if card type matches (or doesn't matter)
                 var typeMatches = proficiency.CardType == card.cardType ||
                                   proficiency.CardType == PF.CardType.None;
-                
+
                 // Check if trait matches (or doesn't matter)
                 var traitMatches = card.traits.Contains(proficiency.Trait) ||
                                    string.IsNullOrEmpty(proficiency.Trait);
-                
+
                 if (typeMatches && traitMatches)
                     return true;
             }
@@ -72,7 +80,7 @@ namespace PACG.Gameplay
         public (PF.Skill skill, int die, int bonus) GetBestSkill(params PF.Skill[] skills)
         {
             if (skills.Length == 0) return (PF.Skill.Strength, 4, 0);
-            
+
             var bestSkill = skills[0];
             int bestDie = 4, bestBonus = 0;
             var bestAvg = 2.5;
@@ -96,20 +104,6 @@ namespace PACG.Gameplay
         // ==============================================================================
         // CARD MOVEMENT INVOLVING THE PLAYER'S DECK
         // ==============================================================================
-        public void Recharge(CardInstance card)
-        {
-            if (card == null || card.Owner != this) return;
-            _cardManager.MoveCard(card, CardLocation.Deck);
-            Deck.Recharge(card);
-        }
-
-        public void Reload(CardInstance card)
-        {
-            if (card == null || card.Owner != this) return;
-            _cardManager.MoveCard(card, CardLocation.Deck);
-            Deck.Reload(card);
-        }
-
         public void AddToHand(CardInstance card)
         {
             card.Owner = this;
@@ -162,6 +156,38 @@ namespace PACG.Gameplay
                 DrawFromDeck();
         }
 
+        public void Heal(int amount, CardInstance source = null)
+        {
+            // If we're wounded, prompt to remove the scourge. Return without healing if removed.
+            if (ActiveScourges.Contains(ScourgeType.Wounded))
+            {
+                ScourgeRules.PromptForWoundedRemoval(this, _gameServices);
+                if (!ActiveScourges.Contains(ScourgeType.Wounded)) return;
+            }
+
+            var validCards = Discards.Where(c => c != source).ToList();
+            amount = validCards.Count < amount ? validCards.Count : amount;
+            for (var i = 0; i < amount; i++)
+            {
+                var card = validCards[DiceUtils.Roll(1, validCards.Count) - 1];
+                Deck.ShuffleIn(card);
+            }
+        }
+
+        public void Recharge(CardInstance card)
+        {
+            if (card == null || card.Owner != this) return;
+            _cardManager.MoveCard(card, CardLocation.Deck);
+            Deck.Recharge(card);
+        }
+
+        public void Reload(CardInstance card)
+        {
+            if (card == null || card.Owner != this) return;
+            _cardManager.MoveCard(card, CardLocation.Deck);
+            Deck.Reload(card);
+        }
+
         public void ShuffleIntoDeck(CardInstance card)
         {
             if (card == null) return;
@@ -184,7 +210,9 @@ namespace PACG.Gameplay
 
         // Pass-throughs to ContextManager
         public IReadOnlyList<PlayerCharacter> LocalCharacters =>
-            _contexts.GameContext.GetCharactersAt(Location).Except(new[] { this }).ToList();
+            Location != null
+                ? _contexts.GameContext.GetCharactersAt(Location).Except(new[] { this }).ToList()
+                : new List<PlayerCharacter>();
         public Location Location => _contexts.GameContext.GetPcLocation(this);
         public void Move(Location newLoc) => _contexts.GameContext.MoveCharacter(this, newLoc);
 

@@ -20,6 +20,8 @@ namespace PACG.Gameplay
             AdventureNumber = adventureNumber;
             HourDeck = new Deck(cardManager);
         }
+        
+        public void AddLocation(Location loc) => _locationPcs.TryAdd(loc, new List<PlayerCharacter>());
 
         public Location GetPcLocation(PlayerCharacter pc)
         {
@@ -29,7 +31,7 @@ namespace PACG.Gameplay
                     return loc;
             }
 
-            Debug.LogError($"[{GetType().Name}] Unable to find location for {pc.CharacterData.CharacterName}!");
+            Debug.LogWarning($"[{GetType().Name}] Unable to find location for {pc.CharacterData.CharacterName}!");
             return null;
         }
 

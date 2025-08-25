@@ -58,9 +58,15 @@ namespace PACG.Gameplay
         /// <param name="action"></param>
         public void MoveCard(CardInstance card, PF.ActionType action)
         {
+            if (card == null)
+            {
+                Debug.LogWarning($"[{GetType().Name}] Attempted to move null card!");
+                return;
+            }
+            
             if (card.Owner == null)
             {
-                Debug.LogError($"[{GetType().Name}] {card.Data.cardName} has no owner - use MoveCard(CardInstance, CardLocation) instead!");
+                Debug.LogWarning($"[{GetType().Name}] {card.Data.cardName} has no owner - use MoveCard(CardInstance, CardLocation) instead!");
                 return;
             }
 

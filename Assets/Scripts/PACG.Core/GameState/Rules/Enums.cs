@@ -47,6 +47,7 @@ public static class PF
         Arcane,
         Craft,
         Diplomacy,
+        Disable,
         Divine,
         Fortitude,
         Knowledge,
@@ -54,7 +55,7 @@ public static class PF
         Perception,
         Ranged,
         Stealth,
-        Survival
+        Survival,
     }
 
     public enum TargetingRule { CurrentPlayer, RandomPlayer, LocalPlayer, EachLocalPlayer, RandomLocalPlayer }

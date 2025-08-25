@@ -1,14 +1,15 @@
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace PACG.Gameplay
 {
     public abstract class LocationLogicBase : ILogicBase
     {
-        private GameServices _gameServices;
+        // Dependency injections
+        private readonly ContextManager _contexts;
+        private readonly GameServices _gameServices;
 
         protected LocationLogicBase(GameServices gameServices)
         {
+            _contexts = gameServices.Contexts;
             _gameServices = gameServices;
         }
 

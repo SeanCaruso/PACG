@@ -23,7 +23,7 @@ MonoBehaviour:
     - baseDC: 4
       adventureLevelMult: 0
       category: 1
-      allowedSkills: 0300000004000000070000000a000000
+      allowedSkills: 0300000004000000070000000b000000
   rerollThreshold: 0
   powers: When any character plays a weapon on a combat check, freely banish to add
     1d4+# and the Magic trait.

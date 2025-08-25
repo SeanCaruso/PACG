@@ -80,11 +80,15 @@ namespace PACG.Gameplay
                 _contexts.EncounterContext.Character.AddToHand(card);
             }
         }
+        
+        /// <summary>
+        /// If overridden, you must also perform the default behavior!
+        /// </summary>
         public virtual void OnUndefeated(CardInstance card)
         {
             if (card.IsBane)
             {
-                _contexts.EncounterPcLocation.ShuffleIn(card, true);
+                _contexts.EncounterPcLocation?.ShuffleIn(card, true);
             }
             else
             {

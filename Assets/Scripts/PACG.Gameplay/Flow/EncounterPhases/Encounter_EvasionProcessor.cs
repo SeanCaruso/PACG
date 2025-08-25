@@ -21,6 +21,9 @@ namespace PACG.Gameplay
         {
             if (_contexts.EncounterContext == null) return;
             
+            // The Entangled scourge prevents evasion.
+            if (_contexts.EncounterContext.Character.ActiveScourges.Contains(ScourgeType.Entangled)) return;
+            
             // First, see if anything added an evasion effect to this exploration.
             if (_contexts.EncounterContext.ExploreEffects.Any(effect => effect is EvadeExploreEffect))
             {

@@ -69,5 +69,15 @@ namespace PACG.Gameplay
         }
 
         public IReadOnlyCollection<PlayerCharacter> Characters => _contexts.GameContext.GetCharactersAt(this);
+
+        public void Close()
+        {
+            // Entangled and Frightened Scourges are removed on location close.
+            foreach (var pc in Characters)
+            {
+                pc.RemoveScourge(ScourgeType.Entangled);
+                pc.RemoveScourge(ScourgeType.Frightened);
+            }
+        }
     }
 }
