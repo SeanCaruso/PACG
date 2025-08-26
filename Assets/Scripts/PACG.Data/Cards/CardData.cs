@@ -26,5 +26,6 @@ public abstract class CardData : ScriptableObject
     public List<string> vulnerabilities;
 
     [Header("Traits")]
+    public bool IsLoot;
     public List<string> traits;
 }

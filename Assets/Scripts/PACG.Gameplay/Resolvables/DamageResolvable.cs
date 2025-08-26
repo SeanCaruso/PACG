@@ -8,7 +8,10 @@ namespace PACG.Gameplay
     {
         public PlayerCharacter PlayerCharacter { get; }
         public string DamageType { get; }
-        public int Amount { get; protected set; }
+        public int Amount { get; private set; }
+        
+        private PF.ActionType _defaultActionType = PF.ActionType.Discard;
+        public void OverrideActionType(PF.ActionType actionType) => _defaultActionType = actionType;
 
         public DamageResolvable(PlayerCharacter playerCharacter, int amount, string damageType = "Combat")
         {
@@ -23,7 +26,7 @@ namespace PACG.Gameplay
 
             // Add default damage discard action if the card was in the player's hand.
             if (PlayerCharacter.Hand.Contains(card))
-                actions.Add(new DefaultAction(card, PF.ActionType.Discard));
+                actions.Add(new DefaultAction(card, _defaultActionType));
 
             return actions;
         }
@@ -40,15 +43,18 @@ namespace PACG.Gameplay
                 return true;
             }
 
-            int totalResolved = 0;
+            var totalResolved = 0;
             foreach (var action in actions)
             {
-                if (action is DefaultAction)
-                    totalResolved += 1;
-                else if (action is PlayCardAction playAction)
+                switch (action)
                 {
-                    totalResolved += (int)playAction.ActionData.GetValueOrDefault("Damage", 0);
-                    Amount = (int)playAction.ActionData.GetValueOrDefault("ReduceDamageTo", Amount);
+                    case DefaultAction:
+                        totalResolved += 1;
+                        break;
+                    case PlayCardAction playAction:
+                        totalResolved += (int)playAction.ActionData.GetValueOrDefault("Damage", 0);
+                        Amount = (int)playAction.ActionData.GetValueOrDefault("ReduceDamageTo", Amount);
+                        break;
                 }
             }
 
@@ -57,16 +63,12 @@ namespace PACG.Gameplay
                 GameEvents.SetStatusText("");
                 return true;
             }
-            else if (totalResolved < Amount)
-            {
-                GameEvents.SetStatusText($"Damage: Discard {Amount - totalResolved}");
-                return false;
-            }
-            else
-            {
-                GameEvents.SetStatusText($"Damage: Too much damage taken!");
-                return false;
-            }
+
+            GameEvents.SetStatusText(totalResolved < Amount
+                ? $"Damage: Discard {Amount - totalResolved}"
+                : $"Damage: Too much damage taken!");
+
+            return false;
         }
     }
 }

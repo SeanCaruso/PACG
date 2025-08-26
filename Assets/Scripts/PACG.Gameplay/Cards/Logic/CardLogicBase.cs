@@ -17,9 +17,10 @@ namespace PACG.Gameplay
             _contexts = gameServices.Contexts;
         }
 
-        // Playable card methods (default implementations for non-playable cards)
         public List<IStagedAction> GetAvailableActions(CardInstance card)
         {
+            if (card.Owner == null) return new List<IStagedAction>();
+            
             // If the owner is exhausted and already played a boon, no actions are available on another boon.
             if (card.Owner.ActiveScourges.Contains(ScourgeType.Exhausted)
                 && _asm.StagedActionsFor(card.Owner).Any(a => a.Card != card))

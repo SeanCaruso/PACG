@@ -19,8 +19,6 @@ namespace PACG.Gameplay
             {
                 Debug.Log($"Rolled {check.CheckResult.FinalRollTotal} vs. {check.CheckResult.DC} - Success!");
             }
-            else if (false /* avenge? */)
-            { }
             else
             {
                 DamageResolvable damageResolvable = new(check.Resolvable.Character, -check.CheckResult.MarginOfSuccess);

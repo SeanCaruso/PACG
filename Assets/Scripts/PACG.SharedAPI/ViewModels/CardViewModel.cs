@@ -25,6 +25,7 @@ namespace PACG.SharedAPI
 
         // Ready-to-use values
         public Color32 PanelColor { get; set; }
+        public bool IsLoot => CardInstance.Data.IsLoot;
         public IEnumerable<string> Traits => CardInstance.Data.traits.Select(trait => trait.ToUpper());
 
         // Check Section 1

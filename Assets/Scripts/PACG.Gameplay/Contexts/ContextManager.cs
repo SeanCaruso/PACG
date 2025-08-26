@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using PACG.SharedAPI;
 using UnityEngine;
 
@@ -7,10 +8,14 @@ namespace PACG.Gameplay
     public class ContextManager
     {
         private ActionStagingManager _asm;
+        private CardManager _cardManager;
+        private GameServices _gameServices;
 
         public void Initialize(GameServices gameServices)
         {
             _asm = gameServices.ASM;
+            _cardManager = gameServices.Cards;
+            _gameServices = gameServices;
         }
 
         // ======================================================================
@@ -64,6 +69,35 @@ namespace PACG.Gameplay
             if (CurrentResolvable != null)
                 Debug.LogWarning($"[ContextManager] Created {resolvable} is overwriting {CurrentResolvable}!");
 
+            // If this is a damage resolvable, check to see if we have any responses for it. If so, we'll need to
+            // handle those responses first.
+            if (resolvable is DamageResolvable damageResolvable)
+            {
+                var args = new DiscardEventArgs(
+                    damageResolvable.PlayerCharacter,
+                    new List<CardInstance>(),
+                    CardLocation.Hand,
+                    damageResolvable
+                );
+                _cardManager.TriggerBeforeDiscard(args);
+
+                if (args.HasResponses)
+                {
+                    var options = args.CardResponses.Select(response => 
+                        new PlayerChoiceResolvable.ChoiceOption(response.Description, response.OnAccept)
+                    ).ToList();
+                    options.Add(new PlayerChoiceResolvable.ChoiceOption("Skip", () => { }));
+                    
+                    var choices = new PlayerChoiceResolvable("Use Power?", options.ToArray());
+                    var damageProcessor = new NewResolvableProcessor(damageResolvable, _gameServices);
+                    choices.OverrideNextProcessor(damageProcessor);
+                    
+                    var choiceProcessor = new NewResolvableProcessor(choices, _gameServices);
+                    _gameServices.GameFlow.StartPhase(choiceProcessor, "Power Options");
+                    return;
+                }
+            }
+
             CurrentResolvable = resolvable;
 
             // Automatic context creation based on resolvable type.
@@ -71,7 +105,7 @@ namespace PACG.Gameplay
             {
                 CheckContext = new CheckContext(checkResolvable);
                 DialogEvents.RaiseCheckStartEvent(CheckContext);
-                
+
                 CheckContext.ExploreEffects.AddRange(EncounterContext?.ExploreEffects ?? new List<IExploreEffect>());
 
                 EncounterContext?.ExploreEffects.RemoveAll(effect =>
@@ -81,7 +115,7 @@ namespace PACG.Gameplay
             // Now that it's set as our current resolvable and we have a CheckContext if needed,
             // do any post-construction setup.
             resolvable.Initialize();
-            
+
             // Update the UI.
             _asm.UpdateGameStatePreview();
             _asm.UpdateActionButtons();
@@ -111,11 +145,11 @@ namespace PACG.Gameplay
         public Location EncounterPcLocation => GameContext?.GetPcLocation(EncounterContext?.Character);
 
         // Test for additional explorations
-        public bool IsExplorePossible => (      // Exploration is possible if...
-                CurrentResolvable == null &&    // ... we don't have a resolvable...
-                EncounterContext == null &&     // ... or encounter, ...
-                TurnPcLocation.Count > 0 &&     // ... we have more cards in the location, ...
-                _asm.StagedCards.Count == 0     // ... and we don't have any currently staged cards.
+        public bool IsExplorePossible => ( // Exploration is possible if...
+                CurrentResolvable == null && // ... we don't have a resolvable...
+                EncounterContext == null && // ... or encounter, ...
+                TurnPcLocation.Count > 0 && // ... we have more cards in the location, ...
+                _asm.StagedCards.Count == 0 // ... and we don't have any currently staged cards.
             );
     }
 }

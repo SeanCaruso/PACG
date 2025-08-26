@@ -193,6 +193,7 @@ namespace PACG.Gameplay
         public void ShuffleIntoDeck(CardInstance card)
         {
             if (card == null) return;
+            card.Owner = this;
             _cardManager.MoveCard(card, CardLocation.Deck);
             Deck.ShuffleIn(card);
         }

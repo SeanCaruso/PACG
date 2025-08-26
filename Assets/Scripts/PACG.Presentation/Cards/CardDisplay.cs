@@ -36,6 +36,7 @@ namespace PACG.Presentation
         public TextMeshProUGUI recoveryText;
 
         [Header("Traits")]
+        public GameObject LootPanel;
         public GameObject traitsSection;
 
         public CardViewModel ViewModel { get; private set; }
@@ -72,7 +73,10 @@ namespace PACG.Presentation
             }
 
             // Traits
+            LootPanel.SetActive(view.IsLoot);
             foreach (var trait in view.Traits) AddTextToPanel(trait, traitsSection);
+            
+            LayoutRebuilder.ForceRebuildLayoutImmediate(traitsSection.GetComponent<RectTransform>());
         }
 
         private void UpdateChecksSection(CardViewModel view)

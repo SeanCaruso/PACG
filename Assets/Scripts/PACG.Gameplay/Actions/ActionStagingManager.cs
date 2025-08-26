@@ -126,7 +126,7 @@ namespace PACG.Gameplay
                 canCommit: actions.Any() && !HasExploreStaged,
                 canSkip: false,
                 canCancel: actions.Any(),
-                isExploreEnabled: _contexts.TurnContext.CanFreelyExplore || HasExploreStaged
+                isExploreEnabled: _contexts.TurnContext?.CanFreelyExplore == true || HasExploreStaged
             );
         }
 

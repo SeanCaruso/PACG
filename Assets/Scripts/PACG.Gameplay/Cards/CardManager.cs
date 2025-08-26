@@ -9,8 +9,9 @@ namespace PACG.Gameplay
     {
         private LogicRegistry _logic;
 
-        private readonly List<CardInstance> allCards = new();
-        private readonly List<CardInstance> theVault = new();
+        private readonly List<CardInstance> _allCards = new();
+        
+        private readonly ResponseRegistry _responseRegistry = new();
 
         public void Initialize(GameServices gameServices)
         {
@@ -26,22 +27,37 @@ namespace PACG.Gameplay
             }
 
             CardInstance newInstance = new(card, _logic.GetLogic<CardLogicBase>(card.cardID), owner);
-            allCards.Add(newInstance);
+            _allCards.Add(newInstance);
 
             return newInstance;
         }
+
+        public void TriggerBeforeDiscard(DiscardEventArgs args) => _responseRegistry.TriggerBeforeDiscard(args);
 
         public void MoveCard(CardInstance card, CardLocation newLocation)
         {
             if (card == null)
             {
-                Debug.LogError($"Attempted to move null card to {newLocation}!");
+                Debug.LogWarning($"Attempted to move null card to {newLocation}!");
                 return;
             }
 
             if (card.CurrentLocation == newLocation)
             {
                 return;
+            }
+            
+            var wasActive = card.CurrentLocation is (CardLocation.Hand or CardLocation.Revealed or CardLocation.Displayed);
+            var isActive = newLocation is (CardLocation.Hand or CardLocation.Revealed or CardLocation.Displayed);
+            
+            switch (isActive)
+            {
+                case true when !wasActive:
+                    _responseRegistry.RegisterResponses(card);
+                    break;
+                case false when wasActive:
+                    _responseRegistry.UnregisterResponses(card);
+                    break;
             }
 
             card.CurrentLocation = newLocation;
@@ -113,16 +129,8 @@ namespace PACG.Gameplay
             }
         }
 
-        private void HandleCardLocationChanged(CardInstance card)
-        {
-            if (card == null) return;
-
-            theVault.Remove(card);
-            if (card.CurrentLocation == CardLocation.Vault) theVault.Add(card);
-        }
-
         // Find cards...
-        public List<CardInstance> FindAll(System.Func<CardInstance, bool> predicate) => allCards.Where(predicate).ToList();
+        private List<CardInstance> FindAll(System.Func<CardInstance, bool> predicate) => _allCards.Where(predicate).ToList();
         // ... by location
         public List<CardInstance> GetCardsInLocation(CardLocation location) => FindAll(card => card.CurrentLocation == location);
         // ... owned by a specific player
@@ -130,6 +138,6 @@ namespace PACG.Gameplay
         // ... owned by a specific player in a specific location
         public List<CardInstance> GetCardsOwnedBy(PlayerCharacter owner, CardLocation location) => FindAll(card => card.Owner == owner && card.CurrentLocation == location);
         // ... are considered part of a specific player's hand (in hand and revealed)
-        public List<CardInstance> GetCardsInHand(PlayerCharacter owner) => FindAll(card => card.Owner == owner && (card.CurrentLocation == CardLocation.Hand || card.CurrentLocation == CardLocation.Revealed));
+        public List<CardInstance> GetCardsInHand(PlayerCharacter owner) => FindAll(card => card.Owner == owner && card.CurrentLocation is CardLocation.Hand or CardLocation.Revealed);
     }
 }
