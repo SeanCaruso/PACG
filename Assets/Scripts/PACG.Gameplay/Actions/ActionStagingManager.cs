@@ -175,5 +175,11 @@ namespace PACG.Gameplay
             // We're done committing actions. Tell the GameFlowManager to continue.
             _gameFlow.Process();
         }
+
+        public void Skip()
+        {
+            _contexts.CurrentResolvable?.OnSkip();
+            Commit();
+        }
     }
 }

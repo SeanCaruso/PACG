@@ -79,5 +79,12 @@ namespace PACG.Gameplay
                 pc.RemoveScourge(ScourgeType.Frightened);
             }
         }
+
+        // ==============================================================================
+        // CONVENIENCE FUNCTIONS
+        // ==============================================================================
+        
+        // Facade pattern for LocationLogic
+        public LocationPower? GetEndOfTurnPower() => LocationLogic?.GetEndOfTurnPower(this);
     }
 }

@@ -10,33 +10,32 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2055319bda4c23c4085fa2e92def0349, type: 3}
-  m_Name: Caravan
+  m_Name: Campsite
   m_EditorClassIdentifier: 
-  LocationName: Caravan
+  LocationName: Campsite
   Level: 0
   AtLocationPower:
     IsActivated: 1
-    SpriteEnabled: {fileID: 7622579193695881461, guid: 9e6b389c106158945ab9805dc74d7a54, type: 3}
-    SpriteDisabled: {fileID: 5071702482097040453, guid: d6d52556353153e4f947d2508ca4b58d, type: 3}
-    Text: At the start of your turn, each local character may move.
+    SpriteEnabled: {fileID: 2058518826365189002, guid: 3e2f2442f98ec8841a3f13dcaca70d54, type: 3}
+    SpriteDisabled: {fileID: -4945773871214007067, guid: b9f6bf30d923f264abf0c605b463c5ec, type: 3}
+    Text: At the end of your turn, you may heal a card.
   ToClosePower:
     IsActivated: 0
     SpriteEnabled: {fileID: 0}
     SpriteDisabled: {fileID: 0}
-    Text: Either succeed at a Wisdom or Perception 5+# check or summon and defeat
-      the danger.
+    Text: Choose 3 different types of boons, then recharge a boon of each type.
   WhenClosedPower:
     IsActivated: 0
     SpriteEnabled: {fileID: 0}
     SpriteDisabled: {fileID: 0}
-    Text: After you move, you may give a card to a local character.
-  NumMonsters: 1
-  NumBarriers: 2
-  NumWeapons: 1
-  NumSpells: 1
-  NumArmors: 1
+    Text: No effect.
+  NumMonsters: 4
+  NumBarriers: 0
+  NumWeapons: 2
+  NumSpells: 0
+  NumArmors: 0
   NumItems: 1
   NumAllies: 2
   NumBlessings: 0
   Traits:
-  - Urban
+  - Wild

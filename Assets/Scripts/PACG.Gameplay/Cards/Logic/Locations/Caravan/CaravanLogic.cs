@@ -5,12 +5,12 @@ namespace PACG.Gameplay
     {
         private readonly ContextManager _contexts;
 
-        public CaravanLogic(GameServices gameServices) : base(gameServices)
+        public CaravanLogic(GameServices gameServices)
         {
             _contexts = gameServices.Contexts;
         }
 
-        public override IResolvable GetToCloseResolvables()
+        public override IResolvable GetToCloseResolvable()
         {
             var dc = 5 + _contexts.GameContext.AdventureNumber;
 

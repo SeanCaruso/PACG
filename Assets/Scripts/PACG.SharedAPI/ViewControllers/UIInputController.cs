@@ -56,7 +56,7 @@ namespace PACG.SharedAPI
 
             cancelButton.onClick.AddListener(() => _asm.Cancel());
             commitButton.onClick.AddListener(() => _asm.Commit());
-            skipButton.onClick.AddListener(() => _asm.Commit());
+            skipButton.onClick.AddListener(() => _asm.Skip());
         }
 
         protected void OnDestroy()
@@ -104,7 +104,7 @@ namespace PACG.SharedAPI
             }
         }
 
-        private void PlayerPowerEnabled(CharacterPower power, bool isEnabled, IResolvable powerResolvable)
+        private void PlayerPowerEnabled(CharacterPower power, bool isEnabled)
         {
             if (!_powerButtonMap.TryGetValue(power, out var buttonObj))
             {
@@ -118,12 +118,7 @@ namespace PACG.SharedAPI
             button.enabled = isEnabled;
 
             button.onClick.RemoveAllListeners();
-            button.onClick.AddListener(() =>
-            {
-                if (_contexts.CurrentResolvable is PlayerPowerAvailableResolvable res)
-                    res.DoNextResolvable();
-                _asm.Commit();
-            });
+            button.onClick.AddListener(() => power.OnActivate?.Invoke());
         }
 
         private void UpdateTurnButtons()

@@ -1,4 +1,3 @@
-
 using PACG.SharedAPI;
 using UnityEngine;
 
@@ -12,7 +11,7 @@ namespace PACG.Gameplay
         private readonly GameFlowManager _gameFlow;
         private readonly GameServices _gameServices;
 
-        private static int _turnNumber = 0;
+        private static int _turnNumber = 1;
 
         public StartTurnController(PlayerCharacter pc, GameServices gameServices)
         {
@@ -27,8 +26,9 @@ namespace PACG.Gameplay
         {
             Debug.Log($"===== STARTING TURN {_turnNumber++} =====");
 
-            _contexts.NewTurn(new(_pc));
+            _contexts.NewTurn(new TurnContext(_pc));
             GameEvents.RaisePlayerCharacterChanged(_pc);
+            GameEvents.RaiseLocationChanged(_pc.Location);
 
             _gameFlow.QueueNextProcessor(new Turn_StartTurnProcessor(_gameServices));
 

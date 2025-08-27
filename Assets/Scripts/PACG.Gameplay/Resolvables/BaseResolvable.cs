@@ -31,6 +31,10 @@ namespace PACG.Gameplay
         public virtual void Resolve()
         {
         }
+        
+        public virtual void OnSkip()
+        {
+        }
 
         /// <summary>
         /// Default action button state - Commit/Skip if valid, Cancel if actions are staged.

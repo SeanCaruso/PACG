@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace PACG.SharedAPI
 {
-    public class CardDisplayFactory : MonoBehaviour
+    public class LocationDisplayFactory : MonoBehaviour
     {
         public enum DisplayContext
         {
@@ -15,17 +15,17 @@ namespace PACG.SharedAPI
         }
         
         [Header("Prefabs")]
-        public CardDisplay CardDisplayPrefab;
+        public LocationDisplay LocationDisplayPrefab;
 
-        public CardDisplay CreateCardDisplay(CardInstance card, DisplayContext context, Transform parent = null)
+        public LocationDisplay CreateLocationDisplay(Location location, DisplayContext context, Transform parent = null)
         {
-            var display = Instantiate(CardDisplayPrefab, parent);
-            display.SetViewModel(CardViewModelFactory.CreateFrom(card));
+            var display = Instantiate(LocationDisplayPrefab, parent);
+            display.SetViewModel(LocationViewModelFactory.CreateFrom(location));
             ConfigureForContext(display, context);
             return display;
         }
 
-        private void ConfigureForContext(CardDisplay display, DisplayContext context)
+        private static void ConfigureForContext(LocationDisplay display, DisplayContext context)
         {
             // Reset transform to clean slate for layout system.
             display.transform.localPosition = Vector3.zero;

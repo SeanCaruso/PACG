@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using PACG.Data;
 
 namespace PACG.Gameplay
 {
@@ -31,6 +32,9 @@ namespace PACG.Gameplay
         public bool ForceEndTurn { get; set; } = false;
 
         public List<IExploreEffect> ExploreEffects { get; } = new();
+        
+        public List<LocationPower> PerformedLocationPowers { get; } = new();
+        public List<CharacterPower> PerformedCharacterPowers { get; } = new();
 
         public TurnContext(PlayerCharacter currentPC)
         {

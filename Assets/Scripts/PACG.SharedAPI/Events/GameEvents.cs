@@ -14,6 +14,9 @@ namespace PACG.SharedAPI
 
         public static event Action<CardInstance> HourChanged;
         public static void RaiseHourChanged(CardInstance hourCard) => HourChanged?.Invoke(hourCard);
+        
+        public static event Action<Location> LocationChanged;
+        public static void RaiseLocationChanged(Location location) => LocationChanged?.Invoke(location);
 
         public static event Action<CardInstance> EncounterStarted;
         public static void RaiseEncounterStarted(CardInstance encounteredCard) => EncounterStarted?.Invoke(encounteredCard);
@@ -32,14 +35,19 @@ namespace PACG.SharedAPI
 
         public static event Action<List<CardInstance>> CardLocationsChanged;
         public static void RaiseCardLocationsChanged(List<CardInstance> cards) => CardLocationsChanged?.Invoke(cards);
+        
+        // Location events
+        public static event Action<LocationPower, bool> LocationPowerEnabled;
+        public static void RaiseLocationPowerEnabled(LocationPower power, bool enabled) =>
+            LocationPowerEnabled?.Invoke(power, enabled);
 
         // Player Character events
         public static event Action<PlayerCharacter> PlayerCharacterChanged;
         public static void RaisePlayerCharacterChanged(PlayerCharacter pc) => PlayerCharacterChanged?.Invoke(pc);
 
-        public static event Action<CharacterPower, bool, IResolvable> PlayerPowerEnabled;
-        public static void RaisePlayerPowerEnabled(CharacterPower power, bool enabled, IResolvable powerResolvable = null) =>
-            PlayerPowerEnabled?.Invoke(power, enabled, powerResolvable);
+        public static event Action<CharacterPower, bool> PlayerPowerEnabled;
+        public static void RaisePlayerPowerEnabled(CharacterPower power, bool enabled) =>
+            PlayerPowerEnabled?.Invoke(power, enabled);
 
         public static event Action<int> PlayerDeckCountChanged;
         public static void RaisePlayerDeckCountChanged(int count) => PlayerDeckCountChanged?.Invoke(count);

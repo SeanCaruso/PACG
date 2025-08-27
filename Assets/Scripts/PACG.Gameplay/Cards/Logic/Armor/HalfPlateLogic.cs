@@ -27,6 +27,8 @@ namespace PACG.Gameplay
                 actions.Add(new PlayCardAction(card, PF.ActionType.Draw, ("Damage", 2), ("IsFreely", true)));
             if (CanBury(card))
                 actions.Add(new PlayCardAction(card, PF.ActionType.Bury, ("ReduceDamageTo", 0)));
+            if (CanFreelyBury(card))
+                actions.Add(new PlayCardAction(card, PF.ActionType.Bury, ("ReduceDamageTo", 0), ("IsFreely", true)));
             return actions;
         }
 
@@ -51,27 +53,32 @@ namespace PACG.Gameplay
             return false;
         }
 
+        // We can draw for damage if displayed and we have a DamageResolvable for the card's owner with Combat damage.
         private bool CanDraw(CardInstance card) => 
-            // We can draw for damage if displayed and we have a DamageResolvable for the card's owner with Combat damage.
-            Check != null
-            && card.Owner.DisplayedCards.Contains(card)
-            && !Check.StagedCardTypes.Contains(PF.CardType.Armor)
+            card.Owner.DisplayedCards.Contains(card)
+            && _asm.StagedCards.Count(c => c.Data.cardType == card.Data.cardType) == 0
             && _contexts.CurrentResolvable is DamageResolvable { DamageType: "Combat" } resolvable
             && resolvable.PlayerCharacter == card.Owner;
 
+        // We can also freely draw if the card was displayed for this damage resolution.
         private bool CanFreelyDraw(CardInstance card) =>
-            // We can draw for damage if displayed and we have a DamageResolvable for the card's owner with Combat damage.
-            Check != null
-            && card.Owner.DisplayedCards.Contains(card)
-            && _asm.CardStaged(card) // If we staged the Display this check, we can freely draw.
+            card.Owner.DisplayedCards.Contains(card)
+            && _asm.CardStaged(card)
             && _contexts.CurrentResolvable is DamageResolvable { DamageType: "Combat" } resolvable
             && resolvable.PlayerCharacter == card.Owner;
 
+        // We can bury for damage if displayed, the owner is proficient, and we have a DamageResolvable for the card's owner.
         private bool CanBury(CardInstance card) =>
-            // We can bury for damage if displayed, the owner is proficient, and we have a DamageResolvable for the card's owner.
-            Check != null
-            && card.Owner.DisplayedCards.Contains(card)
-            && (_asm.CardStaged(card) || !Check.StagedCardTypes.Contains(card.Data.cardType)) // If we staged the Display this check, we can freely bury.
+            card.Owner.DisplayedCards.Contains(card)
+            && _asm.StagedCards.Count(c => c.Data.cardType == card.Data.cardType) == 0
+            && card.Owner.IsProficient(card.Data)
+            && _contexts.CurrentResolvable is DamageResolvable resolvable
+            && resolvable.PlayerCharacter == card.Owner;
+
+        // We can also freely bury if the card was displayed for this damage resolution.
+        private bool CanFreelyBury(CardInstance card) =>
+            card.Owner.DisplayedCards.Contains(card)
+            && _asm.CardStaged(card)
             && card.Owner.IsProficient(card.Data)
             && _contexts.CurrentResolvable is DamageResolvable resolvable
             && resolvable.PlayerCharacter == card.Owner;

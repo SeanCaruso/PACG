@@ -221,6 +221,6 @@ namespace PACG.Gameplay
 
         // Facade pattern for CharacterLogic
         public IResolvable GetStartOfTurnResolvable() => Logic.GetStartOfTurnResolvable(this);
-        public IResolvable GetEndOfTurnResolvable() => Logic.GetEndOfTurnResolvable(this);
+        public CharacterPower? GetEndOfTurnPower() => Logic.GetEndOfTurnPower(this);
     }
 }

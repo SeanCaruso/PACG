@@ -17,7 +17,7 @@ namespace PACG.SharedAPI
         public Transform actionButtonContainer;
         public GameObject actionButtonPrefab;
 
-        private CardDisplay _currentlyEnlargedCard;
+        private GameObject _currentlyEnlargedCard;
 
         // Placeholder object with the same size to keep layouts behaving.
         private GameObject _placeholder;
@@ -46,29 +46,22 @@ namespace PACG.SharedAPI
             _contexts = gameServices.Contexts;
         }
 
-        public void ShowPreviewForCard(CardDisplay cardDisplay)
+        public void ShowPreviewForCard(GameObject cardObj)
         {
             if (_currentlyEnlargedCard != null) return;
 
-            var cardInstance = cardDisplay.ViewModel.CardInstance;
-            if (cardInstance == null)
-            {
-                Debug.LogError($"Tried to preview {cardDisplay.name}, but it has no CardInstance!");
-                return;
-            }
-
-            _currentlyEnlargedCard = cardDisplay;
+            _currentlyEnlargedCard = cardObj;
 
             // Store the card's original location and size.
-            _originalParent = cardDisplay.transform.parent;
-            _originalSiblingIndex = cardDisplay.transform.GetSiblingIndex();
-            _originalScale = cardDisplay.transform.localScale;
+            _originalParent = cardObj.transform.parent;
+            _originalSiblingIndex = cardObj.transform.GetSiblingIndex();
+            _originalScale = cardObj.transform.localScale;
             
             // Create a placeholder object by cloning the card and making it invisible.
-            _placeholder = Instantiate(cardDisplay.gameObject, cardDisplay.transform.parent, false);
+            _placeholder = Instantiate(cardObj.gameObject, cardObj.transform.parent, false);
             _placeholder.name = "Preview Clone";
             
-            _placeholder.transform.SetSiblingIndex(cardDisplay.transform.GetSiblingIndex());
+            _placeholder.transform.SetSiblingIndex(cardObj.transform.GetSiblingIndex());
             if (!_placeholder.TryGetComponent<CanvasGroup>(out var placeholderCanvasGroup))
                 placeholderCanvasGroup = _placeholder.AddComponent<CanvasGroup>();
 
@@ -78,7 +71,7 @@ namespace PACG.SharedAPI
             previewArea.SetActive(true);
 
             // Move the card to the preview area and enlarge it.
-            var cardRect = cardDisplay.GetComponent<RectTransform>();
+            var cardRect = cardObj.GetComponent<RectTransform>();
             cardRect.SetParent(previewArea.transform, false);
             cardRect.anchoredPosition = Vector3.zero;
             cardRect.anchorMin = new Vector2(0.5f, 0.5f);
@@ -86,9 +79,18 @@ namespace PACG.SharedAPI
             cardRect.localScale = new Vector3(2f, 2f, 1.0f);
 
             // Disable any drag handlers.
-            if (cardDisplay.TryGetComponent<CardDragHandler>(out var dragHandler))
+            if (cardObj.TryGetComponent<CardDragHandler>(out var dragHandler))
             {
                 dragHandler.enabled = false;
+            }
+
+            if (!cardObj.TryGetComponent<CardDisplay>(out var cardDisplay)) return;
+
+            var cardInstance = cardDisplay.ViewModel.CardInstance;
+            if (cardInstance == null)
+            {
+                Debug.LogWarning($"Tried to preview {cardDisplay.name}, but it has no CardInstance!");
+                return;
             }
 
             // If there's a resolvable, grab any additional actions (damage, give, etc.).

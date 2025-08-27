@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using PACG.SharedAPI;
 using UnityEngine;
 
 namespace PACG.Gameplay
@@ -42,6 +43,8 @@ namespace PACG.Gameplay
 
             _locationPcs[oldLoc].Remove(pc);
             SetPcLocation(pc, newLoc);
+            
+            GameEvents.RaiseLocationChanged(newLoc);
         }
 
         /// <summary>

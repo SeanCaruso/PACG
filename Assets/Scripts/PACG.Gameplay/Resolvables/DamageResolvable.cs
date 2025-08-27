@@ -9,6 +9,7 @@ namespace PACG.Gameplay
         public PlayerCharacter PlayerCharacter { get; }
         public string DamageType { get; }
         public int Amount { get; private set; }
+        private int _currentResolved;
         
         private PF.ActionType _defaultActionType = PF.ActionType.Discard;
         public void OverrideActionType(PF.ActionType actionType) => _defaultActionType = actionType;
@@ -23,6 +24,8 @@ namespace PACG.Gameplay
         public override List<IStagedAction> GetAdditionalActionsForCard(CardInstance card)
         {
             List<IStagedAction> actions = new();
+            
+            if (_currentResolved >= Amount) return actions;
 
             // Add default damage discard action if the card was in the player's hand.
             if (PlayerCharacter.Hand.Contains(card))
@@ -57,16 +60,15 @@ namespace PACG.Gameplay
                         break;
                 }
             }
+            _currentResolved = totalResolved;
 
-            if (totalResolved == Amount)
+            if (totalResolved >= Amount)
             {
                 GameEvents.SetStatusText("");
                 return true;
             }
 
-            GameEvents.SetStatusText(totalResolved < Amount
-                ? $"Damage: Discard {Amount - totalResolved}"
-                : $"Damage: Too much damage taken!");
+            GameEvents.SetStatusText($"Damage: Discard {Amount - totalResolved}");
 
             return false;
         }

@@ -10,13 +10,16 @@ namespace PACG.SharedAPI
     {
         [Header("Dependencies")]
         public CardDisplayFactory CardDisplayFactory;
+        public LocationDisplayFactory LocationDisplayFactory;
         
         [Header("Card Areas")]
+        public RectTransform LocationContainer;
         public RectTransform HoursContainer;
         public RectTransform EncounteredContainer;
         
         protected void Awake()
         {
+            GameEvents.LocationChanged += OnLocationChanged;
             GameEvents.HourChanged += OnHourChanged;
             GameEvents.EncounterStarted += OnEncounterStarted;
             GameEvents.EncounterEnded += OnEncounterEnded;
@@ -24,6 +27,7 @@ namespace PACG.SharedAPI
 
         protected void OnDestroy()
         {
+            GameEvents.LocationChanged -= OnLocationChanged;
             GameEvents.HourChanged -= OnHourChanged;
             GameEvents.EncounterStarted -= OnEncounterStarted;
             GameEvents.EncounterEnded -= OnEncounterEnded;
@@ -32,6 +36,18 @@ namespace PACG.SharedAPI
         // ========================================================================================
         // TURN AND ENCOUNTER MANAGEMENT
         // ========================================================================================
+
+        private void OnLocationChanged(Location location)
+        {
+            if (LocationContainer.childCount == 1)
+                Destroy(LocationContainer.GetChild(0).gameObject);
+            
+            LocationDisplayFactory.CreateLocationDisplay(
+                location,
+                LocationDisplayFactory.DisplayContext.Default,
+                LocationContainer
+            );
+        }
 
         private void OnHourChanged(CardInstance hourCard)
         {

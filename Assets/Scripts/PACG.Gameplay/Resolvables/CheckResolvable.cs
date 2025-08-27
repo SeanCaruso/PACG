@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using PACG.SharedAPI;
 
 namespace PACG.Gameplay
 {
@@ -20,6 +21,13 @@ namespace PACG.Gameplay
 
         public override bool CanCommit(List<IStagedAction> actions) => true;
 
-        public override IProcessor CreateProcessor(GameServices gameServices) => new CheckController(this, gameServices);
+        public override IProcessor CreateProcessor(GameServices gameServices) =>
+            new CheckController(this, gameServices);
+
+        public override StagedActionsState GetUIState(List<IStagedAction> actions)
+        {
+            // The only option is Committing.
+            return new StagedActionsState(false, true, false, false);
+        }
     }
 }

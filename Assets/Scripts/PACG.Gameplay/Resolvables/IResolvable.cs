@@ -11,6 +11,7 @@ namespace PACG.Gameplay
         IProcessor CreateProcessor(GameServices gameServices);
         public void Resolve();
         public StagedActionsState GetUIState(List<IStagedAction> actions);
+        public void OnSkip();
 
         public bool CancelAbortsPhase { get; }
     }

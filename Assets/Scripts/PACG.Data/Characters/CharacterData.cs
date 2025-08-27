@@ -42,6 +42,8 @@ namespace PACG.Data
         public Sprite SpriteDisabled;
         [TextArea(2, 3)]
         public string Text;
+        
+        public Action OnActivate;
 
         public bool Equals(CharacterPower other)
         {

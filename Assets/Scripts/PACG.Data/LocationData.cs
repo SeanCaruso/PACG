@@ -1,8 +1,21 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace PACG.Data
 {
+    [Serializable]
+    public struct LocationPower
+    {
+        public bool IsActivated;
+        public Sprite SpriteEnabled;
+        public Sprite SpriteDisabled;
+        [TextArea(2, 3)]
+        public string Text;
+
+        public Action OnActivate;
+    }
+    
     [CreateAssetMenu(fileName = "LocationName", menuName = "Pathfinder/Location Card")]
     public class LocationData : ScriptableObject
     {
@@ -11,12 +24,9 @@ namespace PACG.Data
         public int Level;
 
         [Header("Powers")]
-        [TextArea(2, 3)]
-        public string Power_AtLocation;
-        [TextArea(2, 3)]
-        public string Power_ToClose;
-        [TextArea(2, 3)]
-        public string Power_WhenClosed;
+        public LocationPower AtLocationPower;
+        public LocationPower ToClosePower;
+        public LocationPower WhenClosedPower;
 
         [Header("Card List")]
         public int NumMonsters;
