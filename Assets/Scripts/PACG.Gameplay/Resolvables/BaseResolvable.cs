@@ -31,7 +31,7 @@ namespace PACG.Gameplay
         public virtual void Resolve()
         {
         }
-        
+
         public virtual void OnSkip()
         {
         }
@@ -45,12 +45,12 @@ namespace PACG.Gameplay
             var canCommit = actions.Count > 0 && CanCommit(actions);
             var canSkip = actions.Count == 0 && CanCommit(actions);
 
-            return new StagedActionsState(
-                canCommit: canCommit,
-                canSkip: canSkip,
-                canCancel: actions.Count > 0 || CancelAbortsPhase,
-                isExploreEnabled: false // ASM takes care of this one.
-            );
+            return new StagedActionsState
+            {
+                IsCommitButtonVisible = canCommit,
+                IsSkipButtonVisible = canSkip,
+                IsCancelButtonVisible = actions.Count > 0 || CancelAbortsPhase,
+            };
         }
 
         public virtual bool CancelAbortsPhase => false;

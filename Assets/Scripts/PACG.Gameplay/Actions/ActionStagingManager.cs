@@ -18,7 +18,8 @@ namespace PACG.Gameplay
         private readonly Dictionary<PlayerCharacter, List<IStagedAction>> _pcsStagedActions = new();
         private readonly Dictionary<CardInstance, CardLocation> _originalCardLocs = new();
 
-        private bool HasExploreStaged { get; set; }
+        private bool _hasMoveStaged;
+        private bool _hasExploreStaged;
 
         public IReadOnlyList<IStagedAction> StagedActionsFor(PlayerCharacter pc) =>
             _pcsStagedActions.GetValueOrDefault(pc, new List<IStagedAction>());
@@ -53,7 +54,12 @@ namespace PACG.Gameplay
                 return;
             }
 
-            HasExploreStaged = action is ExploreAction;
+            _hasMoveStaged = action is MoveAction;
+            _hasExploreStaged = action is ExploreAction;
+            if (_hasMoveStaged)
+                GameEvents.SetStatusText("Move?");
+            else if (_hasExploreStaged)
+                GameEvents.SetStatusText("Explore?");
 
             // If this is the first staged action for this card, store where it originally came from.
             _originalCardLocs.TryAdd(action.Card, action.Card.CurrentLocation);
@@ -85,7 +91,9 @@ namespace PACG.Gameplay
 
             GameEvents.RaiseCardLocationsChanged(_originalCardLocs.Keys.ToList());
 
-            HasExploreStaged = false;
+            _hasMoveStaged = false;
+            _hasExploreStaged = false;
+            
             _originalCardLocs.Clear();
             if (_pcsStagedActions.TryGetValue(pc, out var pcActions))
                 pcActions.Clear();
@@ -123,12 +131,14 @@ namespace PACG.Gameplay
 
         private StagedActionsState GetDefaultUiState(List<IStagedAction> actions)
         {
-            return new StagedActionsState(
-                canCommit: actions.Any() && !HasExploreStaged,
-                canSkip: false,
-                canCancel: actions.Any(),
-                isExploreEnabled: _contexts.TurnContext?.CanFreelyExplore == true || HasExploreStaged
-            );
+            return new StagedActionsState
+            {
+                IsCancelButtonVisible = actions.Any(),
+                IsCommitButtonVisible = actions.Any() && !(_hasExploreStaged || _hasMoveStaged),
+                IsSkipButtonVisible = false,
+                IsMoveEnabled = _contexts.TurnContext?.CanMove == true || _hasMoveStaged,
+                IsExploreEnabled = _contexts.TurnContext?.CanFreelyExplore == true || _hasExploreStaged
+            };
         }
 
         public DicePool GetStagedDicePool() => _contexts.CheckContext?.DicePool(
@@ -148,7 +158,7 @@ namespace PACG.Gameplay
                 action.Commit();
             }
 
-            HasExploreStaged = false;
+            _hasExploreStaged = false;
             _originalCardLocs.Clear();
             _pcsStagedActions.Clear();
             _cards.RestoreRevealedCardsToHand();

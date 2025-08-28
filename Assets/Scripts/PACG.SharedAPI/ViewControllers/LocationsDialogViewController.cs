@@ -1,4 +1,3 @@
-using System.Linq;
 using PACG.Gameplay;
 using PACG.Presentation.LocationsDialog;
 using UnityEngine;
@@ -26,10 +25,10 @@ namespace PACG.SharedAPI
             DialogEvents.MoveClickedEvent -= OnMoveClicked;
         }
 
-        private void OnMoveClicked(PlayerCharacter pc, ContextManager contexts)
+        private void OnMoveClicked(PlayerCharacter pc, GameServices gameServices)
         {
             var gui = Instantiate(LocationsDialogPrefab, LocationsDialogContainer);
-            gui.Initialize(LocationDisplayFactory, contexts, pc);
+            gui.Initialize(LocationDisplayFactory, gameServices, pc);
         }
     }
 }

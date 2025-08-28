@@ -5,10 +5,12 @@ namespace PACG.Gameplay
     public class HorseLogic : CardLogicBase
     {
         // Dependency injection of services
+        private readonly ActionStagingManager _asm;
         private readonly ContextManager _contexts;
         
         public HorseLogic(GameServices gameServices) : base(gameServices)
         {
+            _asm = gameServices.ASM;
             _contexts = gameServices.Contexts;
         }
 
@@ -30,9 +32,13 @@ namespace PACG.Gameplay
             var actions = new List<IStagedAction>();
             
             // Recharge to move while not in an encounter.
-            if (_contexts.CurrentResolvable == null && _contexts.EncounterContext == null)
+            if (_contexts.CurrentResolvable == null
+                && _contexts.EncounterContext == null
+                && _asm.StagedCards.Count == 0)
+            {
                 actions.Add(new MoveAction(card, PF.ActionType.Recharge));
-            
+            }
+
             // Discard to explore.
             if (_contexts.IsExplorePossible && card.Owner == _contexts.TurnContext.Character)
                 actions.Add(new ExploreAction(card, PF.ActionType.Discard));

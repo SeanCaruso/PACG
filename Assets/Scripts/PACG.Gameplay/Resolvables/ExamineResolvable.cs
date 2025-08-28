@@ -64,7 +64,7 @@ namespace PACG.Gameplay
         public override StagedActionsState GetUIState(List<IStagedAction> actions)
         {
             // The Examine GUI handles its own button.
-            return new StagedActionsState(false, false, false, false);
+            return new StagedActionsState();
         }
     }
 }

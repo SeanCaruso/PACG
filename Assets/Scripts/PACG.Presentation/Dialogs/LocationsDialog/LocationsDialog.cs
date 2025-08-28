@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using PACG.Gameplay;
 using PACG.SharedAPI;
 using TMPro;
@@ -22,7 +21,9 @@ namespace PACG.Presentation.LocationsDialog
         [Header("Prefabs")]
         public GameObject ActionButtonPrefab;
 
+        private ActionStagingManager _asm;
         private ContextManager _contexts;
+        
         private PlayerCharacter _pc;
         private LocationDisplayFactory _locationDisplayFactory;
 
@@ -36,13 +37,14 @@ namespace PACG.Presentation.LocationsDialog
             CancelButton.GetComponent<Button>().onClick.RemoveAllListeners();
         }
 
-        public void Initialize(LocationDisplayFactory locationDisplayFactory, ContextManager contexts, PlayerCharacter pc)
+        public void Initialize(LocationDisplayFactory locationDisplayFactory, GameServices gameServices, PlayerCharacter pc)
         {
-            _contexts = contexts;
+            _asm = gameServices.ASM;
+            _contexts = gameServices.Contexts;
             _pc = pc;
             _locationDisplayFactory = locationDisplayFactory;
             
-            foreach (var location in contexts.GameContext.Locations)
+            foreach (var location in _contexts.GameContext.Locations)
             {
                 var buttonObj = Instantiate(ActionButtonPrefab, LocationButtonsContainer);
                 buttonObj.GetComponentInChildren<TextMeshProUGUI>().text = location.Name;
@@ -73,6 +75,7 @@ namespace PACG.Presentation.LocationsDialog
                 _contexts.TurnContext.CanMove = false;
                 GameEvents.RaiseTurnStateChanged();
                 Destroy(gameObject);
+                _asm.Commit();
             });
             
             var confirmImage = confirmButton.GetComponent<Image>();

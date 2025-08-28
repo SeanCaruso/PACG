@@ -6,6 +6,7 @@ namespace PACG.Gameplay
     public class LookoutLogic : CardLogicBase
     {
         // Dependency injection of services
+        private readonly ActionStagingManager _asm;
         private readonly ContextManager _contexts;
         private readonly GameFlowManager _gameFlow;
         private readonly GameServices _gameServices;
@@ -53,9 +54,10 @@ namespace PACG.Gameplay
                 actions.Add(new PlayCardAction(card, PF.ActionType.Recharge));
             
             // Can recharge to examine outside of resolvables or encounters.
-            if (_contexts.CurrentResolvable == null &&
-                _contexts.EncounterContext == null &&
-                card.Owner.Location.Count > 0)
+            if (_contexts.CurrentResolvable == null
+                && _contexts.EncounterContext == null
+                && card.Owner.Location.Count > 0
+                && _asm.StagedCards.Count == 0)
             {
                 actions.Add(new PlayCardAction(card, PF.ActionType.Recharge));
             }

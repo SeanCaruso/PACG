@@ -1,10 +1,8 @@
 using PACG.Data;
 using PACG.Gameplay;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 using UnityEngine.UI;
 
 namespace PACG.SharedAPI
@@ -63,7 +61,7 @@ namespace PACG.SharedAPI
             // Hook up button clicks.
             //giveCardButton.onClick.AddListener(() => GiveCardButton_OnClick());
             moveButton.onClick.AddListener(() =>
-                DialogEvents.RaiseMoveClickedEvent(_contexts.TurnContext.Character, _contexts));
+                DialogEvents.RaiseMoveClickedEvent(_contexts.TurnContext.Character, _gameServices));
             exploreButton.onClick.AddListener(ExploreButton_OnClick);
             optionalDiscardButton.onClick.AddListener(() =>
                 _gameFlowManager.StartPhase(new EndTurnController(false, _gameServices), "Turn"));
@@ -180,6 +178,8 @@ namespace PACG.SharedAPI
             commitButton.gameObject.SetActive(state.IsCommitButtonVisible);
             skipButton.gameObject.SetActive(state.IsSkipButtonVisible);
 
+            UpdateButton(moveButton, state.IsMoveEnabled, state.IsMoveEnabled ? MoveEnabled : MoveDisabled);
+            
             UpdateButton(exploreButton, state.IsExploreEnabled,
                 state.IsExploreEnabled ? ExploreEnabled : ExploreDisabled);
         }

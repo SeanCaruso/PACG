@@ -5,12 +5,14 @@ namespace PACG.Gameplay
 {
     public class SpyglassLogic : CardLogicBase
     {
+        private readonly ActionStagingManager _asm;
         private readonly ContextManager _contexts;
 
         private CheckContext Check => _contexts.CheckContext;
 
         public SpyglassLogic(GameServices gameServices) : base(gameServices) 
         {
+            _asm = gameServices.ASM;
             _contexts = gameServices.Contexts;
         }
 
@@ -40,7 +42,8 @@ namespace PACG.Gameplay
             // Can discard to examine any time outside resolvables or encounters.
             if (_contexts.CurrentResolvable == null
                 && _contexts.EncounterContext == null
-                && card.Owner.Location.Count > 0)
+                && card.Owner.Location.Count > 0
+                && _asm.StagedCards.Count == 0)
             {
                 actions.Add(new PlayCardAction(card, PF.ActionType.Discard));
             }

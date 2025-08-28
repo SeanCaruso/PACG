@@ -36,7 +36,7 @@ namespace PACG.Gameplay
         public override StagedActionsState GetUIState(List<IStagedAction> _)
         {
             // This handles its own buttons.
-            return new StagedActionsState(false, false, false, false);
+            return new StagedActionsState();
         }
     }
 }

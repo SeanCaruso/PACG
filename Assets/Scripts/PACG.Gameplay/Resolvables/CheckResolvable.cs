@@ -27,7 +27,10 @@ namespace PACG.Gameplay
         public override StagedActionsState GetUIState(List<IStagedAction> actions)
         {
             // The only option is Committing.
-            return new StagedActionsState(false, true, false, false);
+            return new StagedActionsState
+            {
+                IsCommitButtonVisible = true
+            };
         }
     }
 }
