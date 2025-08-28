@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72b1ad41f9c218045b980737984353fc, type: 3}
+  m_Name: Detect Magic
+  m_EditorClassIdentifier: 
+  cardID: DetectMagic
+  cardName: Detect Magic
+  cardType: 4
+  StoryBaneType: 0
+  cardLevel: 0
+  cardArt: {fileID: 0}
+  checkRequirement:
+    mode: 0
+    checkSteps:
+    - baseDC: 3
+      adventureLevelMult: 0
+      category: 1
+      allowedSkills: 0300000004000000070000000b000000
+  rerollThreshold: 0
+  powers: Banish to examine the top card of your location. If it is a Magic card,
+    you may encounter it. If it is not, you may shuffle your location.
+  recovery: If proficient, discard this card; you may succeed at an Arcane or Divine
+    5 check to recharge it instead.
+  immunities: []
+  vulnerabilities: []
+  IsLoot: 0
+  traits:
+  - Magic
+  - Arcane
+  - Divine

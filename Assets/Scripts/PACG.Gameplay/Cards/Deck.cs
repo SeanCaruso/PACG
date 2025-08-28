@@ -21,7 +21,7 @@ namespace PACG.Gameplay
             _cardManager = cardManager;
         }
 
-        private void Shuffle()
+        public void Shuffle()
         {
             for (var i = _cards.Count - 1; i > 0; i--)
             {

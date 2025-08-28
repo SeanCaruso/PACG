@@ -17,6 +17,7 @@ namespace PACG.Gameplay
 
         public Deck Deck { get; }
         public int Count => Deck.Count;
+        public void Shuffle() => Deck.Shuffle();
 
         public override string ToString() => LocationData.LocationName;
 

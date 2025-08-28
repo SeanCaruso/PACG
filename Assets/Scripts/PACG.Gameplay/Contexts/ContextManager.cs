@@ -89,15 +89,15 @@ namespace PACG.Gameplay
 
                 if (args.HasResponses)
                 {
-                    var options = args.CardResponses.Select(response => 
+                    var options = args.CardResponses.Select(response =>
                         new PlayerChoiceResolvable.ChoiceOption(response.Description, response.OnAccept)
                     ).ToList();
                     options.Add(new PlayerChoiceResolvable.ChoiceOption("Skip", () => { }));
-                    
+
                     var choices = new PlayerChoiceResolvable("Use Power?", options.ToArray());
                     var damageProcessor = new NewResolvableProcessor(damageResolvable, _gameServices);
                     choices.OverrideNextProcessor(damageProcessor);
-                    
+
                     var choiceProcessor = new NewResolvableProcessor(choices, _gameServices);
                     _gameServices.GameFlow.StartPhase(choiceProcessor, "Power Options");
                     return;
@@ -154,11 +154,13 @@ namespace PACG.Gameplay
         public Location EncounterPcLocation => GameContext?.GetPcLocation(EncounterContext?.Character);
 
         // Test for additional explorations
-        public bool IsExplorePossible => ( // Exploration is possible if...
-                CurrentResolvable == null && // ... we don't have a resolvable...
-                EncounterContext == null && // ... or encounter, ...
-                TurnPcLocation.Count > 0 && // ... we have more cards in the location, ...
-                _asm.StagedCards.Count == 0 // ... and we don't have any currently staged cards.
-            );
+        public bool AreCardsPlayable => // Generic cards are playable if...
+        CurrentResolvable == null // ... we don't have a resolvable...
+         && EncounterContext == null // ... or encounter...
+         && _asm.StagedActions.Count == 0; // ... and we don't have any currently staged actions.
+        
+        public bool IsExplorePossible => // Exploration is possible if...
+            AreCardsPlayable // ... we can play cards in general...
+            && TurnPcLocation.Count > 0; // ... and we have more cards in the location.
     }
 }
