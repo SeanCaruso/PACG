@@ -15,17 +15,20 @@ MonoBehaviour:
   LocationName: Caravan
   Level: 0
   AtLocationPower:
+    PowerType: 0
     IsActivated: 1
     SpriteEnabled: {fileID: 7622579193695881461, guid: 9e6b389c106158945ab9805dc74d7a54, type: 3}
     SpriteDisabled: {fileID: 5071702482097040453, guid: d6d52556353153e4f947d2508ca4b58d, type: 3}
     Text: At the start of your turn, each local character may move.
   ToClosePower:
+    PowerType: 1
     IsActivated: 0
     SpriteEnabled: {fileID: 0}
     SpriteDisabled: {fileID: 0}
     Text: Either succeed at a Wisdom or Perception 5+# check or summon and defeat
       the danger.
   WhenClosedPower:
+    PowerType: 2
     IsActivated: 0
     SpriteEnabled: {fileID: 0}
     SpriteDisabled: {fileID: 0}

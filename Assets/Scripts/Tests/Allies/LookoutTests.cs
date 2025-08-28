@@ -1,40 +1,25 @@
-using System.Linq;
 using NUnit.Framework;
 using PACG.Gameplay;
 
 namespace Tests.Allies
 {
-    public class LookoutTests
+    public class LookoutTests : BaseTest
     {
-        private GameServices _gameServices;
         private CardInstance _lookout;
-
-        [OneTimeSetUp]
-        public void OneTimeSetup()
-        {
-            _gameServices = TestUtils.CreateGameServices();
-        }
         
         [SetUp]
-        public void Setup()
+        public override void Setup()
         {
-            _lookout = TestUtils.GetCard(_gameServices, "Lookout");
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            _gameServices.Contexts.EndCheck();
-            _gameServices.Contexts.EndResolvable();
-            _gameServices.Contexts.EndEncounter();
-            _gameServices.Contexts.EndTurn();
+            base.Setup();
+            
+            _lookout = TestUtils.GetCard(GameServices, "Lookout");
         }
 
         [Test]
         public void Lookout_Combat_NoActions()
         {
-            TestUtils.SetupEncounter(_gameServices, "Valeros", "Zombie");
-            _gameServices.Contexts.EncounterContext.Character.AddToHand(_lookout);
+            TestUtils.SetupEncounter(GameServices, "Valeros", "Zombie");
+            GameServices.Contexts.EncounterContext.Character.AddToHand(_lookout);
             
             var actions = _lookout.GetAvailableActions();
             Assert.AreEqual(0, actions.Count);
@@ -43,16 +28,28 @@ namespace Tests.Allies
         [Test]
         public void Lookout_Combat_OneAction()
         {
-            TestUtils.SetupEncounter(_gameServices, "Valeros", "Dire Badger");
-            _gameServices.Contexts.EncounterContext.Character.AddToHand(_lookout);
+            TestUtils.SetupEncounter(GameServices, "Valeros", "Dire Badger");
+            GameServices.Contexts.EncounterContext.Character.AddToHand(_lookout);
             
             var actions = _lookout.GetAvailableActions();
             Assert.AreEqual(1, actions.Count);
             
-            _gameServices.ASM.StageAction(actions[0]);
+            GameServices.ASM.StageAction(actions[0]);
 
-            var dicePool = _gameServices.Contexts.CheckContext.DicePool(_gameServices.ASM.StagedActions);
+            var dicePool = GameServices.Contexts.CheckContext.DicePool(GameServices.ASM.StagedActions);
             Assert.AreEqual("2d4", dicePool.ToString());
+        }
+
+        [Test]
+        public void Lookout_Not_Usable_During_Damage()
+        {
+            Valeros.AddToHand(_lookout);
+            
+            var damage = new DamageResolvable(Valeros, 1, "Magic");
+            GameServices.Contexts.NewResolvable(damage);
+            
+            var actions = _lookout.GetAvailableActions();
+            Assert.AreEqual(0, actions.Count);
         }
     }
 }

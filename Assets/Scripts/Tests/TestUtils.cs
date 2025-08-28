@@ -66,13 +66,15 @@ namespace Tests
         public static PlayerCharacter GetCharacter(GameServices gameServices, string characterName)
         {
             var characterData = LoadCardData<CharacterData>(characterName);
-            return new PlayerCharacter(characterData, null, gameServices);
+            var logic = gameServices.Logic.GetLogic<CharacterLogicBase>(characterName);
+            return new PlayerCharacter(characterData, logic, gameServices);
         }
 
         public static Location GetLocation(GameServices gameServices, string locationName)
         {
             var locationData = LoadCardData<LocationData>(locationName);
-            return new Location(locationData, null, gameServices);
+            var logic = gameServices.Logic.GetLogic<LocationLogicBase>(locationName);
+            return new Location(locationData, logic, gameServices);
         }
 
         public static void SetupEncounter(GameServices gameServices, string character, string card)

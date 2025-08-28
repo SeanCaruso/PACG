@@ -51,6 +51,7 @@ namespace PACG.Gameplay
         // Can reveal on your Perception check.
         private bool CanReveal(CardInstance card) =>
             Check != null
+            && _contexts.CurrentResolvable is CheckResolvable
             && Check.Character == card.Owner
             && Check.CanUseSkill(PF.Skill.Perception)
             && !Check.StagedCardTypes.Contains(PF.CardType.Item);

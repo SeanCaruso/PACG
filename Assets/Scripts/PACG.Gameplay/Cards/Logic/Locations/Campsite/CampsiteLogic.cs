@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using PACG.Data;
 
@@ -7,10 +6,12 @@ namespace PACG.Gameplay
     public class CampsiteLogic : LocationLogicBase
     {
         // Dependency injections
+        private readonly ActionStagingManager _asm;
         private readonly ContextManager _contexts;
         
         public CampsiteLogic(GameServices gameServices)
         {
+            _asm = gameServices.ASM;
             _contexts = gameServices.Contexts;
         }
 
@@ -25,7 +26,15 @@ namespace PACG.Gameplay
                 return null;
             }
 
-            return location.LocationData.AtLocationPower;
+            var healPower = location.LocationData.AtLocationPower;
+            healPower.OnActivate = () =>
+            {
+                _contexts.TurnContext.PerformedLocationPowers.Add(healPower);
+                pc.Heal(1);
+                _asm.Commit();
+            };
+
+            return healPower;
         }
 
         public override IResolvable GetToCloseResolvable()

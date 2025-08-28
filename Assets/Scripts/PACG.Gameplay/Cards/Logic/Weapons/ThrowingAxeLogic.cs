@@ -54,6 +54,7 @@ namespace PACG.Gameplay
         private bool CanReveal(CardInstance card) =>
             // Reveal power can be used by the current owner while playing cards for a Strength, Dexterity, Melee, or Ranged combat check.
             Check is { IsCombatValid: true }
+            && _contexts.CurrentResolvable is CheckResolvable { HasCombat: true }
             && Check.Character == card.Owner
             && !Check.StagedCardTypes.Contains(card.Data.cardType)
             && Check.CanUseSkill(_validSkills);
@@ -61,6 +62,7 @@ namespace PACG.Gameplay
         private bool CanDiscard(CardInstance card) =>
             // Discard power can be freely used on a local combat check while playing cards if the owner is proficient.
             Check is { IsCombatValid: true }
+            && _contexts.CurrentResolvable is CheckResolvable { HasCombat: true }
             && card.Owner.IsProficient(card.Data)
             && Check.IsLocal(card.Owner);
     }

@@ -1,4 +1,6 @@
+using PACG.Data;
 using PACG.Gameplay;
+using PACG.Presentation;
 using UnityEngine;
 
 namespace PACG.SharedAPI
@@ -16,6 +18,8 @@ namespace PACG.SharedAPI
         public RectTransform LocationContainer;
         public RectTransform HoursContainer;
         public RectTransform EncounteredContainer;
+
+        private LocationDisplay _currentLocationDisplay;
         
         protected void Awake()
         {
@@ -23,6 +27,8 @@ namespace PACG.SharedAPI
             GameEvents.HourChanged += OnHourChanged;
             GameEvents.EncounterStarted += OnEncounterStarted;
             GameEvents.EncounterEnded += OnEncounterEnded;
+            
+            GameEvents.LocationPowerEnabled += OnLocationPowerEnabled;
         }
 
         protected void OnDestroy()
@@ -31,6 +37,8 @@ namespace PACG.SharedAPI
             GameEvents.HourChanged -= OnHourChanged;
             GameEvents.EncounterStarted -= OnEncounterStarted;
             GameEvents.EncounterEnded -= OnEncounterEnded;
+            
+            GameEvents.LocationPowerEnabled -= OnLocationPowerEnabled;
         }
 
         // ========================================================================================
@@ -39,10 +47,10 @@ namespace PACG.SharedAPI
 
         private void OnLocationChanged(Location location)
         {
-            if (LocationContainer.childCount == 1)
-                Destroy(LocationContainer.GetChild(0).gameObject);
+            if (_currentLocationDisplay)
+                Destroy(_currentLocationDisplay.gameObject);
             
-            LocationDisplayFactory.CreateLocationDisplay(
+            _currentLocationDisplay = LocationDisplayFactory.CreateLocationDisplay(
                 location,
                 LocationDisplayFactory.DisplayContext.Default,
                 LocationContainer
@@ -73,6 +81,34 @@ namespace PACG.SharedAPI
         {
             if (EncounteredContainer.childCount == 1)
                 Destroy(EncounteredContainer.GetChild(0).gameObject);
+        }
+
+        private void OnLocationPowerEnabled(LocationPower power, bool isEnabled)
+        {
+            switch (power.PowerType)
+            {
+                case LocationPowerType.AtLocation:
+                    _currentLocationDisplay.SetAtLocationPowerEnabled(isEnabled);
+                    if (isEnabled)
+                        _currentLocationDisplay.AtLocationButton.onClick.AddListener(() => power.OnActivate?.Invoke());
+                    else
+                        _currentLocationDisplay.AtLocationButton.onClick.RemoveAllListeners();
+                    break;
+                case LocationPowerType.ToClose:
+                    _currentLocationDisplay.SetToClosePowerEnabled(isEnabled);
+                    if (isEnabled)
+                        _currentLocationDisplay.ToCloseButton.onClick.AddListener(() => power.OnActivate?.Invoke());
+                    else
+                        _currentLocationDisplay.ToCloseButton.onClick.RemoveAllListeners();
+                    break;
+                case LocationPowerType.WhenClosed:
+                    _currentLocationDisplay.SetWhenClosedPowerEnabled(isEnabled);
+                    if (isEnabled)
+                        _currentLocationDisplay.WhenClosedButton.onClick.AddListener(() => power.OnActivate?.Invoke());
+                    else
+                        _currentLocationDisplay.WhenClosedButton.onClick.RemoveAllListeners();
+                    break;
+            }
         }
     }
 }

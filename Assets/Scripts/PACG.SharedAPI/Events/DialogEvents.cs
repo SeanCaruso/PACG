@@ -6,6 +6,11 @@ namespace PACG.SharedAPI
 {
     public static class DialogEvents
     {
+        // Turn phase events
+        public static event Action<PlayerCharacter, ContextManager> MoveClickedEvent;
+        public static void RaiseMoveClickedEvent(PlayerCharacter pc, ContextManager contexts) =>
+            MoveClickedEvent?.Invoke(pc, contexts);
+        
         // Deck examine events
         public static event Action<ExamineContext> ExamineEvent;
         public static void RaiseExamineEvent(ExamineContext examineContext) => ExamineEvent?.Invoke(examineContext);

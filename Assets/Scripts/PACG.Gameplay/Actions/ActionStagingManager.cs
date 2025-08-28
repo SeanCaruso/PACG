@@ -87,7 +87,8 @@ namespace PACG.Gameplay
 
             HasExploreStaged = false;
             _originalCardLocs.Clear();
-            _pcsStagedActions[pc].Clear();
+            if (_pcsStagedActions.TryGetValue(pc, out var pcActions))
+                pcActions.Clear();
 
             // Additional step for phase-level cancels
             if (_contexts.CurrentResolvable?.CancelAbortsPhase == true)

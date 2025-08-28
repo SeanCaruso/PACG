@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 using UnityEngine.UI;
 
 namespace PACG.SharedAPI
@@ -16,6 +17,18 @@ namespace PACG.SharedAPI
         public Button exploreButton; // The location deck.
         public Button optionalDiscardButton;
         public Button endTurnButton;
+
+        [Header("Turn Flow Sprites")]
+        public Sprite GiveCardEnabled;
+        public Sprite GiveCardDisabled;
+        public Sprite MoveEnabled;
+        public Sprite MoveDisabled;
+        public Sprite ExploreEnabled;
+        public Sprite ExploreDisabled;
+        public Sprite OptionalDiscardEnabled;
+        public Sprite OptionalDiscardDisabled;
+        public Sprite EndTurnEnabled;
+        public Sprite EndTurnDisabled;
 
         [Header("Action Staging Flow")]
         public Button cancelButton;
@@ -49,10 +62,13 @@ namespace PACG.SharedAPI
         {
             // Hook up button clicks.
             //giveCardButton.onClick.AddListener(() => GiveCardButton_OnClick());
-            //moveButton.onClick.AddListener(() => MoveButton_OnClick());
+            moveButton.onClick.AddListener(() =>
+                DialogEvents.RaiseMoveClickedEvent(_contexts.TurnContext.Character, _contexts));
             exploreButton.onClick.AddListener(ExploreButton_OnClick);
-            optionalDiscardButton.onClick.AddListener(() => _gameFlowManager.StartPhase(new EndTurnController(false, _gameServices), "Turn"));
-            endTurnButton.onClick.AddListener(() => _gameFlowManager.StartPhase(new EndTurnController(true, _gameServices), "Turn"));
+            optionalDiscardButton.onClick.AddListener(() =>
+                _gameFlowManager.StartPhase(new EndTurnController(false, _gameServices), "Turn"));
+            endTurnButton.onClick.AddListener(() =>
+                _gameFlowManager.StartPhase(new EndTurnController(true, _gameServices), "Turn"));
 
             cancelButton.onClick.AddListener(() => _asm.Cancel());
             commitButton.onClick.AddListener(() => _asm.Commit());
@@ -123,21 +139,31 @@ namespace PACG.SharedAPI
 
         private void UpdateTurnButtons()
         {
-            giveCardButton.enabled = false;
-            moveButton.enabled = false;
-            exploreButton.enabled = false;
-            optionalDiscardButton.enabled = false;
-            endTurnButton.enabled = false;
+            if (_contexts.CurrentResolvable != null || _contexts.TurnContext == null)
+            {
+                UpdateButton(giveCardButton, false, GiveCardDisabled);
+                UpdateButton(moveButton, false, MoveDisabled);
+                UpdateButton(exploreButton, false, ExploreDisabled);
+                UpdateButton(optionalDiscardButton, false, OptionalDiscardDisabled);
+                UpdateButton(endTurnButton, false, EndTurnDisabled);
+            }
+            else
+            {
+                var turn = _contexts.TurnContext;
+                UpdateButton(giveCardButton, turn.CanGive, turn.CanGive ? GiveCardEnabled : GiveCardDisabled);
+                UpdateButton(moveButton, turn.CanMove, turn.CanMove ? MoveEnabled : MoveDisabled);
+                UpdateButton(exploreButton, turn.CanFreelyExplore,
+                    turn.CanFreelyExplore ? ExploreEnabled : ExploreDisabled);
+                UpdateButton(optionalDiscardButton, turn.Character.Hand.Count > 0,
+                    turn.Character.Hand.Count > 0 ? OptionalDiscardEnabled : OptionalDiscardDisabled);
+                UpdateButton(endTurnButton, true, EndTurnEnabled);
+            }
+        }
 
-            // If we're mid-resolvable, everything should be disabled.
-            if (_contexts.CurrentResolvable != null) return;
-
-            var turn = _contexts.TurnContext;
-            giveCardButton.enabled = turn.CanGive;
-            moveButton.enabled = turn.CanMove;
-            exploreButton.enabled = turn.CanFreelyExplore;
-            optionalDiscardButton.enabled = turn.Character.Hand.Count > 0;
-            endTurnButton.enabled = true;
+        private static void UpdateButton(Button button, bool isEnabled, Sprite sprite)
+        {
+            button.enabled = isEnabled;
+            button.gameObject.GetComponent<Image>().sprite = sprite;
         }
 
         private void ExploreButton_OnClick()
@@ -154,8 +180,8 @@ namespace PACG.SharedAPI
             commitButton.gameObject.SetActive(state.IsCommitButtonVisible);
             skipButton.gameObject.SetActive(state.IsSkipButtonVisible);
 
-            exploreButton.enabled = state.IsExploreEnabled;
+            UpdateButton(exploreButton, state.IsExploreEnabled,
+                state.IsExploreEnabled ? ExploreEnabled : ExploreDisabled);
         }
     }
 }
-

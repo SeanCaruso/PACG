@@ -15,16 +15,19 @@ MonoBehaviour:
   LocationName: Campsite
   Level: 0
   AtLocationPower:
+    PowerType: 0
     IsActivated: 1
     SpriteEnabled: {fileID: 2058518826365189002, guid: 3e2f2442f98ec8841a3f13dcaca70d54, type: 3}
     SpriteDisabled: {fileID: -4945773871214007067, guid: b9f6bf30d923f264abf0c605b463c5ec, type: 3}
     Text: At the end of your turn, you may heal a card.
   ToClosePower:
+    PowerType: 1
     IsActivated: 0
     SpriteEnabled: {fileID: 0}
     SpriteDisabled: {fileID: 0}
     Text: Choose 3 different types of boons, then recharge a boon of each type.
   WhenClosedPower:
+    PowerType: 2
     IsActivated: 0
     SpriteEnabled: {fileID: 0}
     SpriteDisabled: {fileID: 0}

@@ -68,11 +68,11 @@ namespace PACG.Gameplay
         }
 
         // Can recharge on a local Perception check.
-        private bool CanRechargeForCheck(CardInstance card) => (
-            _contexts.CheckContext != null &&
-            _contexts.CheckContext.IsLocal(card.Owner) &&
-            !_contexts.CheckContext.StagedCardTypes.Contains(PF.CardType.Ally) &&
-            _contexts.CheckContext.CanUseSkill(PF.Skill.Perception)
-        );
+        private bool CanRechargeForCheck(CardInstance card) =>
+            _contexts.CurrentResolvable is CheckResolvable
+            && _contexts.CheckContext != null
+            && _contexts.CheckContext.IsLocal(card.Owner)
+            && !_contexts.CheckContext.StagedCardTypes.Contains(PF.CardType.Ally)
+            && _contexts.CheckContext.CanUseSkill(PF.Skill.Perception);
     }
 }

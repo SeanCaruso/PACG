@@ -55,10 +55,11 @@ namespace PACG.Gameplay
             List<IStagedAction> actions = new();
 
             // Can reveal if the owner has a combat check and can use Strength or Melee.
-            if (Check is { IsCombatValid: true } &&
-                Check.Character == card.Owner &&
-                Check.CanUseSkill(PF.Skill.Strength, PF.Skill.Melee) &&
-                !Check.StagedCardTypes.Contains(card.Data.cardType))
+            if (Check is { IsCombatValid: true }
+                && _contexts.CurrentResolvable is CheckResolvable {HasCombat: true}
+                && Check.Character == card.Owner
+                && Check.CanUseSkill(PF.Skill.Strength, PF.Skill.Melee)
+                && !Check.StagedCardTypes.Contains(card.Data.cardType))
             {
                 actions.Add(new PlayCardAction(card, PF.ActionType.Reveal, ("IsCombat", true)));
             }

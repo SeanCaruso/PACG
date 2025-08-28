@@ -1,59 +1,29 @@
 using NUnit.Framework;
-using PACG.Data;
 using PACG.Gameplay;
 
 namespace Tests.Weapons
 {
-    public class LongswordTests
+    public class LongswordTests : BaseTest
     {
-        private GameServices _gameServices;
-        private CardData _longswordData;
-        private CardInstance _longswordInstance;
-
-        private CharacterData _valerosData;
-        private PlayerCharacter _valeros;
-
-        [SetUp]
-        public void Setup()
-        {
-            _gameServices = TestUtils.CreateGameServices();
-        
-            _valerosData = TestUtils.LoadCardData<CharacterData>("Valeros");
-            _valeros = new PlayerCharacter(_valerosData, _gameServices.Logic.GetLogic<CharacterLogicBase>(_valerosData.CharacterName), _gameServices);
-        
-            _longswordData = TestUtils.LoadCardData<CardData>("Longsword");
-            _longswordInstance = _gameServices.Cards.New(_longswordData, _valeros);
-            _longswordInstance.CurrentLocation = CardLocation.Hand;
-        
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            _gameServices.Contexts.EndCheck();
-            _gameServices.Contexts.EndResolvable();
-            _gameServices.Contexts.EndEncounter();
-            _gameServices.Contexts.EndTurn();
-        }
     
         [Test]
         public void LongswordLogic_SetupWasSuccessful()
         {
-            Assert.IsNotNull(_longswordData);
-            Assert.AreEqual("Longsword", _longswordInstance.Data.cardName);
-            Assert.AreEqual(PF.CardType.Weapon, _longswordInstance.Data.cardType);
+            Assert.IsNotNull(Longsword.Data);
+            Assert.AreEqual("Longsword", Longsword.Data.cardName);
+            Assert.AreEqual(PF.CardType.Weapon, Longsword.Data.cardType);
         
-            Assert.IsNotNull(_valerosData);
-            Assert.AreEqual("Valeros", _valeros.CharacterData.CharacterName);
-            Assert.IsTrue(_valeros.IsProficient(_longswordInstance.Data));
+            Assert.IsNotNull(Valeros.CharacterData);
+            Assert.AreEqual("Valeros", Valeros.CharacterData.CharacterName);
+            Assert.IsTrue(Valeros.IsProficient(Longsword.Data));
         }
 
         [Test]
         public void Longsword_Combat_ProficientActions()
         {
-            TestUtils.SetupEncounter(_gameServices, "Valeros", "Zombie");
-            var longsword = TestUtils.GetCard(_gameServices, "Longsword");
-            _gameServices.Contexts.EncounterContext.Character.AddToHand(longsword);
+            TestUtils.SetupEncounter(GameServices, "Valeros", "Zombie");
+            var longsword = TestUtils.GetCard(GameServices, "Longsword");
+            GameServices.Contexts.EncounterContext.Character.AddToHand(longsword);
 
             // Before staging, a proficient PC has two actions.
             var actions = longsword.GetAvailableActions();
@@ -62,7 +32,7 @@ namespace Tests.Weapons
             Assert.AreEqual(PF.ActionType.Reload, actions[1].ActionType);
         
             // After staging, a proficient PC has one action.
-            _gameServices.ASM.StageAction(actions[0]);
+            GameServices.ASM.StageAction(actions[0]);
             actions = longsword.GetAvailableActions();
             Assert.AreEqual(1, actions.Count);
             Assert.AreEqual(PF.ActionType.Reload, actions[0].ActionType);
@@ -71,23 +41,22 @@ namespace Tests.Weapons
         [Test]
         public void Longsword_Reveal_Then_Reload()
         {
-            TestUtils.SetupEncounter(_gameServices, "Valeros", "Zombie");
-            var longsword = TestUtils.GetCard(_gameServices, "Longsword");
-            _gameServices.Contexts.EncounterContext.Character.AddToHand(longsword);
+            TestUtils.SetupEncounter(GameServices, "Valeros", "Zombie");
+            GameServices.Contexts.EncounterContext.Character.AddToHand(Longsword);
             
-            var actions = longsword.GetAvailableActions();
-            _gameServices.ASM.StageAction(actions[0]);
+            var actions = Longsword.GetAvailableActions();
+            GameServices.ASM.StageAction(actions[0]);
 
-            var stagedPool = _gameServices.ASM.GetStagedDicePool();
+            var stagedPool = GameServices.ASM.GetStagedDicePool();
             Assert.AreEqual(0, stagedPool.NumDice(12));
             Assert.AreEqual(1, stagedPool.NumDice(10));
             Assert.AreEqual(1, stagedPool.NumDice(8));
             Assert.AreEqual(0, stagedPool.NumDice(6));
             Assert.AreEqual(0, stagedPool.NumDice(4));
         
-            actions = longsword.GetAvailableActions();
-            _gameServices.ASM.StageAction(actions[0]);
-            stagedPool = _gameServices.ASM.GetStagedDicePool();
+            actions = Longsword.GetAvailableActions();
+            GameServices.ASM.StageAction(actions[0]);
+            stagedPool = GameServices.ASM.GetStagedDicePool();
             Assert.AreEqual(0, stagedPool.NumDice(12));
             Assert.AreEqual(1, stagedPool.NumDice(10));
             Assert.AreEqual(1, stagedPool.NumDice(8));
@@ -98,14 +67,13 @@ namespace Tests.Weapons
         [Test]
         public void Longsword_Reload()
         {
-            TestUtils.SetupEncounter(_gameServices, "Valeros", "Zombie");
-            var longsword = TestUtils.GetCard(_gameServices, "Longsword");
-            _gameServices.Contexts.EncounterContext.Character.AddToHand(longsword);
+            TestUtils.SetupEncounter(GameServices, "Valeros", "Zombie");
+            GameServices.Contexts.EncounterContext.Character.AddToHand(Longsword);
             
-            var actions = longsword.GetAvailableActions();
-            _gameServices.ASM.StageAction(actions[1]);
+            var actions = Longsword.GetAvailableActions();
+            GameServices.ASM.StageAction(actions[1]);
         
-            var stagedPool = _gameServices.ASM.GetStagedDicePool();
+            var stagedPool = GameServices.ASM.GetStagedDicePool();
             Assert.AreEqual(0, stagedPool.NumDice(12));
             Assert.AreEqual(1, stagedPool.NumDice(10));
             Assert.AreEqual(1, stagedPool.NumDice(8));
@@ -116,17 +84,28 @@ namespace Tests.Weapons
         [Test]
         public void Longsword_Adds_Traits()
         {
-            TestUtils.SetupEncounter(_gameServices, "Valeros", "Zombie");
-            var longsword = TestUtils.GetCard(_gameServices, "Longsword");
-            _gameServices.Contexts.EncounterContext.Character.AddToHand(longsword);
+            TestUtils.SetupEncounter(GameServices, "Valeros", "Zombie");
+            GameServices.Contexts.EncounterContext.Character.AddToHand(Longsword);
         
-            var actions = longsword.GetAvailableActions();
-            _gameServices.ASM.StageAction(actions[0]);
+            var actions = Longsword.GetAvailableActions();
+            GameServices.ASM.StageAction(actions[0]);
 
-            foreach (var trait in longsword.Traits)
+            foreach (var trait in Longsword.Traits)
             {
-                Assert.IsTrue(_gameServices.Contexts.CheckContext.Invokes(trait));
+                Assert.IsTrue(GameServices.Contexts.CheckContext.Invokes(trait));
             }
+        }
+
+        [Test]
+        public void Longsword_Not_Usable_During_Damage()
+        {
+            Valeros.AddToHand(Longsword);
+            
+            var damage = new DamageResolvable(Valeros, 1, "Magic");
+            GameServices.Contexts.NewResolvable(damage);
+            
+            var actions = Longsword.GetAvailableActions();
+            Assert.AreEqual(0, actions.Count);
         }
     }
 }

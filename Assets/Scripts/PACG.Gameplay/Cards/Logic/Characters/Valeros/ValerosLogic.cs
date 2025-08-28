@@ -25,15 +25,14 @@ namespace PACG.Gameplay
 
             var rechargePower = pc.CharacterData.Powers[1];
 
-            if (validCards.Count <= 0
-                && _contexts.TurnContext?.PerformedCharacterPowers.Contains(rechargePower) == false)
+            if (validCards.Count <= 0)
             {
                 return null;
             }
 
             rechargePower.OnActivate = () =>
             {
-                var resolvable = new ValerosEndOfTurnResolvable(validCards, _gameServices);
+                var resolvable = new ValerosEndOfTurnResolvable(validCards, rechargePower, _gameServices);
                 _gameServices.GameFlow.Interrupt(new NewResolvableProcessor(resolvable, _gameServices));
                 _gameServices.ASM.Commit();
             };

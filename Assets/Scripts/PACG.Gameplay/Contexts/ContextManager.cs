@@ -117,6 +117,7 @@ namespace PACG.Gameplay
             resolvable.Initialize();
 
             // Update the UI.
+            GameEvents.RaiseTurnStateChanged();
             _asm.UpdateGameStatePreview();
             _asm.UpdateActionButtons();
         }
@@ -128,12 +129,14 @@ namespace PACG.Gameplay
         {
             CurrentResolvable?.Resolve();
             CurrentResolvable = null;
+            GameEvents.RaiseTurnStateChanged();
         }
 
         public void EndCheck()
         {
             DialogEvents.RaiseCheckEndEvent();
             CheckContext = null;
+            GameEvents.RaiseTurnStateChanged();
         }
 
         // ======================================================================

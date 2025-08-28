@@ -72,6 +72,7 @@ namespace PACG.Gameplay
         private bool IsCardPlayable(CardInstance card) =>
             // All powers are specific to the card's owner while playing cards during a Strength or Melee combat check.
             Check is { IsCombatValid: true }
+            && _contexts.CurrentResolvable is CheckResolvable { HasCombat: true }
             && Check.Character == card.Owner
             && Check.CanUseSkill(PF.Skill.Strength, PF.Skill.Melee);
     }

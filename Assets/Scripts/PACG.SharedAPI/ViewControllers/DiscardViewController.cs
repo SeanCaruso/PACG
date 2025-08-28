@@ -72,11 +72,16 @@ namespace PACG.SharedAPI
                 _discards.Add(card);
                 UpdateShownDiscard();
             }
-            // Card leaving discard.
-            else if (_discards.Contains(card) && card.CurrentLocation != CardLocation.Discard)
+            // Displayed card leaving discard.
+            else if (_discards.Count > 0 && _discards[^1] == card && card.CurrentLocation != CardLocation.Discard)
             {
                 _discards.Remove(card);
                 UpdateShownDiscard();
+            }
+            // Undisplayed card leaving discard.
+            else if (_discards.Contains(card) && card.CurrentLocation != CardLocation.Discard)
+            {
+                _discards.Remove(card);
             }
         }
 

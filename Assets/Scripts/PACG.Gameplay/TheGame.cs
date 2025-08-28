@@ -1,6 +1,7 @@
 using PACG.Data;
 using PACG.SharedAPI;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace PACG.Gameplay
@@ -21,7 +22,7 @@ namespace PACG.Gameplay
         public CardData hourCardData;
         public CharacterData testCharacter;
         public List<CardData> characterDeck;
-        public LocationData testLocation;
+        public List<LocationData> TestLocations;
         public List<CardData> testLocationDeck;
         // ================================================================================
 
@@ -79,26 +80,33 @@ namespace PACG.Gameplay
             LeanTween.reset();
 
             // Set up test data
-            for (var i = 0; i < 30;  i++)
+            for (var i = 0; i < 30; i++)
             {
                 _gameServices.Contexts.GameContext.HourDeck.ShuffleIn(_gameServices.Cards.New(hourCardData));
             }
 
-            var locationLogic = _gameServices.Logic.GetLogic<LocationLogicBase>(testLocation.LocationName);
-            Location location = new(testLocation, locationLogic, _gameServices);
-
-            foreach (var cardData in testLocationDeck)
+            foreach (var location in from testLocation in TestLocations
+                     let locationLogic = _gameServices.Logic.GetLogic<LocationLogicBase>(testLocation.LocationName)
+                     select new Location(testLocation, locationLogic, _gameServices))
             {
-                location.ShuffleIn(_gameServices.Cards.New(cardData), true);
+                _gameServices.Contexts.GameContext.AddLocation(location);
+
+                foreach (var cardData in testLocationDeck)
+                {
+                    location.ShuffleIn(_gameServices.Cards.New(cardData), true);
+                }
             }
 
             var pcLogic = _gameServices.Logic.GetLogic<CharacterLogicBase>(testCharacter.CharacterName);
             PlayerCharacter testPc = new(testCharacter, pcLogic, _gameServices);
             GameEvents.RaisePlayerCharacterChanged(testPc);
-            
+
             foreach (var card in characterDeck) testPc.ShuffleIntoDeck(_gameServices.Cards.New(card, testPc));
 
-            _gameServices.Contexts.GameContext.SetPcLocation(testPc, location);
+            _gameServices.Contexts.GameContext.SetPcLocation(
+                testPc,
+                _gameServices.Contexts.GameContext.Locations.First()
+            );
 
             testPc.DrawInitialHand();
 

@@ -30,6 +30,8 @@ namespace PACG.Gameplay
             // End the current turn.
             _contexts.EndTurn();
             _gameFlow.QueueNextProcessor(new StartTurnController(nextPc, _gameServices));
+            
+            GameEvents.RaiseTurnStateChanged();
         }
     }
 }

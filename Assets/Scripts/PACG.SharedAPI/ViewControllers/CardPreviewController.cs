@@ -38,6 +38,13 @@ namespace PACG.SharedAPI
             // Add a listener to the background button to handle returning the card.
             backgroundButton.onClick.AddListener(ReturnCardToOrigin);
             previewArea.SetActive(false);
+            
+            GameEvents.TurnStateChanged += ReturnCardToOrigin;
+        }
+
+        private void OnDestroy()
+        {
+            GameEvents.TurnStateChanged -= ReturnCardToOrigin;
         }
 
         public void Initialize(GameServices gameServices)

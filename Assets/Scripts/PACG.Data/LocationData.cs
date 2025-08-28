@@ -4,9 +4,17 @@ using UnityEngine;
 
 namespace PACG.Data
 {
-    [Serializable]
-    public struct LocationPower
+    public enum LocationPowerType
     {
+        AtLocation,
+        ToClose,
+        WhenClosed
+    }
+    
+    [Serializable]
+    public struct LocationPower : IEquatable<LocationPower>
+    {
+        public LocationPowerType PowerType;
         public bool IsActivated;
         public Sprite SpriteEnabled;
         public Sprite SpriteDisabled;
@@ -14,6 +22,25 @@ namespace PACG.Data
         public string Text;
 
         public Action OnActivate;
+
+        public bool Equals(LocationPower other)
+        {
+            return PowerType == other.PowerType
+                   && IsActivated == other.IsActivated
+                   && Equals(SpriteEnabled, other.SpriteEnabled)
+                   && Equals(SpriteDisabled, other.SpriteDisabled)
+                   && Text == other.Text;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is LocationPower other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine((int)PowerType, IsActivated, SpriteEnabled, SpriteDisabled, Text);
+        }
     }
     
     [CreateAssetMenu(fileName = "LocationName", menuName = "Pathfinder/Location Card")]

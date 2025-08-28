@@ -240,7 +240,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 91bf6b7d56006fb4ba523463dbaa5c43, type: 2}
   - {fileID: 11400000, guid: 2a7ae1164e0ff3f4d9253519a4f2e772, type: 2}
   - {fileID: 11400000, guid: ae8c8da9fa58bd8418ecc8ca5855c4a9, type: 2}
-  testLocation: {fileID: 11400000, guid: a54b3de4a8e7ec347a2947701d73c056, type: 2}
+  TestLocations:
+  - {fileID: 11400000, guid: a54b3de4a8e7ec347a2947701d73c056, type: 2}
+  - {fileID: 11400000, guid: 319c429832160b549b7c6caffdb16d9d, type: 2}
   testLocationDeck:
   - {fileID: 11400000, guid: 652b8c01f40d6624faf3599a9d7856d6, type: 2}
   - {fileID: 11400000, guid: 652b8c01f40d6624faf3599a9d7856d6, type: 2}
@@ -569,6 +571,7 @@ Transform:
   - {fileID: 1826954625}
   - {fileID: 370659069}
   - {fileID: 1997517375}
+  - {fileID: 1198426359}
   - {fileID: 911858488}
   - {fileID: 653943238}
   - {fileID: 857526835}
@@ -2195,6 +2198,53 @@ MonoBehaviour:
   backgroundButton: {fileID: 1246803978}
   actionButtonContainer: {fileID: 585025897}
   actionButtonPrefab: {fileID: 7970087573183796855, guid: 08d81759c3e225e439c8139657bc72cf, type: 3}
+--- !u!1 &1198426358
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1198426359}
+  - component: {fileID: 1198426360}
+  m_Layer: 0
+  m_Name: Locations Dialog View Controller
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1198426359
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1198426358}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 735.5706, y: 432.64465, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 449050547}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1198426360
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1198426358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a7fe98fb3d74e04b8d2fad866e46a6f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  LocationsDialogContainer: {fileID: 1871686246}
+  LocationsDialogPrefab: {fileID: 4474184045933381475, guid: fd7567360c984e34bbb2ee3a2e3f25f9, type: 3}
+  LocationDisplayFactory: {fileID: 2048280684}
 --- !u!1 &1246359930
 GameObject:
   m_ObjectHideFlags: 0
@@ -2902,7 +2952,6 @@ GameObject:
   - component: {fileID: 1767435115}
   - component: {fileID: 1767435114}
   - component: {fileID: 1767435113}
-  - component: {fileID: 1767435117}
   m_Layer: 5
   m_Name: Main Game Canvas
   m_TagString: Untagged
@@ -2994,18 +3043,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!114 &1767435117
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1767435112}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0210f861e892cd3488c55e358c59cf5f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1770646896
 GameObject:
   m_ObjectHideFlags: 0
@@ -3704,6 +3741,16 @@ MonoBehaviour:
   exploreButton: {fileID: 1406389908}
   optionalDiscardButton: {fileID: 2002062219}
   endTurnButton: {fileID: 899626749}
+  GiveCardEnabled: {fileID: -7413078424890477635, guid: d200eba8dfdcaad4c8161ba3c6854487, type: 3}
+  GiveCardDisabled: {fileID: 6818188007867002482, guid: 6f468f651d6c4d44cbf014d132ab58f3, type: 3}
+  MoveEnabled: {fileID: 7622579193695881461, guid: 9e6b389c106158945ab9805dc74d7a54, type: 3}
+  MoveDisabled: {fileID: 5071702482097040453, guid: d6d52556353153e4f947d2508ca4b58d, type: 3}
+  ExploreEnabled: {fileID: -8246103488371625927, guid: e5676a0937bd79a479ea630e1bf71435, type: 3}
+  ExploreDisabled: {fileID: -5310682602763745465, guid: ca0b2a2bdf87ea34b9e88668cfb6bee9, type: 3}
+  OptionalDiscardEnabled: {fileID: 8483075871000149727, guid: 8ea1af156c8d10747a92d608e1964128, type: 3}
+  OptionalDiscardDisabled: {fileID: -7194118535124291830, guid: a6d09f6b0421e674b901e51b573c01d7, type: 3}
+  EndTurnEnabled: {fileID: 2058518826365189002, guid: 3e2f2442f98ec8841a3f13dcaca70d54, type: 3}
+  EndTurnDisabled: {fileID: -4945773871214007067, guid: b9f6bf30d923f264abf0c605b463c5ec, type: 3}
   cancelButton: {fileID: 1011016525}
   commitButton: {fileID: 1246359932}
   skipButton: {fileID: 1163429912}

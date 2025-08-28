@@ -25,6 +25,12 @@ namespace PACG.Gameplay
             if (!_contexts.TurnContext.ForceEndTurn)
                 characterPower = _contexts.TurnContext.Character.GetEndOfTurnPower();
 
+            if (characterPower != null && _contexts.TurnContext.PerformedCharacterPowers.Contains(characterPower.Value))
+                characterPower = null;
+            
+            if (locationPower != null && _contexts.TurnContext.PerformedLocationPowers.Contains(locationPower.Value))
+                locationPower = null;
+            
             if (locationPower == null && characterPower == null)
                 return;
             
