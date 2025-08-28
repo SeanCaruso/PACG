@@ -234,7 +234,7 @@ namespace PACG.Gameplay
         // Pass-throughs to ContextManager
         public IReadOnlyList<PlayerCharacter> LocalCharacters =>
             Location != null
-                ? _contexts.GameContext.GetCharactersAt(Location).Except(new[] { this }).ToList()
+                ? _contexts.GameContext.GetCharactersAt(Location)
                 : new List<PlayerCharacter>();
         public Location Location => _contexts.GameContext?.GetPcLocation(this);
         public void Move(Location newLoc) => _contexts.GameContext?.MoveCharacter(this, newLoc);

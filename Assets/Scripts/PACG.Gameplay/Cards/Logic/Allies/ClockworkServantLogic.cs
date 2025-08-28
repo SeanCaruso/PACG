@@ -6,12 +6,14 @@ namespace PACG.Gameplay
 {
     public class ClockworkServantLogic : CardLogicBase
     {
-        // Dependency injection of services
+        // Dependency injection
         private readonly ContextManager _contexts;
+        private readonly GameServices _gameServices;
         
         public ClockworkServantLogic(GameServices gameServices) : base(gameServices)
         {
             _contexts = gameServices.Contexts;
+            _gameServices = gameServices;
         }
 
         public override CheckModifier GetCheckModifier(IStagedAction action)
@@ -51,7 +53,16 @@ namespace PACG.Gameplay
         public override IResolvable GetRecoveryResolvable(CardInstance card)
         {
             // Craft 8 to recharge.
-            return new CheckResolvable(card, card.Owner, CardUtils.SkillCheck(8, Skill.Craft));
+            var resolvable = new CheckResolvable(
+                card,
+                card.Owner,
+                CardUtils.SkillCheck(8, Skill.Craft))
+            {
+                OnSuccess = () => card.Owner.Recharge(card),
+                OnFailure = () => card.Owner.Banish(card, true)
+            };
+
+            return CardUtils.CreateDefaultRecoveryResolvable(resolvable, _gameServices);
         }
 
         // Can recharge on a local Intelligence or Craft check.

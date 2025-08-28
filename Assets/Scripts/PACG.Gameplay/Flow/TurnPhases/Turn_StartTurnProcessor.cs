@@ -29,7 +29,7 @@ namespace PACG.Gameplay
                 ScourgeRules.HandleWoundedDeckDiscard(pc, _gameServices);
 
             // Set initial availability of turn actions
-            _contexts.TurnContext.CanGive = _contexts.TurnContext.Character.LocalCharacters.Count > 0;
+            _contexts.TurnContext.CanGive = _contexts.TurnContext.Character.LocalCharacters.Count > 1;
             _contexts.TurnContext.CanMove = _contexts.GameContext?.Locations.Count > 1;
             _contexts.TurnContext.CanFreelyExplore = _contexts.TurnPcLocation?.Count > 0;
             _contexts.TurnContext.CanCloseLocation = _contexts.TurnPcLocation?.Count == 0;
