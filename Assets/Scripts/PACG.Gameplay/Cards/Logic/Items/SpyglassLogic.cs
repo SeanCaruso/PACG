@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using PACG.Core;
+using PACG.Data;
 
 namespace PACG.Gameplay
 {
@@ -18,18 +20,18 @@ namespace PACG.Gameplay
 
         public override CheckModifier GetCheckModifier(IStagedAction action)
         {
-            if (action.ActionType != PF.ActionType.Reveal) return null;
+            if (action.ActionType != ActionType.Reveal) return null;
 
             return new CheckModifier(action.Card)
             {
-                RestrictedSkills = new[] { PF.Skill.Perception }.ToList(),
+                RestrictedSkills = new[] { Skill.Perception }.ToList(),
                 AddedDice = new[] { 6 }.ToList()
             };
         }
 
         public override void OnCommit(IStagedAction action)
         {
-            if (action.ActionType != PF.ActionType.Discard) return;
+            if (action.ActionType != ActionType.Discard) return;
             _contexts.NewResolvable(new ExamineResolvable(action.Card.Owner.Location, 2, true));
         }
 
@@ -37,7 +39,7 @@ namespace PACG.Gameplay
         {
             List<IStagedAction> actions = new();
             if (CanReveal(card))
-                actions.Add(new PlayCardAction(card, PF.ActionType.Reveal));
+                actions.Add(new PlayCardAction(card, ActionType.Reveal));
 
             // Can discard to examine any time outside resolvables or encounters.
             if (_contexts.CurrentResolvable == null
@@ -45,7 +47,7 @@ namespace PACG.Gameplay
                 && card.Owner.Location.Count > 0
                 && _asm.StagedCards.Count == 0)
             {
-                actions.Add(new PlayCardAction(card, PF.ActionType.Discard));
+                actions.Add(new PlayCardAction(card, ActionType.Discard));
             }
 
             return actions;
@@ -56,7 +58,7 @@ namespace PACG.Gameplay
             Check != null
             && _contexts.CurrentResolvable is CheckResolvable
             && Check.Character == card.Owner
-            && Check.CanUseSkill(PF.Skill.Perception)
-            && !Check.StagedCardTypes.Contains(PF.CardType.Item);
+            && Check.CanUseSkill(Skill.Perception)
+            && !Check.StagedCardTypes.Contains(CardType.Item);
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using PACG.Core;
 
 namespace PACG.Gameplay
 {
@@ -30,7 +31,7 @@ namespace PACG.Gameplay
             List<IStagedAction> actions = new();
             if (CanReveal(card))
             {
-                actions.Add(new PlayCardAction(card, PF.ActionType.Reveal, ("IsFreely", true), ("Damage", 1)));
+                actions.Add(new PlayCardAction(card, ActionType.Reveal, ("IsFreely", true), ("Damage", 1)));
             }
             return actions;
         }

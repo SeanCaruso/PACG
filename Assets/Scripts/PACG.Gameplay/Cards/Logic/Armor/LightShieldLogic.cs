@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using PACG.Core;
 using UnityEngine;
 
 namespace PACG.Gameplay
@@ -27,7 +28,7 @@ namespace PACG.Gameplay
         {
             _contexts.EncounterContext?.AddProhibitedTraits(action.Card.Owner, "2-Handed");
 
-            if (action.ActionType != PF.ActionType.Recharge) return;
+            if (action.ActionType != ActionType.Recharge) return;
             
             // TODO: Implement reroll logic.
             Debug.LogWarning($"[{GetType().Name}] Reroll logic not implemented.");
@@ -38,12 +39,12 @@ namespace PACG.Gameplay
             if (CanReveal(card))
                 return new List<IStagedAction>
                 {
-                    new PlayCardAction(card, PF.ActionType.Reveal, ("IsFreely", true), ("Damage", 1))
+                    new PlayCardAction(card, ActionType.Reveal, ("IsFreely", true), ("Damage", 1))
                 };
             if (CanRecharge(card))
                 return new List<IStagedAction>
                 {
-                    new PlayCardAction(card, PF.ActionType.Recharge, ("IsFreely", true))
+                    new PlayCardAction(card, ActionType.Recharge, ("IsFreely", true))
                 };
             
             return new List<IStagedAction>();
@@ -60,7 +61,7 @@ namespace PACG.Gameplay
             Check != null
             && _contexts.CurrentResolvable is RerollResolvable resolvable
             && card.Owner == resolvable.Character
-            && Check.UsedSkill == PF.Skill.Melee
+            && Check.UsedSkill == Skill.Melee
             && resolvable.DicePool.NumDice(4, 6, 8) > 0;
     }
 }

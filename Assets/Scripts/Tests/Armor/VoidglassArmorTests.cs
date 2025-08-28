@@ -1,5 +1,6 @@
 using System.Linq;
 using NUnit.Framework;
+using PACG.Core;
 using PACG.Gameplay;
 
 namespace Tests.Armor
@@ -23,8 +24,8 @@ namespace Tests.Armor
             GameServices.Contexts.NewResolvable(new DamageResolvable(Valeros, 1, "Magic"));
             
             Assert.AreEqual(2, _voidglassArmor.GetAvailableActions().Count);
-            Assert.AreEqual(PF.ActionType.Recharge, _voidglassArmor.GetAvailableActions()[0].ActionType);
-            Assert.AreEqual(PF.ActionType.Bury, _voidglassArmor.GetAvailableActions()[1].ActionType);
+            Assert.AreEqual(ActionType.Recharge, _voidglassArmor.GetAvailableActions()[0].ActionType);
+            Assert.AreEqual(ActionType.Bury, _voidglassArmor.GetAvailableActions()[1].ActionType);
             
             GameServices.ASM.StageAction(_voidglassArmor.GetAvailableActions()[0]);
             Assert.IsTrue(GameServices.Contexts.CurrentResolvable.CanCommit(GameServices.ASM.StagedActions.ToList()));
@@ -39,13 +40,13 @@ namespace Tests.Armor
             GameServices.Contexts.NewResolvable(new DamageResolvable(Valeros, 1, "Special"));
             
             Assert.AreEqual(1, _voidglassArmor.GetAvailableActions().Count);
-            Assert.AreEqual(PF.ActionType.Display, _voidglassArmor.GetAvailableActions()[0].ActionType);
+            Assert.AreEqual(ActionType.Display, _voidglassArmor.GetAvailableActions()[0].ActionType);
             
             GameServices.ASM.StageAction(_voidglassArmor.GetAvailableActions()[0]);
             
             Assert.AreEqual(2, _voidglassArmor.GetAvailableActions().Count);
-            Assert.AreEqual(PF.ActionType.Recharge, _voidglassArmor.GetAvailableActions()[0].ActionType);
-            Assert.AreEqual(PF.ActionType.Bury, _voidglassArmor.GetAvailableActions()[1].ActionType);
+            Assert.AreEqual(ActionType.Recharge, _voidglassArmor.GetAvailableActions()[0].ActionType);
+            Assert.AreEqual(ActionType.Bury, _voidglassArmor.GetAvailableActions()[1].ActionType);
             
             GameServices.ASM.StageAction(_voidglassArmor.GetAvailableActions()[0]);
             Assert.IsTrue(GameServices.Contexts.CurrentResolvable.CanCommit(GameServices.ASM.StagedActions.ToList()));

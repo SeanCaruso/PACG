@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using PACG.Core;
+using PACG.Data;
 using Object = UnityEngine.Object;
 
 namespace PACG.Gameplay

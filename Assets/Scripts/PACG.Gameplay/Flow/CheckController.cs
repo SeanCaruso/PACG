@@ -1,4 +1,6 @@
 
+using PACG.Data;
+
 namespace PACG.Gameplay
 {
     public class CheckController : IProcessor, IPhaseController
@@ -22,7 +24,7 @@ namespace PACG.Gameplay
 
             _gameFlow.QueueNextProcessor(new Check_RollDiceProcessor(_gameServices));
 
-            if (_resolvable.Card is CardInstance card && card.Data.cardType == PF.CardType.Monster)
+            if (_resolvable.Card is CardInstance card && card.Data.cardType == CardType.Monster)
             {
                 _gameFlow.QueueNextProcessor(new Check_DamageProcessor(_gameServices));
             }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using PACG.Core;
 
 namespace PACG.Gameplay
 {
@@ -17,13 +18,13 @@ namespace PACG.Gameplay
         public override CheckModifier GetCheckModifier(IStagedAction action)
         {
             // Reveal to use Strength or Melee + 1d8.
-            if (action.ActionType != PF.ActionType.Reveal) return null;
+            if (action.ActionType != ActionType.Reveal) return null;
 
             return new CheckModifier(action.Card)
             {
                 RestrictedCategory = CheckCategory.Combat,
                 AddedTraits = action.Card.Traits,
-                RestrictedSkills = new List<PF.Skill> { PF.Skill.Strength, PF.Skill.Melee },
+                RestrictedSkills = new List<Skill> { Skill.Strength, Skill.Melee },
                 ProhibitedTraits = new HashSet<string> { "Offhand" },
                 AddedDice = new List<int> { 8 }
                 
@@ -40,10 +41,10 @@ namespace PACG.Gameplay
 
             switch (action.ActionType)
             {
-                case PF.ActionType.Reveal:
+                case ActionType.Reveal:
                     rerollSources.Add(this);
                     break;
-                case PF.ActionType.Discard:
+                case ActionType.Discard:
                     rerollSources.Remove(this);
                     Check.ContextData["doReroll"] = true;
                     break;
@@ -58,10 +59,10 @@ namespace PACG.Gameplay
             if (Check is { IsCombatValid: true }
                 && _contexts.CurrentResolvable is CheckResolvable {HasCombat: true}
                 && Check.Character == card.Owner
-                && Check.CanUseSkill(PF.Skill.Strength, PF.Skill.Melee)
+                && Check.CanUseSkill(Skill.Strength, Skill.Melee)
                 && !Check.StagedCardTypes.Contains(card.Data.cardType))
             {
-                actions.Add(new PlayCardAction(card, PF.ActionType.Reveal, ("IsCombat", true)));
+                actions.Add(new PlayCardAction(card, ActionType.Reveal, ("IsCombat", true)));
             }
 
             // We can discard to reroll if we're processing a RerollResolvable and this card is one of the reroll options.
@@ -69,7 +70,7 @@ namespace PACG.Gameplay
                 && ((List<CardLogicBase>)Check.ContextData.GetValueOrDefault("rerollCards", new List<CardLogicBase>()))
                 .Contains(this))
             {
-                actions.Add(new PlayCardAction(card, PF.ActionType.Discard, ("IsFreely", true)));
+                actions.Add(new PlayCardAction(card, ActionType.Discard, ("IsFreely", true)));
             }
 
             return actions;

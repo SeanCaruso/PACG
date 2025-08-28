@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using PACG.Core;
+using PACG.Data;
 
 namespace PACG.Gameplay
 {
@@ -24,7 +26,7 @@ namespace PACG.Gameplay
             if (_contexts.CheckContext == null) return null;
 
             var modifier = new CheckModifier(action.Card);
-            modifier.RestrictedSkills.Add(PF.Skill.Perception);
+            modifier.RestrictedSkills.Add(Skill.Perception);
             modifier.AddedDice.Add(4);
             return modifier;
         }
@@ -35,12 +37,12 @@ namespace PACG.Gameplay
             switch (action.ActionType)
             {
                 // Recharge to examine the top card of your location.
-                case PF.ActionType.Recharge:
+                case ActionType.Recharge:
                     _gameFlow.QueueNextProcessor(new NewResolvableProcessor(
                         new ExamineResolvable(action.Card.Owner.Location, 1), _gameServices));
                     break;
                 // Discard to explore. You may evade.
-                case PF.ActionType.Discard:
+                case ActionType.Discard:
                     _contexts.TurnContext.AddExploreEffect(new EvadeExploreEffect());
                     break;
             }
@@ -51,7 +53,7 @@ namespace PACG.Gameplay
             var actions = new List<IStagedAction>();
             
             if (CanRechargeForCheck(card))
-                actions.Add(new PlayCardAction(card, PF.ActionType.Recharge));
+                actions.Add(new PlayCardAction(card, ActionType.Recharge));
             
             // Can recharge to examine outside of resolvables or encounters.
             if (_contexts.CurrentResolvable == null
@@ -59,12 +61,12 @@ namespace PACG.Gameplay
                 && card.Owner.Location.Count > 0
                 && _asm.StagedCards.Count == 0)
             {
-                actions.Add(new PlayCardAction(card, PF.ActionType.Recharge));
+                actions.Add(new PlayCardAction(card, ActionType.Recharge));
             }
 
             // Can discard to explore.
             if (_contexts.IsExplorePossible && card.Owner == _contexts.TurnContext.Character)
-                actions.Add(new ExploreAction(card, PF.ActionType.Discard));
+                actions.Add(new ExploreAction(card, ActionType.Discard));
 
             return actions;
         }
@@ -74,7 +76,7 @@ namespace PACG.Gameplay
             _contexts.CurrentResolvable is CheckResolvable
             && _contexts.CheckContext != null
             && _contexts.CheckContext.IsLocal(card.Owner)
-            && !_contexts.CheckContext.StagedCardTypes.Contains(PF.CardType.Ally)
-            && _contexts.CheckContext.CanUseSkill(PF.Skill.Perception);
+            && !_contexts.CheckContext.StagedCardTypes.Contains(CardType.Ally)
+            && _contexts.CheckContext.CanUseSkill(Skill.Perception);
     }
 }

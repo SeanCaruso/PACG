@@ -1,14 +1,15 @@
 using System.Collections.Generic;
 using System.Linq;
+using PACG.Core;
 using PACG.SharedAPI;
 
 namespace PACG.Gameplay
 {
     public class CheckSkillAccumulator
     {
-        private readonly List<PF.Skill> _baseValidSkills = new();
-        private readonly Dictionary<CardInstance, List<PF.Skill>> _stagedSkillAdditions = new();
-        private readonly Dictionary<CardInstance, List<PF.Skill>> _stagedSkillRestrictions = new();
+        private readonly List<Skill> _baseValidSkills = new();
+        private readonly Dictionary<CardInstance, List<Skill>> _stagedSkillAdditions = new();
+        private readonly Dictionary<CardInstance, List<Skill>> _stagedSkillRestrictions = new();
         
         public CheckSkillAccumulator(CheckResolvable resolvable)
         {
@@ -16,8 +17,8 @@ namespace PACG.Gameplay
             {
                 if (checkStep.category == CheckCategory.Combat)
                 {
-                    _baseValidSkills.Add(PF.Skill.Strength);
-                    _baseValidSkills.Add(PF.Skill.Melee);
+                    _baseValidSkills.Add(Skill.Strength);
+                    _baseValidSkills.Add(Skill.Melee);
                 }
                 else
                 {
@@ -26,25 +27,25 @@ namespace PACG.Gameplay
             }
         }
 
-        public void AddValidSkills(CardInstance card, params PF.Skill[] skills)
+        public void AddValidSkills(CardInstance card, params Skill[] skills)
         {
             if (skills.Length == 0) return;
             
             if (_stagedSkillAdditions.TryGetValue(card, out var addition))
                 addition.AddRange(skills);
             else
-                _stagedSkillAdditions.Add(card, new List<PF.Skill>(skills));
+                _stagedSkillAdditions.Add(card, new List<Skill>(skills));
             
             DialogEvents.RaiseValidSkillsChanged(GetCurrentValidSkills());
         }
-        public void RestrictValidSkills(CardInstance card, params PF.Skill[] skills)
+        public void RestrictValidSkills(CardInstance card, params Skill[] skills)
         {
             if (skills.Length == 0) return;
             
             if (_stagedSkillRestrictions.TryGetValue(card, out var restriction))
                 restriction.AddRange(skills);
             else
-                _stagedSkillRestrictions.Add(card, new List<PF.Skill>(skills));
+                _stagedSkillRestrictions.Add(card, new List<Skill>(skills));
             
             DialogEvents.RaiseValidSkillsChanged(GetCurrentValidSkills());
         }
@@ -55,11 +56,11 @@ namespace PACG.Gameplay
         /// </summary>
         /// <param name="skills">card skills</param>
         /// <returns>true if the current valid skills contains one or more of the given skills</returns>
-        public bool CanUseSkill(params PF.Skill[] skills) => skills.Intersect(GetCurrentValidSkills()).Any();
+        public bool CanUseSkill(params Skill[] skills) => skills.Intersect(GetCurrentValidSkills()).Any();
 
-        public List<PF.Skill> GetCurrentValidSkills()
+        public List<Skill> GetCurrentValidSkills()
         {
-            List<PF.Skill> skills = new(_baseValidSkills);
+            List<Skill> skills = new(_baseValidSkills);
 
             // Apply all additions.
             foreach (var addedSkills in _stagedSkillAdditions.Values)

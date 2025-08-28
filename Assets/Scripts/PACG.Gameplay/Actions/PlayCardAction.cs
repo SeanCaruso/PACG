@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using PACG.Core;
 
 namespace PACG.Gameplay
 {
@@ -6,14 +7,14 @@ namespace PACG.Gameplay
     {
         // Data common to all staged actions.
         public CardInstance Card { get; private set; }
-        public PF.ActionType ActionType { get; private set; }
+        public ActionType ActionType { get; private set; }
 
         // Dictionary to hold any custom data.
         public Dictionary<string, object> ActionData { get; } = new();
 
         private readonly string _label = null;
 
-        public PlayCardAction(CardInstance card, PF.ActionType actionType, params (string, object)[] actionData)
+        public PlayCardAction(CardInstance card, ActionType actionType, params (string, object)[] actionData)
         {
             Card = card;
             ActionType = actionType;

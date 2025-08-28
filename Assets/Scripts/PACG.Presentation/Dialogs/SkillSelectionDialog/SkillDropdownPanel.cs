@@ -21,7 +21,7 @@ namespace PACG.Presentation.SkillSelectionDialog
         public SkillRow SkillRowPrefab;
 
         private CheckContext _checkContext;
-        private readonly Dictionary<PF.Skill, SkillRow> _skillRows = new();
+        private readonly Dictionary<Skill, SkillRow> _skillRows = new();
         private Color32 _cardTypeColor;
         private bool _isCollapsed = true;
         private float _skillRowsHeight;
@@ -51,7 +51,7 @@ namespace PACG.Presentation.SkillSelectionDialog
             RightArrow.transform.localRotation = Quaternion.Euler(0f, 0f, -180f);
         }
 
-        private void OnValidSkillsChanged(List<PF.Skill> validSkills)
+        private void OnValidSkillsChanged(List<Skill> validSkills)
         {
             _skillRowsHeight = 0;
             _skillRows.Clear();
@@ -107,7 +107,7 @@ namespace PACG.Presentation.SkillSelectionDialog
             _isCollapsed = !_isCollapsed;
         }
 
-        private void OnRowClicked(PF.Skill newSkill)
+        private void OnRowClicked(Skill newSkill)
         {
             _checkContext.UsedSkill = newSkill;
             SkillNameText.text = newSkill.ToString().ToUpper();

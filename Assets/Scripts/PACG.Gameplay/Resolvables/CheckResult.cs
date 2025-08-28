@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using PACG.Core;
 
 namespace PACG.Gameplay
 {
@@ -13,10 +14,10 @@ namespace PACG.Gameplay
 
         public PlayerCharacter Character { get; private set; }
         public bool IsCombat { get; private set; }
-        public PF.Skill Skill { get; private set; }
+        public Skill Skill { get; private set; }
         public IReadOnlyList<string> Traits { get; private set; }
 
-        public CheckResult(int rollTotal, int dc, PlayerCharacter character, bool isCombat, PF.Skill skill, IReadOnlyList<string> traits)
+        public CheckResult(int rollTotal, int dc, PlayerCharacter character, bool isCombat, Skill skill, IReadOnlyList<string> traits)
         {
             FinalRollTotal = rollTotal;
             DC = dc;

@@ -48,13 +48,13 @@ namespace Tests.Allies
             _gameServices.Contexts.NewTurn(new TurnContext(_valeros));
 
             var encounterData = ScriptableObject.CreateInstance<BoonCardData>();
-            encounterData.cardType = PF.CardType.Spell;
+            encounterData.cardType = CardType.Spell;
             encounterData.traits = new List<string> { "Arcane", "Magic" };
             encounterData.checkRequirement = new CheckRequirement
             {
                 mode = CheckMode.Single,
                 checkSteps = new List<CheckStep>
-                    { new() { category = CheckCategory.Skill, allowedSkills = new List<PF.Skill> { PF.Skill.Arcane } } }
+                    { new() { category = CheckCategory.Skill, allowedSkills = new List<Skill> { Skill.Arcane } } }
             };
 
             var encounterInstance = new CardInstance(encounterData, new ZombieLogic(_gameServices));
@@ -72,7 +72,7 @@ namespace Tests.Allies
             // Check that the Cat has one recharge action.
             var actions = _catInstance.GetAvailableActions();
             Assert.AreEqual(1, actions.Count);
-            Assert.AreEqual(PF.ActionType.Recharge, actions[0].ActionType);
+            Assert.AreEqual(ActionType.Recharge, actions[0].ActionType);
 
             var modifier = _catInstance.Logic.GetCheckModifier(actions[0]);
             var numD4 = modifier.AddedDice.Count(d => d == 4);
@@ -86,13 +86,13 @@ namespace Tests.Allies
             _gameServices.Contexts.NewTurn(new TurnContext(_valeros));
 
             var encounterData = ScriptableObject.CreateInstance<BoonCardData>();
-            encounterData.cardType = PF.CardType.Item;
+            encounterData.cardType = CardType.Item;
             encounterData.traits = new List<string> { "Magic" };
             encounterData.checkRequirement = new CheckRequirement
             {
                 mode = CheckMode.Single,
                 checkSteps = new List<CheckStep>
-                    { new() { category = CheckCategory.Skill, allowedSkills = new List<PF.Skill>() } }
+                    { new() { category = CheckCategory.Skill, allowedSkills = new List<Skill>() } }
             };
 
             var encounterInstance = new CardInstance(encounterData, new ZombieLogic(_gameServices));
@@ -125,7 +125,7 @@ namespace Tests.Allies
             // Check that we can use the Cat to explore.
             var actions = _catInstance.GetAvailableActions();
             Assert.AreEqual(1, actions.Count);
-            Assert.AreEqual(PF.ActionType.Discard, actions[0].ActionType);
+            Assert.AreEqual(ActionType.Discard, actions[0].ActionType);
         
             // Stage the explore action and explore.
             _gameServices.ASM.StageAction(actions[0]);
@@ -134,7 +134,7 @@ namespace Tests.Allies
             var effects = _gameServices.Contexts.TurnContext.ExploreEffects;
             Assert.AreEqual(1, effects.Count);
 
-            var resolvable = new CheckResolvable(zombieInstance, _valeros, CardUtils.SkillCheck(10, PF.Skill.Arcane));
+            var resolvable = new CheckResolvable(zombieInstance, _valeros, CardUtils.SkillCheck(10, Skill.Arcane));
             var check = new CheckContext(resolvable);
             var dicePool = new DicePool();
             effects[0].ApplyTo(check, dicePool);
@@ -154,7 +154,7 @@ namespace Tests.Allies
             // Check that we can use the Cat to explore.
             var actions = _catInstance.GetAvailableActions();
             Assert.AreEqual(1, actions.Count);
-            Assert.AreEqual(PF.ActionType.Discard, actions[0].ActionType);
+            Assert.AreEqual(ActionType.Discard, actions[0].ActionType);
         
             // Stage the explore action and explore.
             _gameServices.ASM.StageAction(actions[0]);
@@ -163,7 +163,7 @@ namespace Tests.Allies
             var effects = _gameServices.Contexts.TurnContext.ExploreEffects;
             Assert.AreEqual(1, effects.Count);
         
-            var resolvable = new CheckResolvable(spellInstance, _valeros, CardUtils.SkillCheck(10, PF.Skill.Arcane));
+            var resolvable = new CheckResolvable(spellInstance, _valeros, CardUtils.SkillCheck(10, Skill.Arcane));
             var check = new CheckContext(resolvable);
             var dicePool = new DicePool();
             effects[0].ApplyTo(check, dicePool);

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using PACG.Core;
 
 namespace PACG.Gameplay
 {
@@ -17,7 +18,7 @@ namespace PACG.Gameplay
         public override void OnCommit(IStagedAction action)
         {
             // Discard to explore with +1d4 on the first check.
-            if (action.ActionType != PF.ActionType.Discard) return;
+            if (action.ActionType != ActionType.Discard) return;
             
             _contexts.TurnContext.AddExploreEffect(new SkillBonusExploreEffect(
                 1,
@@ -36,12 +37,12 @@ namespace PACG.Gameplay
                 && _contexts.EncounterContext == null
                 && _asm.StagedCards.Count == 0)
             {
-                actions.Add(new MoveAction(card, PF.ActionType.Recharge));
+                actions.Add(new MoveAction(card, ActionType.Recharge));
             }
 
             // Discard to explore.
             if (_contexts.IsExplorePossible && card.Owner == _contexts.TurnContext.Character)
-                actions.Add(new ExploreAction(card, PF.ActionType.Discard));
+                actions.Add(new ExploreAction(card, ActionType.Discard));
             
             return actions;
         }

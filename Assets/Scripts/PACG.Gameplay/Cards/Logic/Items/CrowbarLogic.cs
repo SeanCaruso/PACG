@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using PACG.Core;
+using PACG.Data;
 
 namespace PACG.Gameplay
 {
@@ -29,7 +31,7 @@ namespace PACG.Gameplay
                 modifier.AddedDice.Add(8);
 
             // Recharge to add another 1d8.
-            if (action.ActionType == PF.ActionType.Recharge)
+            if (action.ActionType == ActionType.Recharge)
                 modifier.AddedDice.Add(8);
 
             return modifier;
@@ -44,13 +46,13 @@ namespace PACG.Gameplay
             {
                 return new List<IStagedAction>
                 {
-                    new PlayCardAction(card, PF.ActionType.Reveal),
-                    new PlayCardAction(card, PF.ActionType.Recharge)
+                    new PlayCardAction(card, ActionType.Reveal),
+                    new PlayCardAction(card, ActionType.Recharge)
                 };
             }
             
             // Otherwise, if we're playable that means we've revealed. We can freely recharge.
-            return new List<IStagedAction> { new PlayCardAction(card, PF.ActionType.Recharge, ("IsFreely", true)) };
+            return new List<IStagedAction> { new PlayCardAction(card, ActionType.Recharge, ("IsFreely", true)) };
         }
 
         private bool IsCardPlayable(CardInstance card)
@@ -78,7 +80,7 @@ namespace PACG.Gameplay
 
         private bool IsLockObstacleBarrier()
         {
-            if (_contexts.EncounterContext?.CardData.cardType != PF.CardType.Barrier)
+            if (_contexts.EncounterContext?.CardData.cardType != CardType.Barrier)
                 return false;
 
             var traits = _contexts.EncounterContext.CardData.traits;

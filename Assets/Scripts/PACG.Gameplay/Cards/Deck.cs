@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using PACG.Data;
 using UnityEngine;
 
 namespace PACG.Gameplay
@@ -20,11 +21,11 @@ namespace PACG.Gameplay
             _cardManager = cardManager;
         }
 
-        public void Shuffle()
+        private void Shuffle()
         {
-            for (int i = _cards.Count - 1; i > 0; i--)
+            for (var i = _cards.Count - 1; i > 0; i--)
             {
-                int randomIndex = Random.Range(0, i + 1);
+                var randomIndex = Random.Range(0, i + 1);
                 (_cards[randomIndex], _cards[i]) = (_cards[i], _cards[randomIndex]);
             }
             _knownCards.UnionWith(_examinedCards);
@@ -88,7 +89,7 @@ namespace PACG.Gameplay
             Shuffle();
         }
 
-        public CardInstance DrawFirstCardWith(PF.CardType type, params string[] traits)
+        public CardInstance DrawFirstCardWith(CardType type, params string[] traits)
         {
             var traitList = traits.ToList();
             var matchingCards = _cards.Where(card => card.Data.cardType == type && (traitList.Count == 0 || traitList.Intersect(card.Data.traits).Any())).ToList();

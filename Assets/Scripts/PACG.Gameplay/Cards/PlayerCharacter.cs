@@ -1,8 +1,8 @@
-using PACG.Data;
-using PACG.SharedAPI;
 using System.Collections.Generic;
 using System.Linq;
 using PACG.Core;
+using PACG.Data;
+using PACG.SharedAPI;
 using UnityEngine;
 
 namespace PACG.Gameplay
@@ -17,10 +17,10 @@ namespace PACG.Gameplay
         private CharacterLogicBase Logic { get; }
         public Deck Deck { get; }
 
-        private readonly Dictionary<PF.Skill, (int die, int bonus)> _skills = new();
-        public (int die, int bonus) GetSkill(PF.Skill skill) => _skills.GetValueOrDefault(skill, (4, 0));
-        private readonly Dictionary<PF.Skill, PF.Skill> _skillAttrs = new();
-        public PF.Skill GetAttributeForSkill(PF.Skill skill) => _skillAttrs.GetValueOrDefault(skill, skill);
+        private readonly Dictionary<Skill, (int die, int bonus)> _skills = new();
+        public (int die, int bonus) GetSkill(Skill skill) => _skills.GetValueOrDefault(skill, (4, 0));
+        private readonly Dictionary<Skill, Skill> _skillAttrs = new();
+        public Skill GetAttributeForSkill(Skill skill) => _skillAttrs.GetValueOrDefault(skill, skill);
 
         private readonly HashSet<ScourgeType> _activeScourges = new();
         public IReadOnlyCollection<ScourgeType> ActiveScourges => _activeScourges;
@@ -64,7 +64,7 @@ namespace PACG.Gameplay
             {
                 // Check if card type matches (or doesn't matter)
                 var typeMatches = proficiency.CardType == card.cardType ||
-                                  proficiency.CardType == PF.CardType.None;
+                                  proficiency.CardType == CardType.None;
 
                 // Check if trait matches (or doesn't matter)
                 var traitMatches = card.traits.Contains(proficiency.Trait) ||
@@ -77,9 +77,9 @@ namespace PACG.Gameplay
             return false;
         }
 
-        public (PF.Skill skill, int die, int bonus) GetBestSkill(params PF.Skill[] skills)
+        public (Skill skill, int die, int bonus) GetBestSkill(params Skill[] skills)
         {
-            if (skills.Length == 0) return (PF.Skill.Strength, 4, 0);
+            if (skills.Length == 0) return (Skill.Strength, 4, 0);
 
             var bestSkill = skills[0];
             int bestDie = 4, bestBonus = 0;

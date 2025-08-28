@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using PACG.Core;
 using UnityEngine;
 
 namespace PACG.Gameplay
@@ -7,7 +8,7 @@ namespace PACG.Gameplay
     public class GiveCardAction : IStagedAction
     {
         public CardInstance Card { get; }
-        public PF.ActionType ActionType => PF.ActionType.Discard;
+        public ActionType ActionType => ActionType.Discard;
         public bool IsFreely => false;
         public Dictionary<string, object> ActionData { get; } = new();
 

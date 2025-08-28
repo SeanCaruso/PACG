@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using PACG.Core;
 
 namespace PACG.Gameplay
 {
@@ -24,7 +25,7 @@ namespace PACG.Gameplay
             var modifier = new CheckModifier(action.Card)
             {
                 RestrictedCategory = CheckCategory.Combat,
-                RestrictedSkills = new[] { PF.Skill.Strength, PF.Skill.Melee }.ToList(),
+                RestrictedSkills = new[] { Skill.Strength, Skill.Melee }.ToList(),
                 AddedTraits = action.Card.Traits
             };
 
@@ -35,7 +36,7 @@ namespace PACG.Gameplay
                 modifier.AddedDice.Add(8);
 
             // Reload to add another 1d4.
-            if (action.ActionType == PF.ActionType.Reload)
+            if (action.ActionType == ActionType.Reload)
                 modifier.AddedDice.Add(4);
 
             return modifier;
@@ -49,11 +50,11 @@ namespace PACG.Gameplay
             // If a weapon hasn't been played yet, present one or both options.
             if (!Check.StagedCardTypes.Contains(card.Data.cardType))
             {
-                actions.Add(new PlayCardAction(card, PF.ActionType.Reveal, ("IsCombat", true)));
+                actions.Add(new PlayCardAction(card, ActionType.Reveal, ("IsCombat", true)));
 
                 if (Check.Character.IsProficient(card.Data))
                 {
-                    actions.Add(new PlayCardAction(card, PF.ActionType.Reload, ("IsCombat", true)));
+                    actions.Add(new PlayCardAction(card, ActionType.Reload, ("IsCombat", true)));
                 }
             }
             // Otherwise, if this card has already been played, present the reload option if proficient.
@@ -61,7 +62,7 @@ namespace PACG.Gameplay
             {
                 actions.Add(new PlayCardAction(
                     card,
-                    PF.ActionType.Reload,
+                    ActionType.Reload,
                     ("IsCombat", true), ("IsFreely", true))
                 );
             }
@@ -74,6 +75,6 @@ namespace PACG.Gameplay
             Check is { IsCombatValid: true }
             && _contexts.CurrentResolvable is CheckResolvable { HasCombat: true }
             && Check.Character == card.Owner
-            && Check.CanUseSkill(PF.Skill.Strength, PF.Skill.Melee);
+            && Check.CanUseSkill(Skill.Strength, Skill.Melee);
     }
 }

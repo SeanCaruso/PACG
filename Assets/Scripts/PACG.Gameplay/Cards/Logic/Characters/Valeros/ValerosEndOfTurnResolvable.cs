@@ -1,8 +1,8 @@
-using PACG.SharedAPI;
 using System.Collections.Generic;
 using System.Linq;
+using PACG.Core;
 using PACG.Data;
-using UnityEngine;
+using PACG.SharedAPI;
 
 namespace PACG.Gameplay
 {
@@ -34,7 +34,7 @@ namespace PACG.Gameplay
 
             List<IStagedAction> actions = new();
             if (_validCards.Contains(card))
-                actions.Add(new DefaultAction(card, PF.ActionType.Recharge));
+                actions.Add(new DefaultAction(card, ActionType.Recharge));
 
             return actions;
         }

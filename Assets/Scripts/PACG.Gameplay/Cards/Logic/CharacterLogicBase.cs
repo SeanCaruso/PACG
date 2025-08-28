@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using PACG.Data;
 
 namespace PACG.Gameplay

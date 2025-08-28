@@ -20,6 +20,8 @@ namespace PACG.Gameplay
         protected override void OnExecute()
         {
             if (_contexts.EncounterContext == null) return;
+
+            if (_contexts.EncounterContext.Card?.Logic?.CanEvade == false) return;
             
             // The Entangled scourge prevents evasion.
             if (_contexts.EncounterContext.Character.ActiveScourges.Contains(ScourgeType.Entangled)) return;

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
-using PACG.SharedAPI;
+using PACG.Core;
 using UnityEngine;
 
 namespace PACG.Gameplay
@@ -46,7 +46,7 @@ namespace PACG.Gameplay
             return _resolvable.CheckSteps.FirstOrDefault(step => step.category == _checkRestriction);
         }
 
-        public int GetDcForSkill(PF.Skill skill)
+        public int GetDcForSkill(Skill skill)
         {
             var forcedStep = GetForcedCheckStep();
             if (forcedStep != null)

@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using PACG.Core;
+using PACG.Data;
 
 namespace PACG.Gameplay
 {
@@ -26,11 +28,11 @@ namespace PACG.Gameplay
         {
             // Can freely banish if a weapon has been played on a combat check.
             if (_contexts.CurrentResolvable is CheckResolvable { HasCombat: true } &&
-                _contexts.CheckContext?.StagedCardTypes.Contains(PF.CardType.Weapon) == true)
+                _contexts.CheckContext?.StagedCardTypes.Contains(CardType.Weapon) == true)
             {
                 return new List<IStagedAction>(new[]
                 {
-                    new PlayCardAction(card, PF.ActionType.Banish, ("IsFreely", true))
+                    new PlayCardAction(card, ActionType.Banish, ("IsFreely", true))
                 });
             }
 
@@ -44,7 +46,7 @@ namespace PACG.Gameplay
             return new CheckResolvable(
                 card,
                 card.Owner,
-                CardUtils.SkillCheck(6, PF.Skill.Arcane, PF.Skill.Divine)
+                CardUtils.SkillCheck(6, Skill.Arcane, Skill.Divine)
             );
         }
     }

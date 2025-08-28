@@ -1,7 +1,3 @@
-
-using System.Collections.Generic;
-using System.Linq;
-
 namespace PACG.Gameplay
 {
     public class ZombieLogic : CardLogicBase

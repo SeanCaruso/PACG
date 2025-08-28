@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using PACG.Core;
 using UnityEngine;
 
 namespace PACG.Data
@@ -7,7 +8,7 @@ namespace PACG.Data
     [Serializable]
     public struct AttributeSkill
     {
-        public PF.Skill Attribute;
+        public Skill Attribute;
         public int Die;
         public int Bonus;
     }
@@ -15,22 +16,22 @@ namespace PACG.Data
     [Serializable]
     public struct PcSkill
     {
-        public PF.Skill Skill;
-        public PF.Skill Attribute;
+        public Skill Skill;
+        public Skill Attribute;
         public int Bonus;
     }
 
     [Serializable]
     public struct Proficiency
     {
-        public PF.CardType CardType;
+        public CardType CardType;
         public string Trait;
     }
 
     [Serializable]
     public struct FavoredCard
     {
-        public PF.CardType CardType;
+        public CardType CardType;
         public string Trait;
     }
 

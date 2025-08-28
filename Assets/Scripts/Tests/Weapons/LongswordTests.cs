@@ -1,4 +1,6 @@
 using NUnit.Framework;
+using PACG.Core;
+using PACG.Data;
 using PACG.Gameplay;
 
 namespace Tests.Weapons
@@ -11,7 +13,7 @@ namespace Tests.Weapons
         {
             Assert.IsNotNull(Longsword.Data);
             Assert.AreEqual("Longsword", Longsword.Data.cardName);
-            Assert.AreEqual(PF.CardType.Weapon, Longsword.Data.cardType);
+            Assert.AreEqual(CardType.Weapon, Longsword.Data.cardType);
         
             Assert.IsNotNull(Valeros.CharacterData);
             Assert.AreEqual("Valeros", Valeros.CharacterData.CharacterName);
@@ -28,14 +30,14 @@ namespace Tests.Weapons
             // Before staging, a proficient PC has two actions.
             var actions = longsword.GetAvailableActions();
             Assert.AreEqual(2, actions.Count);
-            Assert.AreEqual(PF.ActionType.Reveal, actions[0].ActionType);
-            Assert.AreEqual(PF.ActionType.Reload, actions[1].ActionType);
+            Assert.AreEqual(ActionType.Reveal, actions[0].ActionType);
+            Assert.AreEqual(ActionType.Reload, actions[1].ActionType);
         
             // After staging, a proficient PC has one action.
             GameServices.ASM.StageAction(actions[0]);
             actions = longsword.GetAvailableActions();
             Assert.AreEqual(1, actions.Count);
-            Assert.AreEqual(PF.ActionType.Reload, actions[0].ActionType);
+            Assert.AreEqual(ActionType.Reload, actions[0].ActionType);
         }
 
         [Test]

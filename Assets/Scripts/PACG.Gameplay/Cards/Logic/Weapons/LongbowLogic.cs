@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using PACG.Core;
 
 namespace PACG.Gameplay
 {
@@ -24,11 +25,11 @@ namespace PACG.Gameplay
                 AddedDice = new[] { 8 }.ToList()
             };
 
-            if (action.ActionType == PF.ActionType.Discard)
+            if (action.ActionType == ActionType.Discard)
                 return modifier;
 
-            modifier.AddedValidSkills = new[] { PF.Skill.Dexterity, PF.Skill.Ranged }.ToList();
-            modifier.RestrictedSkills = new[] { PF.Skill.Dexterity, PF.Skill.Ranged }.ToList();
+            modifier.AddedValidSkills = new[] { Skill.Dexterity, Skill.Ranged }.ToList();
+            modifier.RestrictedSkills = new[] { Skill.Dexterity, Skill.Ranged }.ToList();
             modifier.AddedTraits = action.Card.Traits;
 
             return modifier;
@@ -43,13 +44,13 @@ namespace PACG.Gameplay
         {
             List<IStagedAction> actions = new();
             if (CanReveal(card))
-                actions.Add(new PlayCardAction(card, PF.ActionType.Reveal, ("IsCombat", true)));
+                actions.Add(new PlayCardAction(card, ActionType.Reveal, ("IsCombat", true)));
 
             if (CanDiscard(card))
             {
                 actions.Add(new PlayCardAction(
                     card,
-                    PF.ActionType.Discard,
+                    ActionType.Discard,
                     ("IsCombat", true), ("IsFreely", true))
                 );
             }
@@ -62,7 +63,7 @@ namespace PACG.Gameplay
             Check is { IsCombatValid: true }
             && Check.Character == card.Owner
             && !Check.StagedCardTypes.Contains(card.Data.cardType)
-            && Check.CanUseSkill(PF.Skill.Dexterity, PF.Skill.Ranged);
+            && Check.CanUseSkill(Skill.Dexterity, Skill.Ranged);
 
         private bool CanDiscard(CardInstance card) => (
             // Discard power can be freely used on another character's combat check while playing cards if the owner is proficient.

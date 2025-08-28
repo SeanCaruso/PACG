@@ -1,6 +1,7 @@
-using PACG.SharedAPI;
 using System.Collections.Generic;
 using System.Linq;
+using PACG.Core;
+using PACG.SharedAPI;
 
 namespace PACG.Gameplay
 {
@@ -8,11 +9,11 @@ namespace PACG.Gameplay
     {
         public PlayerCharacter PlayerCharacter { get; }
         public string DamageType { get; }
-        public int Amount { get; private set; }
+        public int Amount { get; set; }
         private int _currentResolved;
         
-        private PF.ActionType _defaultActionType = PF.ActionType.Discard;
-        public void OverrideActionType(PF.ActionType actionType) => _defaultActionType = actionType;
+        private ActionType _defaultActionType = ActionType.Discard;
+        public void OverrideActionType(ActionType actionType) => _defaultActionType = actionType;
 
         public DamageResolvable(PlayerCharacter playerCharacter, int amount, string damageType = "Combat")
         {

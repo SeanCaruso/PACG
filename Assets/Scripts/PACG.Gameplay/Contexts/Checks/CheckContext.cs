@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using PACG.Core;
+using PACG.Data;
 using PACG.SharedAPI;
 using UnityEngine;
 
@@ -21,7 +22,7 @@ namespace PACG.Gameplay
         private CheckSkillAccumulator _skills;
         private CheckTypeDeterminator _typeDeterminator;
         private TraitAccumulator _traits;
-        private readonly HashSet<PF.CardType> _stagedCardTypes = new();
+        private readonly HashSet<CardType> _stagedCardTypes = new();
         
         // --- Immutable Initial State ---
         // These are set once and should never change.
@@ -81,7 +82,7 @@ namespace PACG.Gameplay
             DialogEvents.RaiseValidSkillsChanged(newValidSkills);
         }
 
-        public List<PF.Skill> GetCurrentValidSkills()
+        public List<Skill> GetCurrentValidSkills()
         {
             var validSkills = _skills.GetCurrentValidSkills();
             if (_traits.RequiredTraits.Count == 0) return validSkills;
@@ -136,7 +137,7 @@ namespace PACG.Gameplay
         //       been staged, but is rule-agnostic. CheckContext contains the rule-specific
         //       logic about which actions *can* be staged during a Check.
         // =====================================================================================
-        public IReadOnlyCollection<PF.CardType> StagedCardTypes => _stagedCardTypes;
+        public IReadOnlyCollection<CardType> StagedCardTypes => _stagedCardTypes;
 
         public bool CanStageAction(IStagedAction action)
         {
@@ -169,7 +170,7 @@ namespace PACG.Gameplay
         //     _typeDeterminator.UndoCheckRestriction(source);
         // }
 
-        public int GetDcForSkill(PF.Skill skill) => _typeDeterminator.GetDcForSkill(skill);
+        public int GetDcForSkill(Skill skill) => _typeDeterminator.GetDcForSkill(skill);
 
         private CheckStep GetActiveCheckStep()
         {
@@ -196,13 +197,13 @@ namespace PACG.Gameplay
         /// </summary>
         /// <param name="skills">card skills</param>
         /// <returns>true if the current valid skills contains one or more of the given skills</returns>
-        public bool CanUseSkill(params PF.Skill[] skills) => _skills.CanUseSkill(skills);
+        public bool CanUseSkill(params Skill[] skills) => _skills.CanUseSkill(skills);
 
         // =====================================================================================
         // CHECK RESULTS ENCAPSULATION
         // =====================================================================================
         public List<IStagedAction> CommittedActions { get; set; }
-        public PF.Skill UsedSkill { get; set; }
+        public Skill UsedSkill { get; set; }
         public CheckResult CheckResult { get; set; }
         
         public DicePool DicePool(IReadOnlyList<IStagedAction> actions) => DicePoolBuilder.Build(this, actions);

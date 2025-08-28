@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using PACG.Core;
 
 namespace PACG.Gameplay
 {
@@ -21,15 +22,15 @@ namespace PACG.Gameplay
         {
             List<IStagedAction> actions = new();
             if (CanDisplay(card))
-                actions.Add(new PlayCardAction(card, PF.ActionType.Display));
+                actions.Add(new PlayCardAction(card, ActionType.Display));
             if (CanRechargeForDamage(card))
-                actions.Add(new PlayCardAction(card, PF.ActionType.Recharge, ("Damage", 1)));
+                actions.Add(new PlayCardAction(card, ActionType.Recharge, ("Damage", 1)));
             if (CanFreelyRechargeForDamage(card))
-                actions.Add(new PlayCardAction(card, PF.ActionType.Recharge, ("Damage", 1), ("IsFreely", true)));
+                actions.Add(new PlayCardAction(card, ActionType.Recharge, ("Damage", 1), ("IsFreely", true)));
             if (CanBury(card))
-                actions.Add(new PlayCardAction(card, PF.ActionType.Bury, ("ReduceDamageTo", 0)));
+                actions.Add(new PlayCardAction(card, ActionType.Bury, ("ReduceDamageTo", 0)));
             if (CanFreelyBury(card))
-                actions.Add(new PlayCardAction(card, PF.ActionType.Bury, ("ReduceDamageTo", 0), ("IsFreely", true)));
+                actions.Add(new PlayCardAction(card, ActionType.Bury, ("ReduceDamageTo", 0), ("IsFreely", true)));
             return actions;
         }
 
@@ -104,16 +105,16 @@ namespace PACG.Gameplay
 
             void AcceptAction()
             {
-                _cardManager.MoveCard(sourceCard, PF.ActionType.Recharge);
+                _cardManager.MoveCard(sourceCard, ActionType.Recharge);
                 // If this is for a Mental DamageResolvable, override the default action to Recharge.
                 if (args.DamageResolvable?.DamageType == "Mental")
                 {
-                    args.DamageResolvable?.OverrideActionType(PF.ActionType.Recharge);
+                    args.DamageResolvable?.OverrideActionType(ActionType.Recharge);
                     _asm.Commit();
                 }
                 // If this is for discarding cards from the deck, recharge them instead.
                 foreach (var cardToRecharge in args.Cards)
-                    _cardManager.MoveCard(cardToRecharge, PF.ActionType.Recharge);
+                    _cardManager.MoveCard(cardToRecharge, ActionType.Recharge);
             }
         }
     }

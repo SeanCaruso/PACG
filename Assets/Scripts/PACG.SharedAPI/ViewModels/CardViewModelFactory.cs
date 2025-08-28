@@ -1,6 +1,6 @@
-using PACG.Gameplay;
 using System.Linq;
 using PACG.Core;
+using PACG.Gameplay;
 using UnityEngine;
 
 namespace PACG.SharedAPI
@@ -15,7 +15,8 @@ namespace PACG.SharedAPI
 
             var viewModel = new CardViewModel(card)
             {
-                PanelColor = GuiUtils.GetPanelColor(data.cardType)
+                PanelColor = GuiUtils.GetPanelColor(data.cardType),
+                StoryBaneTypePanelColor = GuiUtils.GetPanelColor(data.StoryBaneType)
             };
 
             if (data.checkRequirement.mode == CheckMode.None)

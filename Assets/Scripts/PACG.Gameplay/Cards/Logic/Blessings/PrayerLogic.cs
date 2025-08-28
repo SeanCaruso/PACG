@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
+using PACG.Core;
+using PACG.Data;
 
 namespace PACG.Gameplay
 {
@@ -51,11 +52,11 @@ namespace PACG.Gameplay
             var actions = new List<IStagedAction>();
             if (CanBless(card))
             {
-                actions.Add(new PlayCardAction(card, PF.ActionType.Discard, ("Bless", true)));
+                actions.Add(new PlayCardAction(card, ActionType.Discard, ("Bless", true)));
             }
             else if (_contexts.IsExplorePossible && _contexts.TurnContext.Character == card.Owner)
             {
-                actions.Add(new PlayCardAction(card, PF.ActionType.Discard, ("Bless", false)));
+                actions.Add(new PlayCardAction(card, ActionType.Discard, ("Bless", false)));
             }
 
             return actions;
@@ -65,6 +66,6 @@ namespace PACG.Gameplay
         private bool CanBless(CardInstance _) => 
             _contexts.CheckContext != null
             && _contexts.CurrentResolvable is CheckResolvable
-            && !_contexts.CheckContext.StagedCardTypes.Contains(PF.CardType.Blessing);
+            && !_contexts.CheckContext.StagedCardTypes.Contains(CardType.Blessing);
     }
 }

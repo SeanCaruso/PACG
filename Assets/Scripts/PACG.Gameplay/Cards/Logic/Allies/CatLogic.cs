@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using PACG.Core;
+using PACG.Data;
 
 namespace PACG.Gameplay
 {
@@ -15,7 +17,7 @@ namespace PACG.Gameplay
 
         public override CheckModifier GetCheckModifier(IStagedAction action)
         {
-            if (action.ActionType != PF.ActionType.Recharge) return null;
+            if (action.ActionType != ActionType.Recharge) return null;
             
             var modifier = new CheckModifier(action.Card);
             modifier.AddedDice.Add(4);
@@ -24,7 +26,7 @@ namespace PACG.Gameplay
 
         public override void OnCommit(IStagedAction action)
         {
-            if (action.ActionType != PF.ActionType.Discard) return;
+            if (action.ActionType != ActionType.Discard) return;
             
             // Discard to explore. +1d4 on checks that invoke the Magic trait.
             var exploreEffect = new SkillBonusExploreEffect(1, 4, 0, false);
@@ -36,16 +38,16 @@ namespace PACG.Gameplay
         {
             // Can recharge on a local check against a spell.
             if (_contexts.CheckContext?.Resolvable.Card is CardInstance checkCard &&
-                checkCard.Data.cardType == PF.CardType.Spell &&
-                !_contexts.CheckContext.StagedCardTypes.Contains(PF.CardType.Ally))
+                checkCard.Data.cardType == CardType.Spell &&
+                !_contexts.CheckContext.StagedCardTypes.Contains(CardType.Ally))
             {
-                return new List<IStagedAction>{ new PlayCardAction(card, PF.ActionType.Recharge) };
+                return new List<IStagedAction>{ new PlayCardAction(card, ActionType.Recharge) };
             }
 
             // Discard to explore.
             if (_contexts.IsExplorePossible && card.Owner == _contexts.TurnContext.Character)
             {
-                return new List<IStagedAction>{ new ExploreAction(card, PF.ActionType.Discard) };
+                return new List<IStagedAction>{ new ExploreAction(card, ActionType.Discard) };
             }
             
             return new List<IStagedAction>();

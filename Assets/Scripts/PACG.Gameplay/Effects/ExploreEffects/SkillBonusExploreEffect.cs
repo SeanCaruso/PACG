@@ -13,10 +13,10 @@ namespace PACG.Gameplay
         private readonly int _diceSides;
         private readonly int _bonus;
         public bool IsForOneCheck { get; }
-        private readonly List<PF.Skill> _skills;
+        private readonly List<Skill> _skills;
         private readonly List<string> _traits = new();
 
-        public SkillBonusExploreEffect(int diceCount, int diceSides, int bonus, bool isForOneCheck, params PF.Skill[] skills)
+        public SkillBonusExploreEffect(int diceCount, int diceSides, int bonus, bool isForOneCheck, params Skill[] skills)
         {
             _diceCount = diceCount;
             _diceSides = diceSides;

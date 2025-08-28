@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using PACG.Core;
+using PACG.Data;
 
 namespace PACG.Gameplay
 {
@@ -16,7 +18,7 @@ namespace PACG.Gameplay
         public override CheckModifier GetCheckModifier(IStagedAction action)
         {
             // Recharge for +1d4 on a local Strength or Melee check.
-            if (action.ActionType != PF.ActionType.Recharge) return null;
+            if (action.ActionType != ActionType.Recharge) return null;
             
             var modifier = new CheckModifier(action.Card);
             modifier.RequiredTraits.AddRange(new[] { "Strength", "Melee" });
@@ -27,14 +29,14 @@ namespace PACG.Gameplay
         public override void OnCommit(IStagedAction action)
         {
             // Discard to explore - +1d4 on Strength and Melee checks.
-            if (action.ActionType != PF.ActionType.Discard) return;
+            if (action.ActionType != ActionType.Discard) return;
             
             _contexts.TurnContext.AddExploreEffect(new SkillBonusExploreEffect(
                 1,
                 4,
                 0,
                 false,
-                PF.Skill.Strength, PF.Skill.Melee)
+                Skill.Strength, Skill.Melee)
             );
         }
 
@@ -43,11 +45,11 @@ namespace PACG.Gameplay
             var actions = new List<IStagedAction>();
             
             if (CanRecharge(card))
-                actions.Add(new PlayCardAction(card, PF.ActionType.Recharge));
+                actions.Add(new PlayCardAction(card, ActionType.Recharge));
 
             if (_contexts.IsExplorePossible && card.Owner == _contexts.TurnContext.Character)
             {
-                actions.Add(new ExploreAction(card, PF.ActionType.Discard));
+                actions.Add(new ExploreAction(card, ActionType.Discard));
             }
 
             return actions;
@@ -58,7 +60,7 @@ namespace PACG.Gameplay
             _contexts.CheckContext != null &&
             _contexts.CurrentResolvable is CheckResolvable &&
             _contexts.CheckContext.IsLocal(card.Owner) &&
-            !_contexts.CheckContext.StagedCardTypes.Contains(PF.CardType.Ally) &&
+            !_contexts.CheckContext.StagedCardTypes.Contains(CardType.Ally) &&
             _contexts.CheckContext.Invokes("Strength", "Melee");
     }
 }

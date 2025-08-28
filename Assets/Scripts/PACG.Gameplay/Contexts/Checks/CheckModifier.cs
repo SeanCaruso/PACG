@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using PACG.Core;
 
 namespace PACG.Gameplay
 {
@@ -7,8 +8,8 @@ namespace PACG.Gameplay
         public CardInstance SourceCard { get; }
 
         // Skill modifications
-        public List<PF.Skill> RestrictedSkills { get; set; } = new();
-        public List<PF.Skill> AddedValidSkills { get; set; } = new();
+        public List<Skill> RestrictedSkills { get; set; } = new();
+        public List<Skill> AddedValidSkills { get; set; } = new();
         public List<string> RequiredTraits { get; set; } = new();
         public HashSet<string> ProhibitedTraits { get; set; } = new();
         

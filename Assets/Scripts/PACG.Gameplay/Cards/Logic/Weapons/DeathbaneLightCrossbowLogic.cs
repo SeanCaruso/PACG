@@ -1,6 +1,4 @@
-using System;
-using System.Collections.Generic;
-using UnityEngine;
+
 
 /*
 [PlayableLogicFor("DeathbaneLightCrossbow")]
@@ -21,7 +19,7 @@ public class DeathbaneLightCrossbowLogic : CardLogicBase
                 && Contexts.CheckContext.CheckCategory == CheckCategory.Combat
                 && Contexts.CheckContext.CheckPhase == CheckPhase.PlayCards)
             {
-                actions.Add(new PlayCardAction(this, CardData, PF.ActionType.Reveal, powerIndex: RevealIndex, isCombatCheck: true));
+                actions.Add(new PlayCardAction(this, CardData, ActionType.Reveal, powerIndex: RevealIndex, isCombatCheck: true));
 
                 // TODO - Add Distant combat check logic. (And update this entire implementation to match standards.)
             }
@@ -44,7 +42,7 @@ public class DeathbaneLightCrossbowLogic : CardLogicBase
         if (powerIndex == RevealIndex)
         {
             // Reveal to use Dexterity or Ranged + 1d8+1.
-            (PF.Skill skill, int die, int bonus) = CardData.Owner.GetBestSkill(PF.Skill.Dexterity, PF.Skill.Ranged);
+            (Skill skill, int die, int bonus) = CardData.Owner.GetBestSkill(Skill.Dexterity, Skill.Ranged);
             Contexts.CheckContext.UsedSkill = skill;
             Contexts.CheckContext.DicePool.AddDice(1, die, bonus);
             Contexts.CheckContext.DicePool.AddDice(1, 8, 1);

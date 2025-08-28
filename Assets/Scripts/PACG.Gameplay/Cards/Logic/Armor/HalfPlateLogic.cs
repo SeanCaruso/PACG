@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using PACG.Core;
 
 namespace PACG.Gameplay
 {
@@ -20,15 +21,15 @@ namespace PACG.Gameplay
         {
             List<IStagedAction> actions = new();
             if (CanDisplay(card))
-                actions.Add(new PlayCardAction(card, PF.ActionType.Display));
+                actions.Add(new PlayCardAction(card, ActionType.Display));
             if (CanDraw(card))
-                actions.Add(new PlayCardAction(card, PF.ActionType.Draw, ("Damage", 2)));
+                actions.Add(new PlayCardAction(card, ActionType.Draw, ("Damage", 2)));
             if (CanFreelyDraw(card))
-                actions.Add(new PlayCardAction(card, PF.ActionType.Draw, ("Damage", 2), ("IsFreely", true)));
+                actions.Add(new PlayCardAction(card, ActionType.Draw, ("Damage", 2), ("IsFreely", true)));
             if (CanBury(card))
-                actions.Add(new PlayCardAction(card, PF.ActionType.Bury, ("ReduceDamageTo", 0)));
+                actions.Add(new PlayCardAction(card, ActionType.Bury, ("ReduceDamageTo", 0)));
             if (CanFreelyBury(card))
-                actions.Add(new PlayCardAction(card, PF.ActionType.Bury, ("ReduceDamageTo", 0), ("IsFreely", true)));
+                actions.Add(new PlayCardAction(card, ActionType.Bury, ("ReduceDamageTo", 0), ("IsFreely", true)));
             return actions;
         }
 

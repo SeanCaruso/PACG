@@ -1,38 +1,9 @@
 
-public static class PF
+using PACG.Data;
+
+namespace PACG.Core
 {
-
     public enum ActionType { Banish, Bury, Discard, Display, Draw, Recharge, Reload, Reveal }
-
-    public enum CardType
-    {
-        // Boons
-        Ally, Armor, Blessing, Item, Spell, Weapon,
-        // Banes
-        Barrier, Monster, StoryBane,
-        
-        // Other
-        None // Used for trait proficiencies.
-    }
-    public static string S(CardType type)
-    {
-        switch(type)
-        {
-            case CardType.StoryBane:
-                return "Story Bane";
-            default:
-                return type.ToString();
-        }
-    }
-    public static bool IsBane(CardType cardType)
-    {
-        return cardType switch
-        {
-            CardType.Barrier or CardType.Monster or CardType.StoryBane => true,
-            _ => false,
-        };
-    }
-    public static bool IsBoon(CardType cardType) => !IsBane(cardType);
 
     public enum Skill
     {
@@ -57,6 +28,29 @@ public static class PF
         Stealth,
         Survival,
     }
+    
+    // ReSharper disable once InconsistentNaming
+    public static class PF
+    {
 
-    public enum TargetingRule { CurrentPlayer, RandomPlayer, LocalPlayer, EachLocalPlayer, RandomLocalPlayer }
+        public static string ToString(CardType type)
+        {
+            return type switch
+            {
+                CardType.StoryBane => "Story Bane",
+                _ => type.ToString()
+            };
+        }
+        public static bool IsBane(CardType cardType)
+        {
+            return cardType switch
+            {
+                CardType.Barrier or CardType.Monster or CardType.StoryBane => true,
+                _ => false,
+            };
+        }
+        public static bool IsBoon(CardType cardType) => !IsBane(cardType);
+
+        public enum TargetingRule { CurrentPlayer, RandomPlayer, LocalPlayer, EachLocalPlayer, RandomLocalPlayer }
+    }
 }

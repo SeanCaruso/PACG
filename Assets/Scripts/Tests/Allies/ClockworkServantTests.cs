@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
+using PACG.Core;
 using PACG.Data;
 using PACG.Gameplay;
 using UnityEngine;
@@ -47,13 +48,13 @@ namespace Tests.Allies
             _gameServices.Contexts.NewTurn(new TurnContext(_valeros));
 
             var encounterData = ScriptableObject.CreateInstance<BoonCardData>();
-            encounterData.cardType = PF.CardType.Ally;
+            encounterData.cardType = CardType.Ally;
             encounterData.traits = new List<string>();
             encounterData.checkRequirement = new CheckRequirement
             {
                 mode = CheckMode.Single,
                 checkSteps = new List<CheckStep>
-                    { new() { category = CheckCategory.Skill, allowedSkills = new List<PF.Skill> { PF.Skill.Intelligence } } }
+                    { new() { category = CheckCategory.Skill, allowedSkills = new List<Skill> { Skill.Intelligence } } }
             };
 
             var encounterInstance = new CardInstance(encounterData, new ZombieLogic(_gameServices));
@@ -71,7 +72,7 @@ namespace Tests.Allies
             // Check that the card has one recharge action.
             var actions = _cardInstance.GetAvailableActions();
             Assert.AreEqual(1, actions.Count);
-            Assert.AreEqual(PF.ActionType.Recharge, actions[0].ActionType);
+            Assert.AreEqual(ActionType.Recharge, actions[0].ActionType);
         
             // Check for +1d6.
             var modifier = _cardInstance.Logic.GetCheckModifier(actions[0]);
@@ -86,13 +87,13 @@ namespace Tests.Allies
             _gameServices.Contexts.NewTurn(new TurnContext(_valeros));
 
             var encounterData = ScriptableObject.CreateInstance<BoonCardData>();
-            encounterData.cardType = PF.CardType.Ally;
+            encounterData.cardType = CardType.Ally;
             encounterData.traits = new List<string>();
             encounterData.checkRequirement = new CheckRequirement
             {
                 mode = CheckMode.Single,
                 checkSteps = new List<CheckStep>
-                    { new() { category = CheckCategory.Skill, allowedSkills = new List<PF.Skill> { PF.Skill.Craft } } }
+                    { new() { category = CheckCategory.Skill, allowedSkills = new List<Skill> { Skill.Craft } } }
             };
 
             var encounterInstance = new CardInstance(encounterData, new ZombieLogic(_gameServices));
@@ -110,7 +111,7 @@ namespace Tests.Allies
             // Check that the card has one recharge action.
             var actions = _cardInstance.GetAvailableActions();
             Assert.AreEqual(1, actions.Count);
-            Assert.AreEqual(PF.ActionType.Recharge, actions[0].ActionType);
+            Assert.AreEqual(ActionType.Recharge, actions[0].ActionType);
         
             // Check for +1d6.
             var modifier = _cardInstance.Logic.GetCheckModifier(actions[0]);
@@ -125,13 +126,13 @@ namespace Tests.Allies
             _gameServices.Contexts.NewTurn(new TurnContext(_valeros));
 
             var encounterData = ScriptableObject.CreateInstance<BoonCardData>();
-            encounterData.cardType = PF.CardType.Item;
+            encounterData.cardType = CardType.Item;
             encounterData.traits = new List<string>();
             encounterData.checkRequirement = new CheckRequirement
             {
                 mode = CheckMode.Single,
                 checkSteps = new List<CheckStep>
-                    { new() { category = CheckCategory.Skill, allowedSkills = new List<PF.Skill> { PF.Skill.Strength} } }
+                    { new() { category = CheckCategory.Skill, allowedSkills = new List<Skill> { Skill.Strength} } }
             };
 
             var encounterInstance = new CardInstance(encounterData, new ZombieLogic(_gameServices));
@@ -164,8 +165,8 @@ namespace Tests.Allies
             // Check that we can use the card to explore.
             var actions = _cardInstance.GetAvailableActions();
             Assert.AreEqual(2, actions.Count);
-            Assert.AreEqual(PF.ActionType.Bury, actions[0].ActionType);
-            Assert.AreEqual(PF.ActionType.Banish, actions[1].ActionType);
+            Assert.AreEqual(ActionType.Bury, actions[0].ActionType);
+            Assert.AreEqual(ActionType.Banish, actions[1].ActionType);
         }
     }
 }

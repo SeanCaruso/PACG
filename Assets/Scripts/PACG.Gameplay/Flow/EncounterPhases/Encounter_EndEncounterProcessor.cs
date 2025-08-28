@@ -1,5 +1,3 @@
-using PACG.SharedAPI;
-
 namespace PACG.Gameplay
 {
     public class Encounter_EndEncounterProcessor : BaseProcessor

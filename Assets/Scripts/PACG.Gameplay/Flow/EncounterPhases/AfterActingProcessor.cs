@@ -1,5 +1,3 @@
-using UnityEngine;
-
 namespace PACG.Gameplay
 {
     public class AfterActingProcessor : BaseProcessor

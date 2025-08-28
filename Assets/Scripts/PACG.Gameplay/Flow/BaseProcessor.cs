@@ -1,5 +1,3 @@
-using UnityEngine;
-
 namespace PACG.Gameplay
 {
     public abstract class BaseProcessor : IProcessor

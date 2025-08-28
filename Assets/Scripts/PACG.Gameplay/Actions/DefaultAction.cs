@@ -1,5 +1,6 @@
 
 using System.Collections.Generic;
+using PACG.Core;
 
 namespace PACG.Gameplay
 {
@@ -9,11 +10,11 @@ namespace PACG.Gameplay
     public class DefaultAction : IStagedAction
     {
         public CardInstance Card { get; protected set; }
-        public PF.ActionType ActionType { get; }
+        public ActionType ActionType { get; }
         public bool IsFreely => true;
         public Dictionary<string, object> ActionData { get; } = new();
 
-        public DefaultAction(CardInstance card, PF.ActionType actionType)
+        public DefaultAction(CardInstance card, ActionType actionType)
         {
             Card = card;
             ActionType = actionType;

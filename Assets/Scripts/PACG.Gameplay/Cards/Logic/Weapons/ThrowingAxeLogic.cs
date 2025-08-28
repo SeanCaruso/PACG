@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using PACG.Core;
 
 namespace PACG.Gameplay
 {
@@ -24,13 +25,13 @@ namespace PACG.Gameplay
             switch (action.ActionType)
             {
                 // Reveal to use Strength, Dexterity, Melee, or Ranged + 1d6.
-                case PF.ActionType.Reveal:
+                case ActionType.Reveal:
                     modifier.AddedTraits.AddRange(action.Card.Traits);
                     modifier.RestrictedSkills.AddRange(_validSkills);
                     modifier.AddedDice.Add(6);
                     break;
                 // Discard to add 1d6.
-                case PF.ActionType.Discard:
+                case ActionType.Discard:
                     modifier.AddedDice.Add(6);
                     break;
             }
@@ -42,14 +43,14 @@ namespace PACG.Gameplay
         {
             List<IStagedAction> actions = new();
             if (CanReveal(card))
-                actions.Add(new PlayCardAction(card, PF.ActionType.Reveal, ("IsCombat", true)));
+                actions.Add(new PlayCardAction(card, ActionType.Reveal, ("IsCombat", true)));
             if (CanDiscard(card))
-                actions.Add(new PlayCardAction(card, PF.ActionType.Discard, ("IsCombat", true), ("IsFreely", true)));
+                actions.Add(new PlayCardAction(card, ActionType.Discard, ("IsCombat", true), ("IsFreely", true)));
             return actions;
         }
 
-        private readonly PF.Skill[] _validSkills =
-            { PF.Skill.Strength, PF.Skill.Dexterity, PF.Skill.Melee, PF.Skill.Ranged };
+        private readonly Skill[] _validSkills =
+            { Skill.Strength, Skill.Dexterity, Skill.Melee, Skill.Ranged };
 
         private bool CanReveal(CardInstance card) =>
             // Reveal power can be used by the current owner while playing cards for a Strength, Dexterity, Melee, or Ranged combat check.

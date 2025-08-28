@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using PACG.Core;
 using UnityEngine;
 
 namespace PACG.Gameplay
@@ -20,7 +21,7 @@ namespace PACG.Gameplay
         /// <param name="baseDc"></param>
         /// <param name="skills"></param>
         /// <returns></returns>
-        public static CheckRequirement SkillCheck(int baseDc, params PF.Skill[] skills)
+        public static CheckRequirement SkillCheck(int baseDc, params Skill[] skills)
         {
             return new CheckRequirement
             {

@@ -1,6 +1,6 @@
-using PACG.Data;
 using System;
 using System.Collections.Generic;
+using PACG.Data;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -20,7 +20,7 @@ namespace PACG.Gameplay
 
         public override string ToString() => LocationData.LocationName;
 
-        private readonly Dictionary<PF.CardType, int> _knownComposition = new();
+        private readonly Dictionary<CardType, int> _knownComposition = new();
         private int _unknownCardCount;
 
         // Dependency injection
@@ -34,7 +34,7 @@ namespace PACG.Gameplay
             Deck = new Deck(gameServices.Cards);
 
             // We know how many of each card type are in the location initially.
-            foreach (PF.CardType type in Enum.GetValues(typeof(PF.CardType)))
+            foreach (CardType type in Enum.GetValues(typeof(CardType)))
                 _knownComposition[type] = 0;
 
             _contexts = gameServices.Contexts;

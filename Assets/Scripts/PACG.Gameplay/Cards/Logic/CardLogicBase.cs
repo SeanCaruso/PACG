@@ -5,6 +5,9 @@ namespace PACG.Gameplay
 {
     public abstract class CardLogicBase : ILogicBase
     {
+        // Override these as needed
+        public virtual bool CanEvade => true;
+        
         // Dependency injection of services
         private readonly ActionStagingManager _asm;
         private readonly CardManager _cards;
@@ -77,6 +80,14 @@ namespace PACG.Gameplay
 
             // TODO: Handle sequential and "None" modes.
             return null;
+        }
+
+        /// <summary>
+        /// Provides a way to modify a resolvable.
+        /// </summary>
+        /// <param name="resolvable"></param>
+        public virtual void ModifyResolvable(IResolvable resolvable)
+        {
         }
 
         public virtual void OnDefeated(CardInstance card)

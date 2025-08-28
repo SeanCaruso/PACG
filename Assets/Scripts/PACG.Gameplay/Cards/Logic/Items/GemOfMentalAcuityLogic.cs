@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using PACG.Core;
+using PACG.Data;
 
 namespace PACG.Gameplay
 {
@@ -19,7 +21,7 @@ namespace PACG.Gameplay
             {
                 RestrictedCategory = CheckCategory.Skill,
                 DieOverride = action.Card.Owner.GetBestSkill(
-                    PF.Skill.Intelligence, PF.Skill.Wisdom, PF.Skill.Charisma
+                    Skill.Intelligence, Skill.Wisdom, Skill.Charisma
                 ).die
             };
 
@@ -30,10 +32,10 @@ namespace PACG.Gameplay
         {
             // Usable on any non-combat check by the owner.
             if (_contexts.CheckContext is { IsSkillValid: true }
-                && !_contexts.CheckContext.StagedCardTypes.Contains(PF.CardType.Item)
+                && !_contexts.CheckContext.StagedCardTypes.Contains(CardType.Item)
                 && _contexts.CheckContext.Character == card.Owner)
             {
-                return new List<IStagedAction> { new PlayCardAction(card, PF.ActionType.Recharge) };
+                return new List<IStagedAction> { new PlayCardAction(card, ActionType.Recharge) };
             }
 
             return new List<IStagedAction>();

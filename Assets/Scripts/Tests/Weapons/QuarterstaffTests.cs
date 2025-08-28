@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using NUnit.Framework;
+using PACG.Core;
+using PACG.Data;
 using PACG.Gameplay;
 using UnityEngine;
 
@@ -41,14 +43,14 @@ namespace Tests.Weapons
             // Before staging, any PC has two actions.
             var actions = _quarterstaff.GetAvailableActions();
             Assert.AreEqual(2, actions.Count);
-            Assert.AreEqual(PF.ActionType.Reveal, actions[0].ActionType);
-            Assert.AreEqual(PF.ActionType.Discard, actions[1].ActionType);
+            Assert.AreEqual(ActionType.Reveal, actions[0].ActionType);
+            Assert.AreEqual(ActionType.Discard, actions[1].ActionType);
 
             // After staging, any PC has one action.
             _gameServices.ASM.StageAction(actions[0]);
             actions = _quarterstaff.GetAvailableActions();
             Assert.AreEqual(1, actions.Count);
-            Assert.AreEqual(PF.ActionType.Discard, actions[0].ActionType);
+            Assert.AreEqual(ActionType.Discard, actions[0].ActionType);
         }
 
         [Test]
@@ -58,7 +60,7 @@ namespace Tests.Weapons
             _gameServices.Contexts.NewTurn(new TurnContext(_valeros));
 
             var encounterData = ScriptableObject.CreateInstance<BaneCardData>();
-            encounterData.cardType = PF.CardType.Barrier;
+            encounterData.cardType = CardType.Barrier;
             encounterData.traits = new List<string> { "Obstacle", "Other Trait" };
 
             var encounterInstance = new CardInstance(encounterData, null);
@@ -76,7 +78,7 @@ namespace Tests.Weapons
             // Check that the quarterstaff has one evade action.
             var actions = _quarterstaff.GetAvailableActions();
             Assert.AreEqual(1, actions.Count);
-            Assert.AreEqual(PF.ActionType.Discard, actions[0].ActionType);
+            Assert.AreEqual(ActionType.Discard, actions[0].ActionType);
 
             // Stage and commit the evade action.
             _gameServices.ASM.StageAction(actions[0]);
@@ -95,7 +97,7 @@ namespace Tests.Weapons
             _gameServices.Contexts.NewTurn(new TurnContext(_valeros));
 
             var encounterData = ScriptableObject.CreateInstance<BaneCardData>();
-            encounterData.cardType = PF.CardType.Barrier;
+            encounterData.cardType = CardType.Barrier;
             encounterData.traits = new List<string> { "Trap", "Other Trait" };
 
             var encounterInstance = new CardInstance(encounterData, null);
@@ -113,7 +115,7 @@ namespace Tests.Weapons
             // Check that the quarterstaff has one evade action.
             var actions = _quarterstaff.GetAvailableActions();
             Assert.AreEqual(1, actions.Count);
-            Assert.AreEqual(PF.ActionType.Discard, actions[0].ActionType);
+            Assert.AreEqual(ActionType.Discard, actions[0].ActionType);
 
             // Stage and commit the evade action.
             _gameServices.ASM.StageAction(actions[0]);
@@ -132,13 +134,13 @@ namespace Tests.Weapons
             _gameServices.Contexts.NewTurn(new TurnContext(_valeros));
 
             var encounterData = ScriptableObject.CreateInstance<BaneCardData>();
-            encounterData.cardType = PF.CardType.Barrier;
+            encounterData.cardType = CardType.Barrier;
             encounterData.traits = new List<string> { "Not a Trap", "Not an Obstacle" };
             encounterData.checkRequirement = new CheckRequirement
             {
                 mode = CheckMode.Single,
                 checkSteps = new List<CheckStep>
-                    { new() { category = CheckCategory.Skill, allowedSkills = new List<PF.Skill>() } }
+                    { new() { category = CheckCategory.Skill, allowedSkills = new List<Skill>() } }
             };
 
             var encounterInstance = new CardInstance(encounterData, new ZombieLogic(_gameServices));

@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using PACG.SharedAPI;
 using System.Linq;
 using PACG.Data;
 
@@ -20,7 +18,7 @@ namespace PACG.Gameplay
         public override CharacterPower? GetEndOfTurnPower(PlayerCharacter pc)
         {
             var validCards = pc.Hand.Concat(pc.Discards)
-                .Where(card => card.Data.cardType is PF.CardType.Armor or PF.CardType.Weapon)
+                .Where(card => card.Data.cardType is CardType.Armor or CardType.Weapon)
                 .ToList();
 
             var rechargePower = pc.CharacterData.Powers[1];

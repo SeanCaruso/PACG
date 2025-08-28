@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using PACG.Core;
+using PACG.Data;
 
 namespace PACG.Gameplay
 {
@@ -26,14 +28,14 @@ namespace PACG.Gameplay
             var actions = new List<IStagedAction>();
             if (CanBless(card))
             {
-                actions.Add(new PlayCardAction(card, PF.ActionType.Discard));
+                actions.Add(new PlayCardAction(card, ActionType.Discard));
 
                 if (_contexts.TurnContext.HourCard.Data.cardLevel == 0)
-                    actions.Add(new PlayCardAction(card, PF.ActionType.Recharge));
+                    actions.Add(new PlayCardAction(card, ActionType.Recharge));
             }
             else if (_contexts.IsExplorePossible && _contexts.TurnContext.Character == card.Owner)
             {
-                actions.Add(new ExploreAction(card, PF.ActionType.Discard));
+                actions.Add(new ExploreAction(card, ActionType.Discard));
             }
 
             return actions;
@@ -43,7 +45,7 @@ namespace PACG.Gameplay
         private bool CanBless(CardInstance card) => (
             _contexts.CheckContext != null &&
             _contexts.CurrentResolvable is CheckResolvable &&
-            !_contexts.CheckContext.StagedCardTypes.Contains(PF.CardType.Blessing) &&
+            !_contexts.CheckContext.StagedCardTypes.Contains(CardType.Blessing) &&
             _contexts.CheckContext.Character.Location.Characters.Contains(card.Owner)
         );
     }

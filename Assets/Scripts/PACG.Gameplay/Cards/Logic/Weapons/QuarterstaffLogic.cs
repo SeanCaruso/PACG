@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using PACG.Core;
+using PACG.Data;
 
 namespace PACG.Gameplay
 {
@@ -24,14 +26,15 @@ namespace PACG.Gameplay
             {
                 RestrictedCategory = CheckCategory.Combat,
                 AddedTraits = action.Card.Traits,
-                RestrictedSkills = new[] {PF.Skill.Strength, PF.Skill.Melee}.ToList(),
-                ProhibitedTraits = new[] { "Offhand" }.ToHashSet(), // After playing, you can't play an Offhand boon this encounter.
+                RestrictedSkills = new[] { Skill.Strength, Skill.Melee }.ToList(),
+                ProhibitedTraits =
+                    new[] { "Offhand" }.ToHashSet(), // After playing, you can't play an Offhand boon this encounter.
                 AddedDice = new[] { 6 }.ToList()
             };
-            
-            if (action.ActionType == PF.ActionType.Discard)
+
+            if (action.ActionType == ActionType.Discard)
                 modifier.AddedDice.Add(6);
-            
+
             return modifier;
         }
 
@@ -49,21 +52,21 @@ namespace PACG.Gameplay
                 // If a weapon hasn't been played yet, display both combat options.
                 if (!_contexts.CheckContext.StagedCardTypes.Contains(card.Data.cardType))
                 {
-                    actions.Add(new PlayCardAction(card, PF.ActionType.Reveal, ("IsCombat", true)));
-                    actions.Add(new PlayCardAction(card, PF.ActionType.Discard, ("IsCombat", true)));
+                    actions.Add(new PlayCardAction(card, ActionType.Reveal, ("IsCombat", true)));
+                    actions.Add(new PlayCardAction(card, ActionType.Discard, ("IsCombat", true)));
                 }
                 // Otherwise, if this card has already been played, present the discard option only.
                 else if (_asm.CardStaged(card))
                 {
                     actions.Add(new PlayCardAction(
-                        card, PF.ActionType.Discard, ("IsCombat", true), ("IsFreely", true))
+                        card, ActionType.Discard, ("IsCombat", true), ("IsFreely", true))
                     );
                 }
             }
-            
-            if (CanEvade(card))
+
+            if (CanDiscardToEvade(card))
             {
-                actions.Add(new PlayCardAction(card, PF.ActionType.Discard));
+                actions.Add(new PlayCardAction(card, ActionType.Discard));
             }
 
             return actions;
@@ -73,12 +76,12 @@ namespace PACG.Gameplay
         private bool IsPlayableForCombat(CardInstance card) =>
             _contexts.CheckContext is { IsCombatValid: true }
             && _contexts.CheckContext.Character == card.Owner
-            && _contexts.CheckContext.CanUseSkill(PF.Skill.Strength, PF.Skill.Melee);
+            && _contexts.CheckContext.CanUseSkill(Skill.Strength, Skill.Melee);
 
         // Can be played by the owner to evade an Obstacle or Trap barrier.
-        private bool CanEvade(CardInstance card) =>
+        private bool CanDiscardToEvade(CardInstance card) =>
             _contexts.EncounterContext?.CurrentPhase == EncounterPhase.Evasion &&
-            _contexts.EncounterContext?.CardData.cardType == PF.CardType.Barrier &&
+            _contexts.EncounterContext?.CardData.cardType == CardType.Barrier &&
             _contexts.EncounterContext.HasTrait("Obstacle", "Trap") &&
             _contexts.EncounterContext?.Character == card.Owner;
     }

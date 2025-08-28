@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using PACG.Core;
 
 namespace PACG.Gameplay
 {
@@ -16,7 +17,7 @@ namespace PACG.Gameplay
         public override CheckModifier GetCheckModifier(IStagedAction action)
         {
             // Recharge for +1d6 on a local Intelligence or Craft check.
-            if (action.ActionType != PF.ActionType.Recharge) return null;
+            if (action.ActionType != ActionType.Recharge) return null;
             
             var modifier = new CheckModifier(action.Card);
             modifier.RequiredTraits.AddRange(new[] { "Intelligence", "Craft" });
@@ -27,7 +28,7 @@ namespace PACG.Gameplay
         public override void OnCommit(IStagedAction action)
         {
             // Bury or Banish to explore
-            if (action.ActionType is not (PF.ActionType.Bury or PF.ActionType.Banish)) return;
+            if (action.ActionType is not (ActionType.Bury or ActionType.Banish)) return;
             _contexts.TurnContext.AddExploreEffect(new BasicExploreEffect());
         }
 
@@ -36,12 +37,12 @@ namespace PACG.Gameplay
             var actions = new List<IStagedAction>();
             
             if (CanRecharge(card))
-                actions.Add(new PlayCardAction(card, PF.ActionType.Recharge));
+                actions.Add(new PlayCardAction(card, ActionType.Recharge));
 
             if (_contexts.IsExplorePossible && card.Owner == _contexts.TurnContext.Character)
             {
-                actions.Add(new ExploreAction(card, PF.ActionType.Bury));
-                actions.Add(new ExploreAction(card, PF.ActionType.Banish));
+                actions.Add(new ExploreAction(card, ActionType.Bury));
+                actions.Add(new ExploreAction(card, ActionType.Banish));
             }
 
             return actions;
@@ -50,7 +51,7 @@ namespace PACG.Gameplay
         public override IResolvable GetRecoveryResolvable(CardInstance card)
         {
             // Craft 8 to recharge.
-            return new CheckResolvable(card, card.Owner, CardUtils.SkillCheck(8, PF.Skill.Craft));
+            return new CheckResolvable(card, card.Owner, CardUtils.SkillCheck(8, Skill.Craft));
         }
 
         // Can recharge on a local Intelligence or Craft check.

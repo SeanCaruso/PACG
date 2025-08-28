@@ -1,6 +1,8 @@
-using PACG.SharedAPI;
 using System.Collections.Generic;
 using System.Linq;
+using PACG.Core;
+using PACG.Data;
+using PACG.SharedAPI;
 using UnityEngine;
 
 namespace PACG.Gameplay
@@ -72,7 +74,7 @@ namespace PACG.Gameplay
         /// </summary>
         /// <param name="card"></param>
         /// <param name="action"></param>
-        public void MoveCard(CardInstance card, PF.ActionType action)
+        public void MoveCard(CardInstance card, ActionType action)
         {
             if (card == null)
             {
@@ -88,30 +90,30 @@ namespace PACG.Gameplay
 
             switch (action)
             {
-                case PF.ActionType.Banish:
+                case ActionType.Banish:
                     MoveCard(card, card.OriginalOwner == null ? CardLocation.Vault : CardLocation.Recovery);
                     break;
-                case PF.ActionType.Bury:
+                case ActionType.Bury:
                     MoveCard(card, CardLocation.Buried);
                     break;
-                case PF.ActionType.Discard:
+                case ActionType.Discard:
                     MoveCard(card, CardLocation.Discard);
                     break;
-                case PF.ActionType.Display:
+                case ActionType.Display:
                     MoveCard(card, CardLocation.Displayed);
                     break;
-                case PF.ActionType.Draw:
+                case ActionType.Draw:
                     MoveCard(card, CardLocation.Hand);
                     break;
-                case PF.ActionType.Recharge:
+                case ActionType.Recharge:
                     MoveCard(card, CardLocation.Deck);
                     card.Owner.Recharge(card);
                     break;
-                case PF.ActionType.Reload:
+                case ActionType.Reload:
                     MoveCard(card, CardLocation.Deck);
                     card.Owner.Reload(card);
                     break;
-                case PF.ActionType.Reveal:
+                case ActionType.Reveal:
                     MoveCard(card, CardLocation.Revealed);
                     break;
                 default:

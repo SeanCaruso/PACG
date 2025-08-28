@@ -1,5 +1,6 @@
 
 using System.Collections.Generic;
+using PACG.Core;
 using UnityEngine;
 
 public enum CheckMode { Single, Choice, Sequential, None }
@@ -14,7 +15,7 @@ public class CheckStep
 
     [Header("Check Type")]
     public CheckCategory category;
-    public List<PF.Skill> allowedSkills;
+    public List<Skill> allowedSkills;
 }
 
 [System.Serializable]

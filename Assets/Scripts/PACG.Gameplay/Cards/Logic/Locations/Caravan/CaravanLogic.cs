@@ -1,4 +1,6 @@
 
+using PACG.Core;
+
 namespace PACG.Gameplay
 {
     public class CaravanLogic : LocationLogicBase
@@ -18,7 +20,7 @@ namespace PACG.Gameplay
             return new CheckResolvable(
                 _contexts.TurnPcLocation,
                 _contexts.TurnContext.Character,
-                CardUtils.SkillCheck(dc,PF.Skill.Wisdom, PF.Skill.Perception)
+                CardUtils.SkillCheck(dc,Skill.Wisdom, Skill.Perception)
             );
         }
 

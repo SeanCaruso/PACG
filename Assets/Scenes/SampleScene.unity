@@ -244,9 +244,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a54b3de4a8e7ec347a2947701d73c056, type: 2}
   - {fileID: 11400000, guid: 319c429832160b549b7c6caffdb16d9d, type: 2}
   testLocationDeck:
-  - {fileID: 11400000, guid: 652b8c01f40d6624faf3599a9d7856d6, type: 2}
-  - {fileID: 11400000, guid: 652b8c01f40d6624faf3599a9d7856d6, type: 2}
-  - {fileID: 11400000, guid: 652b8c01f40d6624faf3599a9d7856d6, type: 2}
+  - {fileID: 11400000, guid: 15e50ef9bae16b14c9922932df023c5f, type: 2}
 --- !u!4 &182072643
 Transform:
   m_ObjectHideFlags: 0

@@ -36,6 +36,8 @@ namespace PACG.Presentation
         public TextMeshProUGUI recoveryText;
 
         [Header("Traits")]
+        public GameObject StoryBaneTypePanel;
+        public TextMeshProUGUI StoryBaneTypeText;
         public GameObject LootPanel;
         public GameObject traitsSection;
 
@@ -73,6 +75,9 @@ namespace PACG.Presentation
             }
 
             // Traits
+            StoryBaneTypePanel.SetActive(view.IsStoryBane);
+            StoryBaneTypePanel.GetComponent<Image>().color = view.StoryBaneTypePanelColor;
+            StoryBaneTypeText.text = view.StoryBaneType;
             LootPanel.SetActive(view.IsLoot);
             foreach (var trait in view.Traits) AddTextToPanel(trait, traitsSection);
             
@@ -88,7 +93,7 @@ namespace PACG.Presentation
             {
                 // We need to resize the label to fit the whole section width (and get rid of the DC).
                 var checksSectionRect = checksSection.GetComponent<RectTransform>();
-                checksSectionRect.sizeDelta = new(80f, checksSectionRect.sizeDelta.y);
+                checksSectionRect.sizeDelta = new Vector2(80f, checksSectionRect.sizeDelta.y);
                 checkDcPanel.SetActive(false);
                 return;
             }

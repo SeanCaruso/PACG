@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using PACG.Core;
 using PACG.Gameplay;
 
 namespace Tests.Monsters
@@ -31,10 +32,10 @@ namespace Tests.Monsters
             Assert.IsTrue(check.IsCombatValid);
             Assert.IsTrue(check.IsSkillValid);
             Assert.AreEqual(4, check.GetCurrentValidSkills().Count);
-            Assert.AreEqual(11, check.GetDcForSkill(PF.Skill.Strength));
-            Assert.AreEqual(11, check.GetDcForSkill(PF.Skill.Melee));
-            Assert.AreEqual(6, check.GetDcForSkill(PF.Skill.Perception));
-            Assert.AreEqual(6, check.GetDcForSkill(PF.Skill.Survival));
+            Assert.AreEqual(11, check.GetDcForSkill(Skill.Strength));
+            Assert.AreEqual(11, check.GetDcForSkill(Skill.Melee));
+            Assert.AreEqual(6, check.GetDcForSkill(Skill.Perception));
+            Assert.AreEqual(6, check.GetDcForSkill(Skill.Survival));
         }
 
         [Test]
@@ -62,7 +63,7 @@ namespace Tests.Monsters
 
             var check = _gameServices.Contexts.CheckContext;
             check.Resolvable.CheckSteps[1].baseDC = 1;
-            check.UsedSkill = PF.Skill.Perception;
+            check.UsedSkill = Skill.Perception;
             
             _gameServices.ASM.Commit();
             

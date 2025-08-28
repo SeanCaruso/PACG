@@ -1,11 +1,12 @@
 using System.Collections.Generic;
+using PACG.Core;
 
 namespace PACG.Gameplay
 {
     public class MoveAction : IStagedAction
     {
         public CardInstance Card { get; }
-        public PF.ActionType ActionType { get; }
+        public ActionType ActionType { get; }
 
         public bool IsFreely => false; // Doesn't apply to Move actions.
         public Dictionary<string, object> ActionData { get; } = new();
@@ -22,7 +23,7 @@ namespace PACG.Gameplay
         /// </summary>
         /// <param name="card"></param>
         /// <param name="actionType"></param>
-        public MoveAction(CardInstance card, PF.ActionType actionType)
+        public MoveAction(CardInstance card, ActionType actionType)
         {
             Card = card;
             ActionType = actionType;

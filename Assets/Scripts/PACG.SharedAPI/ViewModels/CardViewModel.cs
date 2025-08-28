@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using PACG.Core;
+using PACG.Data;
 using PACG.Gameplay;
 using UnityEngine;
 
@@ -19,12 +20,15 @@ namespace PACG.SharedAPI
         // Ready-to-display strings
         public string Name => CardInstance.Data.cardName.ToUpper();
         public string Type => CardInstance.Data.cardType.ToString().ToUpper();
+        public string StoryBaneType => CardInstance.Data.StoryBaneType.ToString().ToUpper();
         public string Level => $"{CardInstance.Data.cardLevel}";
         public string PowersText => StringUtils.ReplaceAdventureLevel(CardInstance.Data.powers, CardUtils.AdventureNumber);
         public string RecoveryText => StringUtils.ReplaceAdventureLevel(CardInstance.Data.recovery, CardUtils.AdventureNumber);
 
         // Ready-to-use values
         public Color32 PanelColor { get; set; }
+        public Color32 StoryBaneTypePanelColor { get; set; }
+        public bool IsStoryBane => CardInstance.Data.cardType == CardType.StoryBane;
         public bool IsLoot => CardInstance.Data.IsLoot;
         public IEnumerable<string> Traits => CardInstance.Data.traits.Select(trait => trait.ToUpper());
 
