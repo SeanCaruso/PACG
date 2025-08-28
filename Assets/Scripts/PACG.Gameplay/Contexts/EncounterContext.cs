@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using PACG.Data;
@@ -21,6 +22,12 @@ namespace PACG.Gameplay
         public PlayerCharacter Character { get; }
         public CardInstance Card { get; }
 
+        public EncounterContext(PlayerCharacter pc, CardInstance card)
+        {
+            Character = pc;
+            Card = card;
+        }
+
         // Convenience properties
         public CardData CardData => Card.Data;
 
@@ -37,12 +44,10 @@ namespace PACG.Gameplay
         public EncounterPhase CurrentPhase { get; set; } = EncounterPhase.OnEncounter;
         public List<IExploreEffect> ExploreEffects { get; set; } = new();
         public CheckResult CheckResult { get; set; }
-
-        public EncounterContext(PlayerCharacter pc, CardInstance card)
-        {
-            Character = pc;
-            Card = card;
-        }
+        
+        // Flags/properties set by cards/powers.
+        public bool IgnoreAfterActingPowers { get; set; } = false;
+        public List<Action<IResolvable>> ResolvableModifiers { get; } = new();
 
         public void AddProhibitedTraits(PlayerCharacter pc, params string[] traits)
         {

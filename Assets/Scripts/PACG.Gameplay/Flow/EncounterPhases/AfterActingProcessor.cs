@@ -2,17 +2,25 @@ namespace PACG.Gameplay
 {
     public class AfterActingProcessor : BaseProcessor
     {
-        private readonly EncounterContext _context;
+        private readonly ContextManager _contexts;
 
-        public AfterActingProcessor(EncounterContext context, GameServices gameServices)
+        public AfterActingProcessor(GameServices gameServices)
             : base(gameServices)
         {
-            _context = context;
+            _contexts = gameServices.Contexts;
         }
 
         protected override void OnExecute()
         {
-            // TODO
+            if (_contexts.EncounterContext == null) return;
+            
+            _contexts.EncounterContext.CurrentPhase = EncounterPhase.AfterActing;
+
+            if (_contexts.EncounterContext.IgnoreAfterActingPowers) return;
+            
+            var resolvable = _contexts.EncounterContext.Card.GetAfterActingResolvable();
+            if (resolvable != null)
+                _contexts.NewResolvable(resolvable);
         }
     }
 }

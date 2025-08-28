@@ -26,9 +26,13 @@ namespace Tests.StoryBanes
             var direWolf = TestUtils.GetCard(GameServices, "Dire Wolf");
             for (var i = 0; i < 100; i++)
             {
+                GameServices.Contexts.NewEncounter(new EncounterContext(Valeros, direWolf));
+                direWolf.Logic.OnEncounter();
+                
                 const int baseDamage = 1;
                 var resolvable = new DamageResolvable(Valeros, baseDamage);
-                direWolf.Logic.ModifyResolvable(resolvable);
+                GameServices.Contexts.NewResolvable(resolvable);
+                
                 Assert.IsTrue(resolvable.Amount >= baseDamage + 1);
                 Assert.IsTrue(resolvable.Amount <= baseDamage + 4);
             }

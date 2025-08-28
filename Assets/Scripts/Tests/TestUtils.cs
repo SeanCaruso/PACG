@@ -79,15 +79,21 @@ namespace Tests
 
         public static void SetupEncounter(GameServices gameServices, string character, string card)
         {
-            var location = GetLocation(gameServices, "Caravan");
             var pc = GetCharacter(gameServices, character);
             var encounterCard = GetCard(gameServices, card);
+            
+            SetupEncounter(gameServices, pc, encounterCard);
+        }
+
+        public static void SetupEncounter(GameServices gameServices, PlayerCharacter pc, CardInstance card)
+        {
+            var location = GetLocation(gameServices, "Caravan");
         
             gameServices.Contexts.NewGame(new GameContext(1, gameServices.Cards));
             gameServices.Contexts.GameContext.SetPcLocation(pc, location);
         
             gameServices.Contexts.NewTurn(new TurnContext(pc));
-            gameServices.GameFlow.StartPhase(new EncounterController(pc, encounterCard, gameServices), "Encounter");
+            gameServices.GameFlow.StartPhase(new EncounterController(pc, card, gameServices), "Encounter");
         }
     }
 

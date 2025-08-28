@@ -7,7 +7,7 @@ namespace PACG.Gameplay
     {
         // Override these as needed
         public virtual bool CanEvade => true;
-        
+
         // Dependency injection of services
         private readonly ActionStagingManager _asm;
         private readonly CardManager _cards;
@@ -23,14 +23,14 @@ namespace PACG.Gameplay
         public List<IStagedAction> GetAvailableActions(CardInstance card)
         {
             if (card.Owner == null) return new List<IStagedAction>();
-            
+
             // If the owner is exhausted and already played a boon, no actions are available on another boon.
             if (card.Owner.ActiveScourges.Contains(ScourgeType.Exhausted)
                 && _asm.StagedActionsFor(card.Owner).Any(a => a.Card != card))
             {
                 return new List<IStagedAction>();
             }
-            
+
             // Only cards in hand (including reveals) and display are playable by default.
             // Resolvables will add extra actions if necessary.
             if (card.CurrentLocation is not (CardLocation.Displayed or CardLocation.Hand or CardLocation.Revealed))
@@ -39,7 +39,7 @@ namespace PACG.Gameplay
             // If the card has any prohibited traits, (e.g., 2-Handed vs. Offhand), just return.
             var prohibitedTraits = _contexts.EncounterContext?.ProhibitedTraits
                 .GetValueOrDefault(card.Owner, new HashSet<string>()).ToList() ?? new List<string>();
-            
+
             prohibitedTraits.AddRange(_contexts.CheckContext?.ProhibitedTraits(card.Owner) ?? new List<string>());
             if (prohibitedTraits.Intersect(card.Traits).Any())
                 return new List<IStagedAction>();
@@ -67,9 +67,14 @@ namespace PACG.Gameplay
         }
 
         // Encounter card methods (default implementations for playable cards)
+        public virtual void OnEncounter()
+        {
+        }
+
         public virtual IResolvable GetOnEncounterResolvable(CardInstance card) => null;
         public virtual IResolvable GetBeforeActingResolvable(CardInstance card) => null;
         public virtual IResolvable GetResolveEncounterResolvable(CardInstance card) => null;
+        public virtual IResolvable GetAfterActingResolvable(CardInstance card) => null;
 
         public virtual IResolvable GetCheckResolvable(CardInstance card)
         {
@@ -80,14 +85,6 @@ namespace PACG.Gameplay
 
             // TODO: Handle sequential and "None" modes.
             return null;
-        }
-
-        /// <summary>
-        /// Provides a way to modify a resolvable.
-        /// </summary>
-        /// <param name="resolvable"></param>
-        public virtual void ModifyResolvable(IResolvable resolvable)
-        {
         }
 
         public virtual void OnDefeated(CardInstance card)
@@ -101,7 +98,7 @@ namespace PACG.Gameplay
                 _contexts.EncounterContext.Character.AddToHand(card);
             }
         }
-        
+
         /// <summary>
         /// If overridden, you must also perform the default behavior!
         /// </summary>

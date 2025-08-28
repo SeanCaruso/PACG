@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using PACG.SharedAPI;
@@ -69,7 +70,10 @@ namespace PACG.Gameplay
             if (CurrentResolvable != null)
                 Debug.LogWarning($"[ContextManager] Created {resolvable} is overwriting {CurrentResolvable}!");
 
-            EncounterContext?.Card?.Logic?.ModifyResolvable(resolvable);
+            foreach (var action in EncounterContext?.ResolvableModifiers ?? new List<Action<IResolvable>>())
+            {
+                action(resolvable);
+            }
 
             // If this is a damage resolvable, check to see if we have any responses for it. If so, we'll need to
             // handle those responses first.

@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b9caa4de1a44a24690a5d7218d08e5f, type: 3}
+  m_Name: Ezren
+  m_EditorClassIdentifier: 
+  CharacterName: Ezren
+  Attributes:
+  - Attribute: 0
+    Die: 6
+    Bonus: 0
+  - Attribute: 1
+    Die: 6
+    Bonus: 0
+  - Attribute: 2
+    Die: 4
+    Bonus: 0
+  - Attribute: 3
+    Die: 12
+    Bonus: 0
+  - Attribute: 4
+    Die: 8
+    Bonus: 0
+  - Attribute: 5
+    Die: 6
+    Bonus: 0
+  Skills:
+  - Skill: 7
+    Attribute: 3
+    Bonus: 2
+  - Skill: 8
+    Attribute: 3
+    Bonus: 1
+  - Skill: 13
+    Attribute: 3
+    Bonus: 2
+  HandSize: 6
+  Proficiencies:
+  - CardType: 9
+    Trait: Arcane
+  Traits:
+  - Human
+  - Wizard
+  Powers:
+  - IsActivated: 1
+    SpriteEnabled: {fileID: 3200584872129738782, guid: e43eb5860c0b4264b8ebfbefec21ea48, type: 3}
+    SpriteDisabled: {fileID: 5849056180980883084, guid: 1930836b6737f06458ce1a668dfcc888, type: 3}
+    Text: At the start of your turn, you may examine the top card of your deck; if
+      it is a spell, you may draw it.
+  - IsActivated: 1
+    SpriteEnabled: {fileID: -2610769535960228662, guid: 6cd14c46e2973a94d8e36cd1d4764125, type: 3}
+    SpriteDisabled: {fileID: -7686410601089741857, guid: 41ffa137d867c2b4e8fa4621f5fc211a, type: 3}
+    Text: On your turn, you may recharge a spell to examine the top card of your
+      location. If you do, you may discard a card to explore.
+  - IsActivated: 0
+    SpriteEnabled: {fileID: 0}
+    SpriteDisabled: {fileID: 0}
+    Text: On a local check against a Magic card, you may recharge a card to add 1d4.
+  Weapons: 1
+  Spells: 7
+  Armors: 0
+  Items: 4
+  Allies: 3
+  Blessings: 0
+  FavoredCards:
+  - CardType: 4
+    Trait: 

@@ -11,6 +11,11 @@ namespace PACG.Gameplay
         // Interface properties
         public string Name => Data.cardName;
         public List<string> Traits => Data.traits;
+        private bool IsStoryBane => Data.cardType == CardType.StoryBane;
+        /// <summary>
+        /// Gets the actual card type (i.e. Barrier or Monster for Story Banes).
+        /// </summary>
+        public CardType CardType => IsStoryBane ? Data.StoryBaneType : Data.cardType;
         
         // Passed in via constructor
         public CardData Data { get; }
@@ -53,6 +58,7 @@ namespace PACG.Gameplay
         public IResolvable GetOnEncounterResolvable() => Logic?.GetOnEncounterResolvable(this);
         public IResolvable GetBeforeActingResolvable() => Logic?.GetBeforeActingResolvable(this);
         public IResolvable GetCheckResolvable() => Logic?.GetCheckResolvable(this);
+        public IResolvable GetAfterActingResolvable() => Logic?.GetAfterActingResolvable(this);
     }
 
     public enum CardLocation { Buried, Deck, Discard, Displayed, Hand, Recovery, Revealed, Vault }

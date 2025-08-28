@@ -7,11 +7,20 @@ namespace PACG.Gameplay
     {
         public override bool CanEvade => false;
         
+        // Dependency injection
+        private readonly ContextManager _contexts;
+        
         public DireWolfLogic(GameServices gameServices) : base(gameServices)
         {
+            _contexts = gameServices.Contexts;
         }
 
-        public override void ModifyResolvable(IResolvable resolvable)
+        public override void OnEncounter()
+        {
+            _contexts.EncounterContext?.ResolvableModifiers.Add(ModifyDamageResolvable);
+        }
+
+        private static void ModifyDamageResolvable(IResolvable resolvable)
         {
             if (resolvable is not DamageResolvable damageResolvable) return;
 

@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 72b1ad41f9c218045b980737984353fc, type: 3}
-  m_Name: Enchant Weapon
+  m_Name: Force Missile
   m_EditorClassIdentifier: 
-  cardID: EnchantWeapon
-  cardName: Enchant Weapon
+  cardID: ForceMissile
+  cardName: Force Missile
   cardType: 4
   StoryBaneType: 0
   cardLevel: 0
@@ -24,17 +24,20 @@ MonoBehaviour:
     - baseDC: 4
       adventureLevelMult: 0
       category: 1
-      allowedSkills: 0300000004000000070000000b000000
+      allowedSkills: 0300000007000000
   rerollThreshold: 0
-  powers: When any character plays a weapon on a combat check, freely banish to add
-    1d4+# and the Magic trait.
-  recovery: If proficient, discard this card; you may succeed at an Arcane or Divine
-    6 check to recharge it instead.
+  powers: 'For your combat check, banish to use Arcane + 2d4.
+
+
+    On another character''s
+    combat check, banish to add 2d4 and the Attack, Force, and Magic traits.'
+  recovery: If proficient, discard this card; you may succeed at an Arcane 6 check
+    to recharge it instead.
   immunities: []
   vulnerabilities: []
   IsLoot: 0
   traits:
   - Magic
   - Arcane
-  - Divine
-  - Veteran
+  - Attack
+  - Force
