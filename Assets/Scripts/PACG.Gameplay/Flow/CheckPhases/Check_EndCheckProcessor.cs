@@ -1,3 +1,4 @@
+
 namespace PACG.Gameplay
 {
     /// <summary>
@@ -14,6 +15,14 @@ namespace PACG.Gameplay
 
         protected override void OnExecute()
         {
+            if (_contexts.CheckContext?.CheckResult == null) return;
+            
+            // If we have any defined success/fail callbacks, invoke them.
+            if (_contexts.CheckContext.CheckResult.WasSuccess)
+                _contexts.CheckContext.Resolvable?.OnSuccess?.Invoke();
+            else
+                _contexts.CheckContext.Resolvable?.OnFailure?.Invoke();
+            
             // If we're in an encounter, store the check result for later processing.
             if (_contexts.EncounterContext != null)
             {

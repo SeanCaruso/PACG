@@ -9,10 +9,12 @@ namespace PACG.Gameplay
     {
         // Dependency injections
         private readonly ContextManager _contexts;
+        private readonly GameServices _gameServices;
 
         public EnchantWeaponLogic(GameServices gameServices) : base(gameServices)
         {
             _contexts = gameServices.Contexts;
+            _gameServices = gameServices;
         }
 
         public override CheckModifier GetCheckModifier(IStagedAction action)
@@ -43,11 +45,16 @@ namespace PACG.Gameplay
         {
             if (!card.Owner.IsProficient(card.Data)) return null;
 
-            return new CheckResolvable(
+            var resolvable = new CheckResolvable(
                 card,
                 card.Owner,
-                CardUtils.SkillCheck(6, Skill.Arcane, Skill.Divine)
-            );
+                CardUtils.SkillCheck(6, Skill.Arcane, Skill.Divine))
+                {
+                    OnSuccess = () => card.Owner.Reload(card),
+                    OnFailure = () => card.Owner.Discard(card)
+                };
+
+            return CardUtils.CreateDefaultRecoveryResolvable(resolvable, _gameServices);
         }
     }
 }

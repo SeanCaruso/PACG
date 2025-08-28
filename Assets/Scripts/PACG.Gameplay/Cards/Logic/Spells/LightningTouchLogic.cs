@@ -9,6 +9,7 @@ namespace PACG.Gameplay
     {
         // Dependency injection
         private readonly ContextManager _contexts;
+        private readonly GameServices _gameServices;
 
         public LightningTouchLogic(GameServices gameServices) : base(gameServices)
         {
@@ -56,11 +57,16 @@ namespace PACG.Gameplay
         {
             if (!card.Owner.IsProficient(card.Data)) return null;
 
-            return new CheckResolvable(
+            var resolvable = new CheckResolvable(
                 card,
                 card.Owner,
-                CardUtils.SkillCheck(6, Skill.Arcane)
-            );
+                CardUtils.SkillCheck(6, Skill.Arcane))
+            {
+                OnSuccess = () => card.Owner.Reload(card),
+                OnFailure = () => card.Owner.Discard(card)
+            };
+
+            return CardUtils.CreateDefaultRecoveryResolvable(resolvable, _gameServices);
         }
     }
 }

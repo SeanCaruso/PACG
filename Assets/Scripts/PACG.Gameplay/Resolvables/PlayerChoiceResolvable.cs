@@ -7,6 +7,9 @@ namespace PACG.Gameplay
 {
     public class PlayerChoiceResolvable : BaseResolvable
     {
+        /// <summary>
+        /// Action gets called by the Controller after ContextManager.EndResolvable() and before GFM.Process().
+        /// </summary>
         public class ChoiceOption
         {
             public string Label { get; }

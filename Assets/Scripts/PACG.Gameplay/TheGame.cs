@@ -1,11 +1,19 @@
 using System.Collections.Generic;
 using System.Linq;
+using NUnit.Framework.Internal;
 using PACG.Data;
 using PACG.SharedAPI;
 using UnityEngine;
 
 namespace PACG.Gameplay
 {
+    [System.Serializable]
+    public class TestCharacter
+    {
+        public CharacterData Pc;
+        public List<CardData> Deck;
+    }
+    
     public class TheGame : MonoBehaviour
     {
         public CardPreviewController CardPreviewController;
@@ -20,10 +28,14 @@ namespace PACG.Gameplay
         // As we add features, these should be removed.
         [Header("Test Objects")]
         public CardData hourCardData;
-        public CharacterData testCharacter;
-        public List<CardData> characterDeck;
+        public List<TestCharacter> TestCharacters;
         public List<LocationData> TestLocations;
         public List<CardData> testLocationDeck;
+
+        public List<string> CharactersToUse;
+        
+        // Valeros: Half-plate, Light Shield, Longbow, Longsword, Longspear, Throwing Axe, Helm, Crowbar, Spyglass,
+        //          Prayer, Prayer, Prayer, Soldier, Horse, Lookout
         // ================================================================================
 
         private GameServices _gameServices;
@@ -97,20 +109,26 @@ namespace PACG.Gameplay
                 }
             }
 
-            var pcLogic = _gameServices.Logic.GetLogic<CharacterLogicBase>(testCharacter.CharacterName);
-            PlayerCharacter testPc = new(testCharacter, pcLogic, _gameServices);
-            GameEvents.RaisePlayerCharacterChanged(testPc);
+            foreach (var character in TestCharacters)
+            {
+                if (!CharactersToUse.Contains(character.Pc.CharacterName)) continue;
+                
+                var pcLogic = _gameServices.Logic.GetLogic<CharacterLogicBase>(character.Pc.CharacterName);
+                PlayerCharacter testPc = new(character.Pc, pcLogic, _gameServices);
+                
+                foreach (var card in character.Deck) testPc.ShuffleIntoDeck(_gameServices.Cards.New(card, testPc));
+                
+                _gameServices.Contexts.GameContext.SetPcLocation(
+                    testPc,
+                    _gameServices.Contexts.GameContext.Locations.First()
+                );
 
-            foreach (var card in characterDeck) testPc.ShuffleIntoDeck(_gameServices.Cards.New(card, testPc));
+                testPc.DrawInitialHand();
+            }
 
-            _gameServices.Contexts.GameContext.SetPcLocation(
-                testPc,
-                _gameServices.Contexts.GameContext.Locations.First()
-            );
-
-            testPc.DrawInitialHand();
-
-            var turnController = new StartTurnController(testPc, _gameServices);
+            var firstPc = _gameServices.Contexts.GameContext.Characters.First();
+            GameEvents.RaisePlayerCharacterChanged(firstPc);
+            var turnController = new StartTurnController(firstPc, _gameServices);
             _gameServices.GameFlow.StartPhase(turnController, "Turn");
         }
     }

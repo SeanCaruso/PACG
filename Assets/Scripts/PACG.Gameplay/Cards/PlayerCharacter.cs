@@ -111,6 +111,26 @@ namespace PACG.Gameplay
             _cardManager.MoveCard(card, CardLocation.Hand);
         }
 
+        public void Banish(CardInstance card, bool forceToVault = false)
+        {
+            if (card == null) return;
+
+            if (forceToVault)
+            {
+                card.Owner = null;
+                card.OriginalOwner = null;
+            }
+            
+            _cardManager.MoveCard(card, ActionType.Banish);
+        }
+
+        public void Discard(CardInstance card)
+        {
+            if (card == null) return;
+            card.Owner = this;
+            _cardManager.MoveCard(card, ActionType.Discard);
+        }
+
         public CardInstance DrawFromDeck()
         {
             if (Deck.Count == 0)

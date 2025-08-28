@@ -8,10 +8,12 @@ namespace PACG.Gameplay
     {
         // Dependency injection
         private readonly ContextManager _contexts;
+        private readonly GameServices _gameServices;
 
         public FrostbiteLogic(GameServices gameServices) : base(gameServices)
         {
             _contexts = gameServices.Contexts;
+            _gameServices = gameServices;
         }
 
         public override CheckModifier GetCheckModifier(IStagedAction action)
@@ -72,7 +74,13 @@ namespace PACG.Gameplay
                 allowedSkills = new[] { Skill.Divine }.ToList() 
             });
 
-            return new CheckResolvable(card, card.Owner, checkReq);
+            var resolvable = new CheckResolvable(card, card.Owner, checkReq)
+            {
+                OnSuccess = () => card.Owner.Reload(card),
+                OnFailure = () => card.Owner.Discard(card)
+            };
+
+            return CardUtils.CreateDefaultRecoveryResolvable(resolvable, _gameServices);
         }
 
         private static void ModifyDamageResolvable(IResolvable resolvable)

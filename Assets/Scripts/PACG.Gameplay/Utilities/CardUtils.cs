@@ -35,6 +35,22 @@ namespace PACG.Gameplay
             };
         }
 
+        public static PlayerChoiceResolvable CreateDefaultRecoveryResolvable(
+            CheckResolvable recoveryResolvable,
+            GameServices gameServices)
+        {
+            var choiceResolvable = new PlayerChoiceResolvable("Recover?",
+                new PlayerChoiceResolvable.ChoiceOption("Yes", () =>
+                {
+                    var processor = new NewResolvableProcessor(recoveryResolvable, gameServices);
+                    gameServices.GameFlow.Interrupt(processor);
+                }),
+                new PlayerChoiceResolvable.ChoiceOption("No", () => { })
+            );
+            
+            return choiceResolvable;
+        }
+
         /// <summary>
         /// Returns the modified DC based on the current adventure number. INITIALIZE MUST BE CALLED BEFORE THIS!
         /// </summary>
