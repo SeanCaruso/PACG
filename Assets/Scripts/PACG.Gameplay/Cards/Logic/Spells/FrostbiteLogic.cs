@@ -76,7 +76,7 @@ namespace PACG.Gameplay
 
             var resolvable = new CheckResolvable(card, card.Owner, checkReq)
             {
-                OnSuccess = () => card.Owner.Reload(card),
+                OnSuccess = () => card.Owner.Recharge(card),
                 OnFailure = () => card.Owner.Discard(card)
             };
 

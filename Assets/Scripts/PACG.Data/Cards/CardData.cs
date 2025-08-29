@@ -11,7 +11,9 @@ namespace PACG.Data
         Barrier, Monster, StoryBane,
         
         // Other
-        None // Used for trait proficiencies.
+        None, // Used for trait proficiencies.
+        
+        Character, Location, Scourge
     }
     
     public abstract class CardData : ScriptableObject

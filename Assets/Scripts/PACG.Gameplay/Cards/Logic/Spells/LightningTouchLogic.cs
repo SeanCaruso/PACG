@@ -62,7 +62,7 @@ namespace PACG.Gameplay
                 card.Owner,
                 CardUtils.SkillCheck(6, Skill.Arcane))
             {
-                OnSuccess = () => card.Owner.Reload(card),
+                OnSuccess = () => card.Owner.Recharge(card),
                 OnFailure = () => card.Owner.Discard(card)
             };
 

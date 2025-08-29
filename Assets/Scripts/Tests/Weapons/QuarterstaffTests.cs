@@ -73,7 +73,7 @@ namespace Tests.Weapons
 
             // Check that the game pauses when reaching a Generic Resolvable.
             Assert.IsNotNull(_gameServices.Contexts.CurrentResolvable);
-            Assert.IsTrue(_gameServices.Contexts.CurrentResolvable is GenericResolvable);
+            Assert.IsTrue(_gameServices.Contexts.CurrentResolvable is EvadeResolvable);
 
             // Check that the quarterstaff has one evade action.
             var actions = _quarterstaff.GetAvailableActions();
@@ -93,7 +93,6 @@ namespace Tests.Weapons
         public void Quarterstaff_EvadeTrap()
         {
             // Set up a new encounter with an Obstacle barrier.
-            var valeros = TestUtils.GetCharacter(_gameServices, "Valeros");
             _gameServices.Contexts.NewTurn(new TurnContext(_valeros));
 
             var encounterData = ScriptableObject.CreateInstance<BaneCardData>();
@@ -110,7 +109,7 @@ namespace Tests.Weapons
 
             // Check that the game pauses when reaching a Generic Resolvable.
             Assert.IsNotNull(_gameServices.Contexts.CurrentResolvable);
-            Assert.IsTrue(_gameServices.Contexts.CurrentResolvable is GenericResolvable);
+            Assert.IsTrue(_gameServices.Contexts.CurrentResolvable is EvadeResolvable);
 
             // Check that the quarterstaff has one evade action.
             var actions = _quarterstaff.GetAvailableActions();
@@ -130,7 +129,6 @@ namespace Tests.Weapons
         public void Quarterstaff_NoEvadeNonObstacleOrTrap()
         {
             // Set up a new encounter with an Obstacle barrier.
-            var valeros = TestUtils.GetCharacter(_gameServices, "Valeros");
             _gameServices.Contexts.NewTurn(new TurnContext(_valeros));
 
             var encounterData = ScriptableObject.CreateInstance<BaneCardData>();

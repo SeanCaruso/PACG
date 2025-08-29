@@ -1,5 +1,6 @@
 
 using System.Collections.Generic;
+using PACG.Data;
 
 namespace PACG.Gameplay
 {
@@ -9,6 +10,7 @@ namespace PACG.Gameplay
     public interface ICard
     {
         public string Name { get; }
+        public CardType CardType { get; }
         public List<string> Traits { get; }
     }
 }

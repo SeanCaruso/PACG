@@ -11,6 +11,7 @@ namespace PACG.Gameplay
     {
         // ICard properties
         public string Name => CharacterData.CharacterName;
+        public CardType CardType => CardType.Character;
         public List<string> Traits => CharacterData.Traits;
 
         public CharacterData CharacterData { get; }

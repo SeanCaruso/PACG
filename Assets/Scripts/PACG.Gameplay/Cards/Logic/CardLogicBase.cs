@@ -30,6 +30,10 @@ namespace PACG.Gameplay
             {
                 return new List<IStagedAction>();
             }
+            
+            // If there's an encountered card with immunities, check the card's traits.
+            if (_contexts.EncounterContext?.CardData.immunities.Intersect(card.Traits).Any() == true)
+                return new List<IStagedAction>();
 
             // Only cards in hand (including reveals) and display are playable by default.
             // Resolvables will add extra actions if necessary.

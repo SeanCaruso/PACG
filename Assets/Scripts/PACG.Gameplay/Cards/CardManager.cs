@@ -132,7 +132,7 @@ namespace PACG.Gameplay
         }
 
         // Find cards...
-        private List<CardInstance> FindAll(System.Func<CardInstance, bool> predicate) => _allCards.Where(predicate).ToList();
+        public List<CardInstance> FindAll(System.Func<CardInstance, bool> predicate) => _allCards.Where(predicate).ToList();
         // ... by location
         public List<CardInstance> GetCardsInLocation(CardLocation location) => FindAll(card => card.CurrentLocation == location);
         // ... owned by a specific player

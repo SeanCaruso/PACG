@@ -10,6 +10,7 @@ namespace PACG.Gameplay
     {
         // ICard properties
         public string Name => LocationData.LocationName;
+        public CardType CardType => CardType.Location;
         public List<string> Traits => LocationData.Traits;
         
         public LocationData LocationData { get; }

@@ -8,11 +8,13 @@ namespace PACG.Gameplay
     public class Encounter_EvasionProcessor : BaseProcessor
     {
         // Dependency injection
+        private readonly CardManager _cardManager;
         private readonly ContextManager _contexts;
         private readonly GameFlowManager _gameFlow;
         
         public Encounter_EvasionProcessor(GameServices gameServices) : base(gameServices)
         {
+            _cardManager = gameServices.Cards;
             _contexts = gameServices.Contexts;
             _gameFlow = gameServices.GameFlow;
         }
@@ -38,13 +40,13 @@ namespace PACG.Gameplay
             
             // TODO: Check character powers.
 
-            // Finally, check the encounter PC's cards.
-            if (!_contexts.EncounterContext.Character.AllCards.Any(card => card.GetAvailableActions().Count > 0))
+            // Finally, check characters' cards.
+            if (!_cardManager.FindAll(c => c.Owner != null && c.GetAvailableActions().Any()).Any())
                 return;
             
             GameEvents.SetStatusText("Evade?");
             
-            _contexts.NewResolvable(new GenericResolvable(EvadeEncounter));
+            _contexts.NewResolvable(new EvadeResolvable(EvadeEncounter));
         }
 
         private void PromptForEvasion(Action onEvade)
@@ -58,10 +60,12 @@ namespace PACG.Gameplay
 
         private void EvadeEncounter()
         {
+            if (_contexts.EncounterContext == null) return;
+            
             Debug.Log($"[{GetType().Name}] Evading {_contexts.EncounterContext.Card}");
             
             if (_contexts.EncounterContext.Card.CurrentLocation == CardLocation.Deck)
-                _contexts.TurnContext.Location.ShuffleIn(_contexts.EncounterContext.Card, true);
+                _contexts.EncounterContext.Character.Location.ShuffleIn(_contexts.EncounterContext.Card, true);
             
             _contexts.EndEncounter();
             
