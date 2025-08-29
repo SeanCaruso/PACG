@@ -15,7 +15,7 @@ namespace PACG.Gameplay
         
         public override void Resolve() => _onEvadeCallback?.Invoke();
         
-        public override StagedActionsState GetUIState(List<IStagedAction> actions)
+        public override StagedActionsState GetUIState(IReadOnlyList<IStagedAction> actions)
         {
             var canCommit = actions.Count > 0;
             var canSkip = actions.Count == 0;

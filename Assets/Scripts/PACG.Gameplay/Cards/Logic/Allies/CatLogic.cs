@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using PACG.Core;
 using PACG.Data;
 
@@ -37,9 +36,9 @@ namespace PACG.Gameplay
         protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)
         {
             // Can recharge on a local check against a spell.
-            if (_contexts.CheckContext?.Resolvable.Card is CardInstance checkCard &&
-                checkCard.Data.cardType == CardType.Spell &&
-                !_contexts.CheckContext.StagedCardTypes.Contains(CardType.Ally))
+            if (_contexts.CheckContext?.Resolvable.Card is CardInstance checkCard
+                && checkCard.Data.cardType == CardType.Spell
+                && !_contexts.CheckContext.Resolvable.IsCardTypeStaged(CardType.Ally))
             {
                 return new List<IStagedAction>{ new PlayCardAction(card, ActionType.Recharge) };
             }

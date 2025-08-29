@@ -59,6 +59,6 @@ namespace PACG.Gameplay
             && _contexts.CurrentResolvable is CheckResolvable
             && Check.Character == card.Owner
             && Check.CanUseSkill(Skill.Perception)
-            && !Check.StagedCardTypes.Contains(CardType.Item);
+            && !_contexts.CurrentResolvable.IsCardTypeStaged(card.CardType);
     }
 }

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using PACG.Core;
 
 namespace PACG.Gameplay
@@ -67,9 +66,9 @@ namespace PACG.Gameplay
 
         // Can recharge on a local Intelligence or Craft check.
         private bool CanRecharge(CardInstance card) => 
-            _contexts.CheckContext != null &&
-            _contexts.CheckContext.IsLocal(card.Owner) &&
-            !_contexts.CheckContext.StagedCardTypes.Contains(card.Data.cardType) &&
-            _contexts.CheckContext.Invokes("Intelligence", "Craft");
+            _contexts.CheckContext != null
+            && _contexts.CheckContext.IsLocal(card.Owner)
+            && !_contexts.CheckContext.Resolvable.IsCardTypeStaged(card.Data.cardType)
+            && _contexts.CheckContext.Invokes("Intelligence", "Craft");
     }
 }

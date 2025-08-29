@@ -102,6 +102,7 @@ namespace Tests
         protected GameServices GameServices;
         
         // Common cards.
+        protected PlayerCharacter Ezren;
         protected PlayerCharacter Valeros;
         
         protected CardInstance Longsword;
@@ -112,6 +113,7 @@ namespace Tests
         {
             GameServices = TestUtils.CreateGameServices();
             
+            Ezren = TestUtils.GetCharacter(GameServices, "Ezren");
             Valeros = TestUtils.GetCharacter(GameServices, "Valeros");
             
             Longsword = TestUtils.GetCard(GameServices, "Longsword");

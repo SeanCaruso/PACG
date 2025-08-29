@@ -62,7 +62,7 @@ namespace PACG.Gameplay
             // Reveal power can be used by the current owner while playing cards for a Dexterity or Ranged combat check.
             Check is { IsCombatValid: true }
             && Check.Character == card.Owner
-            && !Check.StagedCardTypes.Contains(card.Data.cardType)
+            && !_contexts.CurrentResolvable.IsCardTypeStaged(card.CardType)
             && Check.CanUseSkill(Skill.Dexterity, Skill.Ranged);
 
         private bool CanDiscard(CardInstance card) => (

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using PACG.Core;
 using PACG.Data;
 
@@ -66,7 +65,7 @@ namespace PACG.Gameplay
             if (resolvable.Character != card.Owner)
                 return false; // ... for the card's owner...
 
-            if (Check.StagedCardTypes.Contains(card.Data.cardType))
+            if (resolvable.IsCardTypeStaged(card.CardType))
                 return false; // ... with no Items played.
 
             if (Check.Invokes("Strength"))

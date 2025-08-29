@@ -16,6 +16,9 @@ namespace PACG.Gameplay
 
         protected override void OnExecute()
         {
+            if (_contexts.TurnContext == null) return;
+            _contexts.TurnContext.CurrentPhase = TurnPhase.Recovery;
+            
             var recoveryCards = _cardManager.GetCardsInLocation(CardLocation.Recovery);
             if (recoveryCards.Count == 0) return;
             

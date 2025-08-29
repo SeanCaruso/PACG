@@ -11,7 +11,7 @@ namespace PACG.Gameplay
         // Interface properties
         public string Name => Data.cardName;
         public List<string> Traits => Data.traits;
-        private bool IsStoryBane => Data.cardType == CardType.StoryBane;
+        public bool IsStoryBane => Data.cardType == CardType.StoryBane;
         /// <summary>
         /// Gets the actual card type (i.e. Barrier or Monster for Story Banes).
         /// </summary>

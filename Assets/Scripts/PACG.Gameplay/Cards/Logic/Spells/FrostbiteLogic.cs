@@ -45,7 +45,7 @@ namespace PACG.Gameplay
             if (_contexts.CheckContext is { IsCombatValid: true }
                 && _contexts.CurrentResolvable is CheckResolvable { HasCombat: true } resolvable
                 && resolvable.Character == card.Owner
-                && _contexts.CheckContext?.StagedCardTypes.Count(t => t == card.Data.cardType) == 0)
+                && !_contexts.CheckContext.Resolvable.IsCardTypeStaged(card.Data.cardType))
             {
                 actions.Add(new PlayCardAction(card, ActionType.Banish));
             }

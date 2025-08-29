@@ -48,7 +48,7 @@ namespace PACG.Gameplay
                 return;
             }
 
-            if (_contexts.CheckContext?.CanStageAction(action) == false)
+            if (_contexts.CurrentResolvable?.CanStageAction(action) == false)
             {
                 Debug.LogWarning($"{action.Card.Data.cardName}.{action} can't be staged! How did we get this far?");
                 return;
@@ -72,7 +72,7 @@ namespace PACG.Gameplay
             _pcsStagedActions[action.Card.Owner] = pcActions;
 
             // If we're attempting a check, add the action's card type if needed.
-            _contexts.CheckContext?.StageCardTypeIfNeeded(action);
+            _contexts.CurrentResolvable?.StageCardTypeIfNeeded(action);
 
             UpdateGameStatePreview();
             // Send the UI event to update Cancel/Commit buttons.

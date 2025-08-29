@@ -60,7 +60,7 @@ namespace PACG.Gameplay
             _contexts.CheckContext != null &&
             _contexts.CurrentResolvable is CheckResolvable &&
             _contexts.CheckContext.IsLocal(card.Owner) &&
-            !_contexts.CheckContext.StagedCardTypes.Contains(CardType.Ally) &&
+            !_contexts.CheckContext.Resolvable.IsCardTypeStaged(CardType.Ally) &&
             _contexts.CheckContext.Invokes("Strength", "Melee");
     }
 }

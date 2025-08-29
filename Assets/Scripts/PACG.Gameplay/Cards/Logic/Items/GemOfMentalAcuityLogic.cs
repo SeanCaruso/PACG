@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using System.Linq;
 using PACG.Core;
-using PACG.Data;
 
 namespace PACG.Gameplay
 {
@@ -32,7 +30,7 @@ namespace PACG.Gameplay
         {
             // Usable on any non-combat check by the owner.
             if (_contexts.CheckContext is { IsSkillValid: true }
-                && !_contexts.CheckContext.StagedCardTypes.Contains(CardType.Item)
+                && (_contexts.CurrentResolvable as CheckResolvable)?.IsCardTypeStaged(card.CardType) == false
                 && _contexts.CheckContext.Character == card.Owner)
             {
                 return new List<IStagedAction> { new PlayCardAction(card, ActionType.Recharge) };

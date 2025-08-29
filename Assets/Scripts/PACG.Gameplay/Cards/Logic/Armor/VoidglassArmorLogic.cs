@@ -41,7 +41,7 @@ namespace PACG.Gameplay
                 return false;
 
             // Can't display if another armor was played on the check.
-            if (_asm.StagedCards.Count(c => c.Data.cardType == card.Data.cardType) > 0)
+            if (_contexts.CurrentResolvable?.IsCardTypeStaged(card.CardType) == true)
                 return false;
 
             // If there's no encounter or resolvable...
@@ -58,8 +58,8 @@ namespace PACG.Gameplay
         // We can recharge for damage if displayed and we have a DamageResolvable for the card's owner.
         private bool CanRechargeForDamage(CardInstance card) =>
             card.Owner.DisplayedCards.Contains(card)
-            && _asm.StagedCards.Count(c => c.Data.cardType == card.Data.cardType) == 0
             && _contexts.CurrentResolvable is DamageResolvable resolvable
+            && !resolvable.IsCardTypeStaged(card.CardType)
             && resolvable.PlayerCharacter == card.Owner;
 
         // We can also freely recharge if the card was displayed for this damage resolution.
@@ -72,9 +72,9 @@ namespace PACG.Gameplay
         // We can bury for damage if displayed, the owner is proficient, and we have a DamageResolvable for the card's owner.
         private bool CanBury(CardInstance card) =>
             card.Owner.DisplayedCards.Contains(card)
-            && _asm.StagedCards.Count(c => c.Data.cardType == card.Data.cardType) == 0
             && card.Owner.IsProficient(card.Data)
             && _contexts.CurrentResolvable is DamageResolvable resolvable
+            && !resolvable.IsCardTypeStaged(card.CardType)
             && resolvable.PlayerCharacter == card.Owner;
 
         // We can also freely bury if the card was displayed for this damage resolution.

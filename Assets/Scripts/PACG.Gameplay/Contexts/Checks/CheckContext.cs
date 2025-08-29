@@ -2,10 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using PACG.Core;
-using PACG.Data;
 using PACG.SharedAPI;
-using UnityEngine;
-
 
 namespace PACG.Gameplay
 {
@@ -22,7 +19,6 @@ namespace PACG.Gameplay
         private CheckSkillAccumulator _skills;
         private CheckTypeDeterminator _typeDeterminator;
         private TraitAccumulator _traits;
-        private readonly HashSet<CardType> _stagedCardTypes = new();
         
         // --- Immutable Initial State ---
         // These are set once and should never change.
@@ -49,7 +45,6 @@ namespace PACG.Gameplay
             _skills = new CheckSkillAccumulator(Resolvable);
             _typeDeterminator = new CheckTypeDeterminator(Resolvable);
             _traits = new TraitAccumulator(Resolvable);
-            _stagedCardTypes.Clear();
 
             // Gather and apply modifiers.
             foreach (var action in stagedActions)
@@ -64,11 +59,6 @@ namespace PACG.Gameplay
                     _traits.AddProhibitedTraits(modifier.SourceCard, modifier.ProhibitedTraits.ToArray());
                     if (modifier.RestrictedCategory != null)
                         _typeDeterminator.RestrictCheckCategory(modifier.SourceCard, modifier.RestrictedCategory.Value);
-                }
-
-                if (!action.IsFreely)
-                {
-                    _stagedCardTypes.Add(action.Card.Data.cardType);
                 }
             }
             
@@ -129,46 +119,12 @@ namespace PACG.Gameplay
         public bool Invokes(params string[] traits) =>  Traits.Intersect(traits).Any();
         
         public IReadOnlyList<string> ProhibitedTraits(PlayerCharacter pc) => _traits.ProhibitedTraits(pc);
-
-        // =====================================================================================
-        // CONTEXT-SPECIFIC ACTION STAGING
-        //
-        // Note: ActionStagingManager is responsible for the actual actions and cards that have
-        //       been staged, but is rule-agnostic. CheckContext contains the rule-specific
-        //       logic about which actions *can* be staged during a Check.
-        // =====================================================================================
-        public IReadOnlyCollection<CardType> StagedCardTypes => _stagedCardTypes;
-
-        public bool CanStageAction(IStagedAction action)
-        {
-            // Rule: prevent duplicate card types (if not freely playable).
-            if (action.IsFreely || !_stagedCardTypes.Contains(action.Card.Data.cardType)) return true;
-            
-            Debug.LogWarning($"{action.Card.Data.cardName} staged a duplicate type - was this intended?");
-            return false;
-
-        }
-
-        public void StageCardTypeIfNeeded(IStagedAction action)
-        {
-            if (!action.IsFreely) _stagedCardTypes.Add(action.Card.Data.cardType);
-        }
         
         // =====================================================================================
         // TYPE DETERMINATION PASSTHROUGHS TO CheckTypeDeterminator
         // =====================================================================================
         public bool IsCombatValid => _typeDeterminator.IsCombatValid;
         public bool IsSkillValid => _typeDeterminator.IsSkillValid;
-
-        // public void RestrictCheckCategory(CardInstance card, CheckCategory category)
-        // {
-        //     _typeDeterminator.RestrictCheckCategory(card, category);
-        // }
-        //
-        // public void UndoCheckRestriction(CardInstance source)
-        // {
-        //     _typeDeterminator.UndoCheckRestriction(source);
-        // }
 
         public int GetDcForSkill(Skill skill) => _typeDeterminator.GetDcForSkill(skill);
 

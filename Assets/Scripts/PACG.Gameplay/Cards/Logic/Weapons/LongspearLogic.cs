@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using PACG.Core;
 
 namespace PACG.Gameplay
@@ -60,7 +59,7 @@ namespace PACG.Gameplay
                 && _contexts.CurrentResolvable is CheckResolvable {HasCombat: true}
                 && Check.Character == card.Owner
                 && Check.CanUseSkill(Skill.Strength, Skill.Melee)
-                && !Check.StagedCardTypes.Contains(card.Data.cardType))
+                && !_contexts.CurrentResolvable.IsCardTypeStaged(card.CardType))
             {
                 actions.Add(new PlayCardAction(card, ActionType.Reveal, ("IsCombat", true)));
             }

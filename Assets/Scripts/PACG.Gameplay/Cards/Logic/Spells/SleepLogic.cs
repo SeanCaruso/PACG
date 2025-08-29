@@ -49,7 +49,7 @@ namespace PACG.Gameplay
             _contexts.CurrentResolvable is CheckResolvable resolvable
             && resolvable.Card.CardType is CardType.Monster or CardType.Ally
             && resolvable.Character.LocalCharacters.Contains(card.Owner)
-            && _contexts.CheckContext?.StagedCardTypes.Contains(CardType.Spell) == false;
+            && !resolvable.IsCardTypeStaged(card.CardType);
 
         public override IResolvable GetRecoveryResolvable(CardInstance card)
         {

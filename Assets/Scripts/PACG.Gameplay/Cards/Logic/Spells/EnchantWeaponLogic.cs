@@ -8,6 +8,7 @@ namespace PACG.Gameplay
     public class EnchantWeaponLogic : CardLogicBase
     {
         // Dependency injections
+        private readonly ActionStagingManager _asm;
         private readonly ContextManager _contexts;
         private readonly GameServices _gameServices;
 
@@ -29,8 +30,8 @@ namespace PACG.Gameplay
         protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)
         {
             // Can freely banish if a weapon has been played on a combat check.
-            if (_contexts.CurrentResolvable is CheckResolvable { HasCombat: true } &&
-                _contexts.CheckContext?.StagedCardTypes.Contains(CardType.Weapon) == true)
+            if (_contexts.CurrentResolvable is CheckResolvable { HasCombat: true }
+                && _asm.StagedCards.Any(c => c.CardType == CardType.Weapon))
             {
                 return new List<IStagedAction>(new[]
                 {

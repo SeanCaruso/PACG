@@ -50,7 +50,7 @@ namespace PACG.Gameplay
             if (IsPlayableForCombat(card))
             {
                 // If a weapon hasn't been played yet, display both combat options.
-                if (!_contexts.CheckContext.StagedCardTypes.Contains(card.Data.cardType))
+                if (!_contexts.CurrentResolvable.IsCardTypeStaged(card.CardType))
                 {
                     actions.Add(new PlayCardAction(card, ActionType.Reveal, ("IsCombat", true)));
                     actions.Add(new PlayCardAction(card, ActionType.Discard, ("IsCombat", true)));

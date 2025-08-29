@@ -22,12 +22,12 @@ namespace PACG.Gameplay
             CheckSteps = checkRequirement.checkSteps.ToList();
         }
 
-        public override bool CanCommit(List<IStagedAction> actions) => true;
+        public override bool CanCommit(IReadOnlyList<IStagedAction> actions) => true;
 
         public override IProcessor CreateProcessor(GameServices gameServices) =>
             new CheckController(this, gameServices);
 
-        public override StagedActionsState GetUIState(List<IStagedAction> actions)
+        public override StagedActionsState GetUIState(IReadOnlyList<IStagedAction> actions)
         {
             // The only option is Committing.
             return new StagedActionsState

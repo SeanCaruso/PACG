@@ -51,7 +51,7 @@ namespace PACG.Gameplay
         /// <summary>
         /// This resolvable can only be resolved via the Examine UI.
         /// </summary>
-        public override bool CanCommit(List<IStagedAction> actions) => false;
+        public override bool CanCommit(IReadOnlyList<IStagedAction> actions) => false;
 
         public override void Resolve()
         {
@@ -61,7 +61,7 @@ namespace PACG.Gameplay
             }
         }
 
-        public override StagedActionsState GetUIState(List<IStagedAction> actions)
+        public override StagedActionsState GetUIState(IReadOnlyList<IStagedAction> actions)
         {
             // The Examine GUI handles its own button.
             return new StagedActionsState();

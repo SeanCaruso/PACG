@@ -42,11 +42,10 @@ namespace PACG.Gameplay
         }
 
         // We can bless on a local check.
-        private bool CanBless(CardInstance card) => (
-            _contexts.CheckContext != null &&
-            _contexts.CurrentResolvable is CheckResolvable &&
-            !_contexts.CheckContext.StagedCardTypes.Contains(CardType.Blessing) &&
-            _contexts.CheckContext.Character.Location.Characters.Contains(card.Owner)
-        );
+        private bool CanBless(CardInstance card) =>
+            _contexts.CheckContext != null
+            && _contexts.CurrentResolvable is CheckResolvable resolvable
+            && !resolvable.IsCardTypeStaged(card.CardType)
+            && _contexts.CheckContext.Character.Location.Characters.Contains(card.Owner);
     }
 }

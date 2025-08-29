@@ -36,7 +36,7 @@ namespace PACG.Gameplay
             GameEvents.RaisePlayerChoiceEvent(this);
         }
 
-        public override StagedActionsState GetUIState(List<IStagedAction> _)
+        public override StagedActionsState GetUIState(IReadOnlyList<IStagedAction> _)
         {
             // This handles its own buttons.
             return new StagedActionsState();
