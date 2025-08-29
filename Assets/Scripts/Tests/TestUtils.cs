@@ -41,7 +41,7 @@ namespace Tests
         public static T LoadCardData<T>(string assetName) where T : ScriptableObject
         {
             // Search for the card by name in the CardData folder structure.
-            var guids = AssetDatabase.FindAssets($"t:{typeof(T)} {assetName}", new[] { "Assets/CardData" });
+            var guids = AssetDatabase.FindAssets($"t:{typeof(T)} {assetName}", new[] { "Assets/_GameData" });
 
             switch (guids.Length)
             {
