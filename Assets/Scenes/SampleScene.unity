@@ -268,6 +268,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: d747111548c51b64583711ae21922f8d, type: 2}
   CharactersToUse:
   - Ezren
+  - Valeros
 --- !u!4 &182072643
 Transform:
   m_ObjectHideFlags: 0

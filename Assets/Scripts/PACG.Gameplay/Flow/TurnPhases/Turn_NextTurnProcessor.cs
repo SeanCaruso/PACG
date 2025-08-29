@@ -1,3 +1,4 @@
+using System.Linq;
 using PACG.SharedAPI;
 
 namespace PACG.Gameplay
@@ -23,8 +24,9 @@ namespace PACG.Gameplay
             // Draw up to the current player's hand size.
             _contexts.TurnContext.Character.DrawToHandSize();
 
-            // TODO: Get next player
-            var nextPc = _contexts.TurnContext.Character;
+            var idx =_contexts.GameContext.Characters.ToList().IndexOf(_contexts.TurnContext.Character) + 1;
+            idx = idx % _contexts.GameContext.Characters.Count;
+            var nextPc = _contexts.GameContext.Characters[idx];
 
             // End the current turn.
             _contexts.EndTurn();

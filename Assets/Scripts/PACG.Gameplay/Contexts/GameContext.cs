@@ -9,6 +9,7 @@ namespace PACG.Gameplay
     {
         public int AdventureNumber { get; }
         public Deck HourDeck { get; }
+        public int TurnNumber { get; set; } = 1;
 
         private readonly Dictionary<Location, List<PlayerCharacter>> _locationPcs = new();
 

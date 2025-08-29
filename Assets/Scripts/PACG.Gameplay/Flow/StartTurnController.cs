@@ -11,8 +11,6 @@ namespace PACG.Gameplay
         private readonly GameFlowManager _gameFlow;
         private readonly GameServices _gameServices;
 
-        private int _turnNumber = 1;
-
         public StartTurnController(PlayerCharacter pc, GameServices gameServices)
         {
             _pc = pc;
@@ -24,7 +22,7 @@ namespace PACG.Gameplay
 
         public void Execute()
         {
-            Debug.Log($"===== STARTING TURN {_turnNumber++} =====");
+            Debug.Log($"===== STARTING TURN {_contexts.GameContext.TurnNumber++} =====");
 
             _contexts.NewTurn(new TurnContext(_pc));
             GameEvents.RaisePlayerCharacterChanged(_pc);
