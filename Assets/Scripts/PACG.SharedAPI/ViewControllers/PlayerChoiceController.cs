@@ -7,10 +7,16 @@ namespace PACG.SharedAPI
 {
     public class PlayerChoiceController : MonoBehaviour
     {
+        [Header("Dependencies")]
+        public CardDisplayFactory CardDisplayFactory;
+
         [Header("UI Elements")]
         public Transform ActionButtonContainer;
+        public Transform CardPreviewContainer;
+
+        [Header("Prefabs")]
         public GameObject ButtonPrefab;
-        
+
         // Dependency injection
         private ContextManager _contexts;
         private GameFlowManager _gameFlow;
@@ -49,6 +55,22 @@ namespace PACG.SharedAPI
                     _gameFlow.Process();
                 });
             }
+
+            if (resolvable.Card == null) return;
+
+            var cardDisplay = CardDisplayFactory.CreateCardDisplay(
+                resolvable.Card,
+                CardDisplayFactory.DisplayContext.Preview,
+                CardPreviewContainer);
+            var cardRect = cardDisplay.gameObject.GetComponent<RectTransform>();
+            cardRect.anchoredPosition = Vector3.zero;
+            cardRect.anchorMin = new Vector2(0.5f, 0.5f);
+            cardRect.anchorMax = new Vector2(0.5f, 0.5f);
+            var traitsSection = cardDisplay.transform.Find("Traits_Area"); // or however it's named
+            if (traitsSection)
+                LayoutRebuilder.ForceRebuildLayoutImmediate(traitsSection.GetComponent<RectTransform>());
+            
+            CardPreviewContainer.parent.gameObject.SetActive(true);
         }
 
         private void EndChoice()
@@ -59,6 +81,12 @@ namespace PACG.SharedAPI
             {
                 Destroy(ActionButtonContainer.GetChild(i).gameObject);
             }
+
+            for (var i = 0; i < CardPreviewContainer.childCount; i++)
+            {
+                Destroy(CardPreviewContainer.GetChild(i).gameObject);
+            }
+            CardPreviewContainer.parent.gameObject.SetActive(false);
         }
     }
 }

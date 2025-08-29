@@ -2727,7 +2727,6 @@ GameObject:
   - component: {fileID: 2079309816610978051}
   - component: {fileID: 7201142468512572902}
   - component: {fileID: 8431384695262642363}
-  - component: {fileID: 1333614837928264833}
   - component: {fileID: 5763011417382780068}
   m_Layer: 5
   m_Name: Card_Visual
@@ -2830,18 +2829,6 @@ MonoBehaviour:
   StoryBaneTypeText: {fileID: 1386799171084876015}
   LootPanel: {fileID: 6569705331603756496}
   traitsSection: {fileID: 3078242710255914718}
---- !u!114 &1333614837928264833
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5180823416483861943}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 578e18ddb14823947bf07a45def2c481, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!225 &5763011417382780068
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -3844,7 +3831,7 @@ MonoBehaviour:
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 1
-  m_ChildControlHeight: 0
+  m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0

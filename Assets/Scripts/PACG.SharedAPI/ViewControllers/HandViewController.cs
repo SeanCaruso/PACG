@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using System.Linq;
 using PACG.Gameplay;
 using PACG.Presentation;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace PACG.SharedAPI
 {
@@ -12,6 +14,8 @@ namespace PACG.SharedAPI
 
         [Header("UI Elements")]
         public Transform HandContainer;
+
+        private const float MaxWidth = 1045f;
         
         private PlayerCharacter _currentPC;
         private readonly Dictionary<CardInstance, CardDisplay> _cardInstancesToDisplaysMap = new();
@@ -31,6 +35,15 @@ namespace PACG.SharedAPI
         private void OnPlayerCharacterChanged(PlayerCharacter pc)
         {
             _currentPC = pc;
+            
+            for (var i = HandContainer.childCount - 1; i >= 0; i--)
+                Destroy(HandContainer.GetChild(i).gameObject);
+            _cardInstancesToDisplaysMap.Clear();
+            
+            foreach (var card in _currentPC.Hand)
+                CreateDisplayForCard(card);
+            
+            AdjustSpacing();
         }
         
         private void OnCardLocationChanged(CardInstance card)
@@ -47,6 +60,8 @@ namespace PACG.SharedAPI
             {
                 RemoveDisplayForCard(card);
             }
+            
+            AdjustSpacing();
         }
 
         private void CreateDisplayForCard(CardInstance card)
@@ -65,6 +80,21 @@ namespace PACG.SharedAPI
             
             Destroy(cardDisplay.gameObject);
             _cardInstancesToDisplaysMap.Remove(card);
+        }
+
+        private void AdjustSpacing()
+        {
+            var layout = HandContainer.gameObject.GetComponent<HorizontalLayoutGroup>();
+            if (_cardInstancesToDisplaysMap.Count <= 4)
+            {
+                layout.spacing = 15f;
+                return;
+            }
+            
+            var cardWidth = _cardInstancesToDisplaysMap.Values.First().GetComponent<RectTransform>().rect.width;
+            var totalCardsWidth = _cardInstancesToDisplaysMap.Count * cardWidth;
+            var extraSpace = totalCardsWidth - MaxWidth;
+            layout.spacing = -extraSpace / (_cardInstancesToDisplaysMap.Count - 1);
         }
     }
 }

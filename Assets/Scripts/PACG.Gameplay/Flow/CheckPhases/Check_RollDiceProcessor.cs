@@ -35,7 +35,8 @@ namespace PACG.Gameplay
             var rollTotal = dicePool.Roll();
             check.CheckResult = new CheckResult(rollTotal, dc, pc, check.IsCombatCheck, check.UsedSkill, check.Traits);
 
-            var needsReroll = check.CheckResult.MarginOfSuccess < _contexts.EncounterContext.CardData.rerollThreshold;
+            var needsReroll = 
+                check.CheckResult.MarginOfSuccess < (resolvable.Card as CardInstance)?.Data.rerollThreshold;
             var cardsToCheck = pc.Hand.Union(pc.DisplayedCards);
             var cardInstances = cardsToCheck.ToList();
             var hasRerollOptions = cardInstances.Any(card => card.GetAvailableActions().Count > 0);

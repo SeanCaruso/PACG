@@ -32,6 +32,7 @@ namespace PACG.Gameplay
             // The only option is Committing.
             return new StagedActionsState
             {
+                IsCancelButtonVisible = actions.Count > 0,
                 IsCommitButtonVisible = true
             };
         }

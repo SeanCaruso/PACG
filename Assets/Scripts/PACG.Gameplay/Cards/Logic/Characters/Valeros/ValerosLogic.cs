@@ -6,12 +6,10 @@ namespace PACG.Gameplay
     public class ValerosLogic : CharacterLogicBase
     {
         // Dependency injections
-        private readonly ContextManager _contexts;
         private readonly GameServices _gameServices;
-        
+
         public ValerosLogic(GameServices gameServices)
         {
-            _contexts = gameServices.Contexts;
             _gameServices = gameServices;
         }
 
@@ -21,12 +19,13 @@ namespace PACG.Gameplay
                 .Where(card => card.Data.cardType is CardType.Armor or CardType.Weapon)
                 .ToList();
 
-            var rechargePower = pc.CharacterData.Powers[1];
-
             if (validCards.Count <= 0)
             {
                 return null;
             }
+
+            var rechargePower = pc.CharacterData.Powers[1];
+
 
             rechargePower.OnActivate = () =>
             {
@@ -34,7 +33,7 @@ namespace PACG.Gameplay
                 _gameServices.GameFlow.Interrupt(new NewResolvableProcessor(resolvable, _gameServices));
                 _gameServices.ASM.Commit();
             };
-            
+
             return rechargePower;
         }
     }

@@ -11,7 +11,7 @@ namespace PACG.Gameplay
         private readonly GameFlowManager _gameFlow;
         private readonly GameServices _gameServices;
 
-        private static int _turnNumber = 1;
+        private int _turnNumber = 1;
 
         public StartTurnController(PlayerCharacter pc, GameServices gameServices)
         {
@@ -30,6 +30,7 @@ namespace PACG.Gameplay
             GameEvents.RaisePlayerCharacterChanged(_pc);
             GameEvents.RaiseLocationChanged(_pc.Location);
 
+            _gameFlow.QueueNextProcessor(new Turn_AdvanceHourProcessor(_gameServices));
             _gameFlow.QueueNextProcessor(new Turn_StartTurnProcessor(_gameServices));
 
             _gameFlow.CompleteCurrentPhase();

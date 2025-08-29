@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using PACG.Data;
 using PACG.SharedAPI;
 
@@ -12,6 +13,7 @@ namespace PACG.Gameplay
         private readonly ContextManager _contexts;
 
         public override bool CancelAbortsPhase => true;
+        public bool HideCancelButton { get; set; }
 
         public PowersAvailableResolvable(LocationPower? locationPower,
             CharacterPower? characterPower,
@@ -42,6 +44,14 @@ namespace PACG.Gameplay
                 _contexts.TurnContext.PerformedLocationPowers.Add(_locationPower.Value);
             if (_characterPower != null)
                 _contexts.TurnContext.PerformedCharacterPowers.Add(_characterPower.Value);
+        }
+
+        public override StagedActionsState GetUIState(IReadOnlyList<IStagedAction> actions)
+        {
+            var baseState = base.GetUIState(actions);
+            if (HideCancelButton)
+                baseState.IsCancelButtonVisible = false;
+            return baseState;
         }
     }
 }

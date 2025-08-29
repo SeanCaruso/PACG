@@ -9,19 +9,23 @@ namespace PACG.SharedAPI
 {
     public class CardPreviewController : MonoBehaviour
     {
+        [Header("Dependencies")]
+        public CardDisplayFactory CardDisplayFactory;
+
         [Header("UI Elements")]
-        public GameObject previewArea;
-        public Button backgroundButton;
+        public GameObject PreviewArea;
+        public Transform PreviewContainer;
+        public Button BackgroundButton;
 
         [Header("Action Buttons")]
-        public Transform actionButtonContainer;
-        public GameObject actionButtonPrefab;
+        public Transform ActionButtonContainer;
+        public GameObject ActionButtonPrefab;
 
         private GameObject _currentlyEnlargedCard;
 
         // Placeholder object with the same size to keep layouts behaving.
         private GameObject _placeholder;
-        
+
         // Original state.
         private Transform _originalParent;
         private int _originalSiblingIndex;
@@ -35,10 +39,8 @@ namespace PACG.SharedAPI
 
         private void Start()
         {
-            // Add a listener to the background button to handle returning the card.
-            backgroundButton.onClick.AddListener(ReturnCardToOrigin);
-            previewArea.SetActive(false);
-            
+            PreviewArea.SetActive(false);
+
             GameEvents.TurnStateChanged += ReturnCardToOrigin;
         }
 
@@ -55,7 +57,9 @@ namespace PACG.SharedAPI
 
         public void ShowPreviewForCard(GameObject cardObj)
         {
-            if (_currentlyEnlargedCard != null) return;
+            if (_currentlyEnlargedCard) return;
+
+            BackgroundButton.onClick.AddListener(ReturnCardToOrigin);
 
             _currentlyEnlargedCard = cardObj;
 
@@ -63,11 +67,11 @@ namespace PACG.SharedAPI
             _originalParent = cardObj.transform.parent;
             _originalSiblingIndex = cardObj.transform.GetSiblingIndex();
             _originalScale = cardObj.transform.localScale;
-            
+
             // Create a placeholder object by cloning the card and making it invisible.
             _placeholder = Instantiate(cardObj.gameObject, cardObj.transform.parent, false);
             _placeholder.name = "Preview Clone";
-            
+
             _placeholder.transform.SetSiblingIndex(cardObj.transform.GetSiblingIndex());
             if (!_placeholder.TryGetComponent<CanvasGroup>(out var placeholderCanvasGroup))
                 placeholderCanvasGroup = _placeholder.AddComponent<CanvasGroup>();
@@ -75,15 +79,14 @@ namespace PACG.SharedAPI
             placeholderCanvasGroup.alpha = 0f;
 
             // Show the preview area.
-            previewArea.SetActive(true);
+            PreviewArea.SetActive(true);
 
             // Move the card to the preview area and enlarge it.
             var cardRect = cardObj.GetComponent<RectTransform>();
-            cardRect.SetParent(previewArea.transform, false);
+            cardRect.SetParent(PreviewContainer, false);
             cardRect.anchoredPosition = Vector3.zero;
             cardRect.anchorMin = new Vector2(0.5f, 0.5f);
             cardRect.anchorMax = new Vector2(0.5f, 0.5f);
-            cardRect.localScale = new Vector3(2f, 2f, 1.0f);
 
             // Disable any drag handlers.
             if (cardObj.TryGetComponent<CardDragHandler>(out var dragHandler))
@@ -101,7 +104,8 @@ namespace PACG.SharedAPI
             }
 
             // If there's a resolvable, grab any additional actions (damage, give, etc.).
-            var playableActions = _contexts.CurrentResolvable?.GetAdditionalActionsForCard(cardInstance) ?? new List<IStagedAction>();
+            var playableActions = _contexts.CurrentResolvable?.GetAdditionalActionsForCard(cardInstance) ??
+                                  new List<IStagedAction>();
             playableActions.AddRange(cardInstance.GetAvailableActions());
 
             GenerateActionButtons(playableActions);
@@ -111,7 +115,7 @@ namespace PACG.SharedAPI
         {
             foreach (var action in actions)
             {
-                var buttonObj = Instantiate(actionButtonPrefab, actionButtonContainer);
+                var buttonObj = Instantiate(ActionButtonPrefab, ActionButtonContainer);
 
                 buttonObj.GetComponentInChildren<TextMeshProUGUI>().text = action.ActionType.ToString();
                 var button = buttonObj.GetComponent<Button>();
@@ -128,7 +132,7 @@ namespace PACG.SharedAPI
         private void ReturnCardToOrigin()
         {
             if (!_currentlyEnlargedCard || !_placeholder) return;
-            
+
             // Return the card to its original parent and Z-index.
             _currentlyEnlargedCard.transform.SetParent(_originalParent, false);
             _currentlyEnlargedCard.transform.SetSiblingIndex(_originalSiblingIndex);
@@ -141,11 +145,12 @@ namespace PACG.SharedAPI
         private void EndPreview()
         {
             Destroy(_placeholder);
-            
+            BackgroundButton.onClick.RemoveAllListeners();
+
             if (!_currentlyEnlargedCard) return;
-            
+
             _currentlyEnlargedCard.transform.localScale = Vector3.one;
-            
+
             // Re-enable any drag handlers.
             if (_currentlyEnlargedCard.TryGetComponent<CardDragHandler>(out var dragHandler))
             {
@@ -153,7 +158,7 @@ namespace PACG.SharedAPI
             }
 
             // Hide the preview and clear the card.
-            previewArea.SetActive(false);
+            PreviewArea.SetActive(false);
             _currentlyEnlargedCard = null;
 
             // Remove any action buttons.
@@ -161,6 +166,7 @@ namespace PACG.SharedAPI
             {
                 Destroy(button);
             }
+
             _activeActionButtons.Clear();
         }
     }

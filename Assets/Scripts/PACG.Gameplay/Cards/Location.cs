@@ -14,7 +14,7 @@ namespace PACG.Gameplay
         public List<string> Traits => LocationData.Traits;
         
         public LocationData LocationData { get; }
-        public LocationLogicBase LocationLogic { get; }
+        private LocationLogicBase LocationLogic { get; }
 
         public Deck Deck { get; }
         public int Count => Deck.Count;
@@ -87,6 +87,7 @@ namespace PACG.Gameplay
         // ==============================================================================
         
         // Facade pattern for LocationLogic
+        public LocationPower? GetStartOfTurnPower() => LocationLogic?.GetStartOfTurnPower(this);
         public LocationPower? GetEndOfTurnPower() => LocationLogic?.GetEndOfTurnPower(this);
     }
 }

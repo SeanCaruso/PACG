@@ -46,11 +46,9 @@ namespace PACG.Gameplay
                 GameEvents.SetStatusText("");
                 return true;
             }
-            else
-            {
-                GameEvents.SetStatusText("Recharge a weapon or an armor from your hand or discards.");
-                return false;
-            }
+            
+            GameEvents.SetStatusText("Recharge a weapon or an armor from your hand or discards.");
+            return false;
         }
 
         public override void Resolve()

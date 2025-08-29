@@ -550,6 +550,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1246803977}
+  - {fileID: 843161832}
   - {fileID: 585025897}
   m_Father: {fileID: 1871686246}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1072,6 +1073,41 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CardDisplayPrefab: {fileID: 8431384695262642363, guid: 665bdf9d8f0b08c448526ebe58d4022e, type: 3}
+--- !u!1 &843161831
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 843161832}
+  m_Layer: 5
+  m_Name: Card Container
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &843161832
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 843161831}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 2, y: 2, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 416585362}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 250, y: 350}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &857526834
 GameObject:
   m_ObjectHideFlags: 0
@@ -1302,7 +1338,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b98a7864d0d05af49b9f177889c2ce6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CardDisplayFactory: {fileID: 736274002}
   ActionButtonContainer: {fileID: 468733349}
+  CardPreviewContainer: {fileID: 843161832}
   ButtonPrefab: {fileID: 7970087573183796855, guid: 08d81759c3e225e439c8139657bc72cf, type: 3}
 --- !u!1 &912236913
 GameObject:
@@ -2215,10 +2253,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe67a9e9009f7414cb5d39929d978886, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  previewArea: {fileID: 416585361}
-  backgroundButton: {fileID: 1246803978}
-  actionButtonContainer: {fileID: 585025897}
-  actionButtonPrefab: {fileID: 7970087573183796855, guid: 08d81759c3e225e439c8139657bc72cf, type: 3}
+  CardDisplayFactory: {fileID: 736274002}
+  PreviewArea: {fileID: 416585361}
+  PreviewContainer: {fileID: 843161832}
+  BackgroundButton: {fileID: 1246803978}
+  ActionButtonContainer: {fileID: 585025897}
+  ActionButtonPrefab: {fileID: 7970087573183796855, guid: 08d81759c3e225e439c8139657bc72cf, type: 3}
 --- !u!1 &1198426358
 GameObject:
   m_ObjectHideFlags: 0
@@ -3818,10 +3858,10 @@ RectTransform:
   - {fileID: 1754042362}
   - {fileID: 117230052}
   - {fileID: 1821694483}
-  - {fileID: 468733349}
   - {fileID: 367809581}
   - {fileID: 222995517}
   - {fileID: 416585362}
+  - {fileID: 468733349}
   m_Father: {fileID: 1767435116}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}

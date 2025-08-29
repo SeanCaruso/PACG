@@ -46,8 +46,11 @@ namespace PACG.Gameplay
                     gameServices.GameFlow.Interrupt(processor);
                 }),
                 new PlayerChoiceResolvable.ChoiceOption("No", () => { })
-            );
-            
+            )
+            {
+                Card = recoveryResolvable.Card as CardInstance
+            };
+
             return choiceResolvable;
         }
 

@@ -52,13 +52,16 @@ namespace PACG.Gameplay
                 var modifier = action.Card.Logic?.GetCheckModifier(action);
                 if (modifier != null)
                 {
+                    // Do this first - the skill selection dialog uses it to determine the DC for the selected
+                    // skill, but if something forces a Combat check, we need to know that first.
+                    if (modifier.RestrictedCategory != null)
+                        _typeDeterminator.RestrictCheckCategory(modifier.SourceCard, modifier.RestrictedCategory.Value);
+                    
                     _skills.RestrictValidSkills(modifier.SourceCard, modifier.RestrictedSkills.ToArray());
                     _skills.AddValidSkills(modifier.SourceCard, modifier.AddedValidSkills.ToArray());
                     _traits.AddTraits(modifier.SourceCard, modifier.AddedTraits.ToArray());
                     _traits.AddRequiredTraits(modifier.SourceCard, modifier.RequiredTraits.ToArray());
                     _traits.AddProhibitedTraits(modifier.SourceCard, modifier.ProhibitedTraits.ToArray());
-                    if (modifier.RestrictedCategory != null)
-                        _typeDeterminator.RestrictCheckCategory(modifier.SourceCard, modifier.RestrictedCategory.Value);
                 }
             }
             

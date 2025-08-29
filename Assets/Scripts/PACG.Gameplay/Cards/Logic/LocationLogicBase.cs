@@ -8,6 +8,7 @@ namespace PACG.Gameplay
         // AT THIS LOCATION
         // ========================================================================================
         public virtual IResolvable GetStartOfTurnResolvable() => null;
+        public virtual LocationPower? GetStartOfTurnPower(Location location) => null;
         public virtual IResolvable GetEndOfTurnResolvable() => null;
         public virtual LocationPower? GetEndOfTurnPower(Location location) => null;
 
