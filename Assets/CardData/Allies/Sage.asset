@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72b1ad41f9c218045b980737984353fc, type: 3}
+  m_Name: Sage
+  m_EditorClassIdentifier: 
+  cardID: Sage
+  cardName: Sage
+  cardType: 0
+  StoryBaneType: 0
+  cardLevel: 0
+  cardArt: {fileID: 0}
+  checkRequirement:
+    mode: 0
+    checkSteps:
+    - baseDC: 4
+      adventureLevelMult: 0
+      category: 1
+      allowedSkills: 05000000090000000d000000
+  rerollThreshold: 0
+  powers: 'On a local Arcane non-combat or Knowledge non-combat check, recharge to
+    add 1d6.
+
+
+    Discard to examine the top card of your location, then shuffle
+    the location, then you may explore.'
+  recovery: 
+  immunities: []
+  vulnerabilities: []
+  IsLoot: 0
+  traits:
+  - Human
+  - Arcanist

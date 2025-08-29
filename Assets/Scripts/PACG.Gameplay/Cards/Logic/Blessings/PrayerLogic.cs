@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using System.Linq;
 using PACG.Core;
-using PACG.Data;
 
 namespace PACG.Gameplay
 {
@@ -32,7 +30,6 @@ namespace PACG.Gameplay
         {
             if (!action.ActionData.TryGetValue("Bless", out var isBless)) return;
             if ((bool)isBless) return;
-            
             
             // Examine the top card of your location...
             var examineResolvable = new ExamineResolvable(action.Card.Owner.Location, 1);

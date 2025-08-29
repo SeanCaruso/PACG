@@ -25,7 +25,23 @@ namespace PACG.Gameplay
 
         private readonly HashSet<ScourgeType> _activeScourges = new();
         public IReadOnlyCollection<ScourgeType> ActiveScourges => _activeScourges;
-        public void AddScourge(ScourgeType scourge) => _activeScourges.Add(scourge);
+
+        public void AddScourge(ScourgeType scourge)
+        {
+            if (_contexts.TurnContext?.Character == this)
+            {
+                foreach (var effect in _contexts.TurnContext.ExploreEffects)
+                {
+                    if (effect is not ScourgeImmunityExploreEffect { NumToIgnore: > 0 } scourgeEffect) continue;
+                    
+                    scourgeEffect.NumToIgnore--;
+                    return;
+                }
+            }
+            
+            _activeScourges.Add(scourge);
+        }
+
         public void RemoveScourge(ScourgeType scourge) => _activeScourges.Remove(scourge);
 
         // --- Dependency Injections
@@ -121,7 +137,7 @@ namespace PACG.Gameplay
                 card.Owner = null;
                 card.OriginalOwner = null;
             }
-            
+
             _cardManager.MoveCard(card, ActionType.Banish);
         }
 

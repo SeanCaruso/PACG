@@ -10,13 +10,11 @@ namespace PACG.Gameplay
         // Dependency injection
         private readonly CardManager _cardManager;
         private readonly ContextManager _contexts;
-        private readonly GameFlowManager _gameFlow;
         
         public Encounter_EvasionProcessor(GameServices gameServices) : base(gameServices)
         {
             _cardManager = gameServices.Cards;
             _contexts = gameServices.Contexts;
-            _gameFlow = gameServices.GameFlow;
         }
 
         protected override void OnExecute()
@@ -67,9 +65,8 @@ namespace PACG.Gameplay
             if (_contexts.EncounterContext.Card.CurrentLocation == CardLocation.Deck)
                 _contexts.EncounterContext.Character.Location.ShuffleIn(_contexts.EncounterContext.Card, true);
             
+            // Null out the encounter for the other Encounter sub-processors.
             _contexts.EndEncounter();
-            
-            _gameFlow.AbortPhase();
         }
     }
 }
