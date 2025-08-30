@@ -18,14 +18,14 @@ namespace PACG.Gameplay
 
         public override CheckModifier GetCheckModifier(IStagedAction action)
         {
-            if (_contexts.CurrentResolvable is not CheckResolvable resolvable) return null;
+            if (_contexts.CheckContext?.Resolvable == null) return null;
             
             var modifier = new CheckModifier(action.Card);
             modifier.AddedDice.AddRange(new [] { 4, 4 }.ToList());
             modifier.AddedTraits.AddRange(new[] { "Attack", "Force", "Magic" });
             modifier.RestrictedCategory = CheckCategory.Combat;
             
-            if (action.Card.Owner != resolvable.Character) return modifier;
+            if (action.Card.Owner != _contexts.CheckContext.Resolvable.Character) return modifier;
             
             modifier.AddedTraits.Add("Arcane");
             modifier.AddedValidSkills.Add(Skill.Arcane);
@@ -43,7 +43,7 @@ namespace PACG.Gameplay
                 && _contexts.CurrentResolvable is CheckResolvable { HasCombat: true }
                 && !_contexts.CurrentResolvable.IsCardTypeStaged(card.CardType))
             {
-                actions.Add(new PlayCardAction(card, ActionType.Banish));
+                actions.Add(new PlayCardAction(card, ActionType.Banish, ("IsCombat", true)));
             }
 
             return actions;

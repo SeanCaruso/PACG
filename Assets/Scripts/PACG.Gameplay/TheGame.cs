@@ -13,7 +13,7 @@ namespace PACG.Gameplay
         public CharacterData Pc;
         public List<CardData> Deck;
     }
-    
+
     public class TheGame : MonoBehaviour
     {
         public CardPreviewController CardPreviewController;
@@ -27,13 +27,15 @@ namespace PACG.Gameplay
         // === TEMPORARY MEMBERS FOR DEVELOPMENT ==========================================
         // As we add features, these should be removed.
         [Header("Test Objects")]
+        public int AdventureNumber;
+        public ScenarioData ScenarioData;
         public CardData hourCardData;
         public List<TestCharacter> TestCharacters;
         public List<LocationData> TestLocations;
         public List<CardData> testLocationDeck;
 
         public List<string> CharactersToUse;
-        
+
         // Valeros: Half-plate, Light Shield, Longbow, Longsword, Longspear, Throwing Axe, Helm, Crowbar, Spyglass,
         //          Prayer, Prayer, Prayer, Soldier, Horse, Lookout
         // ================================================================================
@@ -70,8 +72,7 @@ namespace PACG.Gameplay
         // Start is called after all Awake() methods are finished.
         private void Start()
         {
-            _gameServices.Contexts.NewGame(new GameContext(1, _gameServices.Cards));
-            CardUtils.Initialize(_gameServices.Contexts.GameContext.AdventureNumber);
+            CardUtils.Initialize(AdventureNumber);
             // =================================================================
             // STEP 3: WIRE UP THE PRESENTATION LAYER
             // The presentation layer also needs to know about certain services.
@@ -90,6 +91,12 @@ namespace PACG.Gameplay
             // Everything is built and wired. Now we tell the engine to start.
             // =================================================================
             LeanTween.reset();
+
+            var scenarioData = Instantiate(ScenarioData);
+            _gameServices.Contexts.NewGame(new GameContext(AdventureNumber, scenarioData, _gameServices));
+            
+            if (!string.IsNullOrEmpty(scenarioData.DuringScenario))
+                GameEvents.RaiseScenarioHasPower(_gameServices);
 
             // Set up test data
             for (var i = 0; i < 30; i++)
@@ -112,12 +119,12 @@ namespace PACG.Gameplay
             foreach (var character in TestCharacters)
             {
                 if (!CharactersToUse.Contains(character.Pc.CharacterName)) continue;
-                
+
                 var pcLogic = _gameServices.Logic.GetLogic<CharacterLogicBase>(character.Pc.CharacterName);
                 PlayerCharacter testPc = new(character.Pc, pcLogic, _gameServices);
-                
+
                 foreach (var card in character.Deck) testPc.ShuffleIntoDeck(_gameServices.Cards.New(card, testPc));
-                
+
                 _gameServices.Contexts.GameContext.SetPcLocation(
                     testPc,
                     _gameServices.Contexts.GameContext.Locations.First()

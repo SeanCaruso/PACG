@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using PACG.Data;
 using PACG.SharedAPI;
 using UnityEngine;
 
@@ -8,21 +9,39 @@ namespace PACG.Gameplay
     public class GameContext
     {
         public int AdventureNumber { get; }
+        public ScenarioData ScenarioData { get; }
+        public ScenarioLogicBase ScenarioLogic { get; }
         public Deck HourDeck { get; }
         public int TurnNumber { get; set; } = 1;
 
         private readonly Dictionary<Location, List<PlayerCharacter>> _locationPcs = new();
 
         public IReadOnlyList<Location> Locations => _locationPcs.Keys.ToList();
-        public IReadOnlyList<PlayerCharacter> Characters => _locationPcs.Values.SelectMany(x => x).ToList();
-        public IReadOnlyList<PlayerCharacter> GetCharactersAt(Location loc) => _locationPcs.GetValueOrDefault(loc, new List<PlayerCharacter>());
+        public IReadOnlyList<PlayerCharacter> Characters =>
+            _locationPcs.Values.SelectMany(x => x).ToList();
 
+        public IReadOnlyList<PlayerCharacter> GetCharactersAt(Location loc) =>
+            _locationPcs.GetValueOrDefault(loc, new List<PlayerCharacter>());
+
+        public GameContext(int adventureNumber, ScenarioData scenarioData, GameServices gameServices)
+        {
+            AdventureNumber = adventureNumber;
+
+            ScenarioData = scenarioData;
+            ScenarioLogic = gameServices.Logic.GetLogic<ScenarioLogicBase>(ScenarioData.ID);
+
+            HourDeck = new Deck(gameServices.Cards);
+        }
+
+        /// <summary>
+        /// Constructor for testing.
+        /// </summary>
         public GameContext(int adventureNumber, CardManager cardManager)
         {
             AdventureNumber = adventureNumber;
             HourDeck = new Deck(cardManager);
         }
-        
+
         public void AddLocation(Location loc) => _locationPcs.TryAdd(loc, new List<PlayerCharacter>());
 
         public Location GetPcLocation(PlayerCharacter pc)
@@ -44,7 +63,7 @@ namespace PACG.Gameplay
 
             _locationPcs[oldLoc].Remove(pc);
             SetPcLocation(pc, newLoc);
-            
+
             GameEvents.RaiseLocationChanged(newLoc);
         }
 
@@ -55,7 +74,8 @@ namespace PACG.Gameplay
         /// <param name="newLoc"></param>
         public void SetPcLocation(PlayerCharacter pc, Location newLoc)
         {
-            Debug.Log($"[{GetType().Name}] Moving {pc.CharacterData.CharacterName} to {newLoc.LocationData.LocationName}.");
+            Debug.Log(
+                $"[{GetType().Name}] Moving {pc.CharacterData.CharacterName} to {newLoc.LocationData.LocationName}.");
             if (!_locationPcs.ContainsKey(newLoc))
                 _locationPcs.Add(newLoc, new List<PlayerCharacter>());
             _locationPcs[newLoc].Add(pc);

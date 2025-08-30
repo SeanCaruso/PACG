@@ -38,6 +38,14 @@ namespace PACG.Gameplay
             _contexts.TurnContext.CanFreelyExplore = _contexts.TurnPcLocation?.Count > 0;
             _contexts.TurnContext.CanCloseLocation = _contexts.TurnPcLocation?.Count == 0;
 
+            if (_contexts.GameContext?.ScenarioLogic?.HasAvailableAction == true)
+            {
+                _contexts.TurnContext.HasScenarioTurnAction = true;
+                _contexts.TurnContext.CanUseScenarioTurnAction = true;
+                
+                GameEvents.RaiseScenarioPowerEnabled(true);
+            }
+
             if (pc.ActiveScourges.Contains(ScourgeType.Entangled))
                 _contexts.TurnContext.CanMove = false;
 

@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a39437dda7aa4b449413e7870afb44b1, type: 3}
+  m_Name: 1S - Rumble Road
+  m_EditorClassIdentifier: 
+  Name: '1\u2605: Rumble Road'
+  ID: RumbleRoad
+  Setup: 'If this is your first scenario, use only the first 3 small locations and
+    create the hourglass from 12 blessings.
+
+
+    Characters start at the Caravan.'
+  Locations:
+  - NumPcs: 1
+    LocationData: {fileID: 11400000, guid: 319c429832160b549b7c6caffdb16d9d, type: 2}
+  - NumPcs: 1
+    LocationData: {fileID: 11400000, guid: a54b3de4a8e7ec347a2947701d73c056, type: 2}
+  DuringScenario: Instead of your first exploration of your turn, you may heal 1d4
+    cards.
+  IsDuringPowerActivated: 1
+  DuringScenarioPowerEnabled: {fileID: 2058518826365189002, guid: 3e2f2442f98ec8841a3f13dcaca70d54, type: 3}
+  DuringScenarioPowerDisabled: {fileID: -4945773871214007067, guid: b9f6bf30d923f264abf0c605b463c5ec, type: 3}
+  Dangers: []
+  Villain:
+    CardData: {fileID: 0}
+    CustomName: 
+    IsClosing: 0
+  Henchmen:
+  - CardData: {fileID: 11400000, guid: 15e50ef9bae16b14c9922932df023c5f, type: 2}
+    CustomName: 
+    IsClosing: 1
+  Reward: Each character gets a new level 1 boon of any type.

@@ -222,6 +222,8 @@ MonoBehaviour:
   PlayerChoiceController: {fileID: 911858489}
   UiInputController: {fileID: 1864128405}
   DebugController: {fileID: 1914270870}
+  AdventureNumber: 1
+  ScenarioData: {fileID: 11400000, guid: 64bb4066945f8f84a9340f2166dbea94, type: 2}
   hourCardData: {fileID: 11400000, guid: 06534aedf16e0b345b540522bee89026, type: 2}
   TestCharacters:
   - Pc: {fileID: 11400000, guid: 7f93a7efbf7cf2c408a01c15431b7656, type: 2}
@@ -266,9 +268,20 @@ MonoBehaviour:
   - {fileID: 11400000, guid: d747111548c51b64583711ae21922f8d, type: 2}
   - {fileID: 11400000, guid: d747111548c51b64583711ae21922f8d, type: 2}
   - {fileID: 11400000, guid: d747111548c51b64583711ae21922f8d, type: 2}
+  - {fileID: 11400000, guid: d747111548c51b64583711ae21922f8d, type: 2}
+  - {fileID: 11400000, guid: d747111548c51b64583711ae21922f8d, type: 2}
+  - {fileID: 11400000, guid: d747111548c51b64583711ae21922f8d, type: 2}
+  - {fileID: 11400000, guid: d747111548c51b64583711ae21922f8d, type: 2}
+  - {fileID: 11400000, guid: d747111548c51b64583711ae21922f8d, type: 2}
+  - {fileID: 11400000, guid: d747111548c51b64583711ae21922f8d, type: 2}
+  - {fileID: 11400000, guid: d747111548c51b64583711ae21922f8d, type: 2}
+  - {fileID: 11400000, guid: d747111548c51b64583711ae21922f8d, type: 2}
+  - {fileID: 11400000, guid: d747111548c51b64583711ae21922f8d, type: 2}
+  - {fileID: 11400000, guid: d747111548c51b64583711ae21922f8d, type: 2}
+  - {fileID: 11400000, guid: d747111548c51b64583711ae21922f8d, type: 2}
   CharactersToUse:
   - Ezren
-  - Valeros
+  - 
 --- !u!4 &182072643
 Transform:
   m_ObjectHideFlags: 0
@@ -596,6 +609,7 @@ Transform:
   - {fileID: 1997517375}
   - {fileID: 1198426359}
   - {fileID: 911858488}
+  - {fileID: 969452409}
   - {fileID: 653943238}
   - {fileID: 857526835}
   - {fileID: 1864128404}
@@ -1074,6 +1088,104 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CardDisplayPrefab: {fileID: 8431384695262642363, guid: 665bdf9d8f0b08c448526ebe58d4022e, type: 3}
+--- !u!1 &746861058
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 746861059}
+  - component: {fileID: 746861062}
+  - component: {fileID: 746861061}
+  - component: {fileID: 746861060}
+  m_Layer: 0
+  m_Name: Scenario Area
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &746861059
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 746861058}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1871686246}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -15, y: -100}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 1, y: 1}
+--- !u!114 &746861060
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 746861058}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: -1
+  m_PreferredWidth: 345
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
+--- !u!114 &746861061
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 746861058}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 2
+  m_VerticalFit: 2
+--- !u!114 &746861062
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 746861058}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 2
+  m_Spacing: 0
+  m_ChildForceExpandWidth: 0
+  m_ChildForceExpandHeight: 0
+  m_ChildControlWidth: 1
+  m_ChildControlHeight: 1
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
 --- !u!1 &843161831
 GameObject:
   m_ObjectHideFlags: 0
@@ -1475,6 +1587,52 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 912236913}
   m_CullTransparentMesh: 1
+--- !u!1 &969452408
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 969452409}
+  - component: {fileID: 969452410}
+  m_Layer: 0
+  m_Name: Scenario View Controller
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &969452409
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 969452408}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 449050547}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &969452410
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 969452408}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 674cb2fa50c4477fa662be36fd026789, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ScenarioPowerContainer: {fileID: 746861059}
+  ScenarioPowerPrefab: {fileID: 745462196765210939, guid: 7695fc530693162439ad2f645de8d48b, type: 3}
 --- !u!1 &993305534
 GameObject:
   m_ObjectHideFlags: 0
@@ -2959,7 +3117,7 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 2
-  m_Spacing: 5
+  m_Spacing: 10
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 0
@@ -3143,7 +3301,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 490, y: -0}
+  m_AnchoredPosition: {x: 495, y: -0}
   m_SizeDelta: {x: 360, y: 90}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &1770646898
@@ -3857,6 +4015,7 @@ RectTransform:
   - {fileID: 1246359931}
   - {fileID: 1163429911}
   - {fileID: 1754042362}
+  - {fileID: 746861059}
   - {fileID: 117230052}
   - {fileID: 1821694483}
   - {fileID: 367809581}

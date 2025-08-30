@@ -17,7 +17,7 @@ namespace PACG.Gameplay
 
         public override CheckModifier GetCheckModifier(IStagedAction action)
         {
-            if (_contexts.CurrentResolvable is not CheckResolvable) return null;
+            if (_contexts.CheckContext?.Resolvable == null) return null;
 
             return new CheckModifier(action.Card)
             {
@@ -46,7 +46,7 @@ namespace PACG.Gameplay
                 && resolvable.Character == card.Owner
                 && !_contexts.CurrentResolvable.IsCardTypeStaged(card.CardType))
             {
-                actions.Add(new PlayCardAction(card, ActionType.Banish));
+                actions.Add(new PlayCardAction(card, ActionType.Banish, ("IsCombat", true)));
             }
 
             return actions;

@@ -19,8 +19,8 @@ namespace PACG.SharedAPI
             var keyboard = Keyboard.current;
             if (keyboard == null) return;
 
-            bool ctrl = keyboard.leftCtrlKey.isPressed || keyboard.rightCtrlKey.isPressed;
-            bool shift = keyboard.leftShiftKey.isPressed || keyboard.rightShiftKey.isPressed;
+            var ctrl = keyboard.leftCtrlKey.isPressed || keyboard.rightCtrlKey.isPressed;
+            var shift = keyboard.leftShiftKey.isPressed || keyboard.rightShiftKey.isPressed;
 
             if (ctrl && shift && keyboard.eKey.isPressed)
             {
@@ -35,6 +35,7 @@ namespace PACG.SharedAPI
             if (ctrl && shift && keyboard.dKey.wasPressedThisFrame)
             {
                 var pc = _contexts.TurnContext.Character;
+                if (pc.Deck.Count == 0) return;
                 pc.AddToHand(pc.DrawFromDeck());
                 Debug.Log($"NEW HAND: {string.Join(",", _contexts.TurnContext.Character.Hand)}");
             }
@@ -42,8 +43,24 @@ namespace PACG.SharedAPI
             if (ctrl && shift && keyboard.rKey.wasPressedThisFrame)
             {
                 var hand = _contexts.TurnContext.Character.Hand;
+                if (hand.Count == 0) return;
                 _contexts.TurnContext.Character.Recharge(hand[^1]);
                 Debug.Log($"NEW HAND: {string.Join(",", _contexts.TurnContext.Character.Hand)}");
+            }
+
+            if (ctrl && shift && keyboard.deleteKey.wasPressedThisFrame)
+            {
+                var hand = _contexts.TurnContext.Character.Hand;
+                if (hand.Count == 0) return;
+                _contexts.TurnContext.Character.Discard(hand[^1]);
+                GameEvents.RaiseTurnStateChanged();
+            }
+
+            if (ctrl && shift && keyboard.hKey.wasPressedThisFrame)
+            {
+                if (_contexts.TurnContext.Character.Discards.Count == 0) return;
+                _contexts.TurnContext.Character.Heal(1);
+                GameEvents.RaiseTurnStateChanged();
             }
         }
 #endif

@@ -28,7 +28,11 @@ namespace PACG.Gameplay
         public bool CanFreelyExplore { get; set; }
         public bool CanCloseLocation { get; set; }
         public bool CanEndTurn { get; set; }
-
+        
+        // Special cases for scenario effects.
+        public bool HasScenarioTurnAction { get; set; }
+        public bool CanUseScenarioTurnAction { get; set; }
+        
         public bool ForceEndTurn { get; set; } = false;
 
         public List<IExploreEffect> ExploreEffects { get; } = new();

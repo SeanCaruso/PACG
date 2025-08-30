@@ -72,6 +72,7 @@ namespace PACG.Presentation.LocationsDialog
             confirmButton.onClick.AddListener(() =>
             {
                 _contexts.GameContext.MoveCharacter(_pc, location);
+                _contexts.TurnContext.CanGive = false;
                 _contexts.TurnContext.CanMove = false;
                 GameEvents.RaiseTurnStateChanged();
                 Destroy(gameObject);
