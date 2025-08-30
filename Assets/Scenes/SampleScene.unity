@@ -264,24 +264,12 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a54b3de4a8e7ec347a2947701d73c056, type: 2}
   - {fileID: 11400000, guid: 319c429832160b549b7c6caffdb16d9d, type: 2}
   testLocationDeck:
-  - {fileID: 11400000, guid: 15e50ef9bae16b14c9922932df023c5f, type: 2}
-  - {fileID: 11400000, guid: d747111548c51b64583711ae21922f8d, type: 2}
-  - {fileID: 11400000, guid: d747111548c51b64583711ae21922f8d, type: 2}
-  - {fileID: 11400000, guid: d747111548c51b64583711ae21922f8d, type: 2}
-  - {fileID: 11400000, guid: d747111548c51b64583711ae21922f8d, type: 2}
-  - {fileID: 11400000, guid: d747111548c51b64583711ae21922f8d, type: 2}
-  - {fileID: 11400000, guid: d747111548c51b64583711ae21922f8d, type: 2}
-  - {fileID: 11400000, guid: d747111548c51b64583711ae21922f8d, type: 2}
-  - {fileID: 11400000, guid: d747111548c51b64583711ae21922f8d, type: 2}
-  - {fileID: 11400000, guid: d747111548c51b64583711ae21922f8d, type: 2}
-  - {fileID: 11400000, guid: d747111548c51b64583711ae21922f8d, type: 2}
-  - {fileID: 11400000, guid: d747111548c51b64583711ae21922f8d, type: 2}
   - {fileID: 11400000, guid: d747111548c51b64583711ae21922f8d, type: 2}
   - {fileID: 11400000, guid: d747111548c51b64583711ae21922f8d, type: 2}
   - {fileID: 11400000, guid: d747111548c51b64583711ae21922f8d, type: 2}
   CharactersToUse:
   - Ezren
-  - 
+  - Valeros
 --- !u!4 &182072643
 Transform:
   m_ObjectHideFlags: 0
@@ -1452,6 +1440,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CardDisplayFactory: {fileID: 736274002}
+  LocationDisplayFactory: {fileID: 2048280684}
   ActionButtonContainer: {fileID: 468733349}
   CardPreviewContainer: {fileID: 843161832}
   ButtonPrefab: {fileID: 7970087573183796855, guid: 08d81759c3e225e439c8139657bc72cf, type: 3}

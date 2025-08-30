@@ -55,11 +55,10 @@ namespace PACG.Gameplay
             TurnContext?.ExploreEffects.Clear();
         }
 
-        public void EndEncounter()
-        {
-            GameEvents.RaiseEncounterEnded();
-            EncounterContext = null;
-        }
+        /// <summary>
+        /// This only sets the context to null. Event sending must be handled by the caller.
+        /// </summary>
+        public void EndEncounter() => EncounterContext = null;
 
         /// <summary>
         /// USE ONLY IF YOU KNOW WHAT YOU'RE DOING! NewResolvableProcessor IS PROBABLY BETTER!

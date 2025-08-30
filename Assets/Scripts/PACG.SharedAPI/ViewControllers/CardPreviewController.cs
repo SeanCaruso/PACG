@@ -103,9 +103,14 @@ namespace PACG.SharedAPI
                 return;
             }
 
+            var playableActions = new List<IStagedAction>();
+            // If there's an encountered card, grab any additional actions.
+            playableActions.AddRange(_contexts.EncounterContext?.Card?.GetAdditionalActionsForCard(cardInstance) ??
+                                     new List<IStagedAction>());
+
             // If there's a resolvable, grab any additional actions (damage, give, etc.).
-            var playableActions = _contexts.CurrentResolvable?.GetAdditionalActionsForCard(cardInstance) ??
-                                  new List<IStagedAction>();
+            playableActions.AddRange(_contexts.CurrentResolvable?.GetAdditionalActionsForCard(cardInstance) ??
+                                     new List<IStagedAction>());
             playableActions.AddRange(cardInstance.GetAvailableActions());
 
             GenerateActionButtons(playableActions);

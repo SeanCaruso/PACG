@@ -16,7 +16,7 @@ namespace PACG.Gameplay
         /// Gets the actual card type (i.e. Barrier or Monster for Story Banes).
         /// </summary>
         public CardType CardType => IsStoryBane ? Data.StoryBaneType : Data.cardType;
-        
+
         // Passed in via constructor
         public CardData Data { get; }
         public CardLogicBase Logic { get; }
@@ -53,7 +53,11 @@ namespace PACG.Gameplay
         // FACADE PATTERN - CONVENIENCE CALLS TO CARD LOGIC
         // ========================================================================================
 
-        public List<IStagedAction> GetAvailableActions() => Logic?.GetAvailableActions(this) ?? new List<IStagedAction>();
+        public List<IStagedAction> GetAvailableActions() =>
+            Logic?.GetAvailableActions(this) ?? new List<IStagedAction>();
+
+        public List<IStagedAction> GetAdditionalActionsForCard(CardInstance card) =>
+            Logic?.GetAvailableActions(card) ?? new List<IStagedAction>();
 
         public IResolvable GetOnEncounterResolvable() => Logic?.GetOnEncounterResolvable(this);
         public IResolvable GetBeforeActingResolvable() => Logic?.GetBeforeActingResolvable(this);
@@ -61,5 +65,15 @@ namespace PACG.Gameplay
         public IResolvable GetAfterActingResolvable() => Logic?.GetAfterActingResolvable(this);
     }
 
-    public enum CardLocation { Buried, Deck, Discard, Displayed, Hand, Recovery, Revealed, Vault }
+    public enum CardLocation
+    {
+        Buried,
+        Deck,
+        Discard,
+        Displayed,
+        Hand,
+        Recovery,
+        Revealed,
+        Vault
+    }
 }

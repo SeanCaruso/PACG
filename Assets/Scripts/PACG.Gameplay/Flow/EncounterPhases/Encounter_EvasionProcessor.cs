@@ -66,6 +66,7 @@ namespace PACG.Gameplay
                 _contexts.EncounterContext.Character.Location.ShuffleIn(_contexts.EncounterContext.Card, true);
             
             // Null out the encounter for the other Encounter sub-processors.
+            GameEvents.RaiseEncounterEnded();
             _contexts.EndEncounter();
         }
     }

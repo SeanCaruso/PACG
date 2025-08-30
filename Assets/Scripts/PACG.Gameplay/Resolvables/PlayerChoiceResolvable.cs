@@ -24,7 +24,7 @@ namespace PACG.Gameplay
 
         public string Prompt { get; }
         public IReadOnlyList<ChoiceOption> Options { get; }
-        public CardInstance Card { get; set; }
+        public ICard Card { get; set; }
 
         public PlayerChoiceResolvable(string prompt, params ChoiceOption[] options)
         {

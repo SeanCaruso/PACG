@@ -31,6 +31,7 @@ namespace PACG.Gameplay
         public CheckContext(CheckResolvable resolvable)
         {
             Resolvable = resolvable;
+            
             _skills = new CheckSkillAccumulator(Resolvable);
             _typeDeterminator = new CheckTypeDeterminator(Resolvable);
             _traits = new TraitAccumulator(Resolvable);

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using PACG.Core;
+using PACG.Data;
 using PACG.Gameplay;
 using PACG.SharedAPI;
 using TMPro;
@@ -40,10 +41,10 @@ namespace PACG.Presentation.SkillSelectionDialog
             DialogEvents.ValidSkillsChanged -= OnValidSkillsChanged;
         }
 
-        public void SetCheckContext(CheckContext context, CardInstance card)
+        public void SetCheckContext(CheckContext context, CardType cardType)
         {
             _checkContext = context;
-            _cardTypeColor = GuiUtils.GetPanelColor(card.Data.cardType);
+            _cardTypeColor = GuiUtils.GetPanelColor(cardType);
             
             OnValidSkillsChanged(context.GetCurrentValidSkills());
 

@@ -21,7 +21,10 @@ namespace PACG.Gameplay
                 _contexts.TurnPcLocation,
                 _contexts.TurnContext.Character,
                 CardUtils.SkillCheck(dc,Skill.Wisdom, Skill.Perception)
-            );
+            )
+            {
+                Verb = CheckVerb.Close
+            };
         }
 
         // TODO: Implement when we have multiple characters and locations.

@@ -89,5 +89,6 @@ namespace PACG.Gameplay
         // Facade pattern for LocationLogic
         public LocationPower? GetStartOfTurnPower() => LocationLogic?.GetStartOfTurnPower(this);
         public LocationPower? GetEndOfTurnPower() => LocationLogic?.GetEndOfTurnPower(this);
+        public IResolvable GetToCloseResolvable() => LocationLogic?.GetToCloseResolvable();
     }
 }

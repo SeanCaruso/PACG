@@ -19,14 +19,14 @@ namespace PACG.Presentation.SkillSelectionDialog
         
         public void SetCheckContext(CheckContext context)
         {
-            if (context.Resolvable?.Card is not CardInstance card) return;
-            
-            LabelText.text = PF.IsBane(card.Data.cardType) ? "CHECK TO DEFEAT" : "CHECK TO ACQUIRE";
+            if (context.Resolvable == null) return;
+
+            LabelText.text = $"CHECK TO {context.Resolvable.Verb.ToString().ToUpper()}";
             CardNameText.text = context.Resolvable.Card.Name.ToUpper();
-            CardNamePanel.color = GuiUtils.GetPanelColor(card.Data.cardType);
+            CardNamePanel.color = GuiUtils.GetPanelColor(context.Resolvable.Card.CardType);
             
             var dropdown = Instantiate(SkillDropdownPanel, DropdownContainer);
-            dropdown.SetCheckContext(context, card);
+            dropdown.SetCheckContext(context, context.Resolvable.Card.CardType);
         }
     }
 }

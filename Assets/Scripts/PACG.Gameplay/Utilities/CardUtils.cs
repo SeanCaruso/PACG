@@ -39,6 +39,8 @@ namespace PACG.Gameplay
             CheckResolvable recoveryResolvable,
             GameServices gameServices)
         {
+            recoveryResolvable.Verb = CheckVerb.Recover;
+            
             var choiceResolvable = new PlayerChoiceResolvable("Recover?",
                 new PlayerChoiceResolvable.ChoiceOption("Yes", () =>
                 {

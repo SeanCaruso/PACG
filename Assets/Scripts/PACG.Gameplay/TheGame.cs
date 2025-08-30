@@ -94,7 +94,7 @@ namespace PACG.Gameplay
 
             var scenarioData = Instantiate(ScenarioData);
             _gameServices.Contexts.NewGame(new GameContext(AdventureNumber, scenarioData, _gameServices));
-            
+
             if (!string.IsNullOrEmpty(scenarioData.DuringScenario))
                 GameEvents.RaiseScenarioHasPower(_gameServices);
 
@@ -113,6 +113,7 @@ namespace PACG.Gameplay
                 foreach (var cardData in testLocationDeck)
                 {
                     location.ShuffleIn(_gameServices.Cards.New(cardData), true);
+                    location.ShuffleIn(_gameServices.Cards.New(scenarioData.Henchmen[0].CardData), false);
                 }
             }
 

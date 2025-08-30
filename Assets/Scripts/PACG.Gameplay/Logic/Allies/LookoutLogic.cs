@@ -14,6 +14,7 @@ namespace PACG.Gameplay
         
         public LookoutLogic(GameServices gameServices) : base(gameServices)
         {
+            _asm = gameServices.ASM;
             _contexts = gameServices.Contexts;
             _gameFlow = gameServices.GameFlow;
             _gameServices = gameServices;
