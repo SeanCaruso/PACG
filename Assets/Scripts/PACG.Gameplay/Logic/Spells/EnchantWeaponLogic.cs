@@ -18,24 +18,21 @@ namespace PACG.Gameplay
             _gameServices = gameServices;
         }
 
-        public override CheckModifier GetCheckModifier(IStagedAction action)
-        {
-            var modifier = new CheckModifier(action.Card);
-            modifier.AddedDice.Add(4);
-            modifier.AddedBonus += _contexts.GameContext.AdventureNumber;
-            modifier.AddedTraits.Add("Magic");
-            return modifier;
-        }
-
         protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)
         {
-            // Can freely banish if a weapon has been played on a combat check.
+            // Can freely banish for +1d4 if a weapon has been played on a combat check.
             if (_contexts.CurrentResolvable is CheckResolvable { HasCombat: true }
                 && _asm.StagedCards.Any(c => c.CardType == CardType.Weapon))
             {
+                var modifier = new CheckModifier(card)
+                {
+                    AddedDice = new List<int> { 4 },
+                    AddedBonus = _contexts.GameContext.AdventureNumber,
+                    AddedTraits = new List<string> { "Magic" }
+                };
                 return new List<IStagedAction>(new[]
                 {
-                    new PlayCardAction(card, ActionType.Banish, ("IsFreely", true))
+                    new PlayCardAction(card, ActionType.Banish, modifier, ("IsFreely", true))
                 });
             }
 
@@ -50,10 +47,10 @@ namespace PACG.Gameplay
                 card,
                 card.Owner,
                 CardUtils.SkillCheck(6, Skill.Arcane, Skill.Divine))
-                {
-                    OnSuccess = () => card.Owner.Recharge(card),
-                    OnFailure = () => card.Owner.Discard(card)
-                };
+            {
+                OnSuccess = () => card.Owner.Recharge(card),
+                OnFailure = () => card.Owner.Discard(card)
+            };
 
             return CardUtils.CreateDefaultRecoveryResolvable(resolvable, _gameServices);
         }

@@ -15,26 +15,6 @@ namespace PACG.Gameplay
             _contexts = gameServices.Contexts;
         }
 
-        public override CheckModifier GetCheckModifier(IStagedAction action)
-        {
-            // Both powers give +1d8 to combat checks.
-            var modifier = new CheckModifier(action.Card)
-            {
-                RestrictedCategory = CheckCategory.Combat,
-                ProhibitedTraits = new[] { "Offhand" }.ToHashSet(),
-                AddedDice = new[] { 8 }.ToList()
-            };
-
-            if (action.ActionType == ActionType.Discard)
-                return modifier;
-
-            modifier.AddedValidSkills = new[] { Skill.Dexterity, Skill.Ranged }.ToList();
-            modifier.RestrictedSkills = new[] { Skill.Dexterity, Skill.Ranged }.ToList();
-            modifier.AddedTraits = action.Card.Traits;
-
-            return modifier;
-        }
-
         public override void OnCommit(IStagedAction action)
         {
             _contexts.EncounterContext?.AddProhibitedTraits(action.Card.Owner, "Offhand");
@@ -44,16 +24,34 @@ namespace PACG.Gameplay
         {
             List<IStagedAction> actions = new();
             if (CanReveal(card))
-                actions.Add(new PlayCardAction(card, ActionType.Reveal, ("IsCombat", true)));
-
-            if (CanDiscard(card))
             {
-                actions.Add(new PlayCardAction(
-                    card,
-                    ActionType.Discard,
-                    ("IsCombat", true), ("IsFreely", true))
-                );
+                var revealModifier = new CheckModifier(card)
+                {
+                    RestrictedCategory = CheckCategory.Combat,
+                    ProhibitedTraits = new[] { "Offhand" }.ToHashSet(),
+                    AddedDice = new List<int> { 8 },
+                    AddedValidSkills = new List<Skill> { Skill.Dexterity, Skill.Ranged },
+                    RestrictedSkills = new List<Skill> { Skill.Dexterity, Skill.Ranged },
+                    AddedTraits = card.Traits
+                };
+                actions.Add(new PlayCardAction(card, ActionType.Reveal, revealModifier, ("IsCombat", true)));
             }
+
+            if (!CanDiscard(card)) return actions;
+            
+            var modifier = new CheckModifier(card)
+            {
+                RestrictedCategory = CheckCategory.Combat,
+                ProhibitedTraits = new[] { "Offhand" }.ToHashSet(),
+                AddedDice = new[] { 8 }.ToList()
+            };
+                
+            actions.Add(new PlayCardAction(
+                card,
+                ActionType.Discard,
+                modifier,
+                ("IsCombat", true), ("IsFreely", true))
+            );
 
             return actions;
         }

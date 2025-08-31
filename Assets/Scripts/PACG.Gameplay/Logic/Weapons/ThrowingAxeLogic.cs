@@ -15,37 +15,33 @@ namespace PACG.Gameplay
             _contexts = gameServices.Contexts;
         }
 
-        public override CheckModifier GetCheckModifier(IStagedAction action)
-        {
-            var modifier = new CheckModifier(action.Card)
-            {
-                RestrictedCategory = CheckCategory.Combat
-            };
-
-            switch (action.ActionType)
-            {
-                // Reveal to use Strength, Dexterity, Melee, or Ranged + 1d6.
-                case ActionType.Reveal:
-                    modifier.AddedTraits.AddRange(action.Card.Traits);
-                    modifier.RestrictedSkills.AddRange(_validSkills);
-                    modifier.AddedDice.Add(6);
-                    break;
-                // Discard to add 1d6.
-                case ActionType.Discard:
-                    modifier.AddedDice.Add(6);
-                    break;
-            }
-            
-            return modifier;
-        }
-
         protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)
         {
             List<IStagedAction> actions = new();
+            // Reveal for Strength/Melee/Dexterity/Ranged +1d6 on a combat check.
             if (CanReveal(card))
-                actions.Add(new PlayCardAction(card, ActionType.Reveal, ("IsCombat", true)));
-            if (CanDiscard(card))
-                actions.Add(new PlayCardAction(card, ActionType.Discard, ("IsCombat", true), ("IsFreely", true)));
+            {
+                var modifier = new CheckModifier(card)
+                {
+                    RestrictedCategory = CheckCategory.Combat,
+                    AddedTraits = card.Traits,
+                    RestrictedSkills = _validSkills.ToList(),
+                    AddedDice = new List<int> { 6 }
+                };
+                actions.Add(new PlayCardAction(card, ActionType.Reveal, modifier, ("IsCombat", true)));
+            }
+
+            if (!CanDiscard(card)) return actions;
+
+            // Discard for +1d6 on a local combat check.
+            var discardModifier = new CheckModifier(card)
+            {
+                RestrictedCategory = CheckCategory.Combat,
+                AddedDice = new List<int> { 6 }
+            };
+            actions.Add(new PlayCardAction(card, ActionType.Discard, discardModifier,
+                ("IsCombat", true), ("IsFreely", true)));
+
             return actions;
         }
 

@@ -17,22 +17,17 @@ namespace PACG.Gameplay
             _gameServices = gameServices;
         }
 
-        public override CheckModifier GetCheckModifier(IStagedAction action)
-        {
-            if (_contexts.CurrentResolvable is not CheckResolvable) return null;
-
-            return new CheckModifier(action.Card)
-            {
-                AddedDice = new List<int> { 6 }
-            };
-        }
-
         protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)
         {
             var actions = new List<IStagedAction>();
+            
+            var modifier = new CheckModifier(card)
+            {
+                AddedDice = new List<int> { 6 }
+            };
 
             if (CanBanishOnCheck(card) || CanBanishToEvade(card))
-                actions.Add(new PlayCardAction(card, ActionType.Banish));
+                actions.Add(new PlayCardAction(card, ActionType.Banish, modifier));
 
             return actions;
         }

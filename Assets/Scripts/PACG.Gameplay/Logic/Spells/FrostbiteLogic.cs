@@ -16,20 +16,6 @@ namespace PACG.Gameplay
             _gameServices = gameServices;
         }
 
-        public override CheckModifier GetCheckModifier(IStagedAction action)
-        {
-            if (_contexts.CheckContext?.Resolvable == null) return null;
-
-            return new CheckModifier(action.Card)
-            {
-                RestrictedCategory = CheckCategory.Combat,
-                AddedValidSkills = new List<Skill> { Skill.Arcane, Skill.Divine },
-                RestrictedSkills = new List<Skill> { Skill.Arcane, Skill.Divine },
-                AddedDice = new List<int> { 4, 4 },
-                AddedTraits = action.Card.Traits
-            };
-        }
-
         public override void OnCommit(IStagedAction action)
         {
             if (_contexts.EncounterContext?.Card.IsBane != true) return;
@@ -41,14 +27,22 @@ namespace PACG.Gameplay
         {
             var actions = new List<IStagedAction>();
 
-            // Playable on the owner's combat check.
-            if (_contexts.CheckContext is { IsCombatValid: true }
-                && _contexts.CurrentResolvable is CheckResolvable { HasCombat: true } resolvable
-                && resolvable.Character == card.Owner
-                && !_contexts.CheckContext.Resolvable.IsCardTypeStaged(card.Data.cardType))
+            // Playable for Arcane/Divine +2d4 on the owner's combat check.
+            if (_contexts.CheckContext is not { IsCombatValid: true }
+                || _contexts.CurrentResolvable is not CheckResolvable { HasCombat: true } resolvable
+                || resolvable.Character != card.Owner
+                || _contexts.CheckContext.Resolvable.IsCardTypeStaged(card.Data.cardType)) return actions;
+            
+            var modifier = new CheckModifier(card)
             {
-                actions.Add(new PlayCardAction(card, ActionType.Banish, ("IsCombat", true)));
-            }
+                RestrictedCategory = CheckCategory.Combat,
+                AddedValidSkills = new List<Skill> { Skill.Arcane, Skill.Divine },
+                RestrictedSkills = new List<Skill> { Skill.Arcane, Skill.Divine },
+                AddedDice = new List<int> { 4, 4 },
+                AddedTraits = card.Traits
+            };
+                
+            actions.Add(new PlayCardAction(card, ActionType.Banish, modifier, ("IsCombat", true)));
 
             return actions;
         }

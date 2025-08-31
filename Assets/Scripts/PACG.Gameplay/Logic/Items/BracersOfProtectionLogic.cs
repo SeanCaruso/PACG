@@ -27,6 +27,7 @@ namespace PACG.Gameplay
                 actions.Add(new PlayCardAction(
                     card,
                     ActionType.Reveal,
+                    null,
                     ("Damage", 1), ("IsFreely", true)));
             }
             
@@ -35,7 +36,7 @@ namespace PACG.Gameplay
                 && anyDamage.PlayerCharacter == card.Owner
                 && !anyDamage.IsCardTypeStaged(card.CardType))
             {
-                actions.Add(new PlayCardAction(card, ActionType.Recharge, ("Damage", 1)));
+                actions.Add(new PlayCardAction(card, ActionType.Recharge, null, ("Damage", 1)));
             }
 
             return actions;

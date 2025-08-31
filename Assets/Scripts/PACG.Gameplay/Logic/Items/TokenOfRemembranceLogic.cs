@@ -20,16 +20,6 @@ namespace PACG.Gameplay
             _gameServices = gameServices;
         }
 
-        public override CheckModifier GetCheckModifier(IStagedAction action)
-        {
-            if (action.ActionType != ActionType.Recharge) return null;
-
-            return new CheckModifier(action.Card)
-            {
-                AddedDice = new List<int> { 8 }
-            };
-        }
-
         public override void OnCommit(IStagedAction action)
         {
             var validCards = 
@@ -53,14 +43,18 @@ namespace PACG.Gameplay
                 && resolvable.Character == card.Owner
                 && !resolvable.IsCardTypeStaged(card.CardType))
             {
-                actions.Add(new PlayCardAction(card, ActionType.Recharge));
+                var modifier = new CheckModifier(card)
+                {
+                    AddedDice = new List<int> { 8 }
+                };
+                actions.Add(new PlayCardAction(card, ActionType.Recharge, modifier));
             }
             
             // Bury to reload a spell from your discards.
             if (_contexts.AreCardsPlayable
                 && card.Owner.Discards.Any(c => c.CardType == CardType.Spell))
             {
-                actions.Add(new PlayCardAction(card, ActionType.Bury));
+                actions.Add(new PlayCardAction(card, ActionType.Bury, null));
             }
 
             return actions;

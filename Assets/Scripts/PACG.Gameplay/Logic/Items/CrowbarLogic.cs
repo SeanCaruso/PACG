@@ -15,43 +15,45 @@ namespace PACG.Gameplay
             _contexts = gameServices.Contexts;
         }
 
-        public override CheckModifier GetCheckModifier(IStagedAction action)
-        {
-            if (action is not PlayCardAction playAction) return null;
-            
-            var modifier = new CheckModifier(action.Card);
-            
-            // Only restrict to Strength skill on non-Lock or Obstacle Barriers.
-            if (!IsLockObstacleBarrier())
-                modifier.RequiredTraits.Add("Strength");
-
-            // If not freely, Reveal to add 1d8.
-            if (!playAction.IsFreely)
-                modifier.AddedDice.Add(8);
-
-            // Recharge to add another 1d8.
-            if (action.ActionType == ActionType.Recharge)
-                modifier.AddedDice.Add(8);
-
-            return modifier;
-        }
-
         protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)
         {
             if (!IsCardPlayable(card)) return new List<IStagedAction>();
             
-            // We can reveal or reveal and recharge if not revealed already.
+            // Only restrict to Strength skill on non-Lock or Obstacle Barriers.
+            var requiredTraits = new List<string>();
+            if (!IsLockObstacleBarrier())
+                requiredTraits.Add("Strength");
+            
+            var actions = new List<IStagedAction>();
+            // We can reveal for +1d8 or reveal and recharge for +2d8 if not revealed already.
             if (card.CurrentLocation != CardLocation.Revealed)
             {
-                return new List<IStagedAction>
+                var oneD8Modifier = new CheckModifier(card)
                 {
-                    new PlayCardAction(card, ActionType.Reveal),
-                    new PlayCardAction(card, ActionType.Recharge)
+                    AddedDice = new List<int> { 8 },
+                    RequiredTraits = requiredTraits
                 };
+                actions.Add(new PlayCardAction(card, ActionType.Reveal, oneD8Modifier));
+                var twoD8Modifier = new CheckModifier(card)
+                {
+                    AddedDice = new List<int> { 8, 8 },
+                    RequiredTraits = requiredTraits
+                };
+                actions.Add(new PlayCardAction(card, ActionType.Recharge, twoD8Modifier));
             }
+            // Otherwise, if we're playable that means we've revealed. We can freely recharge for +1d8.
+            else
+            {
+                var rechargeModifier = new CheckModifier(card)
+                {
+                    AddedDice = new List<int>() { 8 },
+                    RequiredTraits = requiredTraits
+                };
+                actions.Add(new PlayCardAction(card, ActionType.Recharge, rechargeModifier, ("IsFreely", true)));
+            }
+
+            return actions;
             
-            // Otherwise, if we're playable that means we've revealed. We can freely recharge.
-            return new List<IStagedAction> { new PlayCardAction(card, ActionType.Recharge, ("IsFreely", true)) };
         }
 
         private bool IsCardPlayable(CardInstance card)

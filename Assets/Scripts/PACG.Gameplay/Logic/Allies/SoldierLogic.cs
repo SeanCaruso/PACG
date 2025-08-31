@@ -9,28 +9,17 @@ namespace PACG.Gameplay
     {
         // Dependency injection of services
         private readonly ContextManager _contexts;
-        
+
         public SoldierLogic(GameServices gameServices) : base(gameServices)
         {
             _contexts = gameServices.Contexts;
-        }
-
-        public override CheckModifier GetCheckModifier(IStagedAction action)
-        {
-            // Recharge for +1d4 on a local Strength or Melee check.
-            if (action.ActionType != ActionType.Recharge) return null;
-            
-            var modifier = new CheckModifier(action.Card);
-            modifier.RequiredTraits.AddRange(new[] { "Strength", "Melee" });
-            modifier.AddedDice.Add(4);
-            return modifier;
         }
 
         public override void OnCommit(IStagedAction action)
         {
             // Discard to explore - +1d4 on Strength and Melee checks.
             if (action.ActionType != ActionType.Discard) return;
-            
+
             _contexts.TurnContext.AddExploreEffect(new SkillBonusExploreEffect(
                 1,
                 4,
@@ -43,9 +32,17 @@ namespace PACG.Gameplay
         protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)
         {
             var actions = new List<IStagedAction>();
-            
+
+            // Recharge for +1d4 on a local Strength or Melee check.
             if (CanRecharge(card))
-                actions.Add(new PlayCardAction(card, ActionType.Recharge));
+            {
+                var modifier = new CheckModifier(card)
+                {
+                    RequiredTraits = new[] { "Strength", "Melee" }.ToList(),
+                    AddedDice = new[] { 4 }.ToList()
+                };
+                actions.Add(new PlayCardAction(card, ActionType.Recharge, modifier));
+            }
 
             if (_contexts.IsExplorePossible && card.Owner == _contexts.TurnContext.Character)
             {
@@ -56,7 +53,7 @@ namespace PACG.Gameplay
         }
 
         // Can recharge on a local Strength or Melee check.
-        private bool CanRecharge(CardInstance card) => 
+        private bool CanRecharge(CardInstance card) =>
             _contexts.CheckContext != null &&
             _contexts.CurrentResolvable is CheckResolvable &&
             _contexts.CheckContext.IsLocal(card.Owner) &&

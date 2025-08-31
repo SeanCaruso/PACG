@@ -9,7 +9,7 @@ namespace PACG.Gameplay
         private readonly ContextManager _contexts;
         private readonly ActionStagingManager _asm;
 
-        public HalfPlateLogic(GameServices gameServices) : base(gameServices) 
+        public HalfPlateLogic(GameServices gameServices) : base(gameServices)
         {
             _contexts = gameServices.Contexts;
             _asm = gameServices.ASM;
@@ -19,15 +19,15 @@ namespace PACG.Gameplay
         {
             List<IStagedAction> actions = new();
             if (CanDisplay(card))
-                actions.Add(new PlayCardAction(card, ActionType.Display));
+                actions.Add(new PlayCardAction(card, ActionType.Display, null));
             if (CanDraw(card))
-                actions.Add(new PlayCardAction(card, ActionType.Draw, ("Damage", 2)));
+                actions.Add(new PlayCardAction(card, ActionType.Draw, null, ("Damage", 2)));
             if (CanFreelyDraw(card))
-                actions.Add(new PlayCardAction(card, ActionType.Draw, ("Damage", 2), ("IsFreely", true)));
+                actions.Add(new PlayCardAction(card, ActionType.Draw, null, ("Damage", 2), ("IsFreely", true)));
             if (CanBury(card))
-                actions.Add(new PlayCardAction(card, ActionType.Bury, ("ReduceDamageTo", 0)));
+                actions.Add(new PlayCardAction(card, ActionType.Bury, null, ("ReduceDamageTo", 0)));
             if (CanFreelyBury(card))
-                actions.Add(new PlayCardAction(card, ActionType.Bury, ("ReduceDamageTo", 0), ("IsFreely", true)));
+                actions.Add(new PlayCardAction(card, ActionType.Bury, null, ("ReduceDamageTo", 0), ("IsFreely", true)));
             return actions;
         }
 
@@ -44,7 +44,7 @@ namespace PACG.Gameplay
             // If there's no encounter or resolvable...
             if (_contexts.EncounterContext == null && _contexts.CurrentResolvable == null)
                 return true; // ... we can display.
-            
+
             // Otherwise, We can only display if there's a DamageResolvable for this card's owner.
             if ((_contexts.CurrentResolvable as DamageResolvable)?.PlayerCharacter == card.Owner)
                 return true;
@@ -53,7 +53,7 @@ namespace PACG.Gameplay
         }
 
         // We can draw for damage if displayed and we have a DamageResolvable for the card's owner with Combat damage.
-        private bool CanDraw(CardInstance card) => 
+        private bool CanDraw(CardInstance card) =>
             card.Owner.DisplayedCards.Contains(card)
             && _contexts.CurrentResolvable is DamageResolvable { DamageType: "Combat" } resolvable
             && !resolvable.IsCardTypeStaged(card.CardType)

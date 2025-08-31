@@ -55,7 +55,7 @@ namespace Tests.Spells
         {
             GameServices.Contexts.NewEncounter(new EncounterContext(_ezren, Zombie));
 
-            var frostbiteAction = new PlayCardAction(_frostbite, ActionType.Banish);
+            var frostbiteAction = new PlayCardAction(_frostbite, ActionType.Banish, null);
             frostbiteAction.Commit();
             
             Assert.AreEqual(1, GameServices.Contexts.EncounterContext.ResolvableModifiers.Count);

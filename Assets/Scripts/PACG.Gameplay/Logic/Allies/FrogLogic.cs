@@ -42,7 +42,7 @@ namespace PACG.Gameplay
                 && _contexts.EncounterContext.Card.IsBane
                 && _contexts.EncounterContext.HasTrait("Obstacle", "Trap"))
             {
-                actions.Add(new PlayCardAction(card, ActionType.Bury));
+                actions.Add(new PlayCardAction(card, ActionType.Bury, null));
             }
             
             // Can discard if the owner can explore.

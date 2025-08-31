@@ -30,6 +30,10 @@ namespace PACG.Core
                     return new Color32(213, 112, 41, 255);
                 case CardType.StoryBane:
                     return new Color32(130, 36, 38, 255);
+                
+                // Other
+                case CardType.Location:
+                    return new Color32(135, 113, 84, 255);
                 default:
                     Debug.LogError($"GetPanelColor --- Unknown card type: {cardType}");
                     return new Color32(255, 0, 255, 255);

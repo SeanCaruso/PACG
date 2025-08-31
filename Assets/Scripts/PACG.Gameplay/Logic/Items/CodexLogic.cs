@@ -14,32 +14,11 @@ namespace PACG.Gameplay
             _contexts = gameServices.Contexts;
         }
 
-        public override CheckModifier GetCheckModifier(IStagedAction action)
-        {
-            switch (action.ActionType)
-            {
-                case ActionType.Reveal:
-                    return new CheckModifier(action.Card)
-                    {
-                        AddedBonus = 1
-                    };
-                case ActionType.Discard:
-                    var (die, bonus) = action.Card.Owner.GetSkill(Skill.Knowledge);
-                    return new CheckModifier(action.Card)
-                    {
-                        AddedDice = new List<int> { die },
-                        AddedBonus = bonus
-                    };
-                default:
-                    return null;
-            }
-        }
-
         protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)
         {
             var actions = new List<IStagedAction>();
 
-            // Reveal on your check to acquire.
+            // Reveal for +1 on your check to acquire.
             if (_contexts.CurrentResolvable is CheckResolvable
                 {
                     Card: CardInstance { IsBoon: true }
@@ -47,15 +26,19 @@ namespace PACG.Gameplay
                 && !acquireResolvable.IsCardTypeStaged(card.CardType)
                 && acquireResolvable.Character == card.Owner)
             {
-                actions.Add(new PlayCardAction(card, ActionType.Reveal));
+                var modifier = new CheckModifier(card) { AddedBonus = 1 };
+                actions.Add(new PlayCardAction(card, ActionType.Reveal, modifier));
             }
 
-            // Discard on a local check to acquire
+            // Discard for +Knowledge on a local check to acquire
+            // ReSharper disable once InvertIf
             if (_contexts.CurrentResolvable is CheckResolvable { Card: CardInstance { IsBoon: true } } localResolvable
                 && !localResolvable.IsCardTypeStaged(card.CardType)
                 && localResolvable.Character.LocalCharacters.Contains(card.Owner))
             {
-                actions.Add(new PlayCardAction(card, ActionType.Discard));
+                var (die, bonus) = card.Owner.GetSkill(Skill.Knowledge);
+                var modifier = new CheckModifier(card) { AddedDice = new List<int> { die }, AddedBonus = bonus };
+                actions.Add(new PlayCardAction(card, ActionType.Discard, modifier));
             }
 
             return actions;

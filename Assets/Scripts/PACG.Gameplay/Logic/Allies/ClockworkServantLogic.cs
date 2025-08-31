@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using PACG.Core;
 
 namespace PACG.Gameplay
@@ -15,17 +16,6 @@ namespace PACG.Gameplay
             _gameServices = gameServices;
         }
 
-        public override CheckModifier GetCheckModifier(IStagedAction action)
-        {
-            // Recharge for +1d6 on a local Intelligence or Craft check.
-            if (action.ActionType != ActionType.Recharge) return null;
-            
-            var modifier = new CheckModifier(action.Card);
-            modifier.RequiredTraits.AddRange(new[] { "Intelligence", "Craft" });
-            modifier.AddedDice.Add(6);
-            return modifier;
-        }
-
         public override void OnCommit(IStagedAction action)
         {
             // Bury or Banish to explore
@@ -36,15 +26,22 @@ namespace PACG.Gameplay
         protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)
         {
             var actions = new List<IStagedAction>();
-            
-            if (CanRecharge(card))
-                actions.Add(new PlayCardAction(card, ActionType.Recharge));
 
-            if (_contexts.IsExplorePossible && card.Owner == _contexts.TurnContext.Character)
+            // Recharge for +1d6 on a local Intelligence or Craft check.
+            if (CanRecharge(card))
             {
-                actions.Add(new ExploreAction(card, ActionType.Bury));
-                actions.Add(new ExploreAction(card, ActionType.Banish));
+                var modifier = new CheckModifier(card)
+                {
+                    RequiredTraits = new[] { "Intelligence", "Craft" }.ToList(),
+                    AddedDice = new[] { 6 }.ToList()
+                };
+                actions.Add(new PlayCardAction(card, ActionType.Recharge, modifier));
             }
+
+            if (!_contexts.IsExplorePossible || card.Owner != _contexts.TurnContext.Character) return actions;
+            
+            actions.Add(new ExploreAction(card, ActionType.Bury));
+            actions.Add(new ExploreAction(card, ActionType.Banish));
 
             return actions;
         }

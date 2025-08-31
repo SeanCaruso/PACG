@@ -75,7 +75,7 @@ namespace Tests.Allies
             Assert.AreEqual(ActionType.Recharge, actions[0].ActionType);
         
             // Check for +1d6.
-            var modifier = _cardInstance.Logic.GetCheckModifier(actions[0]);
+            var modifier = (actions[0] as PlayCardAction)?.CheckModifier;
             var numD6 = modifier?.AddedDice.Count(d => d == 6);
             Assert.AreEqual(1, numD6);
         }
@@ -114,7 +114,7 @@ namespace Tests.Allies
             Assert.AreEqual(ActionType.Recharge, actions[0].ActionType);
         
             // Check for +1d6.
-            var modifier = _cardInstance.Logic.GetCheckModifier(actions[0]);
+            var modifier = (actions[0] as PlayCardAction)?.CheckModifier;
             var numD6 = modifier?.AddedDice.Count(d => d == 6);
             Assert.AreEqual(1, numD6);
         }

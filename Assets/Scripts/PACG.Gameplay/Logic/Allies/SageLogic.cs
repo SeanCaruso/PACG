@@ -18,19 +18,6 @@ namespace PACG.Gameplay
             _gameServices = gameServices;
         }
 
-        public override CheckModifier GetCheckModifier(IStagedAction action)
-        {
-            if (action.ActionType != ActionType.Recharge) return null;
-
-            // Recharge for +1d6 on a local Arcane or Knowledge non-combat check.
-            return new CheckModifier(action.Card)
-            {
-                RestrictedCategory = CheckCategory.Skill,
-                RestrictedSkills = new[] { Skill.Arcane, Skill.Knowledge }.ToList(),
-                AddedDice = new[] { 6 }.ToList()
-            };
-        }
-
         public override void OnCommit(IStagedAction action)
         {
             if (action.ActionType != ActionType.Discard) return;
@@ -56,19 +43,25 @@ namespace PACG.Gameplay
         {
             var actions = new List<IStagedAction>();
 
-            // Can recharge on a local Arcane or Knowledge non-combat check.
+            // Can recharge for +1d6 on a local Arcane or Knowledge non-combat check.
             if (_contexts.CheckContext?.Character.LocalCharacters.Contains(card.Owner) == true
                 && _contexts.CurrentResolvable?.IsCardTypeStaged(card.CardType) != true
                 && _contexts.CheckContext.IsSkillValid
                 && _contexts.CheckContext.CanUseSkill(Skill.Arcane, Skill.Knowledge))
             {
-                actions.Add(new PlayCardAction(card, ActionType.Recharge));
+                var modifier = new CheckModifier(card)
+                {
+                    RestrictedCategory = CheckCategory.Skill,
+                    RestrictedSkills = new[] { Skill.Arcane, Skill.Knowledge }.ToList(),
+                    AddedDice = new[] { 6 }.ToList()
+                };
+                actions.Add(new PlayCardAction(card, ActionType.Recharge, modifier));
             }
 
             // Can discard to examine and shuffle.
             if (_contexts.AreCardsPlayable && card.Owner.Location.Count > 0)
             {
-                actions.Add(new PlayCardAction(card, ActionType.Discard));
+                actions.Add(new PlayCardAction(card, ActionType.Discard, null));
             }
 
             return actions;

@@ -52,12 +52,6 @@ namespace PACG.Gameplay
         }
 
         /// <summary>
-        /// Returns a description of how this card's action modifies a check for preview and staging purposes.
-        /// This is a pure, read-only query and should have no side effects.
-        /// </summary>
-        public virtual CheckModifier GetCheckModifier(IStagedAction action) => null;
-
-        /// <summary>
         /// Applies the permanent, one-time effects of an action when it is committed.
         /// This should NOT modify the dice pool.
         /// </summary>

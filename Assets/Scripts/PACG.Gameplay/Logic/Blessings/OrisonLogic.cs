@@ -14,24 +14,16 @@ namespace PACG.Gameplay
             _contexts = gameServices.Contexts;
         }
 
-        public override CheckModifier GetCheckModifier(IStagedAction action)
-        {
-            if (action is ExploreAction) return null;
-            
-            var modifier = new CheckModifier(action.Card);
-            modifier.SkillDiceToAdd++;
-            return modifier;
-        }
-
         protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)
         {
             var actions = new List<IStagedAction>();
             if (CanBless(card))
             {
-                actions.Add(new PlayCardAction(card, ActionType.Discard));
+                var modifier = new CheckModifier(card) { SkillDiceToAdd = 1 };
+                actions.Add(new PlayCardAction(card, ActionType.Discard, modifier));
 
                 if (_contexts.TurnContext.HourCard.Data.cardLevel == 0)
-                    actions.Add(new PlayCardAction(card, ActionType.Recharge));
+                    actions.Add(new PlayCardAction(card, ActionType.Recharge, modifier));
             }
             else if (_contexts.IsExplorePossible && _contexts.TurnContext.Character == card.Owner)
             {

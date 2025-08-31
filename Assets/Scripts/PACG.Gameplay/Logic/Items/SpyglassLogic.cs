@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using PACG.Core;
-using PACG.Data;
 
 namespace PACG.Gameplay
 {
@@ -18,17 +17,6 @@ namespace PACG.Gameplay
             _contexts = gameServices.Contexts;
         }
 
-        public override CheckModifier GetCheckModifier(IStagedAction action)
-        {
-            if (action.ActionType != ActionType.Reveal) return null;
-
-            return new CheckModifier(action.Card)
-            {
-                RestrictedSkills = new[] { Skill.Perception }.ToList(),
-                AddedDice = new[] { 6 }.ToList()
-            };
-        }
-
         public override void OnCommit(IStagedAction action)
         {
             if (action.ActionType != ActionType.Discard) return;
@@ -38,8 +26,16 @@ namespace PACG.Gameplay
         protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)
         {
             List<IStagedAction> actions = new();
+            // Reveal for +1d6 on your Perception check.
             if (CanReveal(card))
-                actions.Add(new PlayCardAction(card, ActionType.Reveal));
+            {
+                var modifier = new CheckModifier(card)
+                {
+                    RestrictedSkills = new[] { Skill.Perception }.ToList(),
+                    AddedDice = new[] { 6 }.ToList()
+                };
+                actions.Add(new PlayCardAction(card, ActionType.Reveal, modifier));
+            }
 
             // Can discard to examine any time outside resolvables or encounters.
             if (_contexts.CurrentResolvable == null
@@ -47,7 +43,7 @@ namespace PACG.Gameplay
                 && card.Owner.Location.Count > 0
                 && _asm.StagedCards.Count == 0)
             {
-                actions.Add(new PlayCardAction(card, ActionType.Discard));
+                actions.Add(new PlayCardAction(card, ActionType.Discard, null));
             }
 
             return actions;

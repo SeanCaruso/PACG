@@ -23,7 +23,7 @@ namespace PACG.Gameplay
             // Freely banish to reduce a local character's Combat damage by 4.
             if (_contexts.CurrentResolvable is DamageResolvable{ DamageType: "Combat" } resolvable
                 && resolvable.PlayerCharacter.LocalCharacters.Contains(card.Owner))
-                actions.Add(new PlayCardAction(card, ActionType.Banish, ("Damage", 4)));
+                actions.Add(new PlayCardAction(card, ActionType.Banish, null, ("Damage", 4)));
             
             return actions;
         }

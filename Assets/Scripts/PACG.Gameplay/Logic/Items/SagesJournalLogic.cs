@@ -14,32 +14,11 @@ namespace PACG.Gameplay
             _contexts = gameServices.Contexts;
         }
 
-        public override CheckModifier GetCheckModifier(IStagedAction action)
-        {
-            switch (action.ActionType)
-            {
-                case ActionType.Reveal:
-                    return new CheckModifier(action.Card)
-                    {
-                        AddedDice = new List<int> { 4 }
-                    };
-                case ActionType.Bury:
-                    var (die, bonus) = action.Card.Owner.GetSkill(Skill.Knowledge);
-                    return new CheckModifier(action.Card)
-                    {
-                        AddedDice = new List<int> { die },
-                        AddedBonus = bonus
-                    };
-                default:
-                    return null;
-            }
-        }
-
         protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)
         {
             var actions = new List<IStagedAction>();
 
-            // Reveal on your check against a story bane.
+            // Reveal for +1d4 on your check against a story bane.
             if (_contexts.CurrentResolvable is CheckResolvable
                 {
                     Card: CardInstance { IsStoryBane: true }
@@ -47,15 +26,25 @@ namespace PACG.Gameplay
                 && !storyBaneResolvable.IsCardTypeStaged(card.CardType)
                 && storyBaneResolvable.Character == card.Owner)
             {
-                actions.Add(new PlayCardAction(card, ActionType.Reveal));
+                var modifier = new CheckModifier(card)
+                {
+                    AddedDice = new List<int> { 4 }
+                };
+                actions.Add(new PlayCardAction(card, ActionType.Reveal, modifier));
             }
 
-            // Bury on a local check against a bane.
+            // Bury for +Knowledge on a local check against a bane.
             if (_contexts.CurrentResolvable is CheckResolvable { Card: CardInstance { IsBane: true } } baneResolvable
                 && !baneResolvable.IsCardTypeStaged(card.CardType)
                 && baneResolvable.Character.LocalCharacters.Contains(card.Owner))
             {
-                actions.Add(new PlayCardAction(card, ActionType.Bury));
+                var (die, bonus) = card.Owner.GetSkill(Skill.Knowledge);
+                var modifier = new CheckModifier(card)
+                {
+                    AddedDice = new List<int> { die },
+                    AddedBonus = bonus
+                };
+                actions.Add(new PlayCardAction(card, ActionType.Bury, modifier));
             }
 
             return actions;

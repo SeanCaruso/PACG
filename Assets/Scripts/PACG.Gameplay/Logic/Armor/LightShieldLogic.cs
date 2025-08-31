@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using PACG.Core;
 using UnityEngine;
 
@@ -17,13 +18,6 @@ namespace PACG.Gameplay
             _contexts = gameServices.Contexts;
         }
 
-        public override CheckModifier GetCheckModifier(IStagedAction action)
-        {
-            var modifier = new CheckModifier(action.Card);
-            modifier.ProhibitedTraits.Add("2-Handed");
-            return modifier;
-        }
-
         public override void OnCommit(IStagedAction action)
         {
             _contexts.EncounterContext?.AddProhibitedTraits(action.Card.Owner, "2-Handed");
@@ -36,15 +30,20 @@ namespace PACG.Gameplay
 
         protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)
         {
+            var modifier = new CheckModifier(card)
+            {
+                ProhibitedTraits = new[] {"2-Handed"}.ToHashSet()
+            };
+            
             if (CanReveal(card))
                 return new List<IStagedAction>
                 {
-                    new PlayCardAction(card, ActionType.Reveal, ("IsFreely", true), ("Damage", 1))
+                    new PlayCardAction(card, ActionType.Reveal, modifier, ("IsFreely", true), ("Damage", 1))
                 };
             if (CanRecharge(card))
                 return new List<IStagedAction>
                 {
-                    new PlayCardAction(card, ActionType.Recharge, ("IsFreely", true))
+                    new PlayCardAction(card, ActionType.Recharge, modifier, ("IsFreely", true))
                 };
             
             return new List<IStagedAction>();

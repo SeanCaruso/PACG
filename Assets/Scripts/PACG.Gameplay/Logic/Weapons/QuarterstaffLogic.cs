@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using PACG.Core;
 using PACG.Data;
 
@@ -17,27 +16,6 @@ namespace PACG.Gameplay
             _contexts = gameServices.Contexts;
         }
 
-        public override CheckModifier GetCheckModifier(IStagedAction action)
-        {
-            // Reveal to add 1d6; additionally discard to add another 1d6.
-            if (action is not PlayCardAction { IsCombat: true }) return null;
-
-            var modifier = new CheckModifier(action.Card)
-            {
-                RestrictedCategory = CheckCategory.Combat,
-                AddedTraits = action.Card.Traits,
-                RestrictedSkills = new[] { Skill.Strength, Skill.Melee }.ToList(),
-                ProhibitedTraits =
-                    new[] { "Offhand" }.ToHashSet(), // After playing, you can't play an Offhand boon this encounter.
-                AddedDice = new[] { 6 }.ToList()
-            };
-
-            if (action.ActionType == ActionType.Discard)
-                modifier.AddedDice.Add(6);
-
-            return modifier;
-        }
-
         public override void OnCommit(IStagedAction action)
         {
             _contexts.EncounterContext?.AddProhibitedTraits(action.Card.Owner, "Offhand");
@@ -52,21 +30,52 @@ namespace PACG.Gameplay
                 // If a weapon hasn't been played yet, display both combat options.
                 if (!_contexts.CurrentResolvable.IsCardTypeStaged(card.CardType))
                 {
-                    actions.Add(new PlayCardAction(card, ActionType.Reveal, ("IsCombat", true)));
-                    actions.Add(new PlayCardAction(card, ActionType.Discard, ("IsCombat", true)));
+                    var revealModifier = new CheckModifier(card)
+                    {
+                        RestrictedCategory = CheckCategory.Combat,
+                        AddedTraits = card.Traits,
+                        RestrictedSkills = new List<Skill> { Skill.Strength, Skill.Melee },
+                        ProhibitedTraits = new HashSet<string>
+                            { "Offhand" }, // After playing, you can't play an Offhand boon this encounter.
+                        AddedDice = new List<int> { 6 }
+                    };
+
+                    actions.Add(new PlayCardAction(card, ActionType.Reveal, revealModifier, ("IsCombat", true)));
+
+                    var revealAndDiscardModifier = new CheckModifier(card)
+                    {
+                        RestrictedCategory = CheckCategory.Combat,
+                        AddedTraits = card.Traits,
+                        RestrictedSkills = new List<Skill> { Skill.Strength, Skill.Melee },
+                        ProhibitedTraits = new HashSet<string>
+                            { "Offhand" }, // After playing, you can't play an Offhand boon this encounter.
+                        AddedDice = new List<int> { 6, 6 }
+                    };
+
+                    actions.Add(new PlayCardAction(card, ActionType.Discard, revealAndDiscardModifier,
+                        ("IsCombat", true)));
                 }
                 // Otherwise, if this card has already been played, present the discard option only.
                 else if (_asm.CardStaged(card))
                 {
+                    var discardModifier = new CheckModifier(card)
+                    {
+                        RestrictedCategory = CheckCategory.Combat,
+                        RestrictedSkills = new List<Skill> { Skill.Strength, Skill.Melee },
+                        ProhibitedTraits = new HashSet<string>
+                            { "Offhand" }, // After playing, you can't play an Offhand boon this encounter.
+                        AddedDice = new List<int> { 6 }
+                    };
+
                     actions.Add(new PlayCardAction(
-                        card, ActionType.Discard, ("IsCombat", true), ("IsFreely", true))
+                        card, ActionType.Discard, discardModifier, ("IsCombat", true), ("IsFreely", true))
                     );
                 }
             }
 
             if (CanDiscardToEvade(card))
             {
-                actions.Add(new PlayCardAction(card, ActionType.Discard));
+                actions.Add(new PlayCardAction(card, ActionType.Discard, null));
             }
 
             return actions;
@@ -80,9 +89,9 @@ namespace PACG.Gameplay
 
         // Can be played by the owner to evade an Obstacle or Trap barrier.
         private bool CanDiscardToEvade(CardInstance card) =>
-            _contexts.EncounterContext?.CurrentPhase == EncounterPhase.Evasion &&
-            _contexts.EncounterContext?.CardData.cardType == CardType.Barrier &&
-            _contexts.EncounterContext.HasTrait("Obstacle", "Trap") &&
-            _contexts.EncounterContext?.Character == card.Owner;
+            _contexts.EncounterContext?.CurrentPhase == EncounterPhase.Evasion
+            && _contexts.EncounterContext?.CardData.cardType == CardType.Barrier
+            && _contexts.EncounterContext.HasTrait("Obstacle", "Trap")
+            && _contexts.EncounterContext?.Character == card.Owner;
     }
 }

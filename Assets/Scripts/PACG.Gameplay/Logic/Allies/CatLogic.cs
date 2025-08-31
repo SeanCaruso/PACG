@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using PACG.Core;
 using PACG.Data;
 
@@ -14,15 +15,6 @@ namespace PACG.Gameplay
             _contexts = gameServices.Contexts;
         }
 
-        public override CheckModifier GetCheckModifier(IStagedAction action)
-        {
-            if (action.ActionType != ActionType.Recharge) return null;
-            
-            var modifier = new CheckModifier(action.Card);
-            modifier.AddedDice.Add(4);
-            return modifier;
-        }
-
         public override void OnCommit(IStagedAction action)
         {
             if (action.ActionType != ActionType.Discard) return;
@@ -35,12 +27,13 @@ namespace PACG.Gameplay
 
         protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)
         {
-            // Can recharge on a local check against a spell.
+            // Can recharge for +1d4 on a local check against a spell.
             if (_contexts.CheckContext?.Resolvable.Card is CardInstance checkCard
                 && checkCard.Data.cardType == CardType.Spell
                 && !_contexts.CheckContext.Resolvable.IsCardTypeStaged(CardType.Ally))
             {
-                return new List<IStagedAction>{ new PlayCardAction(card, ActionType.Recharge) };
+                var modifier = new CheckModifier(card) { AddedDice = new[] { 4 }.ToList() };
+                return new List<IStagedAction>{ new PlayCardAction(card, ActionType.Recharge, modifier) };
             }
 
             // Discard to explore.

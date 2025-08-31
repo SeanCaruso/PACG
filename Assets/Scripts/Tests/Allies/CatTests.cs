@@ -74,8 +74,8 @@ namespace Tests.Allies
             Assert.AreEqual(1, actions.Count);
             Assert.AreEqual(ActionType.Recharge, actions[0].ActionType);
 
-            var modifier = _catInstance.Logic.GetCheckModifier(actions[0]);
-            var numD4 = modifier.AddedDice.Count(d => d == 4);
+            var modifier = (actions[0] as PlayCardAction)?.CheckModifier;
+            var numD4 = modifier?.AddedDice.Count(d => d == 4);
             Assert.AreEqual(1, numD4);
         }
 

@@ -58,8 +58,8 @@ namespace PACG.Gameplay
         {
             if (card == null) return false;
 
-            return _contexts.GameContext.ScenarioData.Henchmen.Any(henchman =>
-                henchman.CardData.cardID == card.Data.cardID && henchman.IsClosing);
+            return _contexts.GameContext?.ScenarioData?.Henchmen.Any(henchman =>
+                henchman.CardData.cardID == card.Data.cardID && henchman.IsClosing) == true;
         }
     }
 }

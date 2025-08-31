@@ -110,7 +110,8 @@ namespace Tests.Spells
             Assert.IsTrue(GameServices.Contexts.CurrentResolvable is CheckResolvable);
             Assert.AreEqual(1, _sleep.GetAvailableActions().Count);
             
-            var modifier = _sleep.Logic.GetCheckModifier(_sleep.GetAvailableActions()[0]);
+            var modifier = (_sleep.GetAvailableActions()[0] as PlayCardAction)?.CheckModifier;
+            Assert.IsNotNull(modifier);
             Assert.AreEqual(1, modifier.AddedDice.Count);
             Assert.AreEqual(6, modifier.AddedDice[0]);
         }
@@ -127,7 +128,8 @@ namespace Tests.Spells
             Assert.IsTrue(GameServices.Contexts.CurrentResolvable is CheckResolvable);
             Assert.AreEqual(1, _sleep.GetAvailableActions().Count);
             
-            var modifier = _sleep.Logic.GetCheckModifier(_sleep.GetAvailableActions()[0]);
+            var modifier = (_sleep.GetAvailableActions()[0] as PlayCardAction)?.CheckModifier;
+            Assert.IsNotNull(modifier);
             Assert.AreEqual(1, modifier.AddedDice.Count);
             Assert.AreEqual(6, modifier.AddedDice[0]);
         }
@@ -144,7 +146,8 @@ namespace Tests.Spells
             Assert.IsTrue(GameServices.Contexts.CurrentResolvable is CheckResolvable);
             Assert.AreEqual(1, _sleep.GetAvailableActions().Count);
             
-            var modifier = _sleep.Logic.GetCheckModifier(_sleep.GetAvailableActions()[0]);
+            var modifier = (_sleep.GetAvailableActions()[0] as PlayCardAction)?.CheckModifier;
+            Assert.IsNotNull(modifier);
             Assert.AreEqual(1, modifier.AddedDice.Count);
             Assert.AreEqual(6, modifier.AddedDice[0]);
         }
@@ -162,8 +165,8 @@ namespace Tests.Spells
             Assert.IsTrue(GameServices.Contexts.CurrentResolvable is CheckResolvable);
             Assert.AreEqual(1, _sleep.GetAvailableActions().Count);
             
-            var modifier = _sleep.Logic.GetCheckModifier(_sleep.GetAvailableActions()[0]);
-            Assert.AreEqual(1, modifier.AddedDice.Count);
+            var modifier = (_sleep.GetAvailableActions()[0] as PlayCardAction)?.CheckModifier;
+            Assert.AreEqual(1, modifier?.AddedDice.Count);
             Assert.AreEqual(6, modifier.AddedDice[0]);
         }
 

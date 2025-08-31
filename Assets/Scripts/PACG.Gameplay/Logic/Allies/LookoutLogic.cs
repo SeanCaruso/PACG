@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using PACG.Core;
 using PACG.Data;
 
@@ -18,17 +19,6 @@ namespace PACG.Gameplay
             _contexts = gameServices.Contexts;
             _gameFlow = gameServices.GameFlow;
             _gameServices = gameServices;
-        }
-
-        public override CheckModifier GetCheckModifier(IStagedAction action)
-        {
-            // Recharge for +1d4 on a local Perception check.
-            if (_contexts.CheckContext == null) return null;
-
-            var modifier = new CheckModifier(action.Card);
-            modifier.RestrictedSkills.Add(Skill.Perception);
-            modifier.AddedDice.Add(4);
-            return modifier;
         }
 
         public override void OnCommit(IStagedAction action)
@@ -52,16 +42,24 @@ namespace PACG.Gameplay
         {
             var actions = new List<IStagedAction>();
             
+            // Recharge for +1d4 on a local Perception check.
             if (CanRechargeForCheck(card))
-                actions.Add(new PlayCardAction(card, ActionType.Recharge));
-            
+            {
+                var modifier = new CheckModifier(card)
+                {
+                    RestrictedSkills = new[] { Skill.Perception }.ToList(),
+                    AddedDice = new[] { 4 }.ToList()
+                };
+                actions.Add(new PlayCardAction(card, ActionType.Recharge, modifier));
+            }
+
             // Can recharge to examine outside of resolvables or encounters.
             if (_contexts.CurrentResolvable == null
                 && _contexts.EncounterContext == null
                 && card.Owner.Location.Count > 0
                 && _asm.StagedCards.Count == 0)
             {
-                actions.Add(new PlayCardAction(card, ActionType.Recharge));
+                actions.Add(new PlayCardAction(card, ActionType.Recharge, null));
             }
 
             // Can discard to explore.

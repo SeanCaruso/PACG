@@ -13,7 +13,7 @@ namespace PACG.Gameplay
             // ReSharper disable once LoopCanBeConvertedToQuery
             foreach (var action in actions)
             {
-                var modifier = action.Card.Logic?.GetCheckModifier(action);
+                var modifier = (action as PlayCardAction)?.CheckModifier;
                 if (modifier != null)
                     modifiers.Add(modifier);
             }

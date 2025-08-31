@@ -22,15 +22,15 @@ namespace PACG.Gameplay
         {
             List<IStagedAction> actions = new();
             if (CanDisplay(card))
-                actions.Add(new PlayCardAction(card, ActionType.Display));
+                actions.Add(new PlayCardAction(card, ActionType.Display, null));
             if (CanRechargeForDamage(card))
-                actions.Add(new PlayCardAction(card, ActionType.Recharge, ("Damage", 1)));
+                actions.Add(new PlayCardAction(card, ActionType.Recharge, null, ("Damage", 1)));
             if (CanFreelyRechargeForDamage(card))
-                actions.Add(new PlayCardAction(card, ActionType.Recharge, ("Damage", 1), ("IsFreely", true)));
+                actions.Add(new PlayCardAction(card, ActionType.Recharge, null, ("Damage", 1), ("IsFreely", true)));
             if (CanBury(card))
-                actions.Add(new PlayCardAction(card, ActionType.Bury, ("ReduceDamageTo", 0)));
+                actions.Add(new PlayCardAction(card, ActionType.Bury, null, ("ReduceDamageTo", 0)));
             if (CanFreelyBury(card))
-                actions.Add(new PlayCardAction(card, ActionType.Bury, ("ReduceDamageTo", 0), ("IsFreely", true)));
+                actions.Add(new PlayCardAction(card, ActionType.Bury, null, ("ReduceDamageTo", 0), ("IsFreely", true)));
             return actions;
         }
 
@@ -88,7 +88,7 @@ namespace PACG.Gameplay
         public void OnBeforeDiscard(CardInstance sourceCard, DiscardEventArgs args)
         {
             if (sourceCard.Owner != args.Character) return;
-            
+
             // Only respond if displayed or in hand.
             if (sourceCard.CurrentLocation is not (CardLocation.Hand or CardLocation.Displayed)) return;
 
@@ -112,6 +112,7 @@ namespace PACG.Gameplay
                     args.DamageResolvable?.OverrideActionType(ActionType.Recharge);
                     _asm.Commit();
                 }
+
                 // If this is for discarding cards from the deck, recharge them instead.
                 foreach (var cardToRecharge in args.Cards)
                     _cardManager.MoveCard(cardToRecharge, ActionType.Recharge);

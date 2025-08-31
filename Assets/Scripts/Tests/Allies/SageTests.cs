@@ -53,8 +53,8 @@ namespace Tests.Allies
             Assert.AreEqual(1, actions.Count);
             Assert.AreEqual(ActionType.Recharge, actions[0].ActionType);
             
-            var mod = _sage.Logic.GetCheckModifier(actions[0]);
-            Assert.AreEqual(1, mod.AddedDice.Count);
+            var mod = (actions[0] as PlayCardAction)?.CheckModifier;
+            Assert.AreEqual(1, mod?.AddedDice.Count);
             Assert.AreEqual(6, mod.AddedDice[0]);
         }
 
@@ -68,8 +68,8 @@ namespace Tests.Allies
             Assert.AreEqual(1, actions.Count);
             Assert.AreEqual(ActionType.Recharge, actions[0].ActionType);
             
-            var mod = _sage.Logic.GetCheckModifier(actions[0]);
-            Assert.AreEqual(1, mod.AddedDice.Count);
+            var mod = (actions[0] as PlayCardAction)?.CheckModifier;
+            Assert.AreEqual(1, mod?.AddedDice.Count);
             Assert.AreEqual(6, mod.AddedDice[0]);
         }
 
@@ -84,7 +84,8 @@ namespace Tests.Allies
             Assert.AreEqual(1, actions.Count);
             Assert.AreEqual(ActionType.Recharge, actions[0].ActionType);
             
-            var mod = _sage.Logic.GetCheckModifier(actions[0]);
+            var mod = (actions[0] as PlayCardAction)?.CheckModifier;
+            Assert.IsNotNull( mod);
             Assert.AreEqual(1, mod.AddedDice.Count);
             Assert.AreEqual(6, mod.AddedDice[0]);
         }
@@ -100,7 +101,8 @@ namespace Tests.Allies
             Assert.AreEqual(1, actions.Count);
             Assert.AreEqual(ActionType.Recharge, actions[0].ActionType);
             
-            var mod = _sage.Logic.GetCheckModifier(actions[0]);
+            var mod = (actions[0] as PlayCardAction)?.CheckModifier;
+            Assert.IsNotNull( mod);
             Assert.AreEqual(1, mod.AddedDice.Count);
             Assert.AreEqual(6, mod.AddedDice[0]);
         }

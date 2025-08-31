@@ -54,7 +54,7 @@ namespace PACG.Gameplay
             
             if (_contexts.AreCardsPlayable && card.Owner.Location.Count > 0)
             {
-                actions.Add(new PlayCardAction(card, ActionType.Banish));
+                actions.Add(new PlayCardAction(card, ActionType.Banish, null));
             }
             
             return actions;
