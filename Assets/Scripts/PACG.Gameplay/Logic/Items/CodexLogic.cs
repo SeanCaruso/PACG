@@ -23,7 +23,7 @@ namespace PACG.Gameplay
                 {
                     Card: CardInstance { IsBoon: true }
                 } acquireResolvable
-                && !acquireResolvable.IsCardTypeStaged(card.CardType)
+                && acquireResolvable.CanStageType(card.CardType)
                 && acquireResolvable.Character == card.Owner)
             {
                 var modifier = new CheckModifier(card) { AddedBonus = 1 };
@@ -33,7 +33,7 @@ namespace PACG.Gameplay
             // Discard for +Knowledge on a local check to acquire
             // ReSharper disable once InvertIf
             if (_contexts.CurrentResolvable is CheckResolvable { Card: CardInstance { IsBoon: true } } localResolvable
-                && !localResolvable.IsCardTypeStaged(card.CardType)
+                && localResolvable.CanStageType(card.CardType)
                 && localResolvable.Character.LocalCharacters.Contains(card.Owner))
             {
                 var (die, bonus) = card.Owner.GetSkill(Skill.Knowledge);

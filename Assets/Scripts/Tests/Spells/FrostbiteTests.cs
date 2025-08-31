@@ -60,7 +60,7 @@ namespace Tests.Spells
             
             Assert.AreEqual(1, GameServices.Contexts.EncounterContext.ResolvableModifiers.Count);
             
-            var resolvable = new DamageResolvable(_ezren, 2, "Magic");
+            var resolvable = new DamageResolvable(_ezren, 2, GameServices, "Magic");
             GameServices.Contexts.NewResolvable(resolvable);
             
             Assert.AreEqual(1, (GameServices.Contexts.CurrentResolvable as DamageResolvable)?.Amount);

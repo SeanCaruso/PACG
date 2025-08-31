@@ -67,7 +67,7 @@ namespace PACG.Gameplay
             if (resolvable.Character != card.Owner)
                 return false; // ... for the card's owner...
 
-            if (resolvable.IsCardTypeStaged(card.CardType))
+            if (!resolvable.CanStageType(card.CardType))
                 return false; // ... with no Items played.
 
             if (Check.Invokes("Strength"))

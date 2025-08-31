@@ -8,10 +8,12 @@ namespace PACG.Gameplay
     {
         // Dependency injections
         private readonly ContextManager _contexts;
+        private readonly GameServices _gameServices;
         
         public DireBadgerLogic(GameServices gameServices) : base(gameServices)
         {
             _contexts = gameServices.Contexts;
+            _gameServices = gameServices;
         }
 
         public override IResolvable GetResolveEncounterResolvable(CardInstance card)
@@ -20,7 +22,10 @@ namespace PACG.Gameplay
             
             if (result.WasSuccess && result.IsCombat)
             {
-                return new DamageResolvable(_contexts.EncounterContext.Character, DiceUtils.Roll(4));
+                return new DamageResolvable(
+                    _contexts.EncounterContext.Character,
+                    DiceUtils.Roll(4),
+                    _gameServices);
             }
 
             return null;

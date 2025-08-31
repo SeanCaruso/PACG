@@ -12,12 +12,14 @@ namespace PACG.Gameplay
         private readonly ActionStagingManager _asm;
         private readonly CardManager _cards;
         private readonly ContextManager _contexts;
+        private readonly GameServices _gameServices;
 
         protected CardLogicBase(GameServices gameServices)
         {
             _asm = gameServices.ASM;
             _cards = gameServices.Cards;
             _contexts = gameServices.Contexts;
+            _gameServices = gameServices;
         }
 
         public List<IStagedAction> GetAvailableActions(CardInstance card)
@@ -78,7 +80,11 @@ namespace PACG.Gameplay
         {
             if (card.Data.checkRequirement.mode is CheckMode.Choice or CheckMode.Single)
             {
-                return new CheckResolvable(card, _contexts.EncounterContext.Character, card.Data.checkRequirement);
+                return new CheckResolvable(
+                    card,
+                    _contexts.EncounterContext.Character,
+                    card.Data.checkRequirement,
+                    _gameServices);
             }
 
             // TODO: Handle sequential and "None" modes.

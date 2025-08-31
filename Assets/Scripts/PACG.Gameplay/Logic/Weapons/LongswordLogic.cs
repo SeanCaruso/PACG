@@ -22,7 +22,7 @@ namespace PACG.Gameplay
             if (!IsCardPlayable(card)) return actions;
 
             // If a weapon hasn't been played yet, present one or both options.
-            if (!_contexts.CurrentResolvable.IsCardTypeStaged(card.CardType))
+            if (_contexts.CurrentResolvable.CanStageType(card.CardType))
             {
                 var revealModifier = new CheckModifier(card)
                 {

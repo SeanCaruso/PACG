@@ -41,7 +41,7 @@ namespace PACG.Gameplay
                 && _contexts.CurrentResolvable is CheckResolvable resolvable
                 && resolvable.Card.CardType == CardType.Spell
                 && resolvable.Character == card.Owner
-                && !resolvable.IsCardTypeStaged(card.CardType))
+                && resolvable.CanStageType(card.CardType))
             {
                 var modifier = new CheckModifier(card)
                 {

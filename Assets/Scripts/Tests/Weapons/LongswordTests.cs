@@ -103,7 +103,7 @@ namespace Tests.Weapons
         {
             Valeros.AddToHand(Longsword);
             
-            var damage = new DamageResolvable(Valeros, 1, "Magic");
+            var damage = new DamageResolvable(Valeros, 1, GameServices, "Magic");
             GameServices.Contexts.NewResolvable(damage);
             
             var actions = Longsword.GetAvailableActions();

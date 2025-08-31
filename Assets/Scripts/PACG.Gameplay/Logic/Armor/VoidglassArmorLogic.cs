@@ -41,7 +41,7 @@ namespace PACG.Gameplay
                 return false;
 
             // Can't display if another armor was played on the check.
-            if (_contexts.CurrentResolvable?.IsCardTypeStaged(card.CardType) == true)
+            if (_contexts.CurrentResolvable?.CanStageType(card.CardType) == false)
                 return false;
 
             // If there's no encounter or resolvable...
@@ -59,7 +59,7 @@ namespace PACG.Gameplay
         private bool CanRechargeForDamage(CardInstance card) =>
             card.Owner.DisplayedCards.Contains(card)
             && _contexts.CurrentResolvable is DamageResolvable resolvable
-            && !resolvable.IsCardTypeStaged(card.CardType)
+            && resolvable.CanStageType(card.CardType)
             && resolvable.PlayerCharacter == card.Owner;
 
         // We can also freely recharge if the card was displayed for this damage resolution.
@@ -74,7 +74,7 @@ namespace PACG.Gameplay
             card.Owner.DisplayedCards.Contains(card)
             && card.Owner.IsProficient(card.Data)
             && _contexts.CurrentResolvable is DamageResolvable resolvable
-            && !resolvable.IsCardTypeStaged(card.CardType)
+            && resolvable.CanStageType(card.CardType)
             && resolvable.PlayerCharacter == card.Owner;
 
         // We can also freely bury if the card was displayed for this damage resolution.

@@ -67,7 +67,8 @@ namespace PACG.Gameplay
             var resolvable = new CheckResolvable(
                 card,
                 card.Owner,
-                CardUtils.SkillCheck(5, Skill.Arcane, Skill.Divine))
+                CardUtils.SkillCheck(5, Skill.Arcane, Skill.Divine),
+                _gameServices)
             {
                 OnSuccess = () => card.Owner.Recharge(card),
                 OnFailure = () => card.Owner.Discard(card)

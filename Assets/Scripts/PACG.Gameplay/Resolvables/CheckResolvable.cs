@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using PACG.Core;
+using PACG.Data;
 using PACG.SharedAPI;
 
 namespace PACG.Gameplay
@@ -13,7 +14,7 @@ namespace PACG.Gameplay
         Close,
         Recover
     }
-    
+
     public class CheckResolvable : BaseResolvable
     {
         public ICard Card { get; }
@@ -25,12 +26,18 @@ namespace PACG.Gameplay
         public Action OnSuccess { get; set; } = () => { };
         public Action OnFailure { get; set; } = () => { };
 
-        public CheckResolvable(ICard card, PlayerCharacter character, CheckRequirement checkRequirement)
+        // Dependency injection
+        private readonly ActionStagingManager _asm;
+
+        public CheckResolvable(ICard card, PlayerCharacter character, CheckRequirement checkRequirement,
+            GameServices gameServices)
         {
+            _asm = gameServices.ASM;
+
             Card = card;
             Character = character;
             CheckSteps = checkRequirement.checkSteps.ToList();
-            
+
             // Default to defeat for banes, acquire for boons.
             Verb = PF.IsBoon(Card.CardType) ? CheckVerb.Acquire : CheckVerb.Defeat;
         }
@@ -48,6 +55,16 @@ namespace PACG.Gameplay
                 IsCancelButtonVisible = actions.Count > 0,
                 IsCommitButtonVisible = true
             };
+        }
+
+        public override bool CanStageAction(IStagedAction action) =>
+            action.IsFreely || CanStageType(action.Card.CardType);
+
+        public override bool CanStageType(CardType cardType)
+        {
+            // Rule: prevent duplicate card types (if not freely playable).
+            var stagedActions = _asm.StagedActions;
+            return stagedActions.Count(a => a.Card.CardType == cardType && !a.IsFreely) == 0;
         }
     }
 }

@@ -53,7 +53,7 @@ namespace PACG.Gameplay
             Check is { IsCombatValid: true }
             && _contexts.CurrentResolvable is CheckResolvable { HasCombat: true }
             && Check.Character == card.Owner
-            && !_contexts.CurrentResolvable.IsCardTypeStaged(card.CardType)
+            && _contexts.CurrentResolvable.CanStageType(card.CardType)
             && Check.CanUseSkill(_validSkills);
 
         private bool CanDiscard(CardInstance card) =>

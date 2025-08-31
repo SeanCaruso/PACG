@@ -6,10 +6,12 @@ namespace PACG.Gameplay
     public class CaravanLogic : LocationLogicBase
     {
         private readonly ContextManager _contexts;
+        private readonly GameServices _gameServices;
 
         public CaravanLogic(GameServices gameServices)
         {
             _contexts = gameServices.Contexts;
+            _gameServices = gameServices;
         }
 
         public override IResolvable GetToCloseResolvable()
@@ -20,7 +22,8 @@ namespace PACG.Gameplay
             return new CheckResolvable(
                 _contexts.TurnPcLocation,
                 _contexts.TurnContext.Character,
-                CardUtils.SkillCheck(dc,Skill.Wisdom, Skill.Perception)
+                CardUtils.SkillCheck(dc,Skill.Wisdom, Skill.Perception),
+                _gameServices
             )
             {
                 Verb = CheckVerb.Close

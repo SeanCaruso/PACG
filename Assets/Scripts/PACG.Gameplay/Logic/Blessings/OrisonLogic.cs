@@ -37,7 +37,7 @@ namespace PACG.Gameplay
         private bool CanBless(CardInstance card) =>
             _contexts.CheckContext != null
             && _contexts.CurrentResolvable is CheckResolvable resolvable
-            && !resolvable.IsCardTypeStaged(card.CardType)
+            && resolvable.CanStageType(card.CardType)
             && _contexts.CheckContext.Character.Location.Characters.Contains(card.Owner);
     }
 }

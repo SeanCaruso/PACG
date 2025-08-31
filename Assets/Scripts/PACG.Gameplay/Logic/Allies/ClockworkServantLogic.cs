@@ -52,7 +52,8 @@ namespace PACG.Gameplay
             var resolvable = new CheckResolvable(
                 card,
                 card.Owner,
-                CardUtils.SkillCheck(8, Skill.Craft))
+                CardUtils.SkillCheck(8, Skill.Craft),
+                _gameServices)
             {
                 OnSuccess = () => card.Owner.Recharge(card),
                 OnFailure = () => card.Owner.Banish(card, true)
@@ -65,7 +66,7 @@ namespace PACG.Gameplay
         private bool CanRecharge(CardInstance card) => 
             _contexts.CheckContext != null
             && _contexts.CheckContext.IsLocal(card.Owner)
-            && !_contexts.CheckContext.Resolvable.IsCardTypeStaged(card.Data.cardType)
+            && _contexts.CheckContext.Resolvable.CanStageType(card.Data.cardType)
             && _contexts.CheckContext.Invokes("Intelligence", "Craft");
     }
 }

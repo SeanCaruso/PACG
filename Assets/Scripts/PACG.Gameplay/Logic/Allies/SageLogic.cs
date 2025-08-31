@@ -45,7 +45,7 @@ namespace PACG.Gameplay
 
             // Can recharge for +1d6 on a local Arcane or Knowledge non-combat check.
             if (_contexts.CheckContext?.Character.LocalCharacters.Contains(card.Owner) == true
-                && _contexts.CurrentResolvable?.IsCardTypeStaged(card.CardType) != true
+                && _contexts.CurrentResolvable?.CanStageType(card.CardType) == true
                 && _contexts.CheckContext.IsSkillValid
                 && _contexts.CheckContext.CanUseSkill(Skill.Arcane, Skill.Knowledge))
             {

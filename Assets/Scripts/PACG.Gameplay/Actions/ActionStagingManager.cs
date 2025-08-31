@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using PACG.Core;
+using PACG.Data;
 using PACG.SharedAPI;
 using UnityEngine;
 
@@ -26,6 +27,7 @@ namespace PACG.Gameplay
 
         public IReadOnlyList<IStagedAction> StagedActions => _pcsStagedActions.Values.SelectMany(list => list).ToList();
         public IReadOnlyList<CardInstance> StagedCards => _originalCardLocs.Keys.ToList();
+        public IReadOnlyList<CardType> StagedCardTypes => StagedCards.Select(card => card.CardType).Distinct().ToList();
         public bool CardStaged(CardInstance card) => _originalCardLocs.Keys.Contains(card);
 
         public void Initialize(GameServices gameServices)
@@ -48,11 +50,7 @@ namespace PACG.Gameplay
                 return;
             }
 
-            if (_contexts.CurrentResolvable?.CanStageAction(action) == false)
-            {
-                Debug.LogWarning($"{action.Card.Data.cardName}.{action} can't be staged! How did we get this far?");
-                return;
-            }
+            if (_contexts.CurrentResolvable?.CanStageAction(action) == false) return;
 
             _hasMoveStaged = action is MoveAction;
             _hasExploreStaged = action is ExploreAction;
@@ -70,9 +68,6 @@ namespace PACG.Gameplay
             // Perform all required staging logic.
             pcActions.Add(action);
             _pcsStagedActions[action.Card.Owner] = pcActions;
-
-            // If we're attempting a check, add the action's card type if needed.
-            _contexts.CurrentResolvable?.StageCardTypeIfNeeded(action);
 
             UpdateGameStatePreview();
             // Send the UI event to update Cancel/Commit buttons.

@@ -31,7 +31,7 @@ namespace PACG.Gameplay
             if (_contexts.CheckContext is not { IsCombatValid: true }
                 || _contexts.CurrentResolvable is not CheckResolvable { HasCombat: true } resolvable
                 || resolvable.Character != card.Owner
-                || _contexts.CheckContext.Resolvable.IsCardTypeStaged(card.Data.cardType)) return actions;
+                || !_contexts.CheckContext.Resolvable.CanStageType(card.Data.cardType)) return actions;
             
             var modifier = new CheckModifier(card)
             {
@@ -68,7 +68,7 @@ namespace PACG.Gameplay
                 allowedSkills = new[] { Skill.Divine }.ToList() 
             });
 
-            var resolvable = new CheckResolvable(card, card.Owner, checkReq)
+            var resolvable = new CheckResolvable(card, card.Owner, checkReq, _gameServices)
             {
                 OnSuccess = () => card.Owner.Recharge(card),
                 OnFailure = () => card.Owner.Discard(card)

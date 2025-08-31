@@ -1,14 +1,11 @@
 using System.Collections.Generic;
 using PACG.Data;
 using PACG.SharedAPI;
-using UnityEngine;
 
 namespace PACG.Gameplay
 {
     public abstract class BaseResolvable : IResolvable
     {
-        private readonly HashSet<CardType> _stagedCardTypes = new();
-        
         private IProcessor _nextProcessor;
 
         public virtual void Initialize()
@@ -63,25 +60,10 @@ namespace PACG.Gameplay
         // RESOLVABLE-SPECIFIC ACTION STAGING
         //
         // Note: ActionStagingManager is responsible for the actual actions and cards that have
-        //       been staged, but is rule-agnostic. BaseResolvable contains the rule-specific
-        //       logic about which actions *can* be staged during a Resolvable.
+        //       been staged, but is rule-agnostic. Derived resolvables contain the rule-specific
+        //       logic about which actions *can* be staged during that resolvable.
         // =====================================================================================
-        public IReadOnlyCollection<CardType> StagedCardTypes => _stagedCardTypes;
-        public bool IsCardTypeStaged(CardType cardType) => _stagedCardTypes.Contains(cardType);
-
-        public bool CanStageAction(IStagedAction action)
-        {
-            // Rule: prevent duplicate card types (if not freely playable).
-            if (action.IsFreely || !_stagedCardTypes.Contains(action.Card.Data.cardType)) return true;
-            
-            Debug.LogWarning($"{action.Card.Data.cardName} staged a duplicate type - was this intended?");
-            return false;
-
-        }
-
-        public void StageCardTypeIfNeeded(IStagedAction action)
-        {
-            if (!action.IsFreely) _stagedCardTypes.Add(action.Card.Data.cardType);
-        }
+        public virtual bool CanStageAction(IStagedAction action) => true;
+        public virtual bool CanStageType(CardType cardType) => true;
     }
 }

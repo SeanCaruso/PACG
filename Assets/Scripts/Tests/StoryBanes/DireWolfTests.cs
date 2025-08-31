@@ -30,7 +30,7 @@ namespace Tests.StoryBanes
                 direWolf.Logic.OnEncounter();
                 
                 const int baseDamage = 1;
-                var resolvable = new DamageResolvable(Valeros, baseDamage);
+                var resolvable = new DamageResolvable(Valeros, baseDamage, GameServices);
                 GameServices.Contexts.NewResolvable(resolvable);
                 
                 Assert.IsTrue(resolvable.Amount >= baseDamage + 1);

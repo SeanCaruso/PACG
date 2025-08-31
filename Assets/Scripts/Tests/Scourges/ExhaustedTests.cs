@@ -15,7 +15,7 @@ namespace Tests.Scourges
             var soldier = TestUtils.GetCard(GameServices, "Soldier");
             Valeros.AddToHand(soldier);
 
-            var resolvable = new CheckResolvable(Zombie, Valeros, Zombie.Data.checkRequirement);
+            var resolvable = new CheckResolvable(Zombie, Valeros, Zombie.Data.checkRequirement, GameServices);
             GameServices.Contexts.NewResolvable(resolvable);
             
             Assert.AreEqual(2, Longsword.GetAvailableActions().Count);
@@ -30,7 +30,7 @@ namespace Tests.Scourges
             Valeros.AddScourge(ScourgeType.Exhausted);
             Valeros.AddToHand(Longsword);
 
-            var resolvable = new CheckResolvable(Zombie, Valeros, Zombie.Data.checkRequirement);
+            var resolvable = new CheckResolvable(Zombie, Valeros, Zombie.Data.checkRequirement, GameServices);
             GameServices.Contexts.NewResolvable(resolvable);
             
             Assert.AreEqual(2, Longsword.GetAvailableActions().Count);

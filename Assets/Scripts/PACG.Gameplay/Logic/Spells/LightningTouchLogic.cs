@@ -30,7 +30,7 @@ namespace PACG.Gameplay
             if (_contexts.CheckContext is not { IsCombatValid: true }
                 || _contexts.CurrentResolvable is not CheckResolvable { HasCombat: true } resolvable
                 || resolvable.Character != card.Owner
-                || _contexts.CurrentResolvable.IsCardTypeStaged(card.CardType)) return actions;
+                || !_contexts.CurrentResolvable.CanStageType(card.CardType)) return actions;
             
             var modifier = new CheckModifier(card)
             {
@@ -53,7 +53,8 @@ namespace PACG.Gameplay
             var resolvable = new CheckResolvable(
                 card,
                 card.Owner,
-                CardUtils.SkillCheck(6, Skill.Arcane))
+                CardUtils.SkillCheck(6, Skill.Arcane),
+                _gameServices)
             {
                 OnSuccess = () => card.Owner.Recharge(card),
                 OnFailure = () => card.Owner.Discard(card)

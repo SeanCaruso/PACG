@@ -8,10 +8,12 @@ namespace PACG.Gameplay
     public class CatLogic : CardLogicBase
     {
         // Dependency injection
+        private readonly ActionStagingManager _asm;
         private readonly ContextManager _contexts;
         
         public CatLogic(GameServices gameServices) : base(gameServices)
         {
+            _asm = gameServices.ASM;
             _contexts = gameServices.Contexts;
         }
 
@@ -30,7 +32,7 @@ namespace PACG.Gameplay
             // Can recharge for +1d4 on a local check against a spell.
             if (_contexts.CheckContext?.Resolvable.Card is CardInstance checkCard
                 && checkCard.Data.cardType == CardType.Spell
-                && !_contexts.CheckContext.Resolvable.IsCardTypeStaged(CardType.Ally))
+                && _contexts.CheckContext.Resolvable.CanStageType(CardType.Ally))
             {
                 var modifier = new CheckModifier(card) { AddedDice = new[] { 4 }.ToList() };
                 return new List<IStagedAction>{ new PlayCardAction(card, ActionType.Recharge, modifier) };

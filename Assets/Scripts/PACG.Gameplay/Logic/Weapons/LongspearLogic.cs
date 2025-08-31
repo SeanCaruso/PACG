@@ -43,7 +43,7 @@ namespace PACG.Gameplay
                 && _contexts.CurrentResolvable is CheckResolvable {HasCombat: true}
                 && Check.Character == card.Owner
                 && Check.CanUseSkill(Skill.Strength, Skill.Melee)
-                && !_contexts.CurrentResolvable.IsCardTypeStaged(card.CardType))
+                && _contexts.CurrentResolvable.CanStageType(card.CardType))
             {
                 var modifier = new CheckModifier(card)
                 {

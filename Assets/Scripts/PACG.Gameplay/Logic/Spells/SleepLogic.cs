@@ -44,7 +44,7 @@ namespace PACG.Gameplay
             _contexts.CurrentResolvable is CheckResolvable resolvable
             && resolvable.Card.CardType is CardType.Monster or CardType.Ally
             && resolvable.Character.LocalCharacters.Contains(card.Owner)
-            && !resolvable.IsCardTypeStaged(card.CardType);
+            && resolvable.CanStageType(card.CardType);
 
         public override IResolvable GetRecoveryResolvable(CardInstance card)
         {
@@ -53,7 +53,8 @@ namespace PACG.Gameplay
             var resolvable = new CheckResolvable(
                 card,
                 card.Owner,
-                CardUtils.SkillCheck(9, Skill.Arcane))
+                CardUtils.SkillCheck(9, Skill.Arcane),
+                _gameServices)
             {
                 OnSuccess = () => card.Owner.Recharge(card),
                 OnFailure = () => card.Owner.Discard(card)

@@ -21,7 +21,7 @@ namespace Tests.Armor
             _voidglassArmor.Owner = Valeros;
             _voidglassArmor.CurrentLocation = CardLocation.Displayed;
             
-            GameServices.Contexts.NewResolvable(new DamageResolvable(Valeros, 1, "Magic"));
+            GameServices.Contexts.NewResolvable(new DamageResolvable(Valeros, 1, GameServices, "Magic"));
             
             Assert.AreEqual(2, _voidglassArmor.GetAvailableActions().Count);
             Assert.AreEqual(ActionType.Recharge, _voidglassArmor.GetAvailableActions()[0].ActionType);
@@ -37,7 +37,7 @@ namespace Tests.Armor
             _voidglassArmor.Owner = Valeros;
             _voidglassArmor.CurrentLocation = CardLocation.Hand;
             
-            GameServices.Contexts.NewResolvable(new DamageResolvable(Valeros, 1, "Special"));
+            GameServices.Contexts.NewResolvable(new DamageResolvable(Valeros, 1, GameServices, "Special"));
             
             Assert.AreEqual(1, _voidglassArmor.GetAvailableActions().Count);
             Assert.AreEqual(ActionType.Display, _voidglassArmor.GetAvailableActions()[0].ActionType);
@@ -58,7 +58,7 @@ namespace Tests.Armor
             _voidglassArmor.Owner = Valeros;
             GameServices.Cards.MoveCard(_voidglassArmor, CardLocation.Displayed);
             
-            GameServices.Contexts.NewResolvable(new DamageResolvable(Valeros, 3, "Mental"));
+            GameServices.Contexts.NewResolvable(new DamageResolvable(Valeros, 3, GameServices, "Mental"));
             
             Assert.IsTrue(GameServices.Contexts.CurrentResolvable is PlayerChoiceResolvable);
             
@@ -72,7 +72,7 @@ namespace Tests.Armor
             _voidglassArmor.Owner = Valeros;
             GameServices.Cards.MoveCard(_voidglassArmor, CardLocation.Hand);
             
-            GameServices.Contexts.NewResolvable(new DamageResolvable(Valeros, 3, "Mental"));
+            GameServices.Contexts.NewResolvable(new DamageResolvable(Valeros, 3, GameServices, "Mental"));
             
             Assert.IsTrue(GameServices.Contexts.CurrentResolvable is PlayerChoiceResolvable);
             
@@ -88,7 +88,7 @@ namespace Tests.Armor
             Valeros.AddToHand(longsword);
             GameServices.Cards.MoveCard(_voidglassArmor, CardLocation.Hand);
 
-            var damageResolvable = new DamageResolvable(Valeros, 1, "Mental");
+            var damageResolvable = new DamageResolvable(Valeros, 1, GameServices, "Mental");
             var processor = new NewResolvableProcessor(damageResolvable, GameServices);
             GameServices.GameFlow.StartPhase(processor, "Damage");
             

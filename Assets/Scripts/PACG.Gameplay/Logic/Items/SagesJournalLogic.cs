@@ -23,7 +23,7 @@ namespace PACG.Gameplay
                 {
                     Card: CardInstance { IsStoryBane: true }
                 } storyBaneResolvable
-                && !storyBaneResolvable.IsCardTypeStaged(card.CardType)
+                && storyBaneResolvable.CanStageType(card.CardType)
                 && storyBaneResolvable.Character == card.Owner)
             {
                 var modifier = new CheckModifier(card)
@@ -34,9 +34,12 @@ namespace PACG.Gameplay
             }
 
             // Bury for +Knowledge on a local check against a bane.
-            if (_contexts.CurrentResolvable is CheckResolvable { Card: CardInstance { IsBane: true } } baneResolvable
-                && !baneResolvable.IsCardTypeStaged(card.CardType)
-                && baneResolvable.Character.LocalCharacters.Contains(card.Owner))
+            if (_contexts.CurrentResolvable is not CheckResolvable
+                {
+                    Card: CardInstance { IsBane: true }
+                } baneResolvable
+                || !baneResolvable.CanStageType(card.CardType)
+                || !baneResolvable.Character.LocalCharacters.Contains(card.Owner)) return actions;
             {
                 var (die, bonus) = card.Owner.GetSkill(Skill.Knowledge);
                 var modifier = new CheckModifier(card)

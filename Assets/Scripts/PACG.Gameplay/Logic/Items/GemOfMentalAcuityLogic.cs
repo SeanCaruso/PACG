@@ -16,22 +16,20 @@ namespace PACG.Gameplay
         protected override List<IStagedAction> GetAvailableCardActions(CardInstance card)
         {
             // Usable on any non-combat check by the owner.
-            if (_contexts.CheckContext is { IsSkillValid: true }
-                && (_contexts.CurrentResolvable as CheckResolvable)?.IsCardTypeStaged(card.CardType) == false
-                && _contexts.CheckContext.Character == card.Owner)
+            if (_contexts.CheckContext is not { IsSkillValid: true }
+                || (_contexts.CurrentResolvable as CheckResolvable)?.CanStageType(card.CardType) == false
+                || _contexts.CheckContext.Character != card.Owner) return new List<IStagedAction>();
+            
+            var modifier = new CheckModifier(card)
             {
-                var modifier = new CheckModifier(card)
-                {
-                    RestrictedCategory = CheckCategory.Skill,
-                    DieOverride = card.Owner.GetBestSkill(
-                        Skill.Intelligence, Skill.Wisdom, Skill.Charisma
-                    ).die
-                };
+                RestrictedCategory = CheckCategory.Skill,
+                DieOverride = card.Owner.GetBestSkill(
+                    Skill.Intelligence, Skill.Wisdom, Skill.Charisma
+                ).die
+            };
                 
-                return new List<IStagedAction> { new PlayCardAction(card, ActionType.Recharge, modifier) };
-            }
+            return new List<IStagedAction> { new PlayCardAction(card, ActionType.Recharge, modifier) };
 
-            return new List<IStagedAction>();
         }
     }
 }

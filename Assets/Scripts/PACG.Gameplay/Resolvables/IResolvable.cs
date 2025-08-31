@@ -17,9 +17,7 @@ namespace PACG.Gameplay
         public bool CancelAbortsPhase { get; }
         
         // Card Staging
-        public IReadOnlyCollection<CardType> StagedCardTypes { get; }
-        public bool IsCardTypeStaged(CardType cardType);
         public bool CanStageAction(IStagedAction action);
-        public void StageCardTypeIfNeeded(IStagedAction action);
+        public bool CanStageType(CardType cardType);
     }
 }

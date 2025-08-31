@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using PACG.Core;
+using PACG.Data;
 using PACG.SharedAPI;
 
 namespace PACG.Gameplay
@@ -11,12 +12,18 @@ namespace PACG.Gameplay
         public string DamageType { get; }
         public int Amount { get; set; }
         private int _currentResolved;
-        
+
+        // Dependency injection
+        private readonly ActionStagingManager _asm;
+
         private ActionType _defaultActionType = ActionType.Discard;
         public void OverrideActionType(ActionType actionType) => _defaultActionType = actionType;
 
-        public DamageResolvable(PlayerCharacter playerCharacter, int amount, string damageType = "Combat")
+        public DamageResolvable(PlayerCharacter playerCharacter, int amount, GameServices gameServices,
+            string damageType = "Combat")
         {
+            _asm = gameServices.ASM;
+
             PlayerCharacter = playerCharacter;
             Amount = amount;
             DamageType = damageType;
@@ -25,7 +32,7 @@ namespace PACG.Gameplay
         public override List<IStagedAction> GetAdditionalActionsForCard(CardInstance card)
         {
             List<IStagedAction> actions = new();
-            
+
             if (_currentResolved >= Amount) return actions;
 
             // Add default damage discard action if the card was in the player's hand.
@@ -61,6 +68,7 @@ namespace PACG.Gameplay
                         break;
                 }
             }
+
             _currentResolved = totalResolved;
 
             if (totalResolved >= Amount)
@@ -72,6 +80,16 @@ namespace PACG.Gameplay
             GameEvents.SetStatusText($"Damage: Discard {Amount - totalResolved}");
 
             return false;
+        }
+
+        public override bool CanStageAction(IStagedAction action) =>
+            action.IsFreely || CanStageType(action.Card.CardType);
+
+        public override bool CanStageType(CardType cardType)
+        {
+            // Rule: prevent duplicate card types (if not freely playable).
+            var stagedActions = _asm.StagedActions;
+            return stagedActions.Count(a => a.Card.CardType == cardType && !a.IsFreely) == 0;
         }
     }
 }

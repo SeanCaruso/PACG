@@ -74,7 +74,7 @@ namespace PACG.Gameplay
             _contexts.CurrentResolvable is CheckResolvable
             && _contexts.CheckContext != null
             && _contexts.CheckContext.IsLocal(card.Owner)
-            && !_contexts.CheckContext.Resolvable.IsCardTypeStaged(CardType.Ally)
+            && _contexts.CheckContext.Resolvable.CanStageType(CardType.Ally)
             && _contexts.CheckContext.CanUseSkill(Skill.Perception);
     }
 }

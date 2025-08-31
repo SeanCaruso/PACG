@@ -34,7 +34,7 @@ namespace PACG.Gameplay
             // Can recharge for any damage to the owner.
             if (_contexts.CurrentResolvable is DamageResolvable anyDamage
                 && anyDamage.PlayerCharacter == card.Owner
-                && !anyDamage.IsCardTypeStaged(card.CardType))
+                && anyDamage.CanStageType(card.CardType))
             {
                 actions.Add(new PlayCardAction(card, ActionType.Recharge, null, ("Damage", 1)));
             }

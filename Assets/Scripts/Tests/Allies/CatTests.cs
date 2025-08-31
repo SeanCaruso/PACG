@@ -134,7 +134,11 @@ namespace Tests.Allies
             var effects = _gameServices.Contexts.TurnContext.ExploreEffects;
             Assert.AreEqual(1, effects.Count);
 
-            var resolvable = new CheckResolvable(zombieInstance, _valeros, CardUtils.SkillCheck(10, Skill.Arcane));
+            var resolvable = new CheckResolvable(
+                zombieInstance,
+                _valeros,
+                CardUtils.SkillCheck(10, Skill.Arcane),
+                _gameServices);
             var check = new CheckContext(resolvable);
             var dicePool = new DicePool();
             effects[0].ApplyTo(check, dicePool);
@@ -163,7 +167,11 @@ namespace Tests.Allies
             var effects = _gameServices.Contexts.TurnContext.ExploreEffects;
             Assert.AreEqual(1, effects.Count);
         
-            var resolvable = new CheckResolvable(spellInstance, _valeros, CardUtils.SkillCheck(10, Skill.Arcane));
+            var resolvable = new CheckResolvable(
+                spellInstance,
+                _valeros,
+                CardUtils.SkillCheck(10, Skill.Arcane),
+                _gameServices);
             var check = new CheckContext(resolvable);
             var dicePool = new DicePool();
             effects[0].ApplyTo(check, dicePool);

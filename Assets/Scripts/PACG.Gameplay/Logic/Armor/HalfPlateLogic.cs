@@ -38,7 +38,7 @@ namespace PACG.Gameplay
                 return false;
 
             // Can't display if another armor was played for the damage resolvable.
-            if ((_contexts.CurrentResolvable as DamageResolvable)?.IsCardTypeStaged(card.CardType) == true)
+            if (_contexts.CurrentResolvable?.CanStageType(card.CardType) == false)
                 return false;
 
             // If there's no encounter or resolvable...
@@ -56,7 +56,7 @@ namespace PACG.Gameplay
         private bool CanDraw(CardInstance card) =>
             card.Owner.DisplayedCards.Contains(card)
             && _contexts.CurrentResolvable is DamageResolvable { DamageType: "Combat" } resolvable
-            && !resolvable.IsCardTypeStaged(card.CardType)
+            && resolvable.CanStageType(card.CardType)
             && resolvable.PlayerCharacter == card.Owner;
 
         // We can also freely draw if the card was displayed for this damage resolution.
@@ -71,7 +71,7 @@ namespace PACG.Gameplay
             card.Owner.DisplayedCards.Contains(card)
             && card.Owner.IsProficient(card.Data)
             && _contexts.CurrentResolvable is DamageResolvable resolvable
-            && !resolvable.IsCardTypeStaged(card.CardType)
+            && resolvable.CanStageType(card.CardType)
             && resolvable.PlayerCharacter == card.Owner;
 
         // We can also freely bury if the card was displayed for this damage resolution.

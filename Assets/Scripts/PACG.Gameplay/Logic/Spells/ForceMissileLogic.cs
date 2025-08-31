@@ -22,7 +22,7 @@ namespace PACG.Gameplay
             // Playable for +2d4 on any combat check.
             if (_contexts.CheckContext is not { IsCombatValid: true }
                 || _contexts.CurrentResolvable is not CheckResolvable { HasCombat: true }
-                || _contexts.CurrentResolvable.IsCardTypeStaged(card.CardType)) return actions;
+                || !_contexts.CurrentResolvable.CanStageType(card.CardType)) return actions;
             var modifier = new CheckModifier(card)
             {
                 AddedDice = new List<int> { 4, 4 },
@@ -50,7 +50,8 @@ namespace PACG.Gameplay
             var resolvable = new CheckResolvable(
                 card,
                 card.Owner,
-                CardUtils.SkillCheck(6, Skill.Arcane))
+                CardUtils.SkillCheck(6, Skill.Arcane),
+                _gameServices)
             {
                 OnSuccess = () => card.Owner.Recharge(card),
                 OnFailure = () => card.Owner.Discard(card)

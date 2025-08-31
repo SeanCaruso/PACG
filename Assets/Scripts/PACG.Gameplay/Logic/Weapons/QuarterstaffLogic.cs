@@ -28,7 +28,7 @@ namespace PACG.Gameplay
             if (IsPlayableForCombat(card))
             {
                 // If a weapon hasn't been played yet, display both combat options.
-                if (!_contexts.CurrentResolvable.IsCardTypeStaged(card.CardType))
+                if (_contexts.CurrentResolvable.CanStageType(card.CardType))
                 {
                     var revealModifier = new CheckModifier(card)
                     {

@@ -20,7 +20,7 @@ namespace Tests.Items
         [Test]
         public void Bracers_Of_Protection_Two_Actions_Combat_Damage()
         {
-            var resolvable = new DamageResolvable(Ezren, 2);
+            var resolvable = new DamageResolvable(Ezren, 2, GameServices);
             GameServices.Contexts.NewResolvable(resolvable);
             
             var actions = _bracers.GetAvailableActions();
@@ -42,7 +42,7 @@ namespace Tests.Items
         [Test]
         public void Bracers_Of_Protection_One_Actions_Other_Damage()
         {
-            var resolvable = new DamageResolvable(Ezren, 1, "Other");
+            var resolvable = new DamageResolvable(Ezren, 1, GameServices, "Other");
             GameServices.Contexts.NewResolvable(resolvable);
             
             var actions = _bracers.GetAvailableActions();
