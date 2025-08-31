@@ -70,7 +70,7 @@ namespace PACG.Presentation
             if (view.RecoveryText.Length > 0)
             {
                 recoveryLabel.SetActive(true);
-                recoveryText.enabled = true;
+                recoveryText.gameObject.SetActive(true);
                 recoveryText.text = view.RecoveryText;
             }
 

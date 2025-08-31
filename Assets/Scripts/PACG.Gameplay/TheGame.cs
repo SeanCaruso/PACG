@@ -98,6 +98,9 @@ namespace PACG.Gameplay
             if (!string.IsNullOrEmpty(scenarioData.DuringScenario))
                 GameEvents.RaiseScenarioHasPower(_gameServices);
 
+            var dangerInstance = _gameServices.Cards.New(scenarioData.Dangers[0].CardData);
+            GameEvents.RaiseScenarioHasDanger(dangerInstance);
+
             // Set up test data
             for (var i = 0; i < 30; i++)
             {

@@ -6,8 +6,12 @@ namespace PACG.SharedAPI
 {
     public class ScenarioViewController : MonoBehaviour
     {
+        [Header("Dependencies")]
+        public CardDisplayFactory CardDisplayFactory;
+        
         [Header("UI Elements")]
         public Transform ScenarioPowerContainer;
+        public Transform DangerContainer;
         
         [Header("Prefabs")]
         public ScenarioPower ScenarioPowerPrefab;
@@ -19,9 +23,13 @@ namespace PACG.SharedAPI
 
         private void OnEnable()
         {
+            // During scenario powers
             GameEvents.ScenarioHasPower += OnScenarioPower;
             GameEvents.ScenarioPowerEnabled += OnScenarioPowerEnabled;
             GameEvents.TurnStateChanged += UpdateStagedActionButtons;
+            
+            // Danger
+            GameEvents.ScenarioHasDanger += OnScenarioDanger;
         }
         
         private void OnDisable()
@@ -29,6 +37,8 @@ namespace PACG.SharedAPI
             GameEvents.ScenarioHasPower -= OnScenarioPower;
             GameEvents.ScenarioPowerEnabled -= OnScenarioPowerEnabled;
             GameEvents.TurnStateChanged -= UpdateStagedActionButtons;
+            
+            GameEvents.ScenarioHasDanger -= OnScenarioDanger;
         }
 
         private void OnScenarioPower(GameServices gameServices)
@@ -61,6 +71,11 @@ namespace PACG.SharedAPI
             if (!_scenarioPower) return;
             
             OnScenarioPowerEnabled(_contexts.GameContext.ScenarioLogic.HasAvailableAction);
+        }
+
+        private void OnScenarioDanger(CardInstance card)
+        {
+            CardDisplayFactory.CreateCardDisplay(card, CardDisplayFactory.DisplayContext.Default, DangerContainer);
         }
     }
 }

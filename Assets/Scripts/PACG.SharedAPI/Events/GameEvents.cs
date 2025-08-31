@@ -15,6 +15,9 @@ namespace PACG.SharedAPI
         public static event Action<bool> ScenarioPowerEnabled;
         public static void RaiseScenarioPowerEnabled(bool enabled) => ScenarioPowerEnabled?.Invoke(enabled);
 
+        public static event Action<CardInstance> ScenarioHasDanger;
+        public static void RaiseScenarioHasDanger(CardInstance card) => ScenarioHasDanger?.Invoke(card);
+
         // Turn phase events
         public static event Action TurnStateChanged;
         public static void RaiseTurnStateChanged() => TurnStateChanged?.Invoke();

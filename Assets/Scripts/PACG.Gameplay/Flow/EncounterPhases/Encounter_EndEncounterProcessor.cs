@@ -34,7 +34,7 @@ namespace PACG.Gameplay
             if (wasSuccess && IsClosingHenchman(encounteredCard))
             {
                 var pc = _contexts.EncounterContext.Character;
-                
+
                 var closeChoiceResolvable = new PlayerChoiceResolvable("Close location?",
                     new PlayerChoiceResolvable.ChoiceOption("Close", () =>
                     {
@@ -42,10 +42,7 @@ namespace PACG.Gameplay
                         var closeProcessor = new NewResolvableProcessor(closeResolvable, _gameServices);
                         _gameFlow.Interrupt(closeProcessor);
                     }),
-                    new PlayerChoiceResolvable.ChoiceOption("Skip", () => { }))
-                {
-                    Card = _contexts.EncounterContext.Character.Location
-                };
+                    new PlayerChoiceResolvable.ChoiceOption("Skip", () => { }));
                 
                 var nextProcessor = new NewResolvableProcessor(closeChoiceResolvable, _gameServices);
                 _gameFlow.Interrupt(nextProcessor);

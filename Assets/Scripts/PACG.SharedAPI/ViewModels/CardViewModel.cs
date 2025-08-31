@@ -19,7 +19,7 @@ namespace PACG.SharedAPI
         
         // Ready-to-display strings
         public string Name => CardInstance.Data.cardName.ToUpper();
-        public string Type => CardInstance.Data.cardType.ToString().ToUpper();
+        public string Type => PF.ToString(CardInstance.Data.cardType).ToUpper();
         public string StoryBaneType => CardInstance.Data.StoryBaneType.ToString().ToUpper();
         public string Level => $"{CardInstance.Data.cardLevel}";
         public string PowersText => StringUtils.ReplaceAdventureLevel(CardInstance.Data.powers, CardUtils.AdventureNumber);

@@ -29,7 +29,10 @@ MonoBehaviour:
   IsDuringPowerActivated: 1
   DuringScenarioPowerEnabled: {fileID: 2058518826365189002, guid: 3e2f2442f98ec8841a3f13dcaca70d54, type: 3}
   DuringScenarioPowerDisabled: {fileID: -4945773871214007067, guid: b9f6bf30d923f264abf0c605b463c5ec, type: 3}
-  Dangers: []
+  Dangers:
+  - CardData: {fileID: 11400000, guid: 24deac239706741449888e813ddb4949, type: 2}
+    CustomName: 
+    IsClosing: 0
   Villain:
     CardData: {fileID: 0}
     CustomName: 

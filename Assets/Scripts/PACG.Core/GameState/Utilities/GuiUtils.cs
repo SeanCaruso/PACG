@@ -25,7 +25,7 @@ namespace PACG.Core
 
                 // Banes
                 case CardType.Barrier:
-                    return new Color32(255, 227, 57, 255);
+                    return new Color32(240, 180, 29, 255);
                 case CardType.Monster:
                     return new Color32(213, 112, 41, 255);
                 case CardType.StoryBane:
