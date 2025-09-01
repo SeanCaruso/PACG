@@ -78,3 +78,5 @@ MonoBehaviour:
   FavoredCards:
   - CardType: 5
     Trait: Sword
+  IconEnabled: {fileID: 5965417574042598810, guid: 1f22f933ddba0d741a3f56b59a726f1f, type: 3}
+  IconDisabled: {fileID: -4520662400494898539, guid: e17829cbedb6f6142a73bb7497494cc2, type: 3}

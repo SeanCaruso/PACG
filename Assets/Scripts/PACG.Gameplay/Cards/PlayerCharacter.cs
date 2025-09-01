@@ -13,6 +13,8 @@ namespace PACG.Gameplay
         public string Name => CharacterData.CharacterName;
         public CardType CardType => CardType.Character;
         public List<string> Traits => CharacterData.Traits;
+        
+        public override string ToString() => Name;
 
         public CharacterData CharacterData { get; }
         private CharacterLogicBase Logic { get; }
@@ -70,6 +72,14 @@ namespace PACG.Gameplay
                 _skillAttrs[skill.Skill] = skill.Attribute;
             }
         }
+
+        public void SetActive()
+        {
+            _contexts.GameContext.ActiveCharacter = this;
+            GameEvents.RaisePlayerCharacterChanged(this);
+        }
+
+        public bool IsActive => _contexts.GameContext.ActiveCharacter == this;
 
         // ==============================================================================
         // SKILLS AND ATTRIBUTES
@@ -253,6 +263,8 @@ namespace PACG.Gameplay
             Location != null
                 ? _contexts.GameContext.GetCharactersAt(Location)
                 : new List<PlayerCharacter>();
+        public IReadOnlyList<PlayerCharacter> DistantCharacters =>
+            _contexts.GameContext.Characters.Except(LocalCharacters).ToList();
         public Location Location => _contexts.GameContext?.GetPcLocation(this);
         public void Move(Location newLoc) => _contexts.GameContext?.MoveCharacter(this, newLoc);
 

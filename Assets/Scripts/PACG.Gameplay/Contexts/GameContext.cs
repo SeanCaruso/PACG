@@ -19,6 +19,8 @@ namespace PACG.Gameplay
         public IReadOnlyList<Location> Locations => _locationPcs.Keys.ToList();
         public IReadOnlyList<PlayerCharacter> Characters =>
             _locationPcs.Values.SelectMany(x => x).ToList();
+        
+        public PlayerCharacter ActiveCharacter { get; set; }
 
         public IReadOnlyList<PlayerCharacter> GetCharactersAt(Location loc) =>
             _locationPcs.GetValueOrDefault(loc, new List<PlayerCharacter>());
@@ -64,7 +66,7 @@ namespace PACG.Gameplay
             _locationPcs[oldLoc].Remove(pc);
             SetPcLocation(pc, newLoc);
 
-            GameEvents.RaiseLocationChanged(newLoc);
+            GameEvents.RaiseLocationChanged(pc, newLoc);
         }
 
         /// <summary>

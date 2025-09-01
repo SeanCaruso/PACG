@@ -38,6 +38,7 @@ namespace PACG.SharedAPI
         public GameObject power2Button;
         public GameObject power3Button;
 
+        private PlayerCharacter _selectedPc;
         private List<GameObject> PowerButtons => new() { power1Button, power2Button, power3Button };
         private readonly Dictionary<CharacterPower, GameObject> _powerButtonMap = new();
 
@@ -50,6 +51,7 @@ namespace PACG.SharedAPI
         public void Awake()
         {
             // Subscribe to events.
+            GameEvents.PlayerCharacterChanged += OnPlayerCharacterChanged;
             GameEvents.PlayerPowerEnabled += PlayerPowerEnabled;
             GameEvents.PlayerCharacterChanged += UpdatePlayerArea;
             GameEvents.StagedActionsStateChanged += UpdateStagedActionButtons;
@@ -75,6 +77,7 @@ namespace PACG.SharedAPI
 
         protected void OnDestroy()
         {
+            GameEvents.PlayerCharacterChanged -= OnPlayerCharacterChanged;
             GameEvents.PlayerPowerEnabled -= PlayerPowerEnabled;
             GameEvents.PlayerCharacterChanged -= UpdatePlayerArea;
             GameEvents.StagedActionsStateChanged -= UpdateStagedActionButtons;
@@ -90,6 +93,12 @@ namespace PACG.SharedAPI
         }
 
         // --- Turn Flow -----------------------------------------
+        private void OnPlayerCharacterChanged(PlayerCharacter pc)
+        {
+            _selectedPc = pc;
+            UpdatePlayerArea(pc);
+            UpdateTurnButtons();
+        }
 
         private void UpdatePlayerArea(PlayerCharacter pc)
         {
@@ -101,7 +110,7 @@ namespace PACG.SharedAPI
             }
 
             var activatedPowers = pc.CharacterData.Powers.Where(power => power.IsActivated);
-            int idx = 0;
+            var idx = 0;
             foreach (var power in activatedPowers)
             {
                 if (idx > 2) break;
@@ -137,7 +146,9 @@ namespace PACG.SharedAPI
 
         private void UpdateTurnButtons()
         {
-            if (_contexts.CurrentResolvable != null || _contexts.TurnContext == null)
+            if (_contexts.CurrentResolvable != null 
+                || _contexts.TurnContext == null
+                || _selectedPc != _contexts.TurnContext?.Character)
             {
                 UpdateButton(giveCardButton, false, GiveCardDisabled);
                 UpdateButton(moveButton, false, MoveDisabled);

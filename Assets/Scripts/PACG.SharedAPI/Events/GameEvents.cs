@@ -25,8 +25,10 @@ namespace PACG.SharedAPI
         public static event Action<CardInstance> HourChanged;
         public static void RaiseHourChanged(CardInstance hourCard) => HourChanged?.Invoke(hourCard);
 
-        public static event Action<Location> LocationChanged;
-        public static void RaiseLocationChanged(Location location) => LocationChanged?.Invoke(location);
+        public static event Action<PlayerCharacter, Location> PcLocationChanged;
+
+        public static void RaiseLocationChanged(PlayerCharacter pc, Location location) =>
+            PcLocationChanged?.Invoke(pc, location);
 
         public static event Action<CardInstance> EncounterStarted;
 

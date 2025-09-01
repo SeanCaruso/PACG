@@ -76,9 +76,6 @@ namespace PACG.Gameplay
 
         public void Cancel()
         {
-            // Always do the standard undo logic
-            var pc = _contexts.TurnContext.Character;
-
             foreach (var (card, location) in _originalCardLocs)
             {
                 _cards.MoveCard(card, location);
@@ -90,8 +87,7 @@ namespace PACG.Gameplay
             _hasExploreStaged = false;
             
             _originalCardLocs.Clear();
-            if (_pcsStagedActions.TryGetValue(pc, out var pcActions))
-                pcActions.Clear();
+            _pcsStagedActions.Clear();
 
             // Additional step for phase-level cancels
             if (_contexts.CurrentResolvable?.CancelAbortsPhase == true)
@@ -99,7 +95,6 @@ namespace PACG.Gameplay
                 GameEvents.SetStatusText("");
                 _gameFlow.AbortPhase();
                 _contexts.EndResolvable();
-                _pcsStagedActions.Clear(); // Clear ALL PCs' actions when aborting phase
             }
 
             UpdateGameStatePreview();
@@ -114,13 +109,19 @@ namespace PACG.Gameplay
         public void UpdateActionButtons()
         {
             // Send an event to update the state of the action buttons (Cancel, Commit, Skip).
-            // TODO: Update this for the displayed PC. Use Turn PC until then.
-            var pc = _contexts.TurnContext?.Character;
+            var pc = _contexts.GameContext.ActiveCharacter;
             var stagedActions = pc != null
                 ? _pcsStagedActions.GetValueOrDefault(pc, new List<IStagedAction>())
                 : new List<IStagedAction>();
 
             var state = _contexts.CurrentResolvable?.GetUIState(stagedActions) ?? GetDefaultUiState(stagedActions);
+
+            if (pc != _contexts.TurnContext?.Character)
+            {
+                state.IsMoveEnabled = false;
+                state.IsExploreEnabled = false;
+            }
+            
             GameEvents.RaiseStagedActionsStateChanged(state);
         }
 

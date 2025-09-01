@@ -16,8 +16,8 @@ namespace PACG.SharedAPI
         public Button Button;
         public Transform DiscardsContainer;
 
-        private readonly List<CardInstance> _discards = new();
         private PlayerCharacter _currentPC;
+        private IReadOnlyList<CardInstance> Discards => _currentPC?.Discards ?? new List<CardInstance>();
 
         private void OnEnable()
         {
@@ -60,29 +60,14 @@ namespace PACG.SharedAPI
         private void OnPlayerCharacterChanged(PlayerCharacter pc)
         {
             _currentPC = pc;
+            UpdateShownDiscard();
         }
 
         private void OnCardLocationChanged(CardInstance card)
         {
             if (card.Owner != _currentPC) return;
-            
-            // Card entering discard.
-            if (!_discards.Contains(card) && card.CurrentLocation == CardLocation.Discard)
-            {
-                _discards.Add(card);
-                UpdateShownDiscard();
-            }
-            // Displayed card leaving discard.
-            else if (_discards.Count > 0 && _discards[^1] == card && card.CurrentLocation != CardLocation.Discard)
-            {
-                _discards.Remove(card);
-                UpdateShownDiscard();
-            }
-            // Undisplayed card leaving discard.
-            else if (_discards.Contains(card) && card.CurrentLocation != CardLocation.Discard)
-            {
-                _discards.Remove(card);
-            }
+
+            UpdateShownDiscard();
         }
 
         private void UpdateShownDiscard()
@@ -93,10 +78,10 @@ namespace PACG.SharedAPI
                 Destroy(DiscardsContainer.GetChild(i).gameObject);
             }
             
-            if (_discards.Count == 0) return;
+            if (Discards.Count == 0) return;
             
             CardDisplayFactory.CreateCardDisplay(
-                _discards[^1],
+                Discards[^1],
                 CardDisplayFactory.DisplayContext.GameStateIndicator,
                 DiscardsContainer
             );

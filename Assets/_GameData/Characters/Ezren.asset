@@ -73,3 +73,5 @@ MonoBehaviour:
   FavoredCards:
   - CardType: 4
     Trait: 
+  IconEnabled: {fileID: 8205431418078337900, guid: fb047a56902db7a4c910679c131af5c3, type: 3}
+  IconDisabled: {fileID: -8234495435444017897, guid: 96845a222d15dcc438b076f2e0ef53d5, type: 3}

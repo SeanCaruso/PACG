@@ -90,5 +90,9 @@ namespace PACG.Data
         public int Allies;
         public int Blessings;
         public List<FavoredCard> FavoredCards;
+
+        [Header("Images")]
+        public Sprite IconEnabled;
+        public Sprite IconDisabled;
     }
 }

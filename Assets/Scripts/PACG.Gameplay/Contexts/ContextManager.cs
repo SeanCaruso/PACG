@@ -34,7 +34,11 @@ namespace PACG.Gameplay
 
         public void NewGame(GameContext gameContext) => GameContext = gameContext;
 
-        public void NewTurn(TurnContext turnContext) => TurnContext = turnContext;
+        public void NewTurn(TurnContext turnContext)
+        {
+            TurnContext = turnContext;
+            GameContext.ActiveCharacter = turnContext.Character;
+        }
 
         public void EndTurn()
         {

@@ -23,7 +23,7 @@ namespace PACG.SharedAPI
         
         protected void Awake()
         {
-            GameEvents.LocationChanged += OnLocationChanged;
+            GameEvents.PcLocationChanged += OnPcLocationChanged;
             GameEvents.HourChanged += OnHourChanged;
             GameEvents.EncounterStarted += OnEncounterStarted;
             GameEvents.EncounterEnded += OnEncounterEnded;
@@ -33,7 +33,7 @@ namespace PACG.SharedAPI
 
         protected void OnDestroy()
         {
-            GameEvents.LocationChanged -= OnLocationChanged;
+            GameEvents.PcLocationChanged -= OnPcLocationChanged;
             GameEvents.HourChanged -= OnHourChanged;
             GameEvents.EncounterStarted -= OnEncounterStarted;
             GameEvents.EncounterEnded -= OnEncounterEnded;
@@ -45,7 +45,7 @@ namespace PACG.SharedAPI
         // TURN AND ENCOUNTER MANAGEMENT
         // ========================================================================================
 
-        private void OnLocationChanged(Location location)
+        private void OnPcLocationChanged(PlayerCharacter pc, Location location)
         {
             if (_currentLocationDisplay)
                 Destroy(_currentLocationDisplay.gameObject);

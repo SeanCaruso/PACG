@@ -1,4 +1,5 @@
 using PACG.Core;
+using PACG.Gameplay;
 using PACG.Presentation;
 using TMPro;
 using UnityEngine;
@@ -22,6 +23,8 @@ namespace PACG.SharedAPI
         {
             GameEvents.SetStatusTextEvent += SetStatusText;
             GameEvents.DicePoolChanged += OnDicePoolChanged;
+            
+            GameEvents.PlayerCharacterChanged += OnPlayerCharacterChanged;
             GameEvents.PlayerDeckCountChanged += OnPlayerDeckCountChanged;
         }
 
@@ -29,6 +32,8 @@ namespace PACG.SharedAPI
         {
             GameEvents.SetStatusTextEvent -= SetStatusText;
             GameEvents.DicePoolChanged -= OnDicePoolChanged;
+            
+            GameEvents.PlayerCharacterChanged -= OnPlayerCharacterChanged;
             GameEvents.PlayerDeckCountChanged -= OnPlayerDeckCountChanged;
         }
 
@@ -38,6 +43,8 @@ namespace PACG.SharedAPI
                 _currentDicePreview.ClearDice();
             StatusText.text = text;
         }
+
+        private void OnPlayerCharacterChanged(PlayerCharacter pc) => OnPlayerDeckCountChanged(pc.Deck.Count);
 
         private void OnPlayerDeckCountChanged(int count)
         {

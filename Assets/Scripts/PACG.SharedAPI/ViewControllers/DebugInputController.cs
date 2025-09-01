@@ -6,12 +6,26 @@ namespace PACG.SharedAPI
 {
     public class DebugInputController : MonoBehaviour
     {
+        private PlayerCharacter _pc;
+        
         private ContextManager _contexts;
 
         public void Initialize(GameServices gameServices)
         {
             _contexts = gameServices.Contexts;
         }
+
+        private void OnEnable()
+        {
+            GameEvents.PlayerCharacterChanged += SetPc;
+        }
+        
+        private void OnDisable()
+        {
+            GameEvents.PlayerCharacterChanged -= SetPc;
+        }
+        
+        private void SetPc(PlayerCharacter pc) => _pc = pc;
 
 #if UNITY_EDITOR
         private void Update()
@@ -34,32 +48,31 @@ namespace PACG.SharedAPI
 
             if (ctrl && shift && keyboard.dKey.wasPressedThisFrame)
             {
-                var pc = _contexts.TurnContext.Character;
-                if (pc.Deck.Count == 0) return;
-                pc.AddToHand(pc.DrawFromDeck());
-                Debug.Log($"NEW HAND: {string.Join(",", _contexts.TurnContext.Character.Hand)}");
+                if (_pc.Deck.Count == 0) return;
+                _pc.AddToHand(_pc.DrawFromDeck());
+                Debug.Log($"NEW HAND: {string.Join(",", _pc.Hand)}");
             }
 
             if (ctrl && shift && keyboard.rKey.wasPressedThisFrame)
             {
-                var hand = _contexts.TurnContext.Character.Hand;
+                var hand = _pc.Hand;
                 if (hand.Count == 0) return;
-                _contexts.TurnContext.Character.Recharge(hand[^1]);
-                Debug.Log($"NEW HAND: {string.Join(",", _contexts.TurnContext.Character.Hand)}");
+                _pc.Recharge(hand[^1]);
+                Debug.Log($"NEW HAND: {string.Join(",", _pc.Hand)}");
             }
 
             if (ctrl && shift && keyboard.deleteKey.wasPressedThisFrame)
             {
-                var hand = _contexts.TurnContext.Character.Hand;
+                var hand = _pc.Hand;
                 if (hand.Count == 0) return;
-                _contexts.TurnContext.Character.Discard(hand[^1]);
+                _pc.Discard(hand[^1]);
                 GameEvents.RaiseTurnStateChanged();
             }
 
             if (ctrl && shift && keyboard.hKey.wasPressedThisFrame)
             {
-                if (_contexts.TurnContext.Character.Discards.Count == 0) return;
-                _contexts.TurnContext.Character.Heal(1);
+                if (_pc.Discards.Count == 0) return;
+                _pc.Heal(1);
                 GameEvents.RaiseTurnStateChanged();
             }
         }
@@ -67,7 +80,7 @@ namespace PACG.SharedAPI
 
         private void ExamineLocation(int count)
         {
-            var loc = _contexts.TurnContext.Character.Location;
+            var loc = _pc.Location;
             Debug.Log($"[{GetType().Name}] Examining {count} from {loc}");
 
             var resolvable = new ExamineResolvable(loc, count, Keyboard.current.leftAltKey.isPressed);

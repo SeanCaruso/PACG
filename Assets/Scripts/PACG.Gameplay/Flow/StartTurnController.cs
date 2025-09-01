@@ -26,7 +26,7 @@ namespace PACG.Gameplay
 
             _contexts.NewTurn(new TurnContext(_pc));
             GameEvents.RaisePlayerCharacterChanged(_pc);
-            GameEvents.RaiseLocationChanged(_pc.Location);
+            GameEvents.RaiseLocationChanged(_pc, _pc.Location);
 
             _gameFlow.QueueNextProcessor(new Turn_AdvanceHourProcessor(_gameServices));
             _gameFlow.QueueNextProcessor(new Turn_StartTurnProcessor(_gameServices));
